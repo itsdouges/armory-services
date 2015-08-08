@@ -25,7 +25,7 @@ describe('ping service', function () {
 			}
 		];
 
-		
+		spyOn(mockRest.get).
 	});
 
 	it('should set token valid to false if token response was not valid', function () {

@@ -2,15 +2,14 @@ FROM node:0.12.7
 
 MAINTAINER madou <laheen@gmail.com>
 
-LABEL Description="User ping container for api.armory.net.au."
+LABEL Description="Auth container for api.armory.net.au."
 
 ADD package.json /tmp/package.json
 RUN cd /tmp && npm install
 RUN mkdir -p /opt/app && cp -a /tmp/node_modules /opt/app/ && cp -a /tmp/package.json /opt/package.json
 
-COPY /runner.js /opt
 COPY /src /opt/app
 
 WORKDIR /opt
 
-ENTRYPOINT ["node", "runner.js"]
+ENTRYPOINT ["node", "app/users.js"]

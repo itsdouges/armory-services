@@ -1,5 +1,5 @@
-var Client = require('./src/ping').Client;
-var db = require('./src/data');
+var Client = require('./ping').Client;
+var db = require('./data');
 
 var restify = require('restify');
 var client = restify.createJsonClient({

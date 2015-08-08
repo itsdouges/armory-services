@@ -1,0 +1,10 @@
+user
+	id
+	email
+	alias
+	password_hashnsalt
+	gw2_token
+	
+characters
+	name
+	user_id

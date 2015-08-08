@@ -1,10 +1,9 @@
 {
   "name": "armory-auth",
   "version": "0.0.1",
-  "description": "Auth container for api.armory.net.au.",
-  "main": "auth.js",
+  "description": "Users container for api.armory.net.au.",
+  "main": "users.js",
   "dependencies": {
-    "password-hash-and-salt": "^0.1.2",
     "restify": "^3.0.3",
     "restify-oauth2": "^4.0.3",
     "sequelize": "^3.5.1",

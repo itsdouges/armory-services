@@ -1,34 +1,23 @@
 "use strict";
 
+var db = require('./data');
+
 var restify = require("restify");
-var restifyOAuth2 = require("restify-oauth2");
-var hooks = require("./hooks");
 
 var server = restify.createServer({
-    name: "armory.net.au:auth",
-    version: require("../package.json").version,
-    formatters: {
-        "application/hal+json": function (req, res, body) {
-            return res.formatters["application/json"](req, res, body);
-        }
-    }
+    name: "armory.net.au:characters",
+    version: require("../package.json").version
 });
 
 var RESOURCES = Object.freeze({
     INITIAL: "/",
-    TOKEN: "/token"
+    CHARACTERS: "/characters"
 });
 
 server.use(restify.authorizationParser());
 server.use(restify.bodyParser({ 
     mapParams: false 
 }));
-
-restifyOAuth2.ropc(server, { 
-    tokenEndpoint: RESOURCES.TOKEN, 
-    hooks: hooks,
-    tokenExpirationTime: 60
-});
 
 server.get(RESOURCES.INITIAL, function (req, res) {
     var response = "Auth endpoint for armory.net.au";
@@ -46,4 +35,4 @@ server.get(RESOURCES.TOKEN, function (req, res) {
     res.send("You are authenticated!");
 });
 
-server.listen(8080);
+server.listen(8081);

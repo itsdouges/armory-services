@@ -6,6 +6,7 @@
   "dependencies": {
     "q": "^1.4.1",
     "restify": "^3.0.3",
+    "sequelize": "^3.5.1",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
