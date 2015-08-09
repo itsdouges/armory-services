@@ -10,25 +10,23 @@ build_container() {
 }
 
 # $1: container-name
-# $2: port forward
-# $3: extra commands
+# $2: extra commands
 run_container() {
 	docker run \
-		-d \ # daemon mode
-		-p $2 \
-		$3 \
-		armory-$1:latest
+		-d \
+		$2 \
+		"armory-$1:latest"
 }
 
 # $1: container-name
 task_run() {
 	case "$1" in
 		db)
-			run_container $1 "3306:3306" "-e MYSQL_ROOT_PASSWORD=password";;
+			run_container $1 "-p 3306:3306 -e MYSQL_ROOT_PASSWORD=password";;
 		auth)
-			run_container $1 "8080:8000";;
+			run_container $1 "-p 8080:8000";;
 		characters)
-			run_container $1;;
+			run_container $1 "-p 8081:8001";;
 		ping) 
 			run_container $1;;
 		users)

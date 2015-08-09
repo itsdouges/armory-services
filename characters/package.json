@@ -4,12 +4,16 @@
   "description": "Characters container for api.armory.net.au.",
   "main": "characters.js",
   "dependencies": {
+    "request-promise": "^0.4.3",
     "restify": "^3.0.3",
     "restify-oauth2": "^4.0.3",
     "sequelize": "^3.5.1",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "q": "^1.4.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jasmine-node": "^1.14.5"
+    },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -2,6 +2,8 @@ CREATE DATABASE IF NOT EXISTS armory;
 
 USE armory;
 
+# note this might not be needed with sequelize ORM.
+
 CREATE TABLE IF NOT EXISTS users
 	(
 		id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,

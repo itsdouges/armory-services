@@ -4,7 +4,9 @@
   "description": "User ping docker file for api.armory.net.au.",
   "main": "ping.js",
   "dependencies": {
+    "mysql": "^2.8.0",
     "q": "^1.4.1",
+    "request-promise": "^0.4.3",
     "restify": "^3.0.3",
     "sequelize": "^3.5.1",
     "underscore": "^1.8.3"

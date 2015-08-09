@@ -2,7 +2,8 @@
 
 var restify = require("restify");
 var restifyOAuth2 = require("restify-oauth2");
-var hooks = require("./hooks");
+
+var hooks = require("./auth-hooks");
 
 var server = restify.createServer({
     name: "armory.net.au:auth",
@@ -43,7 +44,7 @@ server.get(RESOURCES.TOKEN, function (req, res) {
     }
 
     res.contentType = "application/json";
-    res.send("You are authenticated!");
+    res.send();
 });
 
 server.listen(8080);

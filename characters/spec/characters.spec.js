@@ -1,6 +1,7 @@
-var Client = require('../src/ping').Client;
+var Client = require('../src/characters');
+var q = require('q');
 
-describe('ping service', function () {
+describe('character controller', function () {
 	var mockDatabase;
 	var mockRest;
 
@@ -15,21 +16,35 @@ describe('ping service', function () {
 		}, mockRest, mockDatabase);
 	}
 
-	it('should call get characters for each user in db', function () {
-		mockDatabase.users = [
-			{
-				token: '1234'
-			}, 
-			{
-				token: '5678'
-			}
-		];
+	it('should return null if character is not in our db', function () {
+		var controller = systemUnderTest();
+		
+		var result = controller.read('not found man');
 
-		spyOn(mockRest.get).
+		expect(result).toBe(null);
 	});
 
-	it('should set token valid to false if token response was not valid', function () {
-		var client = systemUnderTest();
-		client.start();
+	it('should call gw2 api if character is in db', function () {
+		var controller = systemUnderTest();
+
+		var character = {
+			name: 'legitcharacter'
+		};
+		
+		var result = controller.read('legitcharacter');
+
+		expect(result).toBe(null);
+	});
+
+	it('should return null if gw2 call was unsuccessful', function () {
+		var controller = systemUnderTest();
+
+		var character = {
+			name: 'legitcharacter'
+		};
+		
+		var result = controller.read('legitcharacter');
+
+		expect(result).toBe(null);
 	});
 });

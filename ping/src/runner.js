@@ -1,18 +1,16 @@
 var Client = require('./ping').Client;
 var db = require('./data');
 
-var restify = require('restify');
-var client = restify.createJsonClient({
-	url: 'https://api.guildwars2.com'
-});
+var requestClient = require('request-promise');
 
 var CYCLE = 600000;
 
-var pinger = new Client({}, client, db);
+var pinger = new Client({}, requestClient, db);
 
-console.log('BEGIN PINGING');
+console.log('BEGIN PING SERVICE');
 
 pinger.ping();
+
 setInterval(function () {
 	pinger.ping();
 }, CYCLE);

@@ -1,38 +1,13 @@
-"use strict";
-
 var db = require('./data');
 
-var restify = require("restify");
+function CharacterController(sequelizeClient) {
+	
+}
 
-var server = restify.createServer({
-    name: "armory.net.au:characters",
-    version: require("../package.json").version
-});
+function ReadCharacter(name) {
+	
+}
 
-var RESOURCES = Object.freeze({
-    INITIAL: "/",
-    CHARACTERS: "/characters"
-});
+CharacterController.prototype.read = ReadCharacter;
 
-server.use(restify.authorizationParser());
-server.use(restify.bodyParser({ 
-    mapParams: false 
-}));
-
-server.get(RESOURCES.INITIAL, function (req, res) {
-    var response = "Auth endpoint for armory.net.au";
-
-    res.contentType = "application/json";
-    res.send(response);
-});
-
-server.get(RESOURCES.TOKEN, function (req, res) {
-    if (!req.username) {
-        return res.sendUnauthenticated();
-    }
-
-    res.contentType = "application/json";
-    res.send("You are authenticated!");
-});
-
-server.listen(8081);
+module.exports = CharacterController;

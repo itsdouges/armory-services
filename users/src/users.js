@@ -1,49 +1,44 @@
-"use strict";
+function UsersController() {
 
-var restify = require("restify");
-var restifyOAuth2 = require("restify-oauth2");
-var hooks = require("./hooks");
+}
 
-var server = restify.createServer({
-    name: "armory.net.au:auth",
-    version: require("../package.json").version,
-    formatters: {
-        "application/hal+json": function (req, res, body) {
-            return res.formatters["application/json"](req, res, body);
-        }
-    }
-});
+function validateCreation(user) {
+	var errors = [];
 
-var RESOURCES = Object.freeze({
-    INITIAL: "/",
-    TOKEN: "/token"
-});
+	validateEmail(user.email, errors);
+	validatePassword(user.password, errors);
 
-server.use(restify.authorizationParser());
-server.use(restify.bodyParser({ 
-    mapParams: false 
-}));
+	if (!user.alias) {
+		errors.push('Alias is required');
+	}
 
-restifyOAuth2.ropc(server, { 
-    tokenEndpoint: RESOURCES.TOKEN, 
-    hooks: hooks,
-    tokenExpirationTime: 60
-});
+	return errors;
+}
 
-server.get(RESOURCES.INITIAL, function (req, res) {
-    var response = "Auth endpoint for armory.net.au";
+function validateEmail(email, errors) {
+	if (!email) {
+		errors.push('Email is required');
+	}
 
-    res.contentType = "application/json";
-    res.send(response);
-});
+	// todo: check valid email against regex
+}
 
-server.get(RESOURCES.TOKEN, function (req, res) {
-    if (!req.username) {
-        return res.sendUnauthenticated();
-    }
+function validatePassword(password, errors) {
+	if (!password) {
+		errors.push('Password is required');
+	}
+}
 
-    res.contentType = "application/json";
-    res.send("You are authenticated!");
-});
+/** 
+ * isEmailTaken:function
+ * Returns promise that is resolved if email is free,
+ * and rejected if email is taken.
+ */
+function isEmailTaken(email) {
+	// TODO: Implement when db is figured out lolz..
+}
 
-server.listen(8080);
+UsersController.prototype.validateEmail = validateEmail;
+UsersController.prototype.validateUser = validateCreation;
+
+module.exports = UsersController;

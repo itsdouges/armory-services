@@ -1,53 +1,59 @@
 var underscore = require('underscore');
-var db;
-var rest;
 
 var defaultOptions = {
 	retries: 2,
 	verbose: false
 };
 
+// TODO: Need a proper logging implementation ! 
+// TODO: Need to implement database calls.
+
 function pingUser(user) {
 	if (!user.token || !user.tokenValid) {
-		defaultOptions.verbose ? console.log('Ignoring user.') : '';
+		defaultOptions.verbose ? console.log('Invalid token, ignoring user.') : '';
 		return;
 	}
 
-	var requestOptions = {
-		path: '/v2/characters',
-		retry: {
-			'retries': defaultOptions.retries
-		},
+	var options = {
+		uri: 'https://api.guildwars2.com/v2/characters',
+		method: 'GET',
 		headers: {
 			'Authorization': 'Bearer ' + user.token
-		},
-		agent: false
+		}
 	};
 
-	rest.get(requestOptions, function(err, req, res, obj) {
-		if (err) 
-			if (err.statusCode == 403) {
-			defaultOptions.verbose ? console.log('Authentication expired') : '';
-			user.tokenValid = false;
-		} else if (obj) {
-			user.characters = obj;
-		}
-	});
+	this.request
+		.get(options)
+		.then(function(data) {
+			defaultOptions.verbose ? console.log('SUCCESS') : '';
+
+			user.characters = data;
+		}, function(error) {
+			if (error.statusCode == 403) {
+				defaultOptions.verbose ? console.log('Token was rejected, setting to invalid.') : '';
+				user.tokenValid = false;
+			} else if (error.statusCode === 500) {
+				console.log('GW2 Api had an error occur.');
+			} else {
+				console.log('Can\'t talk out from the network!');
+			}
+		});
 }
 
-function Client(options, restClient, database) {
+function Client(options, requestClient, database) {
 	underscore.extend(defaultOptions, options);
 
-	rest = restClient;
-	db = database;
+	this.request = requestClient;
+	this.db = database;
 }
 
 Client.prototype.ping = function () {
+	var scope = this;
 	defaultOptions.verbose ? console.log('.') : '';
 
-	db.users.forEach(function (user) {
-		pingUser(user);
+	this.db.users.forEach(function (user) {
+		pingUser.call(scope, user);
 	});
 };
 
-exports.Client = Client;
+module.exports = Client;
