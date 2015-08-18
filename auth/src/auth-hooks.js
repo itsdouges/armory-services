@@ -3,7 +3,17 @@
 var _ = require('underscore');
 var crypto = require('crypto');
 var secret = require('../package.json').secret;
-var tokenHook = require('./token-hook');
+var tokenHook = require('./token-hooks');
+
+var Sequelize = require('sequelize');
+
+var sequelize = new Sequelize('armory', 'admin', 'password', {
+    host: 'http://192.168.59.103:3306/', 
+    dialect: 'mysql'
+});
+
+// todo: use this.
+// var sequelize = new Sequelize('postgres://user:pass@example.com:5432/dbname');
 
 // todo: implement perm data store!!!
 var database = {
@@ -27,8 +37,6 @@ function validateClient (credentials, req, cb) {
     cb(null, isValid);
 };
 
-
-
 function authenticateToken (token, req, cb) {
     if (_.has(database.tokensToUsernames, token)) {
         // If the token authenticates, set the corresponding property on the request, and call back with `true`.
@@ -42,6 +50,7 @@ function authenticateToken (token, req, cb) {
     cb(null, false);
 };
 
-exports.validateClient = validateClient;
-exports.grantUserToken = tokenHook;
-exports.authenticateToken = authenticateToken;
+exports = {
+    validateClient: validateClient,
+    authenticateToken: authenticateToken
+}

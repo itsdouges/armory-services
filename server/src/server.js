@@ -2,7 +2,6 @@
 
 var restify = require("restify");
 var restifyOAuth2 = require("restify-oauth2");
-var hooks = require("./auth-hooks");
 
 var server = restify.createServer({
     name: "armory.net.au:auth",
@@ -24,9 +23,9 @@ server.use(restify.bodyParser({
     mapParams: false 
 }));
 
-restifyOAuth2.ropc(server, {
-    hooks: hooks
-});
+// restifyOAuth2.ropc(server, {
+//     // hooks: hooks
+// });
 
 server.get(RESOURCES.INITIAL, function (req, res) {
     var response = "Users service for armory.net.au";
@@ -52,4 +51,4 @@ server.put(RESOURCES.USERS, function (req, res) {
     res.send("You are authenticated!");
 });
 
-server.listen(8082);
+module.exports = server;

@@ -1,3 +1,5 @@
+
+
 /**
  * [generateToken description]
  * @param  {[type]} data [description]
@@ -31,4 +33,4 @@ function grantUserToken (credentials, req, cb) {
     cb(null, false);
 };
 
-export.modules = grantUserToken;
+exports.modules = grantUserToken;

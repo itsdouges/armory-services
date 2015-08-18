@@ -1,22 +1,25 @@
 {
   "name": "armory-auth",
   "version": "0.0.1",
-  "description": "Characters container for api.armory.net.au.",
-  "main": "characters.js",
+  "description": "Users service for api.armory.net.au.",
+  "main": "node run.js",
   "dependencies": {
+    "fs": "0.0.2",
+    "mysql": "^2.8.0",
+    "path": "^0.11.14",
     "request-promise": "^0.4.3",
     "restify": "^3.0.3",
     "restify-oauth2": "^4.0.3",
     "sequelize": "^3.5.1",
-    "underscore": "^1.8.3",
-    "q": "^1.4.1"
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "jasmine-node": "^1.14.5"
-    },
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "madou",
+  "license": "ISC",
+  "secret": "ayylmao"
 }
