@@ -5,18 +5,22 @@ module.exports = function(sequelize, DataTypes) {
 	id: {
 		type: DataTypes.UUID,
 		field: 'id',
+		required: true,
 		primaryKey: true
 	},
 	email: {
 		type: DataTypes.STRING,
+		required: true,
 		field: 'email'
 	},
 	alias: {
 		type: DataTypes.STRING,
+		required: true,
 		field: 'alias'
 	},
 	passwordHash: {
 		type: DataTypes.STRING,
+		required: true,
 		field: 'password_hash'
 	},
 	gw2ApiToken: {
@@ -28,9 +32,9 @@ module.exports = function(sequelize, DataTypes) {
 		field: 'gw2_api_token_valid'
 	}
   }, {
-    classMethods: {
-      associate: function(models) {
-        User.hasMany(models.Gw2Character, { as: 'Gw2Characters' })
+    	classMethods: {
+      	associate: function(models) {
+        	User.hasMany(models.Gw2Character, { as: 'Gw2Characters' })
       }
     }
   });

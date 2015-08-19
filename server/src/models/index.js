@@ -6,12 +6,11 @@ var Sequelize = require("sequelize");
 
 var env = process.env.ENVIRONMENT || 'dev';
 var config = require(__dirname + '/../../env/' + env + '.json');
+config.db.options.host = process.env[config.db.options.host_env_name];
 
-var sequelize = new Sequelize(config.db.name, config.db.user, config.db.password, {
-    "dialect": "mysql",
-    "host": process.env.DB_PORT_3306_TCP_ADDR,
-    "port": "3306"
-});
+console.log('Connecting to mysql host: ' + config.db.options.host);
+var sequelize = new Sequelize(config.db.name, config.db.user, config.db.password, config.db.options);
+console.log('Connected.');
 
 var db = {};
 

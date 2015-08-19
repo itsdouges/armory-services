@@ -5,8 +5,7 @@
 		"password": "password",
 		"options": {
 			"dialect": "mysql",
-			"host": "127.0.0.1",
-			"port": "3306"
+			"host_env_name": "DB_PORT_3306_TCP_ADDR"
 		}
 	},
 	"port": "8082"

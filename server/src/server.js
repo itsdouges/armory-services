@@ -1,5 +1,7 @@
 "use strict";
 
+// http://cmme.org/tdumitrescu/blog/2014/02/node-sql-testing/
+
 var restify = require("restify");
 var restifyOAuth2 = require("restify-oauth2");
 

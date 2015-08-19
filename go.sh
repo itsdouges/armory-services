@@ -98,6 +98,11 @@ task_build() {
 	esac
 }
 
+task_clean() {
+	echo "Cleaning up untagged images.."
+	docker images | grep "<none>" | awk '{print $3}' | xargs docker rmi -f
+}
+
 # $1: task
 # $2: container-name
 case "$1" in
@@ -109,7 +114,9 @@ case "$1" in
 		task_build $2;;
 	start)
 		task_serve;;
+	clean)
+		task_clean;;
 	*)
-		echo "Available tasks: {run|create|build|serve}"
+		echo "Available tasks: {run|clean|create|build|serve}"
 		exit 1;;
 esac
