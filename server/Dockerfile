@@ -12,4 +12,4 @@ WORKDIR /opt/app
 MAINTAINER madou <laheen@gmail.com>
 LABEL Description="Server container for api.armory.net.au"
 
-ENTRYPOINT ["node", "run.js"]
+ENTRYPOINT ["gulp", "serve"]
