@@ -4,53 +4,29 @@
 
 var restify = require("restify");
 var restifyOAuth2 = require("restify-oauth2");
+var usersResource = require('./resources/users');
 
 var server = restify.createServer({
-    name: "armory.net.au:auth",
-    version: require("../package.json").version,
-    formatters: {
-        "application/hal+json": function (req, res, body) {
-            return res.formatters["application/json"](req, res, body);
-        }
-    }
+    name: "armory.net.au",
+    version: require("../package.json").version
 });
 
 var RESOURCES = Object.freeze({
-    INITIAL: "/",
     USERS: "/users"
 });
 
 server.use(restify.authorizationParser());
-server.use(restify.bodyParser({ 
-    mapParams: false 
-}));
+server.use(restify.bodyParser());
 
 // restifyOAuth2.ropc(server, {
 //     // hooks: hooks
 // });
 
-server.get(RESOURCES.INITIAL, function (req, res) {
-    var response = "Users service for armory.net.au";
-
-    res.contentType = "application/json";
-    res.send(response);
+server.get('/', function (req, res) {
+    res.send("api.armory.net.au");
 });
 
 // create user
-server.post(RESOURCES.USERS, function (req, res) {
- // todo: implement
-});
-
-// update user
-server.put(RESOURCES.USERS, function (req, res) {
-    if (!req.username) {
-        return res.sendUnauthenticated();
-    }
-
-    // todo: implement
-
-    res.contentType = "application/json";
-    res.send("You are authenticated!");
-});
+server.post(RESOURCES.USERS, usersResource.createUser);
 
 module.exports = server;

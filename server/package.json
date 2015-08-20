@@ -6,6 +6,7 @@
   "dependencies": {
     "fs": "0.0.2",
     "mysql": "^2.8.0",
+    "password-hash-and-salt": "^0.1.2",
     "path": "^0.11.14",
     "request-promise": "^0.4.3",
     "restify": "^3.0.3",
@@ -14,7 +15,11 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "jasmine-node": "^1.14.5"
+    "gulp": "^3.9.0",
+    "gulp-jasmine": "^2.0.1",
+    "gulp-jshint": "^1.11.2",
+    "gulp-shell": "^0.4.2",
+    "nodemon": "^1.4.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

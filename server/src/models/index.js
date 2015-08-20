@@ -10,7 +10,6 @@ config.db.options.host = process.env[config.db.options.host_env_name];
 
 console.log('Connecting to mysql host: ' + config.db.options.host);
 var sequelize = new Sequelize(config.db.name, config.db.user, config.db.password, config.db.options);
-console.log('Connected.');
 
 var db = {};
 

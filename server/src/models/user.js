@@ -6,7 +6,8 @@ module.exports = function(sequelize, DataTypes) {
 		type: DataTypes.UUID,
 		field: 'id',
 		required: true,
-		primaryKey: true
+		primaryKey: true,
+		defaultValue: DataTypes.UUIDV4,
 	},
 	email: {
 		type: DataTypes.STRING,
