@@ -1,62 +1,61 @@
 'use strict';
 
-var models = require('../../models');
-var hasher = require('password-hash-and-salt');
+var password = require('password-hash-and-salt');
+var q = require('q');
 
-function createUser(req, res, next) {
-	var email = req.params.email;
-	var password = req.params.password;
-	var alias = req.params.alias;
-	var gw2token = req.params.gw2token;
+function UsersResource(models, validator) {
+	// TODO: Email confirmation.
+	// TODO: Forgot my password.
 
-	var user = {
-		email: email,
-		alias: alias,
-		password: password,
-		gw2ApiToken: gw2token
-	};
-
-	if (!validateUser(user)) {
-		res.send(400, user);
-		next();
-		return;
-	}
-
-	hashPassword(user);
-
-	models.User.create(user)
-		.then(function () {
-			res.send(200);
-			next();
-		}, function (e) {
-			res.send(500, e);
-			next();
-		});
-}
-
-function validateUser(user) {
-	var errors = [];
-
-	if (!user.email ||
-		!user.alias ||
-		!user.password ||
-		!user.gw2ApiToken) {
-		// add errors
-	}
-
-	return errors;
-}
-
-function hashPassword(user) {
-	password('coolpassword').hash(function (error, hash) {
-		if (error) {
-			return error;
+	UsersResource.prototype.create = function (user) {
+		// TODO: change to promise based validation
+		var errors = validator.create(user);
+		if (errors) {
+			return q.reject(errors);
 		}
 
-		user.passwordHash = hash;
-	});
+		var defer = q.defer();
+
+		password(user.password).hash(function (error, hash) {
+			if (error) {
+				defer.reject(error);
+			}
+
+			user.passwordHash = hash;
+
+			models.User
+				.create(user)
+				.then(defer.resolve, defer.reject);
+		});
+
+		return defer.promise;
+	};
+
+	UsersResource.prototype.update = function (user) {
+		// TODO: change to promise based validation
+		var errors = validator.update(user);
+		if (errors) {
+			return q.reject(errors);
+		}
+
+		var defer = q.defer();
+	};
+
+	UsersResource.prototype.updateGw2Token = function (alias, token) {
+		var defer = q.defer();
+
+		validator
+			.gw2Token(token)
+			.then(function () {
+				// TODO: Implement update
+			}, defer.reject);
+		
+		return defer.promise;
+	};
+
+	UsersResource.prototype.sendActivationEmail = function (alias) {
+		// TODO: Implement
+	};
 }
 
-module.exports = {
-	createUser: createUser
-};
+module.exports = UsersResource;

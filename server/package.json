@@ -8,6 +8,7 @@
     "mysql": "^2.8.0",
     "password-hash-and-salt": "^0.1.2",
     "path": "^0.11.14",
+    "q": "^1.4.1",
     "request-promise": "^0.4.3",
     "restify": "^3.0.3",
     "restify-oauth2": "^4.0.3",
@@ -19,7 +20,8 @@
     "gulp-jasmine": "^2.0.1",
     "gulp-jshint": "^1.11.2",
     "gulp-shell": "^0.4.2",
-    "nodemon": "^1.4.1"
+    "nodemon": "^1.4.1",
+    "sqlite3": "^3.0.10"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -2,31 +2,37 @@
 
 // http://cmme.org/tdumitrescu/blog/2014/02/node-sql-testing/
 
-var restify = require("restify");
-var restifyOAuth2 = require("restify-oauth2");
-var usersResource = require('./resources/users');
-
-var server = restify.createServer({
-    name: "armory.net.au",
-    version: require("../package.json").version
-});
+var restify = require("restify"),
+	restifyOAuth2 = require("restify-oauth2"),
+	UsersResource = require('./resources/users'),
+	UserValidator = require('./validators/user-validator');
 
 var RESOURCES = Object.freeze({
     USERS: "/users"
 });
 
-server.use(restify.authorizationParser());
-server.use(restify.bodyParser());
+function Server(models) {
+	var server = restify.createServer({
+	    name: "armory.net.au",
+	    version: require("../package.json").version
+	});
 
-// restifyOAuth2.ropc(server, {
-//     // hooks: hooks
-// });
+	var usersResource = new UsersResource(models, new UserValidator(models.User));
 
-server.get('/', function (req, res) {
-    res.send("api.armory.net.au");
-});
+	server.use(restify.authorizationParser());
+	server.use(restify.bodyParser());
 
-// create user
-server.post(RESOURCES.USERS, usersResource.createUser);
+	// restifyOAuth2.ropc(server, {
+	//     // hooks: hooks
+	// });
 
-module.exports = server;
+	server.get('/', function (req, res) {
+	    res.send("api.armory.net.au");
+	});
+
+	server.post(RESOURCES.USERS, usersResource.createUser);
+
+	return server;
+}
+
+module.exports = Server;

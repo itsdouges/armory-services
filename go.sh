@@ -62,15 +62,13 @@ task_run() {
 		db)
 			# TODO: Replace user/pass with environment variables passed in.
 			run_container $1 "--volumes-from armory-data -v /var/lib/mysql:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=password -e MYSQL_PASSWORD=password -e MYSQL_USER=admin -e MYSQL_DATABASE=armory";;
-		auth)
-			run_container $1 "-p 8080:8080";;
 		server)
 			# docker run -p 8082:8082 --link armory-db:db armory/server
 			run_container $1 "-p 8082:8082 --link armory-db:db";;
 		ping) 
 			run_container $1 "-p 8081:8081";;
 		*)
-			echo "Supported run: {auth|characters|db|ping|users}";;
+			echo "Supported run: {characters|db|ping|users}";;
 	esac
 }
 
@@ -90,14 +88,12 @@ task_build() {
 			build_container $1 "./db-server/";;
 		data) 
 			build_container $1 "./db-data/";;
-		auth)
-			build_container $1 "./auth/";;
 		server)
 			build_container $1 "./server/";;
 		ping)
 			build_container $1 "./ping/";;
 		*)
-			echo "Supported build: {auth|server|db|data|ping}";;
+			echo "Supported build: {server|db|data|ping}";;
 	esac
 }
 
