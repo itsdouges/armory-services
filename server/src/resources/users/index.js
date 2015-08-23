@@ -11,36 +11,65 @@ function UsersResource(models, Validator) {
 		name: 'users',
 		mode: 'create',
 		rules: {
-			email: ['required', 'unique-email']
+			email: ['required', 'unique-email', 'no-white-space'],
+			alias: ['required', 'unique-alias', 'no-white-space'],
+			password: ['required', 'strong-password', 'no-white-space'],
+			gw2Token: ['valid-gw2-token', 'no-white-space']
 		}
-	})
+	});
+
+	Validator.addResource({
+		name: 'users',
+		mode: 'update',
+		rules: {
+			alias: ['required', 'unique-alias', 'no-white-space'],
+			password: ['required', 'strong-password', 'no-white-space']
+		}
+	});
+
+	Validator.addResource({
+		name: 'users',
+		mode: 'update-gw2-token',
+		rules: {
+			gw2Token: ['valid-gw2-token', 'no-white-space']
+		}
+	});
 
 	UsersResource.prototype.create = function (user) {
-		
+		var defer = q.defer();
 
-		var promise = 
-
-		password(user.password).hash(function (error, hash) {
-			if (error) {
-				defer.reject(error);
-			}
-
-			user.passwordHash = hash;
-
-			models.User
-				.create(user)
-				.then(defer.resolve, defer.reject);
+		var validator = new Validator({
+			resource: 'users',
+			mode: 'create'
 		});
+
+		validator.validate(user)
+			.then(function () {
+				password(user.password).hash(function (error, hash) {
+					if (error) {
+						defer.reject(error);
+					}
+
+					user.passwordHash = hash;
+
+					models.User
+						.create(user)
+						.then(defer.resolve, defer.reject);
+				});
+			}, defer.reject);
 
 		return defer.promise;
 	};
 
 	UsersResource.prototype.update = function (user) {
-		// TODO: change to promise based validation
-		var errors = validator.update(user);
-		if (errors) {
-			return q.reject(errors);
-		}
+		var defer = q.defer();
+
+		var validator = new Validator({
+			resource: 'users',
+			mode: 'update'
+		});
+
+		validator.validate()
 
 		models.User
 			.update(user, { where: { alias: user.alias } })
@@ -54,11 +83,15 @@ function UsersResource(models, Validator) {
 	UsersResource.prototype.updateGw2Token = function (alias, token) {
 		var defer = q.defer();
 
-		validator
-			.gw2Token(token)
+		var validator = new Validator({
+			resource: 'users',
+			mode: 'update-gw2-token'
+		});
+
+		validator.validate(token)
 			.then(function () {
-				// TODO: Implement update
-			}, defer.reject);
+				// update !
+			}, defer.reject)
 		
 		return defer.promise;
 	};

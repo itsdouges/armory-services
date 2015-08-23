@@ -25,7 +25,7 @@ function ResourceValidator (options) {
 						callValidator(propertyName, object, rules[ruleName]);
 					});
 				} else {
-					callValidator(propertyName, object, rules[ruleName]);
+					callValidator(propertyName, object, rules[validator.inherits]);
 				}
 			}
 
@@ -34,6 +34,19 @@ function ResourceValidator (options) {
 				if (result.toString && result.toString() === '[object Promise]') {
 					result.then(function (err) {
 						if (err) {
+							var errs = [];
+							if (!err.property) {
+								errs.push('[property] is expected on the resolved promise object');
+							}
+
+							if (!err.message) {
+								errs.push('[message] is expected on the resolved promise object');
+							}
+
+							if (errs.length) {
+								throw Error(errs);
+							}
+
 							errors.push('[' + err.property + '] ' + err.message);
 						}
 					}, function (e) {
@@ -110,7 +123,7 @@ ResourceValidator.addRule = function (rule) {
 				}
 			});
 
-			if (errors) {
+			if (errors.length) {
 				throw Error(errors);
 			}
 		} else {
@@ -127,6 +140,9 @@ ResourceValidator.addRule = function (rule) {
 
 ResourceValidator.addResource = function (resource) {
 	var errors = []
+
+	// todo: add array capability to name so we can
+	// have alias'? such as create is the same as update
 
 	function validateRule(property, rule, isArray) {
 		var arrayText = isArray ? ' in array' : '';

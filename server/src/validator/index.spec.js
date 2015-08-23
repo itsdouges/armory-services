@@ -1,5 +1,7 @@
 'use strict';
 
+var q = require('q');
+
 var ResourceValidator;
 
 describe('resource validator', function () {
@@ -163,29 +165,33 @@ describe('resource validator', function () {
 
 	describe('runner', function () {
 		var systemUnderTest;
-		var models;
+		var promiseRuleDefer;
 
-		var required = require('./rules/required');
-		var uniqueEmail = require('./rules/unique-email');
-		var Models = require('../models');
-		var testDb = require('../../spec/helpers/db');
+		ResourceValidator = require('./index');
 
-		beforeEach(function (done) {
+		beforeEach(function () {
 			ResourceValidator.addRule({
-				name: 'required',
-				func: required
-			});
-
-			models = new Models(testDb());
-			models.sequelize.sync().then(function () {
-				done();
+				name: 'required-synchronous',
+				func: function (name, object) {
+					if(!object[name]) {
+						return 'is required';
+					}
+				}
 			});
 
 			ResourceValidator.addRule({
-				name: 'unique-email',
-				func: uniqueEmail,
+				name: 'promise-with-dependency',
+				func: function (name, object, dependencies) {
+					expect(dependencies.a).toBeDefined();
+					expect(dependencies.a.hey).toBe('im defined');
+
+					promiseRuleDefer = q.defer();
+					return promiseRuleDefer.promise;
+				},
 				dependencies: {
-					models: models
+					a: {
+						hey: 'im defined'
+					}
 				}
 			});
 
@@ -193,8 +199,8 @@ describe('resource validator', function () {
 				name: 'user',
 				mode: 'create',
 				rules: {
-					email: 'required',
-					uniqueEmail: 'unique-email'
+					email: 'required-synchronous',
+					uniqueEmail: 'promise-with-dependency'
 				}
 			});
 
@@ -202,7 +208,7 @@ describe('resource validator', function () {
 				name: 'user',
 				mode: 'update',
 				rules: {
-					email: ['required', 'unique-email']
+					email: ['required-synchronous', 'promise-with-dependency']
 				}
 			});
 		});
@@ -216,6 +222,25 @@ describe('resource validator', function () {
 			expect(function () {
 				systemUnderTest.validate();
 			}).toThrow(Error('Only objects can be validated.'));
+		});
+
+		it ('should throw if resolved error object isnt as expected', function (done) {
+			// todo: look at q docs to finish test
+			done();
+
+			systemUnderTest = new ResourceValidator({
+				resource: 'user',
+				mode: 'update'
+			});
+
+			systemUnderTest.validate({
+				email: 'cool@email.com'
+			})
+			.then(null, function (e) {
+				done();
+			});
+
+			promiseRuleDefer.resolve('ahhhh');
 		});
 
 		describe('with string', function () {		
@@ -233,6 +258,8 @@ describe('resource validator', function () {
 
 					done();
 				});
+
+				promiseRuleDefer.resolve();
 			});
 
 			it ('should resolve promise', function (done) {
@@ -247,6 +274,8 @@ describe('resource validator', function () {
 				.then(function (e) {
 					done();
 				});
+
+				promiseRuleDefer.resolve();
 			});
 
 			it ('should reject promise with unique email is required error', function (done) {
@@ -255,23 +284,22 @@ describe('resource validator', function () {
 					mode: 'create'
 				});
 
-				models.User
-					.create({
-						email: 'cool@email.com'
-					})
-					.then(function () {
-						systemUnderTest.validate({
-							email: 'im here',
-							uniqueEmail: 'cool@email.com'
-						})
-						.then(null, function (e) {
-							expect(e).toEqual([
-								'[uniqueEmail] is taken'
-							]);
+				systemUnderTest.validate({
+					email: 'im here',
+					uniqueEmail: 'cool@email.com'
+				})
+				.then(null, function (e) {
+					expect(e).toEqual([
+						'[uniqueEmail] is taken'
+					]);
 
-							done();
-						});
-					});
+					done();
+				});
+
+				promiseRuleDefer.resolve({
+					message: 'is taken',
+					property: 'uniqueEmail'
+				});
 			});
 
 			it ('should reject promise with required and unique error', function (done) {
@@ -280,27 +308,83 @@ describe('resource validator', function () {
 					mode: 'create'
 				});
 
-				models.User
-				.create({
-					email: 'cool@email.com'
+				systemUnderTest.validate({
+					uniqueEmail: 'cool@email.com'
 				})
-				.then(function () {
-					systemUnderTest.validate({
-						uniqueEmail: 'cool@email.com'
-					})
-					.then(null, function (e) {
-						expect(e).toEqual([
-							'[email] is required',
-							'[uniqueEmail] is taken'
-						]);
-						
-						done();
-					});
+				.then(null, function (e) {
+					expect(e).toEqual([
+						'[email] is required',
+						'[uniqueEmail] is taken'
+					]);
+					
+					done();
+				});
+
+				promiseRuleDefer.resolve({
+					message: 'is taken',
+					property: 'uniqueEmail'
 				});
 			});
 
 			it ('should call inherited rules', function () {
-				// todo: lazy
+				var inheritPromiseRuleDefer;
+
+				ResourceValidator.addRule({
+					name: 'sync-rule',
+					func: function () {
+						return 'ayy sync';
+					}
+				});
+
+				ResourceValidator.addRule({
+					name: 'promise-rule-with-inheritance',
+					func: function (name, object) {
+						inheritPromiseRuleDefer = q.defer();
+						return inheritPromiseRuleDefer.promise;
+					},
+					inherits: 'sync-rule'
+				});
+
+				ResourceValidator.addResource({
+					name: 'cool',
+					mode: 'cooler',
+					rules: {
+						prop1: 'promise-rule-with-inheritance'
+					}
+				});
+
+				systemUnderTest = new ResourceValidator({
+					resource: 'cool',
+					mode: 'cooler'
+				});
+
+				systemUnderTest.validate({
+					prop1: 'lol'
+				})
+				.then(null, function (e) {
+					expect(e).toEqual([
+						'[prop1] ayy sync',
+						'[prop1] is cool'
+					]);
+				});
+
+				inheritPromiseRuleDefer.resolve({
+					message: 'is cool',
+					property: 'prop1'
+				});
+			});
+
+			it ('should throw if inherited rule doesnt exist', function () {
+				expect(function () {
+					ResourceValidator.addRule({
+						name: 'promise-rule-with-inheritance',
+						func: function (name, object) {
+							inheritPromiseRuleDefer = q.defer();
+							return inheritPromiseRuleDefer.promise;
+						},
+						inherits: 'no-exist'
+					});
+				}).toThrow(Error('Rule [no-exist] not found, add it before trying to inherit'));
 			});
 		});
 
@@ -311,21 +395,20 @@ describe('resource validator', function () {
 					mode: 'update'
 				});
 
-				models.User
-				.create({
+				systemUnderTest.validate({
 					email: 'cool@email.com'
 				})
-				.then(function () {
-					systemUnderTest.validate({
-						email: 'cool@email.com'
-					})
-					.then(null, function (e) {
-						expect(e).toEqual([
-							'[email] is taken'
-						]);
-						
-						done();
-					});
+				.then(null, function (e) {
+					expect(e).toEqual([
+						'[email] is taken'
+					]);
+					
+					done();
+				});
+
+				promiseRuleDefer.resolve({
+					message: 'is taken',
+					property: 'email'
 				});
 			});
 
@@ -343,10 +426,69 @@ describe('resource validator', function () {
 					
 					done();
 				});
+
+				promiseRuleDefer.resolve();
 			});
 
 			it ('should call inherited rules', function () {
-				// todo: lazy
+				var inheritPromiseRuleDefer;
+
+				ResourceValidator.addRule({
+					name: 'sync-rule',
+					func: function () {
+						return 'ayy sync';
+					}
+				});
+
+				ResourceValidator.addRule({
+					name: 'promise-rule-with-inheritance',
+					func: function (name, object) {
+						inheritPromiseRuleDefer = q.defer();
+						return inheritPromiseRuleDefer.promise;
+					},
+					inherits: ['sync-rule']
+				});
+
+				ResourceValidator.addResource({
+					name: 'cool',
+					mode: 'cooler',
+					rules: {
+						prop1: 'promise-rule-with-inheritance'
+					}
+				});
+
+				systemUnderTest = new ResourceValidator({
+					resource: 'cool',
+					mode: 'cooler'
+				});
+
+				systemUnderTest.validate({
+					prop1: 'lol'
+				})
+				.then(null, function (e) {
+					expect(e).toEqual([
+						'[prop1] ayy sync',
+						'[prop1] is cool'
+					]);
+				});
+
+				inheritPromiseRuleDefer.resolve({
+					message: 'is cool',
+					property: 'prop1'
+				});
+			});
+
+			it ('should throw if inherited rule doesnt exist', function () {
+				expect(function () {
+					ResourceValidator.addRule({
+						name: 'promise-rule-with-inheritance',
+						func: function (name, object) {
+							inheritPromiseRuleDefer = q.defer();
+							return inheritPromiseRuleDefer.promise;
+						},
+						inherits: ['no-exist']
+					});
+				}).toThrow(Error(['Rule [no-exist] not found, add it before trying to inherit']));
 			});
 		});
 	});
