@@ -3,18 +3,22 @@
 var password = require('password-hash-and-salt');
 var q = require('q');
 
-function UsersResource(models, validator) {
+function UsersResource(models, Validator) {
 	// TODO: Email confirmation.
 	// TODO: Forgot my password.
 
-	UsersResource.prototype.create = function (user) {
-		// TODO: change to promise based validation
-		var errors = validator.create(user);
-		if (errors) {
-			return q.reject(errors);
+	Validator.addResource({
+		name: 'users',
+		mode: 'create',
+		rules: {
+			email: ['required', 'unique-email']
 		}
+	})
 
-		var defer = q.defer();
+	UsersResource.prototype.create = function (user) {
+		
+
+		var promise = 
 
 		password(user.password).hash(function (error, hash) {
 			if (error) {

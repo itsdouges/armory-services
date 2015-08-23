@@ -19,6 +19,16 @@ function ResourceValidator (options) {
 
 	ResourceValidator.prototype.validate = function (object) {
 		function callValidator(propertyName, object, validator) {
+			if (validator.inherits) {
+				if (Array.isArray(validator.inherits)) {
+					validator.inherits.forEach(function (ruleName) {
+						callValidator(propertyName, object, rules[ruleName]);
+					});
+				} else {
+					callValidator(propertyName, object, rules[ruleName]);
+				}
+			}
+
 			var result = validator.func(property, object, validator.dependencies);
 			if (result !== undefined) {
 				if (result.toString && result.toString() === '[object Promise]') {
@@ -27,7 +37,7 @@ function ResourceValidator (options) {
 							errors.push('[' + err.property + '] ' + err.message);
 						}
 					}, function (e) {
-
+						// todo: throw error here? promise rules shouldnt reject unless something bad happened.
 					});
 
 					validationPromises.push(result);
@@ -88,6 +98,26 @@ ResourceValidator.addRule = function (rule) {
 
 	if (typeof rule.func !== 'function') {
 		throw Error('Rule must be a function!');
+	}
+
+	if (rule.inherits) {
+		if (Array.isArray(rule.inherits)) {
+			var errors = [];
+
+			rule.inherits.forEach(function (e) {
+				if (!rules[e]) {
+					errors.push('Rule [' + e + '] not found, add it before trying to inherit');
+				}
+			});
+
+			if (errors) {
+				throw Error(errors);
+			}
+		} else {
+			if (!rules[rule.inherits]) {
+				throw Error('Rule [' + rule.inherits + '] not found, add it before trying to inherit');
+			}
+		}
 	}
 
 	rules[rule.name] = rule;

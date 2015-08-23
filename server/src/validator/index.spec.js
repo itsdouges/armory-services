@@ -62,6 +62,28 @@ describe('resource validator', function () {
 
 			}).toThrow(Error('Rule must be a function!'));
 		});
+
+		it('should throw error when inheriting with string if rule not found', function () {
+			expect(function () {
+				ResourceValidator.addRule({
+					name: 'cool-rule',
+					func: function () {},
+					inherits: 'ayyy'
+				});
+
+			}).toThrow(Error('Rule [ayyy] not found, add it before trying to inherit'));
+		});
+
+		it('should throw error when inheriting with array if rule not found', function () {
+			expect(function () {
+				ResourceValidator.addRule({
+					name: 'cool-rule',
+					func: function () {},
+					inherits: ['ayyy']
+				});
+
+			}).toThrow(Error(['Rule [ayyy] not found, add it before trying to inherit']));
+		});
 	});
 
 	describe('adding resource', function () {
@@ -276,10 +298,13 @@ describe('resource validator', function () {
 					});
 				});
 			});
+
+			it ('should call inherited rules', function () {
+				// todo: lazy
+			});
 		});
 
 		describe('with array', function () {
-			
 			it ('should reject promise with unique error', function (done) {
 				systemUnderTest = new ResourceValidator({
 					resource: 'user',
@@ -318,6 +343,10 @@ describe('resource validator', function () {
 					
 					done();
 				});
+			});
+
+			it ('should call inherited rules', function () {
+				// todo: lazy
 			});
 		});
 	});
