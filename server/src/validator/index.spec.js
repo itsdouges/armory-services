@@ -4,7 +4,7 @@ var ResourceValidator;
 
 describe('resource validator', function () {
 	beforeEach(function () {
-		ResourceValidator = require('./resource-validator');
+		ResourceValidator = require('./index');
 	});
 
 	describe('instantiation', function () {
@@ -15,6 +15,29 @@ describe('resource validator', function () {
 					mode: 'not-defined'
 				});
 			}).toThrow(Error('Resource is not defined, add one via. ResourceValidator.addResource({}) before trying to instantiate!'));
+		});
+
+		it('should throw error if mode is not defined', function () {
+			expect(function () {
+				ResourceValidator.addRule({
+					name: 'defined',
+					func: function () {}
+				});
+
+				ResourceValidator.addResource({
+					name: 'name',
+					mode: 'create',
+					rules: {
+						propertyName: 'defined',
+						anotherProperty: ['defined']
+					}
+				});
+
+				new ResourceValidator({
+					resource: 'name',
+					mode: 'not-defined'
+				});
+			}).toThrow(Error('Resource mode is not defined, add one via. ResourceValidator.addResource({}) before trying to instantiate!'));
 		});
 	});
 
@@ -42,27 +65,15 @@ describe('resource validator', function () {
 	});
 
 	describe('adding resource', function () {
-		it('should throw error if name isnt defined', function () {
+		it('should throw three errors on empty object', function () {
 			expect(function () {
 				ResourceValidator.addResource({});
-			}).toThrow(Error('Name not defined'));
-		});
-
-		it('should throw error if mode isnt defined', function () {
-			expect(function () {
-				ResourceValidator.addResource({
-					name: 'name'
-				});
-			}).toThrow(Error('Mode not defined'));
-		});
-
-		it('should throw error if rules isnt defined', function () {
-			expect(function () {
-				ResourceValidator.addResource({
-					name: 'name',
-					mode: 'create'
-				});
-			}).toThrow(Error('Rules not defined'));
+			}).toThrow(Error(
+				[
+					'Name not defined', 
+					'Mode not defined',
+					'Rules not defined'
+				]));
 		});
 
 		it('should throw error if rules isnt an object', function () {
@@ -87,8 +98,8 @@ describe('resource validator', function () {
 				});
 			})
 			.toThrow(Error([
-				'Rule for property [propertyName] is an object, they cant be used! Try a string or array of strings!',
-				'Rule in array for property [anotherProperty] is an object, they cant be used! Try a string or array of strings!',
+				'Rule for property [propertyName] can only be strings! Try a string or array of strings!',
+				'Rule in array for property [anotherProperty] can only be strings! Try a string or array of strings!',
 			]));
 		});
 
@@ -174,27 +185,25 @@ describe('resource validator', function () {
 			});
 		});
 
-		describe('with string', function () {		
-			it ('should throw error if object isnt passed in', function () {
-				systemUnderTest = new ResourceValidator({
-					resource: 'user',
-					mode: 'create'
-				});
-
-				expect(function () {
-					systemUnderTest.validate();
-				}).toThrow(Error('Only objects can be validated.'));
+		it ('should throw error if object isnt passed in', function () {
+			systemUnderTest = new ResourceValidator({
+				resource: 'user',
+				mode: 'create'
 			});
 
-			it ('should reject promise email is required', function (done) {
+			expect(function () {
+				systemUnderTest.validate();
+			}).toThrow(Error('Only objects can be validated.'));
+		});
+
+		describe('with string', function () {		
+			it ('should resolve promise with error email is required', function (done) {
 				systemUnderTest = new ResourceValidator({
 					resource: 'user',
 					mode: 'create'
 				});
 
-				systemUnderTest.validate({
-					somethingElse: 'email@email.com'
-				})
+				systemUnderTest.validate({})
 				.then(null, function (e) {
 					expect(e).toEqual([
 						'[email] is required'
@@ -225,22 +234,22 @@ describe('resource validator', function () {
 				});
 
 				models.User
-				.create({
-					email: 'cool@email.com'
-				})
-				.then(function () {
-					systemUnderTest.validate({
-						email: 'im here',
-						uniqueEmail: 'cool@email.com'
+					.create({
+						email: 'cool@email.com'
 					})
-					.then(null, function (e) {
-						expect(e).toEqual([
-							'[uniqueEmail] is taken'
-						]);
+					.then(function () {
+						systemUnderTest.validate({
+							email: 'im here',
+							uniqueEmail: 'cool@email.com'
+						})
+						.then(null, function (e) {
+							expect(e).toEqual([
+								'[uniqueEmail] is taken'
+							]);
 
-						done();
+							done();
+						});
 					});
-				});
 			});
 
 			it ('should reject promise with required and unique error', function (done) {
@@ -270,6 +279,7 @@ describe('resource validator', function () {
 		});
 
 		describe('with array', function () {
+			
 			it ('should reject promise with unique error', function (done) {
 				systemUnderTest = new ResourceValidator({
 					resource: 'user',
