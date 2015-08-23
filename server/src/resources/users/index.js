@@ -38,6 +38,12 @@ function UsersResource(models, validator) {
 			return q.reject(errors);
 		}
 
+		models.User
+			.update(user, { where: { alias: user.alias } })
+			.then(function (e) {
+
+			}, q.reject);
+
 		var defer = q.defer();
 	};
 
