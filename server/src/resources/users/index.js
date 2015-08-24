@@ -11,7 +11,7 @@ function UsersResource(models, Validator) {
 		name: 'users',
 		mode: 'create',
 		rules: {
-			email: ['required', 'unique-email', 'no-white-space'],
+			email: ['requiredd', 'unique-email', 'no-white-space'],
 			alias: ['required', 'unique-alias', 'no-white-space'],
 			password: ['required', 'strong-password', 'no-white-space'],
 			gw2Token: ['valid-gw2-token', 'no-white-space']
@@ -38,10 +38,12 @@ function UsersResource(models, Validator) {
 	UsersResource.prototype.create = function (user) {
 		var defer = q.defer();
 
-		var validator = new Validator({
+		var validator = Validator({
 			resource: 'users',
 			mode: 'create'
 		});
+
+		console.log(validator.validate);
 
 		validator.validate(user)
 			.then(function () {
