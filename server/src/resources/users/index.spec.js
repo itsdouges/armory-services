@@ -5,8 +5,13 @@ var testDb = require('../../../spec/helpers/db');
 
 describe('user resource', function () {
 	var systemUnderTest;
-	var mockValidator;
 	var models;
+
+	var mocks = {
+		validate: function () {}
+	};
+
+	var mockValidator;
 
 	function setupTestData(user, cb) {
 		systemUnderTest
@@ -18,16 +23,65 @@ describe('user resource', function () {
 
 	beforeEach(function (done) {
 		mockValidator = function () {
-			this.validate = function () {};
+			return {
+				validate: mocks.validate
+			};
 		};
+
 		mockValidator.addResource = function () {};
 
 		models = new Models(testDb());
 		models.sequelize.sync().then(function () {
 			done();
 		});
+	});
 
-		systemUnderTest = new UserResource(models, mockValidator);
+	describe('initialisation', function () {
+		it('should add users resource in create mode to validator', function () {
+			spyOn(mockValidator, 'addResource');
+
+			systemUnderTest = new UserResource(models, mockValidator);
+
+			expect(mockValidator.addResource).toHaveBeenCalledWith({
+				name: 'users',
+				mode: 'create',
+				rules: {
+					email: ['required', 'unique-email', 'no-white-space'],
+					alias: ['required', 'unique-alias', 'no-white-space'],
+					password: ['required', 'strong-password', 'no-white-space'],
+					gw2Token: ['valid-gw2-token', 'no-white-space']
+				}
+			});
+		});
+
+		it('should add users resource in update mode to validator', function () {
+			spyOn(mockValidator, 'addResource');
+
+			systemUnderTest = new UserResource(models, mockValidator);
+
+			expect(mockValidator.addResource).toHaveBeenCalledWith({
+				name: 'users',
+				mode: 'update',
+				rules: {
+					alias: ['required', 'unique-alias', 'no-white-space'],
+					password: ['required', 'strong-password', 'no-white-space']
+				}
+			});
+		});
+
+		it('should add users resource in update-gw2-token mode to validator', function () {
+			spyOn(mockValidator, 'addResource');
+
+			systemUnderTest = new UserResource(models, mockValidator);
+
+			expect(mockValidator.addResource).toHaveBeenCalledWith({
+				name: 'users',
+				mode: 'update-gw2-token',
+				rules: {
+					gw2Token: ['valid-gw2-token', 'no-white-space']
+				}
+			});
+		});
 	});
 
 	describe('creation', function () {
@@ -36,7 +90,9 @@ describe('user resource', function () {
 			var defer = q.defer();
 			var errors = ['im a error'];
 
-			//spyOn(mockValidator, 'validate').and.returnValue(defer.promise);
+			spyOn(mocks, 'validate').and.returnValue(defer.promise);
+
+			systemUnderTest = new UserResource(models, mockValidator);
 
 			systemUnderTest
 				.create(user)

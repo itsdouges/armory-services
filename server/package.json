@@ -1,10 +1,11 @@
 {
-  "name": "armory-auth",
+  "name": "armory-server",
   "version": "0.0.1",
-  "description": "Users service for api.armory.net.au.",
+  "description": "Backend for api.armory.net.au.",
   "main": "node run.js",
   "dependencies": {
     "fs": "0.0.2",
+    "gotta-validate": "^0.1.0",
     "mysql": "^2.8.0",
     "password-hash-and-salt": "^0.1.2",
     "path": "^0.11.14",
@@ -24,9 +25,8 @@
     "sqlite3": "^3.0.10"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp test"
   },
   "author": "madou",
-  "license": "ISC",
-  "secret": "ayylmao"
+  "license": "ISC"
 }

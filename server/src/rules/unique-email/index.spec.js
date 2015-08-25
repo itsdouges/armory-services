@@ -1,8 +1,8 @@
 'use strict';
 
 var uniqueEmail = require('./index');
-var Models = require('../../../models');
-var testDb = require('../../../../spec/helpers/db');
+var Models = require('../../models');
+var testDb = require('../../../spec/helpers/db');
 
 describe('unique email rule', function () {
 	var models;
