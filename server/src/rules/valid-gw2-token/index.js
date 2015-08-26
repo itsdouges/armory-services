@@ -8,9 +8,33 @@ function validGw2Token(name, object, dependencies) {
 		return q.resolve();
 	}
 
-	// todo: implement when i have internet !
+	var promise = dependencies.axios.get(dependencies.env.gw2.endpoint + 'tokeninfo', {
+			headers: {
+				'Authorization' : 'Bearer ' + item
+			}
+		})
+		.then(function (response) {
+			var permissions = response.data.permissions;
+			var hasCharacters = permissions.filter(function (item) {
+				return item === 'characters';
+			});
 
-	return q.resolve();
+			if (!hasCharacters.length) {
+				return q.reject({
+					property: name,
+					message: 'needs characters permission'
+				});
+			}
+
+			return;
+		}, function (error) {
+			return q.reject({
+					property: name,
+					message: 'invalid token'
+				});
+		});
+
+	return promise;
 }
 
 module.exports = validGw2Token;

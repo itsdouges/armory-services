@@ -3,14 +3,18 @@
   "version": "0.0.1",
   "description": "Backend for api.armory.net.au.",
   "main": "node run.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/madou/armory-back"
+  },
   "dependencies": {
+    "axios": "^0.5.4",
     "fs": "0.0.2",
-    "gotta-validate": "^0.1.0",
+    "gotta-validate": "^0.1.x",
     "mysql": "^2.8.0",
     "password-hash-and-salt": "^0.1.2",
     "path": "^0.11.14",
     "q": "^1.4.1",
-    "request-promise": "^0.4.3",
     "restify": "^3.0.3",
     "restify-oauth2": "^4.0.3",
     "sequelize": "^3.5.1",
@@ -25,6 +29,7 @@
     "sqlite3": "^3.0.10"
   },
   "scripts": {
+    "start": "gulp serve",
     "test": "gulp test"
   },
   "author": "madou",

@@ -8,5 +8,8 @@
 			"host_env_name": "DB_PORT_3306_TCP_ADDR"
 		}
 	},
-	"port": "8082"
+	"port": "8082",
+	"gw2": {
+		"endpoint": " https://api.guildwars2.com/"
+	}
 }
