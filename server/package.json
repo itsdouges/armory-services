@@ -29,7 +29,7 @@
     "sqlite3": "^3.0.10"
   },
   "scripts": {
-    "start": "gulp serve",
+    "start": "node src/run.js",
     "test": "gulp test"
   },
   "author": "madou",

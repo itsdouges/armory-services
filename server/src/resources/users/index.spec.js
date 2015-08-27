@@ -28,18 +28,28 @@ describe('user resource', function () {
 			};
 		};
 
-		mockValidator.addResource = function () {};
+		mockValidator.addResource = function () { };
+		mockValidator.addRule = function () { };
 
 		models = new Models(testDb());
 		models.sequelize.sync().then(function () {
 			done();
 		});
+
+		spyOn(mockValidator, 'addResource').and.returnValue(mockValidator);
+		spyOn(mockValidator, 'addRule').and.returnValue(mockValidator);
 	});
 
 	describe('initialisation', function () {
-		it('should add users resource in create mode to validator', function () {
-			spyOn(mockValidator, 'addResource');
+		it('should add domain specific rules', function () {
+			systemUnderTest = new UserResource(models, mockValidator);
 
+			// TODO: Think up how to test this better.
+			expect(mockValidator.addRule).toHaveBeenCalled();
+			expect(mockValidator.addRule.calls.count()).toEqual(3);
+		});
+
+		it('should add users resource in create mode to validator', function () {
 			systemUnderTest = new UserResource(models, mockValidator);
 
 			expect(mockValidator.addResource).toHaveBeenCalledWith({
@@ -55,8 +65,6 @@ describe('user resource', function () {
 		});
 
 		it('should add users resource in update mode to validator', function () {
-			spyOn(mockValidator, 'addResource');
-
 			systemUnderTest = new UserResource(models, mockValidator);
 
 			expect(mockValidator.addResource).toHaveBeenCalledWith({
@@ -70,8 +78,6 @@ describe('user resource', function () {
 		});
 
 		it('should add users resource in update-gw2-token mode to validator', function () {
-			spyOn(mockValidator, 'addResource');
-
 			systemUnderTest = new UserResource(models, mockValidator);
 
 			expect(mockValidator.addResource).toHaveBeenCalledWith({
@@ -105,27 +111,40 @@ describe('user resource', function () {
 			defer.reject(errors);
 		});
 
-		// it('should add user to database with expected values', function (done) {
-		// 	var user = {
-		// 		email: 'cool@email.com',
-		// 		password: 'password',
-		// 		alias: 'madou'
-		// 	};
+		it('should add user to database with expected values', function (done) {
+			var user = {
+				email: 'cool@email.com',
+				password: 'password',
+				alias: 'madou',
+				gw2ApiToken: 'haha'
+			};
 
-		// 	spyOn(mockValidator, 'create');
+			var defer = q.defer();
 
-		// 	setupTestData(user, function () {
-		// 		models.User
-		// 			.findOne({ where: { alias: user.alias }})
-		// 			.then(function (e) {
-		// 				expect(e.id).toBeDefined();
-		// 				expect(e.email).toBe(user.email);
-		// 				expect(e.alias).toBe(user.alias);
-		// 				expect(e.passwordHash).toBeDefined();
+			spyOn(mocks, 'validate').and.returnValue(defer.promise);
 
-		// 				done();
-		// 			});
-		// 		});
-		// });
+			systemUnderTest = new UserResource(models, mockValidator);
+
+			systemUnderTest
+				.create(user)
+				.then(function () {
+					models.User
+						.findOne({ where: { alias: user.alias }})
+						.then(function (e) {
+							expect(e.id).toBeDefined();
+							expect(e.email).toBe(user.email);
+							expect(e.alias).toBe(user.alias);
+							expect(e.gw2ApiToken).toBe(user.gw2ApiToken);
+							expect(e.passwordHash).toBeDefined();
+							expect(e.emailValidated).toBe(false);
+
+							done();
+						});
+
+					done();
+				});
+
+			defer.resolve();
+		});
 	});
 });

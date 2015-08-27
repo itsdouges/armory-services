@@ -5,7 +5,8 @@
 var restify = require("restify"),
 	restifyOAuth2 = require("restify-oauth2"),
 	UsersResource = require('./resources/users'),
-	UserValidator = require('./validators/user-validator');
+	GottaValidate = require('gotta-validate'),
+	axios = require('axios');
 
 var RESOURCES = Object.freeze({
     USERS: "/users"
@@ -17,7 +18,9 @@ function Server(models) {
 	    version: require("../package.json").version
 	});
 
-	var usersResource = new UsersResource(models, new UserValidator(models.User));
+	GottaValidate.addDefaultRules();
+
+	var usersResource = new UsersResource(models, GottaValidate, axios);
 
 	server.use(restify.authorizationParser());
 	server.use(restify.bodyParser());

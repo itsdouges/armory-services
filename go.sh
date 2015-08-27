@@ -8,10 +8,19 @@
 # host machine.
 ##
 task_serve() {
-	echo "Starting api.armory.."
+	echo "Starting api.armory.com.."
+	
+	task_build data
+	remove_container data
+	task_create data
 
 	task_build db
+	remove_container db
 	task_run db
+
+	task_build server
+	remove_container server
+	task_run server
 }
 
 # $1: container-name
@@ -29,25 +38,34 @@ build_container() {
 # Ala docker run except it doesn't run the container, but merely
 # gets it ready to run. You can view it with docker ps -a.
 # $1: container-name
+# $2: extra commands
 ##
 create_container() {
 	echo "Creating $1.."
 
-	docker rm -f "armory-$1"
-
 	docker create \
+		$2 \
 		--name "armory-$1" \
 		-t "armory/$1:latest"
+}
 
+remove_container() {
+	echo "Removing container armory-$1.."
+
+	docker rm -f "armory-$1"
+}
+
+remove_image() {
+	echo "Removing image $1.."
+
+	docker rmi -f $1
 }
 
 # $1: container-name
 # $2: extra commands
 run_container() {
-	echo "Removing $1.."
-	docker rm -f "armory-$1"
-
 	echo "Running $1.."
+
 	docker run \
 		-d \
 		$2 \
@@ -60,8 +78,9 @@ run_container() {
 task_run() {
 	case "$1" in
 		db)
+#-v /var/lib/mysql:/var/lib/mysql
 			# TODO: Replace user/pass with environment variables passed in.
-			run_container $1 "--volumes-from armory-data -v /var/lib/mysql:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=password -e MYSQL_PASSWORD=password -e MYSQL_USER=admin -e MYSQL_DATABASE=armory";;
+			run_container $1 "--volumes-from armory-data -e MYSQL_ROOT_PASSWORD=password -e MYSQL_PASSWORD=password -e MYSQL_USER=admin -e MYSQL_DATABASE=armory";;
 		server)
 			# docker run -p 8082:8082 --link armory-db:db armory/server
 			run_container $1 "-p 8082:8082 --link armory-db:db";;
@@ -97,6 +116,21 @@ task_build() {
 	esac
 }
 
+task_remove() {
+	case "$1" in
+		db)
+			remove_container $1;;
+		data) 
+			remove_container $1;;
+		server)
+			remove_container $1;;
+		ping)
+			remove_container $1;;
+		*)
+			echo "Supported removes: {server|db|data|ping}";;
+	esac
+}
+
 task_clean() {
 	echo "Cleaning up untagged images.."
 	docker images | grep "<none>" | awk '{print $3}' | xargs docker rmi -f
@@ -111,11 +145,13 @@ case "$1" in
 		task_create $2;;
 	build)
 		task_build $2;;
-	start)
+	serve)
 		task_serve;;
+	remove)
+		task_remove $2;;
 	clean)
 		task_clean;;
 	*)
-		echo "Available tasks: {run|clean|create|build|serve}"
+		echo "Available tasks: {run|remove|clean|create|build|serve}"
 		exit 1;;
 esac
