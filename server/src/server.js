@@ -33,7 +33,7 @@ function Server(models) {
 	    res.send("api.armory.net.au");
 	});
 
-	server.post(RESOURCES.USERS, usersResource.createUser);
+	server.post(RESOURCES.USERS, usersResource.create);
 
 	return server;
 }

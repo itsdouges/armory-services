@@ -131,9 +131,25 @@ task_remove() {
 	esac
 }
 
-task_clean() {
+task_untagged() {
 	echo "Cleaning up untagged images.."
 	docker images | grep "<none>" | awk '{print $3}' | xargs docker rmi -f
+}
+
+task_clean() {
+	case "$1" in
+		untagged)
+			task_untagged $1;;
+		exited) 
+			task_exited $1;;
+		*)
+			echo "Supported removes: {exited|untagged}";;
+	esac
+}
+
+task_exited() {
+	echo "Cleaning up exited containers.."
+	docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs docker rm
 }
 
 # $1: task
@@ -150,7 +166,7 @@ case "$1" in
 	remove)
 		task_remove $2;;
 	clean)
-		task_clean;;
+		task_clean $2;;
 	*)
 		echo "Available tasks: {run|remove|clean|create|build|serve}"
 		exit 1;;
