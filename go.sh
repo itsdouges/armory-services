@@ -167,7 +167,9 @@ case "$1" in
 		task_remove $2;;
 	clean)
 		task_clean $2;;
+	dev)
+		task_dev $2;;
 	*)
-		echo "Available tasks: {run|remove|clean|create|build|serve}"
+		echo "Available tasks: {run|dev|remove|clean|create|build|serve}"
 		exit 1;;
 esac

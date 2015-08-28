@@ -33,7 +33,24 @@ function Server(models) {
 	    res.send("api.armory.net.au");
 	});
 
-	server.post(RESOURCES.USERS, usersResource.create);
+	server.post(RESOURCES.USERS, function (req, res) {
+		var user = {
+			alias: req.params.alias,
+			email: req.params.email,
+			password: req.params.password,
+			gw2ApiToken: req.params.gw2ApiToken
+		};
+
+		usersResource
+			.create(user)
+			.then(function () {
+				res.send(200);
+				return next();
+			}, function (e) {
+				res.send(400, e);
+				return next();
+			});
+	});
 
 	return server;
 }

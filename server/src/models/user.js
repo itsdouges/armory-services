@@ -20,7 +20,7 @@ module.exports = function(sequelize, DataTypes) {
 			field: 'alias'
 		},
 		passwordHash: {
-			type: DataTypes.STRING,
+			type: DataTypes.STRING(500),
 			required: true,
 			field: 'password_hash'
 		},
