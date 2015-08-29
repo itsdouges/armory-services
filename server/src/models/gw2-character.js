@@ -6,7 +6,27 @@ module.exports = function(sequelize, DataTypes) {
   		field: 'name',
   		type: DataTypes.STRING,
   		primaryKey: true
-  	}
+  	}, 
+    race: {
+      field: 'race',
+      type: DataTypes.STRING
+    }, 
+    gender: {
+      field: 'gender',
+      type: DataTypes.STRING
+    }, 
+    profession: {
+      field: 'profession',
+      type: DataTypes.STRING
+    }, 
+    level: {
+      field: 'level',
+      type: DataTypes.STRING
+    },
+    guild: {
+      field: 'guild',
+      type: DataTypes.STRING
+    }
   }, {
     classMethods: {
       associate: function(models) {

@@ -112,5 +112,22 @@ describe('check resource', function () {
 
 			defer.resolve();
 		});
+
+		it('should reject', function (done) {
+			systemUnderTest = new CheckResource(mockValidator);
+
+			var defer = q.defer();
+
+			spyOn(mocks, 'validate').and.returnValue(defer.promise);
+
+			systemUnderTest.email('email')
+				.then(null, function (e) {
+					expect(e).toBe('ahh!!!');
+
+					done();
+				});
+
+			defer.reject('ahh!!!');
+		});
 	});
 });

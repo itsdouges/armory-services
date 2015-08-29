@@ -145,40 +145,4 @@ describe('gw2 token validator', function () {
 
 		defer.reject();
 	});
-
-	// // todo: move to integration tests. they take too long for usual dev.
-	// it('should call real endpoint and resolve', function (done) {
-	// 	token('token', { token: '3990C73C-18C1-6345-9184-1F99E1FF1F94F74DBE68-D2A7-4C32-908D-4AA1E513B39A' }, { 
-	// 		axios: axios,
-	// 		env: {
-	// 			gw2: {
-	// 				endpoint: 'https://api.guildwars2.com/'
-	// 			}
-	// 		},
-	// 		models: models
-	// 	}).then(function (e) {
-	// 		expect(e).not.toBeDefined();
-	// 		done();
-	// 	});
-	// });
-
-	// // todo: move to integration tests. they take too long for usual dev.
-	// it('should call real endpoint and resolve error', function (done) {
-	// 	token('token', { token: 'invalid' }, { 
-	// 		axios: axios,
-	// 		env: {
-	// 			gw2: {
-	// 				endpoint: 'https://api.guildwars2.com/'
-	// 			}
-	// 		},
-	// 		models: models
-	// 	}).then(function (e) {
-	// 		expect(e).toEqual({ 
-	// 			property: 'token', 
-	// 			message: 'invalid token' 
-	// 		});
-
-	// 		done();
-	// 	});
-	// });
 });

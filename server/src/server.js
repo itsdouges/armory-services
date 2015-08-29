@@ -8,18 +8,22 @@ var restify = require("restify"),
 	UsersResource = require('./resources/users'),
 	CheckResource = require('./resources/check'),
 	GottaValidate = require('gotta-validate'),
-	axios = require('axios');
+	axios = require('axios'),
+	Gw2Api = require('./services/gw2-api');
 
 var RESOURCES = Object.freeze({
     USERS: "/users",
-    CHECK_GW2_TOKEN: "/users/check/gw2-token/:token"
+    CHECK_GW2_TOKEN: "/users/check/gw2-token/:token",
+    EMAIL: "/users/check/email/:email"
 });
 
-function Server(models) {
+function Server(models, env) {
 	var server = restify.createServer({
 	    name: "armory.net.au",
-	    version: require("../package.json").version
+	    version: env.version
 	});
+
+	var gw2Api = Gw2Api(axios, env);
 
 	GottaValidate.addDefaultRules();
 	GottaValidate
@@ -38,7 +42,7 @@ function Server(models) {
 			}
 		});
 
-	var usersResource = new UsersResource(models, GottaValidate, axios);
+	var usersResource = new UsersResource(models, GottaValidate, gw2Api);
 	var checkResource = new CheckResource(GottaValidate);
 
 	server.use(restify.authorizationParser());
@@ -54,10 +58,24 @@ function Server(models) {
 	    return next();
 	});
 
+	server.get(RESOURCES.CHECK_EMAIL, function (req, res) {
+		checkResource
+			.email({
+				email: req.params.email
+			})
+			.then(function () {
+				res.send(200);
+				return next();
+			}, function (e) {
+				res.send(400, e);
+				return next();
+			});
+	});
+
 	server.get(RESOURCES.CHECK_GW2_TOKEN, function (req, res) {
 		checkResource
 			.gw2Token({
-				gw2ApiToken: req.params.token
+				token: req.params.token
 			})
 			.then(function () {
 				res.send(200);

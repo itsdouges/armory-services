@@ -30,7 +30,7 @@
   },
   "scripts": {
     "start": "node src/run.js",
-    "test": "gulp test"
+    "test": "gulp test:unit"
   },
   "author": "madou",
   "license": "ISC"

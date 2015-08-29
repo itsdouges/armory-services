@@ -10,6 +10,6 @@
 	},
 	"port": "8082",
 	"gw2": {
-		"endpoint": " https://api.guildwars2.com/"
+		"endpoint": "https://api.guildwars2.com/"
 	}
 }

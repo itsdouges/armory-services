@@ -12,6 +12,10 @@ module.exports = function(sequelize, DataTypes) {
 			primaryKey: true,
 			defaultValue: DataTypes.UUIDV4,
 		},
+		alias: {
+			type: DataTypes.STRING,
+			field: 'alias'
+		},
 		email: {
 			type: DataTypes.STRING,
 			required: true,

@@ -9,7 +9,7 @@ config.db.options.host = process.env[config.db.options.host_env_name];
 console.log('Connecting to mysql host: ' + config.db.options.host);
 var db = new Sequelize(config.db.name, config.db.user, config.db.password, config.db.options);
 var models = new Models(db);
-var server = Server(models);
+var server = Server(models, config);
 
 console.log('Syncing sequelize models..');
 models.sequelize.sync().then(function () {

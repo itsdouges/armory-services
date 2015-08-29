@@ -10,7 +10,7 @@ describe('user resource', function () {
 	var mocks = {
 		validate: function () {},
 		gw2Api: {
-			readTokenAccountName: function () {}
+			readAccount: function () {}
 		}
 	};
 
@@ -67,19 +67,8 @@ describe('user resource', function () {
 				name: 'users',
 				mode: 'update',
 				rules: {
+					currentPassword: ['required'],
 					password: ['required', 'password', 'no-white-space']
-				}
-			});
-		});
-
-		it('should add users resource in update-gw2-token mode to validator', function () {
-			systemUnderTest = new UserResource(models, mockValidator);
-
-			expect(mockValidator.addResource).toHaveBeenCalledWith({
-				name: 'users',
-				mode: 'update-gw2-token',
-				rules: {
-					gw2_api_tokens: ['valid-gw2-token', 'no-white-space']
 				}
 			});
 		});
@@ -122,7 +111,7 @@ describe('user resource', function () {
 			var accountNameDefer = q.defer();
 
 			spyOn(mocks, 'validate').and.returnValue(defer.promise);
-			spyOn(mocks.gw2Api, 'readTokenAccountName').and.returnValue(accountNameDefer.promise);
+			spyOn(mocks.gw2Api, 'readAccount').and.returnValue(accountNameDefer.promise);
 
 			systemUnderTest = new UserResource(models, mockValidator, mocks.gw2Api);
 			systemUnderTest
@@ -154,7 +143,9 @@ describe('user resource', function () {
 				});
 
 			defer.resolve();
-			accountNameDefer.resolve('cool name.1234');
+			accountNameDefer.resolve({
+				name: 'cool name.1234'
+			});
 		});
 	});
 });

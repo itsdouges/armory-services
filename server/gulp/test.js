@@ -5,7 +5,7 @@ var gulp = require('gulp'),
 /**
  * Run test once and exit
  */
-gulp.task('test', function () {
+gulp.task('test:unit', function () {
 	return gulp.src([
 			__dirname + config.src + '/**/*.spec.js'
 		])
@@ -17,8 +17,20 @@ gulp.task('test', function () {
 /**
  * Watch for file changes and re-run tests on each change
  */
-gulp.task('test:auto', ['test'], function () {
+gulp.task('test:unit:auto', ['test:unit'], function () {
 	console.log('Watching js files..');
 
-    return gulp.watch(__dirname + config.src + '/**/*.js', ['test']);
+    return gulp.watch(__dirname + config.src + '/**/*.js', ['test:unit']);
+});
+
+/**
+ * Run test once and exit
+ */
+gulp.task('test:int', function () {
+	return gulp.src([
+			__dirname + config.src + '/**/*.int.js'
+		])
+		.pipe(jasmine({
+			includeStackTrace: true
+		}));
 });
