@@ -18,9 +18,29 @@ task_serve() {
 	remove_container db
 	task_run db
 
+	pause_for 5
+
 	task_build server
 	remove_container server
 	task_run server
+}
+
+task_serve_dev() {
+	echo "Starting dev api.armory.com.."
+
+	task_build data
+	remove_container data
+	task_create data
+
+	task_build db
+	remove_container db
+	task_run db
+
+	pause_for 5
+
+	task_build server
+	remove_container server
+	task_run devserver
 }
 
 # $1: container-name
@@ -31,6 +51,20 @@ build_container() {
 	docker build \
 		-t "armory/$1:latest" \
 		$2
+}
+
+pause_for() {
+	printf "Pausing for $1 seconds.."
+
+	((t = $1))
+
+  while ((t > 0)); do
+  		printf "."
+      sleep 1
+      ((t -= 1))
+  done
+
+  echo " Finished!"
 }
 
 ##
@@ -63,6 +97,16 @@ remove_image() {
 
 # $1: container-name
 # $2: extra commands
+run_daemon_container() {
+	echo "Running daemon $1.."
+
+	docker run \
+		-d \
+		$2 \
+		--name "armory-$1" \
+		"armory/$1:latest"
+}
+
 run_container() {
 	echo "Running $1.."
 
@@ -78,16 +122,17 @@ run_container() {
 task_run() {
 	case "$1" in
 		db)
-#-v /var/lib/mysql:/var/lib/mysql
 			# TODO: Replace user/pass with environment variables passed in.
-			run_container $1 "--volumes-from armory-data -e MYSQL_ROOT_PASSWORD=password -e MYSQL_PASSWORD=password -e MYSQL_USER=admin -e MYSQL_DATABASE=armory";;
+			run_daemon_container $1 "--volumes-from armory-data -e MYSQL_ROOT_PASSWORD=password -e MYSQL_PASSWORD=password -e MYSQL_USER=admin -e MYSQL_DATABASE=armory";;
 		server)
 			# docker run -p 8082:8082 --link armory-db:db armory/server
-			run_container $1 "-p 8082:8082 --link armory-db:db";;
+			run_daemon_container $1 "-p 8082:8082 --link armory-db:db";;
+		devserver)
+			run_container "server" "-p 8082:8082 --link armory-db:db --file=\"PATH/Dockerfile-dev\"";;
 		ping) 
-			run_container $1 "-p 8081:8081";;
+			run_daemon_container $1 "-p 8081:8081";;
 		*)
-			echo "Supported run: {characters|db|ping|users}";;
+			echo "Supported run: {db|ping|devserver|server}";;
 	esac
 }
 
@@ -167,9 +212,9 @@ case "$1" in
 		task_remove $2;;
 	clean)
 		task_clean $2;;
-	dev)
-		task_dev $2;;
+	servedev)
+		task_serve_dev $2;;
 	*)
-		echo "Available tasks: {run|dev|remove|clean|create|build|serve}"
+		echo "Available tasks: {run|serve|remove|clean|create|build|servedev}"
 		exit 1;;
 esac

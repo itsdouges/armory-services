@@ -10,10 +10,11 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: function(models) {
-        Gw2Character.belongsTo(models.User, {
+        Gw2Character.belongsTo(models.Gw2ApiToken, {
           onDelete: "CASCADE",
           foreignKey: {
-            allowNull: false
+            allowNull: false,
+            as: 'token'
           }
         });
       }

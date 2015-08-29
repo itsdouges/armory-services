@@ -1,5 +1,8 @@
 'use strict';
 
+// how to add children:
+// http://stackoverflow.com/questions/27159759/sequelize-store-an-object-along-with-child-associated-object
+
 module.exports = function(sequelize, DataTypes) {
   var User = sequelize.define('User', {
 		id: {
@@ -12,25 +15,14 @@ module.exports = function(sequelize, DataTypes) {
 		email: {
 			type: DataTypes.STRING,
 			required: true,
-			field: 'email'
-		},
-		alias: {
-			type: DataTypes.STRING,
-			required: true,
-			field: 'alias'
+			field: 'email',
+			allowNull: false
 		},
 		passwordHash: {
 			type: DataTypes.STRING(500),
 			required: true,
+			allowNull: false,
 			field: 'password_hash'
-		},
-		gw2ApiToken: {
-			type: DataTypes.STRING,
-			field: 'gw2_api_token'
-		},
-		gw2ApiTokenValid: {
-			type: DataTypes.BOOLEAN,
-			field: 'gw2_api_token_valid'
 		},
 		emailValidated: {
 			type: DataTypes.BOOLEAN,
@@ -41,7 +33,7 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     	classMethods: {
       	associate: function(models) {
-        	User.hasMany(models.Gw2Character, { as: 'Gw2Characters' })
+        	User.hasMany(models.Gw2ApiToken, { as: 'gw2_api_tokens' });
       }
     }
   });

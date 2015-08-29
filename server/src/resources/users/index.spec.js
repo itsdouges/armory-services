@@ -8,7 +8,10 @@ describe('user resource', function () {
 	var models;
 
 	var mocks = {
-		validate: function () {}
+		validate: function () {},
+		gw2Api: {
+			readTokenAccountName: function () {}
+		}
 	};
 
 	var mockValidator;
@@ -32,7 +35,9 @@ describe('user resource', function () {
 		mockValidator.addRule = function () { };
 
 		models = new Models(testDb());
-		models.sequelize.sync().then(function () {
+		models.sequelize.sync({
+			force: true
+		}).then(function () {
 			done();
 		});
 
@@ -41,14 +46,6 @@ describe('user resource', function () {
 	});
 
 	describe('initialisation', function () {
-		it('should add domain specific rules', function () {
-			systemUnderTest = new UserResource(models, mockValidator);
-
-			// TODO: Think up how to test this better.
-			expect(mockValidator.addRule).toHaveBeenCalled();
-			expect(mockValidator.addRule.calls.count()).toEqual(3);
-		});
-
 		it('should add users resource in create mode to validator', function () {
 			systemUnderTest = new UserResource(models, mockValidator);
 
@@ -57,9 +54,8 @@ describe('user resource', function () {
 				mode: 'create',
 				rules: {
 					email: ['required', 'unique-email', 'no-white-space'],
-					alias: ['required', 'unique-alias', 'no-white-space'],
-					password: ['required', 'strong-password', 'no-white-space'],
-					gw2Token: ['valid-gw2-token', 'no-white-space']
+					password: ['required', 'password', 'no-white-space'],
+					gw2_api_tokens: ['valid-gw2-token', 'no-white-space']
 				}
 			});
 		});
@@ -71,8 +67,7 @@ describe('user resource', function () {
 				name: 'users',
 				mode: 'update',
 				rules: {
-					alias: ['required', 'unique-alias', 'no-white-space'],
-					password: ['required', 'strong-password', 'no-white-space']
+					password: ['required', 'password', 'no-white-space']
 				}
 			});
 		});
@@ -84,7 +79,7 @@ describe('user resource', function () {
 				name: 'users',
 				mode: 'update-gw2-token',
 				rules: {
-					gw2Token: ['valid-gw2-token', 'no-white-space']
+					gw2_api_tokens: ['valid-gw2-token', 'no-white-space']
 				}
 			});
 		});
@@ -115,36 +110,51 @@ describe('user resource', function () {
 			var user = {
 				email: 'cool@email.com',
 				password: 'password',
-				alias: 'madou',
-				gw2ApiToken: 'haha'
+				gw2_api_tokens: [{
+					token: 'haha'
+				}, 
+				{
+					token: 'nahhman'
+				}]
 			};
 
 			var defer = q.defer();
+			var accountNameDefer = q.defer();
 
 			spyOn(mocks, 'validate').and.returnValue(defer.promise);
+			spyOn(mocks.gw2Api, 'readTokenAccountName').and.returnValue(accountNameDefer.promise);
 
-			systemUnderTest = new UserResource(models, mockValidator);
-
+			systemUnderTest = new UserResource(models, mockValidator, mocks.gw2Api);
 			systemUnderTest
 				.create(user)
 				.then(function () {
 					models.User
-						.findOne({ where: { alias: user.alias }})
+						.findOne({ 
+							where: {
+								email: user.email 
+							},
+							include: [{
+								all: true
+							}]
+						})
 						.then(function (e) {
 							expect(e.id).toBeDefined();
 							expect(e.email).toBe(user.email);
-							expect(e.alias).toBe(user.alias);
-							expect(e.gw2ApiToken).toBe(user.gw2ApiToken);
+							expect(e.gw2_api_tokens[0].token).toBe('haha');
+							expect(e.gw2_api_tokens[0].accountName).toBe('cool name.1234');
+							expect(e.gw2_api_tokens[0].UserId).toBe(e.id);
+							expect(e.gw2_api_tokens[1].token).toBe('nahhman');
+							expect(e.gw2_api_tokens[1].accountName).toBe('cool name.1234');
+							expect(e.gw2_api_tokens[1].UserId).toBe(e.id);
 							expect(e.passwordHash).toBeDefined();
 							expect(e.emailValidated).toBe(false);
 
 							done();
 						});
-
-					done();
 				});
 
 			defer.resolve();
+			accountNameDefer.resolve('cool name.1234');
 		});
 	});
 });

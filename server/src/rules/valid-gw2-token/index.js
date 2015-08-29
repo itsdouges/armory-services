@@ -3,38 +3,58 @@
 var q = require('q');
 
 function validGw2Token(name, object, dependencies) {
-	var item = object[name];
-	if (!item) {
+	var token = object[name];
+	if (!token) {
 		return q.resolve();
 	}
 
-	var promise = dependencies.axios.get(dependencies.env.gw2.endpoint + 'tokeninfo', {
-			headers: {
-				'Authorization' : 'Bearer ' + item
-			}
-		})
-		.then(function (response) {
-			var permissions = response.data.permissions;
-			var hasCharacters = permissions.filter(function (item) {
-				return item === 'characters';
-			});
+	var defer = q.defer();
 
-			if (!hasCharacters.length) {
-				return q.reject({
+	dependencies.models
+		.Gw2ApiToken
+		.findOne({ where: { token: token }})
+		.then(function (item) {
+			if (item) {
+				defer.resolve({
 					property: name,
-					message: 'needs characters permission'
+					message: 'is already being used'
 				});
+			} else {
+				checkGw2Api(token);
 			}
-
-			return;
-		}, function (error) {
-			return q.reject({
-					property: name,
-					message: 'invalid token'
-				});
+		}, function (e) {
+			throw e;
 		});
 
-	return promise;
+		function checkGw2Api(token) {
+			dependencies.axios.get(dependencies.env.gw2.endpoint + 'v2/tokeninfo', {
+					headers: {
+						'Authorization' : 'Bearer ' + token
+					}
+				})
+				.then(function (response) {
+					var permissions = response.data.permissions;
+					var hasCharacters = permissions.filter(function (item) {
+						return item === 'characters' || item === 'inventories';
+					});
+
+					if (hasCharacters.length !== 2) {
+						return defer.resolve({
+							property: name,
+							message: 'needs characters and inventories permission'
+						});
+					}
+
+					return defer.resolve();
+				}, function (error) {
+					return defer.resolve({
+							property: name,
+							message: 'invalid token'
+						});
+				});
+		}
+
+	return defer.promise;
 }
 
 module.exports = validGw2Token;

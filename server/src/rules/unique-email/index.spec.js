@@ -27,7 +27,7 @@ describe('unique email rule', function () {
 
 	it('should resolve if email is unique', function (done) {
 		uniqueEmail('email', {
-			email: 'cool@email.com'
+			email: 'cool@email.com!!'
 		}, {
 			models: models
 		})
@@ -39,8 +39,10 @@ describe('unique email rule', function () {
 	it('should resolve with error if email is not unique', function (done) {
 		models.User
 		.create({
-			email: 'cool@email.com'
-		})
+				email: 'cool@email.com',
+				passwordHash: 'lolz',
+				alias: 'swagn'
+			})
 		.then(function () {
 			uniqueEmail('email', {
 				email: 'cool@email.com'

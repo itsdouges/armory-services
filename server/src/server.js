@@ -1,15 +1,18 @@
 "use strict";
 
+// example of testing with sqlite
 // http://cmme.org/tdumitrescu/blog/2014/02/node-sql-testing/
 
 var restify = require("restify"),
 	restifyOAuth2 = require("restify-oauth2"),
 	UsersResource = require('./resources/users'),
+	CheckResource = require('./resources/check'),
 	GottaValidate = require('gotta-validate'),
 	axios = require('axios');
 
 var RESOURCES = Object.freeze({
-    USERS: "/users"
+    USERS: "/users",
+    CHECK_GW2_TOKEN: "/users/check/gw2-token/:token"
 });
 
 function Server(models) {
@@ -19,8 +22,24 @@ function Server(models) {
 	});
 
 	GottaValidate.addDefaultRules();
+	GottaValidate
+		.addRule({
+			name: 'valid-gw2-token',
+			func: require('./rules/valid-gw2-token'),
+			dependencies: {
+				axios: axios,
+				models: models
+			}
+		}).addRule({
+			name: 'unique-email',
+			func: require('./rules/unique-email'),
+			dependencies: {
+				models: models
+			}
+		});
 
 	var usersResource = new UsersResource(models, GottaValidate, axios);
+	var checkResource = new CheckResource(GottaValidate);
 
 	server.use(restify.authorizationParser());
 	server.use(restify.bodyParser());
@@ -31,6 +50,22 @@ function Server(models) {
 
 	server.get('/', function (req, res) {
 	    res.send("api.armory.net.au");
+
+	    return next();
+	});
+
+	server.get(RESOURCES.CHECK_GW2_TOKEN, function (req, res) {
+		checkResource
+			.gw2Token({
+				gw2ApiToken: req.params.token
+			})
+			.then(function () {
+				res.send(200);
+				return next();
+			}, function (e) {
+				res.send(400, e);
+				return next();
+			});
 	});
 
 	server.post(RESOURCES.USERS, function (req, res) {

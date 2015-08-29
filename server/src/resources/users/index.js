@@ -1,52 +1,30 @@
 'use strict';
 
+// todo: use sequelize transactions where appropriate!
 var password = require('password-hash-and-salt');
 var q = require('q');
 
-function UsersResource(models, Validator, axios) {
-	Validator
-		.addRule({
-			name: 'valid-gw2-token',
-			func: require('../../rules/valid-gw2-token'),
-			dependencies: {
-				axios: axios
-			}
-		}).addRule({
-			name: 'unique-email',
-			func: require('../../rules/unique-email'),
-			dependencies: {
-				models: models
-			}
-		}).addRule({
-			name: 'unique-alias',
-			func: require('../../rules/unique-alias'),
-			dependencies: {
-				models: models
-			}
-		});
-
+function UsersResource(models, Validator, gw2Api) {
 	Validator
 		.addResource({
 			name: 'users',
 			mode: 'create',
 			rules: {
 				email: ['required', 'unique-email', 'no-white-space'],
-				alias: ['required', 'unique-alias', 'no-white-space'],
 				password: ['required', 'password', 'no-white-space'],
-				gw2Token: ['valid-gw2-token', 'no-white-space']
+				gw2_api_tokens: ['valid-gw2-token', 'no-white-space']
 			}
 		}).addResource({
 			name: 'users',
 			mode: 'update',
 			rules: {
-				alias: ['required', 'unique-alias', 'no-white-space'],
 				password: ['required', 'password', 'no-white-space']
 			}
 		}).addResource({
 			name: 'users',
 			mode: 'update-gw2-token',
 			rules: {
-				gw2Token: ['valid-gw2-token', 'no-white-space']
+				gw2_api_tokens: ['valid-gw2-token', 'no-white-space']
 			}
 		});
 
@@ -58,21 +36,48 @@ function UsersResource(models, Validator, axios) {
 			mode: 'create'
 		});
 
+		function createUser(user) {
+			models.User
+				.create(user)
+				.then(function (e) {
+					if (user.gw2_api_tokens) {
+						user.gw2_api_tokens.forEach(function (token) {
+							token.UserId = e.id;
+							gw2Api.readTokenAccountName(token.token)
+								.then(function (name) {
+									token.accountName = name;
+									addToken(token);
+								}, function (e) {
+									throw e;
+								});
+						});
+					} else {
+						defer.resolve();
+					}
+				}, function (e) {
+					throw e;
+				});
+		}
+
+		function addToken(token) {
+			models.Gw2ApiToken.create(token)
+				.then(function (e) {
+					defer.resolve();
+				}, function (e) {
+					throw e;
+				});
+		}
+
 		validator.validate(user)
 			.then(function () {
 				password(user.password).hash(function (error, hash) {
 					if (error) {
-						defer.reject(error);
+						throw error;
 					}
 
 					user.passwordHash = hash;
 
-					models.User
-						.create(user)
-						.then(function () {
-							// TODO: Send confirmation email.
-							defer.resolve();
-						}, defer.reject);
+					createUser(user);
 				});
 			}, defer.reject);
 
