@@ -155,7 +155,7 @@ task_build() {
 		server)
 			build_container $1 "./server/";;
 		ping)
-			build_container $1 "./ping/";;
+			build_container $1 "./gw2-ping/";;
 		*)
 			echo "Supported build: {server|db|data|ping}";;
 	esac
