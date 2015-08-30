@@ -14,4 +14,4 @@ COPY gulpfile.js /opt/gulpfile.js
 COPY /src /opt/src
 COPY /env /opt/env
 
-ENTRYPOINT ["npm", "start"]
+ENTRYPOINT ["node", "src/run"]

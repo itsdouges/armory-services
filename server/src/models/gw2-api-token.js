@@ -27,8 +27,7 @@ module.exports = function(sequelize, DataTypes) {
         Gw2ApiToken.belongsTo(models.User, {
           onDelete: "CASCADE",
           foreignKey: {
-            allowNull: false,
-            as: 'user_id'
+            allowNull: false
           }
         });
       }

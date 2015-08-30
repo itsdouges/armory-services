@@ -139,7 +139,7 @@ describe('gw2 token controller', function () {
 								expect(result.accountName).toBe('nameee');
 
 								systemUnderTest
-									.remove('token')
+									.remove(e.id, 'token')
 									.then(function (rez) {
 										expect(rez).toBe(1);
 

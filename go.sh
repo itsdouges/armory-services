@@ -36,7 +36,7 @@ task_serve_dev() {
 	remove_container db
 	task_run db
 
-	pause_for 5
+	pause_for 3
 
 	task_build server
 	remove_container server

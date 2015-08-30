@@ -33,7 +33,7 @@ module.exports = function(sequelize, DataTypes) {
 			field: 'email_validated',
 			allowNull: false,
 			defaultValue: false
-		},
+		}
   }, {
     	classMethods: {
       	associate: function(models) {

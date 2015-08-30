@@ -64,8 +64,7 @@ module.exports = function(sequelize, DataTypes) {
         Gw2Character.belongsTo(models.Gw2ApiToken, {
           onDelete: "CASCADE",
           foreignKey: {
-            allowNull: false,
-            as: 'api_token'
+            allowNull: false
           }
         });
       }
