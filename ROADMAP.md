@@ -6,6 +6,7 @@ Resources:
 		- update (update pass ONLY)
 		- add-token
 		- remove-token
+		- read
 	Characters
 		- read
 	Token

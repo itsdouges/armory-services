@@ -67,10 +67,110 @@ describe('user resource', function () {
 				name: 'users',
 				mode: 'update',
 				rules: {
+					id: 'required',
 					currentPassword: ['required'],
 					password: ['required', 'password', 'no-white-space']
 				}
 			});
+		});
+	});
+
+	describe('read', function () {
+		it('should return user data', function (done) {
+			var user = {
+				email: 'cool@email.com',
+				password: 'password'
+			};
+
+			var defer = q.resolve();
+			spyOn(mocks, 'validate').and.returnValue(defer);
+
+			systemUnderTest = new UserResource(models, mockValidator);
+			systemUnderTest
+				.create(user)
+				.then(function (e) {
+					return systemUnderTest.read(user.email);
+				})
+				.then(function (data) {
+					expect(data.email).toBe(user.email);
+					expect(data.id).toBeDefined();
+					expect(data.passwordHash).toBeDefined();
+
+					done();
+				});
+		});
+	});
+
+	describe('updating', function () {
+		it('should reject promise if passwords don\'t matach', function (done) {
+			var user = {
+				email: 'cool@email.com',
+				password: 'password'
+			};
+
+			var promise = q.resolve();
+			spyOn(mocks, 'validate').and.returnValue(promise);
+
+			systemUnderTest = new UserResource(models, mockValidator);
+			systemUnderTest
+				.create(user)
+				.then(function (e) {
+					user.currentPassword = 'WRONGPASS';
+					return systemUnderTest.update(user);
+				})
+				.then(null, function (e) {
+					expect(e).toBe('Bad password');
+
+					done();
+				});
+		});
+
+		it('should resolve promise if passwords matach and commit to db', function (done) {
+			var user = {
+				email: 'cool@email.com',
+				password: 'password'
+			};
+
+			var promise = q.resolve();
+			spyOn(mocks, 'validate').and.returnValue(promise);
+
+			systemUnderTest = new UserResource(models, mockValidator);
+			systemUnderTest
+				.create(user)
+				.then(function (e) {
+					user.currentPassword = user.password;
+					user.password = 'NewPass123';
+					user.oldHash = user.passwordHash;
+
+					return systemUnderTest.update(user);
+				})
+				.then(function (e) {
+					return systemUnderTest.read(user.email);
+				})
+				.then(function (e) {
+					expect(e.passwordHash).not.toBe(user.oldHash);
+					expect(e.passwordHash).toBe(user.passwordHash);
+
+					done();
+				});
+		});
+
+		it('should reject if validation fails', function (done) {
+			var validationDefer = q.defer();
+			spyOn(mocks, 'validate').and.returnValue(validationDefer.promise);
+
+			var user = {};
+
+			systemUnderTest = new UserResource(models, mockValidator);
+			systemUnderTest
+				.update(user)
+				.then(null, function (e) {
+					expect(e).toBe('errorrr');
+
+					done();
+				});
+
+			validationDefer.reject('errorrr');
 		});
 	});
 
@@ -146,7 +246,8 @@ describe('user resource', function () {
 							expect(e.gw2_api_tokens[1].token).toBe('nahhman');
 							expect(e.gw2_api_tokens[1].accountName).toBe('cool name.4321');
 							expect(e.gw2_api_tokens[1].UserId).toBe(e.id);
-							expect(e.passwordHash).toBeDefined();
+
+							expect(e.passwordHash).toBe(user.passwordHash);
 							expect(e.emailValidated).toBe(false);
 
 							done();
