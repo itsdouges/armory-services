@@ -105,7 +105,9 @@ function UsersResource(models, Validator, gw2Api) {
 		};
 
 		var loadInitialCharacters = function (token, userId) {
-
+			// todo: this logic will be duplicated into gw2-ping
+			// perhaps it will be beneficial to create an endpoint and ping 
+			// it internally instead
 		};
 
 		var promise = validator.validate(user)

@@ -42,15 +42,17 @@ function Server(models, env) {
 			}
 		});
 
+	var AuthHooks = require('./auth/hooks');
+
 	var usersResource = new UsersResource(models, GottaValidate, gw2Api);
 	var checkResource = new CheckResource(GottaValidate);
 
 	server.use(restify.authorizationParser());
 	server.use(restify.bodyParser());
 
-	// restifyOAuth2.ropc(server, {
-	//     // hooks: hooks
-	// });
+	restifyOAuth2.ropc(server, {
+	  hooks: AuthHooks(models, config)
+	});
 
 	server.get('/', function (req, res) {
 	    res.send("api.armory.net.au");
