@@ -8,6 +8,8 @@ Resources:
 		- remove-token
 	Characters
 		- read
+	Token
+		- get token
 		
 	Check
 		- email

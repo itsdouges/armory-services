@@ -8,26 +8,22 @@ function validGw2Token(name, object, dependencies) {
 		return q.resolve();
 	}
 
-	var defer = q.defer();
-
-	dependencies.models
+	var promise = dependencies.models
 		.Gw2ApiToken
 		.findOne({ where: { token: token }})
 		.then(function (item) {
 			if (item) {
-				defer.resolve({
+				return {
 					property: name,
 					message: 'is already being used'
-				});
-			} else {
-				checkGw2Api(token);
+				};
 			}
-		}, function (e) {
-			throw e;
+			
+			return checkGw2Api(token);
 		});
 
 		function checkGw2Api(token) {
-			dependencies.axios.get(dependencies.env.gw2.endpoint + 'v2/tokeninfo', {
+			return dependencies.axios.get(dependencies.env.gw2.endpoint + 'v2/tokeninfo', {
 					headers: {
 						'Authorization' : 'Bearer ' + token
 					}
@@ -39,22 +35,20 @@ function validGw2Token(name, object, dependencies) {
 					});
 
 					if (hasCharacters.length !== 2) {
-						return defer.resolve({
+						return {
 							property: name,
 							message: 'needs characters and inventories permission'
-						});
+						};
 					}
-
-					return defer.resolve();
 				}, function (error) {
-					return defer.resolve({
-							property: name,
-							message: 'invalid token'
-						});
+					return q.resolve({
+						property: name,
+						message: 'invalid token'
+					});
 				});
 		}
 
-	return defer.promise;
+	return promise;
 }
 
 module.exports = validGw2Token;
