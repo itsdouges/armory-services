@@ -109,9 +109,20 @@ describe('user resource', function () {
 
 			var defer = q.defer();
 			var accountNameDefer = q.defer();
+			var accountName2Defer = q.defer();
+
+			mocks.gw2Api.readAccount = function (token) {
+				if (token === 'haha') {
+					return accountNameDefer.promise; 
+				}
+
+				if (token === 'nahhman') {
+					return accountName2Defer.promise;
+				}
+			};
 
 			spyOn(mocks, 'validate').and.returnValue(defer.promise);
-			spyOn(mocks.gw2Api, 'readAccount').and.returnValue(accountNameDefer.promise);
+			spyOn(mocks.gw2Api, 'readAccount').and.callThrough();
 
 			systemUnderTest = new UserResource(models, mockValidator, mocks.gw2Api);
 			systemUnderTest
@@ -133,7 +144,7 @@ describe('user resource', function () {
 							expect(e.gw2_api_tokens[0].accountName).toBe('cool name.1234');
 							expect(e.gw2_api_tokens[0].UserId).toBe(e.id);
 							expect(e.gw2_api_tokens[1].token).toBe('nahhman');
-							expect(e.gw2_api_tokens[1].accountName).toBe('cool name.1234');
+							expect(e.gw2_api_tokens[1].accountName).toBe('cool name.4321');
 							expect(e.gw2_api_tokens[1].UserId).toBe(e.id);
 							expect(e.passwordHash).toBeDefined();
 							expect(e.emailValidated).toBe(false);
@@ -145,6 +156,10 @@ describe('user resource', function () {
 			defer.resolve();
 			accountNameDefer.resolve({
 				name: 'cool name.1234'
+			});
+
+			accountName2Defer.resolve({
+				name: 'cool name.4321'
 			});
 		});
 	});

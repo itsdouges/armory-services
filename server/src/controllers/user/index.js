@@ -24,62 +24,68 @@ function UsersResource(models, Validator, gw2Api) {
 		});
 
 	UsersResource.prototype.create = function (user) {
-		var defer = q.defer();
-
 		var validator = Validator({
 			resource: 'users',
 			mode: 'create'
 		});
 
-		function createUser(user) {
-			models.User
+		var createUser = function (user) {
+			return models.User
 				.create(user)
 				.then(function (e) {
-					if (user.gw2_api_tokens) {
-						user.gw2_api_tokens.forEach(function (token) {
-							token.UserId = e.id;
-							gw2Api.readAccount(token.token)
-								.then(function (account) {
-									token.accountName = account.name;
-									addToken(token);
-								}, function (e) {
-									throw e;
-								});
-						});
-					} else {
-						defer.resolve();
+					if (!user.gw2_api_tokens) {
+						return;
 					}
-				}, function (e) {
-					throw e;
-				});
-		}
 
-		function addToken(token) {
-			models.Gw2ApiToken.create(token)
+					user.gw2_api_tokens.forEach(function (token) {
+						promise.then(function () {
+								return gw2Api
+									.readAccount(token.token)
+									.then(function (account) {
+										token.accountName = account.name;
+										token.UserId = e.id;
+
+										return addApiToken(token);
+									});
+						});
+					});
+				});
+		};
+
+		var addApiToken = function (token) {
+			return models
+				.Gw2ApiToken
+				.create(token)
 				.then(function (e) {
-					defer.resolve();
-				}, function (e) {
-					throw e;
+					return;
 				});
 		}
 
-		validator.validate(user)
+		var promise = validator.validate(user)
 			.then(function () {
+				var defer = q.defer();
+				
 				password(user.password).hash(function (error, hash) {
 					if (error) {
-						throw error;
+						defer.reject(error);
 					}
 
-					user.passwordHash = hash;
-
-					createUser(user);
+					return defer.resolve(hash);
 				});
-			}, defer.reject);
 
-		return defer.promise;
+				return defer.promise;
+			})
+			.then(function (passwordHash) {
+				user.passwordHash = passwordHash;
+				return createUser(user);
+			});
+
+		return promise;
 	};
 
 	UsersResource.prototype.update = function (user) {
+		// todo: implement today (sunday!)
+
 		var defer = q.defer();
 
 		var validator = new Validator({
@@ -96,10 +102,6 @@ function UsersResource(models, Validator, gw2Api) {
 			}, q.reject);
 
 		var defer = q.defer();
-	};
-
-	UsersResource.prototype.sendActivationEmail = function (alias) {
-		// TODO: Implement
 	};
 }
 
