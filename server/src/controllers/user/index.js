@@ -61,7 +61,7 @@ function UsersResource(models, Validator, gw2Api) {
 		});
 
 	/**
-	 * Create user item.
+	 * Create user resource.
 	 * Email and password are required, gw2 api tokens are optional.
 	 */
 	UsersResource.prototype.create = function (user) {
@@ -115,7 +115,7 @@ function UsersResource(models, Validator, gw2Api) {
 	};
 
 	/**
-	 * Read
+	 * Read user resource.
 	 * Finding by email as that is what the user will be using for their
 	 * login credentials.
 	 */
@@ -133,8 +133,8 @@ function UsersResource(models, Validator, gw2Api) {
 	};
 
 	/**
-	 * Update
-	 * Update user resource. Currently only changing your password is supported.
+	 * Update user resource. 
+	 * Currently only changing your password is supported.
 	 */
 	UsersResource.prototype.update = function (user) {
 		var validator = Validator({

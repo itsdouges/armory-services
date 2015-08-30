@@ -9,7 +9,7 @@ Resources:
 		- read
 	Characters
 		- read
-	Token
+	Token (auth)
 		- get token
 		
 	Check

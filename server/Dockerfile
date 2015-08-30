@@ -5,6 +5,8 @@ LABEL Description="Server container for api.armory.net.au"
 
 WORKDIR /opt
 
+RUN npm install -g gulp
+
 COPY package.json /opt/package.json
 RUN npm install
 

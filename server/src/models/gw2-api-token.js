@@ -23,6 +23,7 @@ module.exports = function(sequelize, DataTypes) {
     classMethods: {
       associate: function(models) {
         Gw2ApiToken.hasMany(models.Gw2Character, { as: 'gw2_characters' });
+        
         Gw2ApiToken.belongsTo(models.User, {
           onDelete: "CASCADE",
           foreignKey: {
