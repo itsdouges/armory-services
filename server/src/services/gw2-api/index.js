@@ -14,6 +14,17 @@ function Gw2Api(axios, env) {
 		return promise;
 	}
 
+	function readCharacters (token) {
+		return axios.get(env.gw2.endpoint + 'v2/characters', {
+				headers: {
+					'Authorization' : 'Bearer ' + token
+				}
+		})
+		.then(function (e) {
+			return e.data;
+		});
+	}
+
 	function readCharacter (name, options) {
 		var promise = axios.get(env.gw2.endpoint + 'v2/characters/' + name, {
 				headers: {
@@ -42,6 +53,7 @@ function Gw2Api(axios, env) {
 	}
 
 	var exports = {
+		readCharacters: readCharacters,
 		readCharacter: readCharacter,
 		readAccount: readAccount
 	};

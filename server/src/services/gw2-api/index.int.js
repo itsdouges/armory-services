@@ -60,4 +60,13 @@ describe('gw2 api', function () {
 				done();
 			});
 	});
+
+	it('should return characters data as expected', function (done) {
+		sut.readCharacters(testToken)
+			.then(function (data) {
+				expect(Array.isArray(data)).toBe(true);
+
+				done();
+			});
+	});
 });

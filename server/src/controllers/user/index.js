@@ -74,6 +74,8 @@ function UsersResource(models, Validator, gw2Api) {
 			return models.User
 				.create(user)
 				.then(function (e) {
+					
+					
 					if (!user.gw2_api_tokens) {
 						return;
 					}
@@ -100,7 +102,11 @@ function UsersResource(models, Validator, gw2Api) {
 				.then(function (e) {
 					return;
 				});
-		}
+		};
+
+		var loadInitialCharacters = function (token, userId) {
+
+		};
 
 		var promise = validator.validate(user)
 			.then(function () {
