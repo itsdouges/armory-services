@@ -94,4 +94,62 @@ describe('character controller', function () {
 
 			defer.resolve({});
 	});
+
+	it('should set token to invalid if we recieved a 403 response', function (done) {
+		var defer = q.defer();
+		spyOn(mockGw2Api, 'readCharacter').and.returnValue(defer.promise);
+
+		models
+			.User
+			.create({
+				email: 'cool@email',
+				passwordHash: 'coolpassword'
+			})
+			.then(function () {
+				return models
+					.User
+					.findOne({
+						where: {
+							email: 'cool@email'
+						}
+					});
+			})
+			.then(function (data) {
+				return models
+					.Gw2ApiToken
+					.create({
+						token: 'swag',
+						accountName: 'nameyname',
+						UserId: data.id
+					});
+			})
+			.then(function () {
+				return models
+					.Gw2Character
+					.create({
+						Gw2ApiTokenToken: 'swag',
+						name: 'blastrn'
+					});
+			})
+			.then(function () {
+				return sut.read('blastrn');
+			})
+			.then(null, function (data) {
+				return models.Gw2ApiToken
+					.findOne({
+						where: {
+							token: 'swag'
+						}
+					});
+			})
+			.then(function (data) {
+				expect(data.valid).toBe(false);
+
+				done();
+			});
+
+			defer.reject({
+				status: 403
+			});
+	});
 });

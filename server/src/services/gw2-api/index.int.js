@@ -49,4 +49,15 @@ describe('gw2 api', function () {
 				done();
 			});
 	});
+
+	it('should return invalid token error', function (done) {
+		sut.readCharacter('Blastrn', {
+				token: 'invalid'
+			})
+			.then(null, function (response) {
+				expect(response.status).toBe(403);
+
+				done();
+			});
+	});
 });

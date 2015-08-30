@@ -9,6 +9,12 @@ function CharacterController(models, gw2Api) {
 		return models
 			.Gw2Character
 			.findOne({
+				include: [{
+					model: models.Gw2ApiToken,
+					where: {
+						valid: true
+					}
+				}],
 				where: {
 					name: name
 				}
@@ -32,6 +38,22 @@ function CharacterController(models, gw2Api) {
 					token: data.token,
 					showBags: data.showBags,
 					showCrafting: data.showCrafting
+				})
+				.then(null, function (response) {
+					if (response.status === 403) {
+						return models.Gw2ApiToken
+							.update({
+								valid: false
+							}, {
+								where: {
+									token: characterFromDb.Gw2ApiToken.token
+								}
+							}).then(function () {
+								return q.reject();
+							})
+					}
+
+					return q.reject(response);
 				});
 			})
 			.then(function (data) {
