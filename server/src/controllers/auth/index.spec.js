@@ -111,4 +111,14 @@ describe('auth controller', function () {
 				});
 			});
 	});
+
+	describe('client validation', function () {
+		it('should cb true', function (done) {
+			sut.validateClient(null, null, function (err, res) {
+				expect(res).toBe(true);
+				
+				done();
+			});
+		});
+	});
 });

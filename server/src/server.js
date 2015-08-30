@@ -1,111 +1,59 @@
 "use strict";
 
-// example of testing with sqlite
-// http://cmme.org/tdumitrescu/blog/2014/02/node-sql-testing/
+// TODO: Figure out best way for error handling.
 
 var restify = require("restify"),
 	restifyOAuth2 = require("restify-oauth2"),
-	UsersResource = require('./resources/users'),
-	CheckResource = require('./resources/check'),
 	GottaValidate = require('gotta-validate'),
 	axios = require('axios'),
-	Gw2Api = require('./services/gw2-api');
+	UsersController = require('./controllers/users'),
+	CheckController = require('./controllers/check'),
+	Gw2TokenController = require('./controllers/character'),
+	CharacterController = require('./controllers/character'),
+	AuthController = require('./controllers/auth');
+	Gw2Api = require('./services/gw2-api');	
 
-var RESOURCES = Object.freeze({
-    USERS: "/users",
-    CHECK_GW2_TOKEN: "/users/check/gw2-token/:token",
-    EMAIL: "/users/check/email/:email"
-});
-
-function Server(models, env) {
-	var server = restify.createServer({
-	    name: "armory.net.au",
-	    version: env.version
+GottaValidate.addDefaultRules();
+GottaValidate
+	.addRule({
+		name: 'valid-gw2-token',
+		func: require('./rules/valid-gw2-token'),
+		dependencies: {
+			axios: axios,
+			models: models
+		}
+	}).addRule({
+		name: 'unique-email',
+		func: require('./rules/unique-email'),
+		dependencies: {
+			models: models
+		}
 	});
 
+function Server(models, env) {
 	var gw2Api = Gw2Api(axios, env);
 
-	GottaValidate.addDefaultRules();
-	GottaValidate
-		.addRule({
-			name: 'valid-gw2-token',
-			func: require('./rules/valid-gw2-token'),
-			dependencies: {
-				axios: axios,
-				models: models
-			}
-		}).addRule({
-			name: 'unique-email',
-			func: require('./rules/unique-email'),
-			dependencies: {
-				models: models
-			}
-		});
+	var users = new UsersController(models, GottaValidate, gw2Api);
+	var gw2Tokens = new Gw2TokenController(models, GottaValidate, gw2Api);
+	var characters = new Gw2TokenController(models, gw2Api);
+	var checks = new CheckController(GottaValidate);
+	var auths = AuthController(models);
 
-	var AuthHooks = require('./auth/hooks');
-
-	var usersResource = new UsersResource(models, GottaValidate, gw2Api);
-	var checkResource = new CheckResource(GottaValidate);
+	var server = restify.createServer({
+	    name: "api.armory.net.au",
+	    version: env.version
+	});
 
 	server.use(restify.authorizationParser());
 	server.use(restify.bodyParser());
 
 	restifyOAuth2.ropc(server, {
-	  hooks: AuthHooks(models, config)
+		tokenEndpoint: RESOURCES.TOKEN, 
+	  hooks: AuthHooks(models, config),
+	  tokenExpirationTime: 60
 	});
 
-	server.get('/', function (req, res) {
-	    res.send("api.armory.net.au");
-
-	    return next();
-	});
-
-	server.get(RESOURCES.CHECK_EMAIL, function (req, res) {
-		checkResource
-			.email({
-				email: req.params.email
-			})
-			.then(function () {
-				res.send(200);
-				return next();
-			}, function (e) {
-				res.send(400, e);
-				return next();
-			});
-	});
-
-	server.get(RESOURCES.CHECK_GW2_TOKEN, function (req, res) {
-		checkResource
-			.gw2Token({
-				token: req.params.token
-			})
-			.then(function () {
-				res.send(200);
-				return next();
-			}, function (e) {
-				res.send(400, e);
-				return next();
-			});
-	});
-
-	server.post(RESOURCES.USERS, function (req, res) {
-		var user = {
-			alias: req.params.alias,
-			email: req.params.email,
-			password: req.params.password,
-			gw2ApiToken: req.params.gw2ApiToken
-		};
-
-		usersResource
-			.create(user)
-			.then(function () {
-				res.send(200);
-				return next();
-			}, function (e) {
-				res.send(400, e);
-				return next();
-			});
-	});
+	require('./resources')(server);
 
 	return server;
 }

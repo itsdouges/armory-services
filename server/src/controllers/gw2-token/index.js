@@ -45,10 +45,11 @@ function Gw2TokenController(models, Validator, gw2Api) {
 		return promise;
 	};
 
-	Gw2TokenController.prototype.remove = function (token) {
+	Gw2TokenController.prototype.remove = function (id, token) {
 		return models.Gw2ApiToken
 			.destroy({
 				where: {
+					UserId: id,
 					token: token
 				}
 			});
