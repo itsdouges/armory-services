@@ -1,0 +1,22 @@
+{
+  "name": "test-server",
+  "version": "0.0.1",
+  "description": "Acceptance test server for api.gw2armory.com",
+  "main": "jasmine-node .",
+  "scripts": {
+    "test": "jasmine-node ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/madou/armory-back.git"
+  },
+  "author": "madou",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/madou/armory-back/issues"
+  },
+  "homepage": "https://github.com/madou/armory-back#readme",
+  "devDependencies": {
+    "frisby": "^0.8.5"
+  }
+}

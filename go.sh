@@ -18,7 +18,8 @@ task_serve() {
 	remove_container db
 	task_run db
 
-	pause_for 5
+	echo "Short pause to let db container finish starting up.."
+	pause_for 10
 
 	task_build server
 	remove_container server
@@ -36,11 +37,19 @@ task_serve_dev() {
 	remove_container db
 	task_run db
 
-	pause_for 3
+	pause_for 5
 
-	task_build server
-	remove_container server
+	task_build devserver
+	remove_container devserver
 	task_run devserver
+}
+
+task_acceptance() {
+	task_serve
+
+	task_build acceptance
+	remove_container acceptance
+	task_run acceptance
 }
 
 # $1: container-name
@@ -129,10 +138,12 @@ task_run() {
 			run_daemon_container $1 "-p 8082:8082 --link armory-db:db";;
 		devserver)
 			run_container "server" "-p 8082:8082 --link armory-db:db --file=\"PATH/Dockerfile-dev\"";;
+		acceptance)
+			run_container $1;;
 		ping) 
 			run_daemon_container $1 "-p 8081:8081";;
 		*)
-			echo "Supported run: {db|ping|devserver|server}";;
+			echo "Supported run: {acceptance|db|ping|devserver|server}";;
 	esac
 }
 
@@ -148,6 +159,8 @@ task_create() {
 # $1: container-name
 task_build() {
 	case "$1" in
+		acceptance)
+			build_container $1 "./test-server/";;
 		db)
 			build_container $1 "./db-server/";;
 		data) 
@@ -157,12 +170,14 @@ task_build() {
 		ping)
 			build_container $1 "./gw2-ping/";;
 		*)
-			echo "Supported build: {server|db|data|ping}";;
+			echo "Supported build: {acceptance|server|db|data|ping}";;
 	esac
 }
 
 task_remove() {
 	case "$1" in
+		acceptance)
+			remove_container $1;;
 		db)
 			remove_container $1;;
 		data) 
@@ -172,7 +187,7 @@ task_remove() {
 		ping)
 			remove_container $1;;
 		*)
-			echo "Supported removes: {server|db|data|ping}";;
+			echo "Supported removes: {acceptance|server|db|data|ping}";;
 	esac
 }
 
@@ -213,8 +228,10 @@ case "$1" in
 	clean)
 		task_clean $2;;
 	servedev)
-		task_serve_dev $2;;
+		task_serve_dev;;
+	acceptance)
+		task_acceptance;;
 	*)
-		echo "Available tasks: {run|serve|remove|clean|create|build|servedev}"
+		echo "Available tasks: {acceptance|run|serve|remove|clean|create|build|servedev}"
 		exit 1;;
 esac
