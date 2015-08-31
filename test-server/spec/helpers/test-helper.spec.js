@@ -10,4 +10,12 @@ describe('test helper', function () {
 	it('should expose getRandomString()', function () {
 		expect(getRandomString()).toBeDefined();
 	});
+
+	it('should expose getRandomEmail()', function () {
+		expect(getRandomEmail()).toBeDefined();
+	});
+
+	it('should expose strong pass', function () {
+		expect(strongPass).toBe('1mReallyStrongM@n!');
+	});
 });

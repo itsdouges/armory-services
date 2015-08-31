@@ -47,7 +47,7 @@ function UserResource(server, controller) {
 			alias: req.params.alias,
 			email: req.params.email,
 			password: req.params.password,
-			gw2_api_tokens: req.params.gw2_api_tokens
+			gw2ApiTokens: req.params.gw2ApiTokens
 		};
 
 		controller

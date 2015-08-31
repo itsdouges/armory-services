@@ -48,7 +48,7 @@ function UsersResource(models, Validator, gw2Api) {
 			rules: {
 				email: ['required', 'unique-email', 'no-white-space'],
 				password: ['required', 'password', 'no-white-space'],
-				gw2ApiTokens: ['valid-gw2-token', 'no-white-space']
+				gw2ApiTokens: ['valid-gw2-token', 'no-white-space'] // TODO: UPDATE VALIDATOR TO HANDLE ARRAYS!
 			}
 		}).addResource({
 			name: 'users',
@@ -96,10 +96,7 @@ function UsersResource(models, Validator, gw2Api) {
 		var addApiToken = function (token) {
 			return models
 				.Gw2ApiToken
-				.create(token)
-				.then(function (e) {
-					return;
-				});
+				.create(token);
 		};
 
 		var loadInitialCharacters = function (token, userId) {
@@ -132,6 +129,7 @@ function UsersResource(models, Validator, gw2Api) {
 				where: {
 					email: email
 				}
+				// TODO: Bring back all gw2 api tokens.
 			})
 			.then(function (data) {
 				return data.dataValues;
