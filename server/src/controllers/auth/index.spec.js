@@ -19,7 +19,9 @@ describe('auth controller', function () {
 		});
 
 		sut = Controller(models, {
-			secret: 'secret'
+			jwt_tokens: {
+				secret: 'secret'
+			}
 		});
 	});
 

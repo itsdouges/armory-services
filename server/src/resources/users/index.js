@@ -6,7 +6,7 @@ var RESOURCE = Object.freeze({
 	post: '/users'
 });
 
-function UserResource(server) {
+function UserResource(server, controller) {
 	server.get(RESOURCE.get, function (req, res) {
     if (!req.username) {
         return res.sendUnauthenticated();
@@ -14,11 +14,8 @@ function UserResource(server) {
 
 		controller
 			.read(req.username)
-			.then(function () {
-				res.send(200);
-				return next();
-			}, function (e) {
-				res.send(404);
+			.then(function (data) {
+				res.send(200, data);
 				return next();
 			});
 	});
@@ -28,27 +25,29 @@ function UserResource(server) {
         return res.sendUnauthenticated();
     }
 
+    var user = {
+    	email: req.username,
+    	password: req.params.password,
+    	currentPassword: req.params.currentPassword
+    };
+
 		controller
-			.update(req.username)
+			.update(user)
 			.then(function () {
 				res.send(200);
 				return next();
 			}, function (e) {
-				res.send(404);
+				res.send(400, e);
 				return next();
 			});
 	});
 
 	server.post(RESOURCE.post, function (req, res) {
-    if (!req.username) {
-        return res.sendUnauthenticated();
-    }
-
 		var user = {
 			alias: req.params.alias,
 			email: req.params.email,
 			password: req.params.password,
-			gw2ApiToken: req.params.gw2ApiToken
+			gw2_api_tokens: req.params.gw2_api_tokens
 		};
 
 		controller

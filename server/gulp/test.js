@@ -1,6 +1,16 @@
 var gulp = require('gulp'),
 	jasmine = require('gulp-jasmine'),
-	config = require('./config.json');
+	config = require('./config.json'),
+	runSequence = require('run-sequence');
+
+/**
+ * Run all tests
+ */
+gulp.task('test', function (cb) {
+	runSequence('test:unit', 
+		'test:int', 
+		cb);
+});
 
 /**
  * Run test once and exit

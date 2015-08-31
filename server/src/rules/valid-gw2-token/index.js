@@ -23,6 +23,7 @@ function validGw2Token(name, object, dependencies) {
 		});
 
 		function checkGw2Api(token) {
+			// TODO: Put retry logic here incase the call fails.
 			return dependencies.axios.get(dependencies.env.gw2.endpoint + 'v2/tokeninfo', {
 					headers: {
 						'Authorization' : 'Bearer ' + token

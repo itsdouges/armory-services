@@ -11,5 +11,9 @@
 	"port": "8082",
 	"gw2": {
 		"endpoint": "https://api.guildwars2.com/"
+	},
+	"jwt_tokens": {
+		"secret": "im-secret",
+		"expires_in": 60
 	}
 }

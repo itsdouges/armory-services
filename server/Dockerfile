@@ -5,13 +5,17 @@ LABEL Description="Server container for api.armory.net.au"
 
 WORKDIR /opt
 
-RUN npm install -g gulp
+RUN ["npm", "install", "-g", "gulp"]
 
 COPY package.json /opt/package.json
-RUN npm install
+RUN ["npm", "install"]
 
 COPY gulpfile.js /opt/gulpfile.js
-COPY /src /opt/src
+COPY /gulp /opt/gulp
 COPY /env /opt/env
+COPY /spec /opt/spec
+COPY /src /opt/src
 
-ENTRYPOINT ["node", "src/run"]
+RUN ["npm", "test"]
+
+ENTRYPOINT ["npm", "start"]

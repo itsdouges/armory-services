@@ -21,11 +21,13 @@ function Server(models, config) {
 			func: require('./rules/valid-gw2-token'),
 			dependencies: {
 				axios: axios,
-				models: models
+				models: models,
+				env: config
 			}
 		}).addRule({
 			name: 'unique-email',
 			func: require('./rules/unique-email'),
+			inherits: 'email',
 			dependencies: {
 				models: models
 			}
@@ -37,7 +39,7 @@ function Server(models, config) {
 	var gw2Tokens = new Gw2TokenController(models, GottaValidate, gw2Api);
 	var characters = new CharacterController(models, gw2Api);
 	var checks = new CheckController(GottaValidate);
-	var auths = AuthController(models);
+	var auths = AuthController(models, config);
 
 	var server = restify.createServer({
 	    name: "api.armory.net.au",
@@ -49,11 +51,13 @@ function Server(models, config) {
 
 	restifyOAuth2.ropc(server, {
 		tokenEndpoint: '/token', 
-	  hooks: AuthController(models, config),
-	  tokenExpirationTime: 60
+	  hooks: auths,
+	  tokenExpirationTime: config.jwt_tokens.expires_in
 	});
 
 	require('./resources')(server);
+	require('./resources/users')(server, users);
+	require('./resources/users/check')(server, checks);
 
 	return server;
 }

@@ -55,7 +55,7 @@ describe('user resource', function () {
 				rules: {
 					email: ['required', 'unique-email', 'no-white-space'],
 					password: ['required', 'password', 'no-white-space'],
-					gw2_api_tokens: ['valid-gw2-token', 'no-white-space']
+					gw2ApiTokens: ['valid-gw2-token', 'no-white-space']
 				}
 			});
 		});
@@ -67,7 +67,7 @@ describe('user resource', function () {
 				name: 'users',
 				mode: 'update',
 				rules: {
-					id: 'required',
+					email: 'required',
 					currentPassword: ['required'],
 					password: ['required', 'password', 'no-white-space']
 				}
@@ -199,7 +199,7 @@ describe('user resource', function () {
 			var user = {
 				email: 'cool@email.com',
 				password: 'password',
-				gw2_api_tokens: [{
+				gw2ApiTokens: [{
 					token: 'haha'
 				}, 
 				{

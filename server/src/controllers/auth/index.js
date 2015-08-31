@@ -39,7 +39,7 @@ function AuthController(models, config) {
     function generateToken (data) {
         var random = Math.floor(Math.random() * 100001);
         var timestamp = (new Date()).getTime();
-        var sha256 = crypto.createHmac('sha256', random + config.secret + timestamp);
+        var sha256 = crypto.createHmac('sha256', random + config.jwt_tokens.secret + timestamp);
 
         return sha256.update(data).digest('base64');
     }

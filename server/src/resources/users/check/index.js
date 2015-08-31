@@ -5,9 +5,9 @@ var RESOURCE = Object.freeze({
     email_endpoint: "/users/check/email/:email"
 });
 
-function CheckResource(server) {
-	server.get(RESOURCES.token_endpoint, function (req, res) {
-		checkResource
+function CheckResource(server, controller) {
+	server.get(RESOURCE.token_endpoint, function (req, res) {
+		controller
 			.gw2Token({
 				token: req.params.token
 			})
@@ -20,8 +20,8 @@ function CheckResource(server) {
 			});
 	});
 
-	server.get(RESOURCES.email_endpoint, function (req, res) {
-		checkResource
+	server.get(RESOURCE.email_endpoint, function (req, res) {
+		controller
 			.email({
 				email: req.params.email
 			})

@@ -4,13 +4,13 @@ var RESOURCE = Object.freeze({
 	endpoint: '/users/gw2-token'
 });
 
-function Gw2TokenResource(server) {
+function Gw2TokenResource(server, controller) {
 	server.post(RESOURCE.endpoint, function (req, res) {
     if (!req.username) {
         return res.sendUnauthenticated();
     }
 		
-		checkResource
+		controller
 			.create({
 				token: req.params.token
 			})
@@ -28,7 +28,7 @@ function Gw2TokenResource(server) {
         return res.sendUnauthenticated();
     }
 		
-		checkResource
+		controller
 			.delete({
 				token: req.params.token
 			})

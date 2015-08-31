@@ -48,13 +48,13 @@ function UsersResource(models, Validator, gw2Api) {
 			rules: {
 				email: ['required', 'unique-email', 'no-white-space'],
 				password: ['required', 'password', 'no-white-space'],
-				gw2_api_tokens: ['valid-gw2-token', 'no-white-space']
+				gw2ApiTokens: ['valid-gw2-token', 'no-white-space']
 			}
 		}).addResource({
 			name: 'users',
 			mode: 'update',
 			rules: {
-				id: 'required',
+				email: 'required',
 				currentPassword: ['required'],
 				password: ['required', 'password', 'no-white-space']
 			}
@@ -74,13 +74,11 @@ function UsersResource(models, Validator, gw2Api) {
 			return models.User
 				.create(user)
 				.then(function (e) {
-					
-					
-					if (!user.gw2_api_tokens) {
+					if (!user.gw2ApiTokens) {
 						return;
 					}
 
-					user.gw2_api_tokens.forEach(function (token) {
+					user.gw2ApiTokens.forEach(function (token) {
 						promise.then(function () {
 								return gw2Api
 									.readAccount(token.token)

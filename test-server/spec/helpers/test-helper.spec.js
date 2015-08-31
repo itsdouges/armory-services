@@ -6,4 +6,8 @@ describe('test helper', function () {
 	it('should expose frisby', function () {
 		expect(frisby).toBeDefined();
 	});
+
+	it('should expose getRandomString()', function () {
+		expect(getRandomString()).toBeDefined();
+	});
 });

@@ -45,8 +45,6 @@ task_serve_dev() {
 }
 
 task_acceptance() {
-	task_serve
-
 	task_build acceptance
 	remove_container acceptance
 	task_run acceptance
@@ -120,7 +118,6 @@ run_container() {
 	echo "Running $1.."
 
 	docker run \
-		-d \
 		$2 \
 		--name "armory-$1" \
 		"armory/$1:latest"
