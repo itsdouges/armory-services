@@ -199,12 +199,10 @@ describe('user resource', function () {
 			var user = {
 				email: 'cool@email.com',
 				password: 'password',
-				gw2ApiTokens: [{
-					token: 'haha'
-				}, 
-				{
-					token: 'nahhman'
-				}]
+				gw2ApiTokens: [
+					'haha',
+					'nahhman'
+				]
 			};
 
 			var defer = q.defer();

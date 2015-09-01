@@ -7,7 +7,7 @@ var RESOURCE = Object.freeze({
 });
 
 function UserResource(server, controller) {
-	server.get(RESOURCE.get, function (req, res) {
+	server.get(RESOURCE.get, function (req, res, next) {
     if (!req.username) {
         return res.sendUnauthenticated();
     }
@@ -20,7 +20,7 @@ function UserResource(server, controller) {
 			});
 	});
 
-	server.put(RESOURCE.put, function (req, res) {
+	server.put(RESOURCE.put, function (req, res, next) {
     if (!req.username) {
         return res.sendUnauthenticated();
     }
@@ -42,7 +42,7 @@ function UserResource(server, controller) {
 			});
 	});
 
-	server.post(RESOURCE.post, function (req, res) {
+	server.post(RESOURCE.post, function (req, res, next) {
 		var user = {
 			alias: req.params.alias,
 			email: req.params.email,

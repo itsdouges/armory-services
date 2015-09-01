@@ -33,7 +33,7 @@ describe('gw2 token validator', function () {
 	});
 
 	it('should resolve if item isnt found in object', function (done) {
-		token('token', {})
+		token('token', undefined)
 			.then(function () {
 				done();
 			});
@@ -43,7 +43,7 @@ describe('gw2 token validator', function () {
 		var defer = q.defer();
 		spyOn(mockAxios, 'get').and.returnValue(defer.promise);
 
-		token('token', { token: 'ee' }, { 
+		token('token', 'ee', { 
 			axios: mockAxios,
 			env: mockEnv,
 			models: models
@@ -73,7 +73,7 @@ describe('gw2 token validator', function () {
 		var defer = q.defer();
 		spyOn(mockAxios, 'get').and.returnValue(defer.promise);
 
-		token('token', { token: 'ee' }, { 
+		token('token', 'ee', { 
 			axios: mockAxios,
 			env: mockEnv,
 			models: models
@@ -110,7 +110,7 @@ describe('gw2 token validator', function () {
 						UserId: e.id
 					})
 					.then(function (e) {
-						token('token', { token: 'ee' }, { 
+						token('token', 'ee', { 
 							axios: mockAxios,
 							env: mockEnv,
 							models: models
@@ -130,7 +130,7 @@ describe('gw2 token validator', function () {
 		var defer = q.defer();
 		spyOn(mockAxios, 'get').and.returnValue(defer.promise);
 
-		token('token', { token: 'ee' }, { 
+		token('token', 'ee', { 
 			axios: mockAxios,
 			env: mockEnv,
 			models: models

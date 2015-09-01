@@ -2,15 +2,14 @@
 
 var q = require('q');
 
-function validGw2Token(name, object, dependencies) {
-	var token = object[name];
-	if (!token) {
+function validGw2Token(name, val, dependencies) {
+	if (!val) {
 		return q.resolve();
 	}
 
 	var promise = dependencies.models
 		.Gw2ApiToken
-		.findOne({ where: { token: token }})
+		.findOne({ where: { token: val }})
 		.then(function (item) {
 			if (item) {
 				return {
@@ -19,7 +18,7 @@ function validGw2Token(name, object, dependencies) {
 				};
 			}
 			
-			return checkGw2Api(token);
+			return checkGw2Api(val);
 		});
 
 		function checkGw2Api(token) {

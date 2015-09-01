@@ -48,7 +48,7 @@ function UsersResource(models, Validator, gw2Api) {
 			rules: {
 				email: ['required', 'unique-email', 'no-white-space'],
 				password: ['required', 'password', 'no-white-space'],
-				gw2ApiTokens: ['valid-gw2-token', 'no-white-space'] // TODO: UPDATE VALIDATOR TO HANDLE ARRAYS!
+				gw2ApiTokens: ['valid-gw2-token', 'no-white-space']
 			}
 		}).addResource({
 			name: 'users',
@@ -81,12 +81,15 @@ function UsersResource(models, Validator, gw2Api) {
 					user.gw2ApiTokens.forEach(function (token) {
 						promise.then(function () {
 								return gw2Api
-									.readAccount(token.token)
+									.readAccount(token)
 									.then(function (account) {
-										token.accountName = account.name;
-										token.UserId = e.id;
+										var tokenItem = {
+											token: token,
+											accountName: account.name,
+											UserId: e.id
+										};
 
-										return addApiToken(token);
+										return addApiToken(tokenItem);
 									});
 						});
 					});

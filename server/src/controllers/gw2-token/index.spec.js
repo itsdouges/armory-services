@@ -54,7 +54,10 @@ describe('gw2 token controller', function () {
 		systemUnderTest
 			.add('1234', 'token')
 			.then(null, function (e) {
-				expect(mocks.validate).toHaveBeenCalledWith('token');
+				expect(mocks.validate).toHaveBeenCalledWith({
+					token: 'token'
+				});
+				
 				expect(e).toBe('failed');
 
 				done();
@@ -79,7 +82,7 @@ describe('gw2 token controller', function () {
 			})
 			.then(function (e) {
 				systemUnderTest
-					.add(e.id, 'token')
+					.add('cool@email.com', 'token')
 					.then(function (res) {
 						expect(res).toBe(undefined);
 
@@ -123,7 +126,7 @@ describe('gw2 token controller', function () {
 			})
 			.then(function (e) {
 				systemUnderTest
-					.add(e.id, 'token')
+					.add('cool@email.com', 'token')
 					.then(function (res) {
 						expect(res).toBe(undefined);
 
@@ -139,7 +142,7 @@ describe('gw2 token controller', function () {
 								expect(result.accountName).toBe('nameee');
 
 								systemUnderTest
-									.remove(e.id, 'token')
+									.remove('cool@email.com', 'token')
 									.then(function (rez) {
 										expect(rez).toBe(1);
 

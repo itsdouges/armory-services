@@ -13,45 +13,63 @@ function Gw2TokenController(models, Validator, gw2Api) {
 
 	// TODO: Clean up messy async code.
 
-	Gw2TokenController.prototype.add = function (id, token) {
-		function addTokenToUser(id, token) {
-			gw2Api
-				.readAccount(token)
+	Gw2TokenController.prototype.add = function (email, token) {
+		function addTokenToUser(id, gw2Token) {
+			return gw2Api
+				.readAccount(gw2Token)
 				.then(function (account) {
-					// TODO: This logic is duplicated in user resource. Make it better.
-					models.Gw2ApiToken
+					models
+						.Gw2ApiToken
 						.create({
-							token: token,
+							token: gw2Token,
 							UserId: id,
 							accountName: account.name
-						}).then(function () {
-							return;
 						});
 				});
 		}
 
 		var validator = Validator({
-			resource: 'users',
-			mode: 'update-gw2-token'
+			resource: 'gw2-token',
+			mode: 'add'
 		});
 
-		var promise = validator
-			.validate(token);
-
-			promise.then(function () {
-				addTokenToUser(id, token);
+		return validator
+			.validate({
+				token: token
+			})
+			.then(function () {
+				return models.User.findOne({
+					where: {
+						email: email
+					}
+				}).then(function (user) {
+					return user.id;
+				})
+			})
+			.then(function (id) {
+				return addTokenToUser(id, token);
 			});
-
-		return promise;
 	};
 
-	Gw2TokenController.prototype.remove = function (id, token) {
-		return models.Gw2ApiToken
-			.destroy({
+	Gw2TokenController.prototype.remove = function (email, token) {
+		return models
+			.User
+			.findOne({
 				where: {
-					UserId: id,
-					token: token
+					email: email
 				}
+			})
+			.then(function (user) {
+				return user.id;
+			})
+			.then(function (id) {
+				return models.Gw2ApiToken
+					.destroy({
+						where: {
+							UserId: id,
+							token: token
+						}
+					});
 			});
 	};
 }

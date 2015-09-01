@@ -6,7 +6,7 @@ var RESOURCE = Object.freeze({
 });
 
 function CheckResource(server, controller) {
-	server.get(RESOURCE.token_endpoint, function (req, res) {
+	server.get(RESOURCE.token_endpoint, function (req, res, next) {
 		controller
 			.gw2Token({
 				token: req.params.token
@@ -20,7 +20,7 @@ function CheckResource(server, controller) {
 			});
 	});
 
-	server.get(RESOURCE.email_endpoint, function (req, res) {
+	server.get(RESOURCE.email_endpoint, function (req, res, next) {
 		controller
 			.email({
 				email: req.params.email

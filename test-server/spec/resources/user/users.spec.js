@@ -76,6 +76,11 @@ frisby.create('POST user with good body')
 
 				var token = response.token_type + ' ' + response.access_token;
 
+				// TODO:
+				// gw2token taken create test
+				// gw2token delete test
+				// gw2token doesnt exist delete test (should return 200 #idempotent)
+
 				frisby.create('GET user resource with token')
 					.get(API_ENDPOINT + 'users/me')
 					.addHeader('Authorization', token)

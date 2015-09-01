@@ -16,7 +16,7 @@ describe('gw2 token validator', function () {
 	});
 	
 	it('should call real endpoint and resolve', function (done) {
-		token('token', { token: '3990C73C-18C1-6345-9184-1F99E1FF1F94F74DBE68-D2A7-4C32-908D-4AA1E513B39A' }, { 
+		token('token', '3990C73C-18C1-6345-9184-1F99E1FF1F94F74DBE68-D2A7-4C32-908D-4AA1E513B39A', { 
 			axios: axios,
 			env: {
 				gw2: {
@@ -31,7 +31,7 @@ describe('gw2 token validator', function () {
 	});
 
 	it('should call real endpoint and resolve error', function (done) {
-		token('token', { token: 'invalid' }, { 
+		token('token', 'invalid', { 
 			axios: axios,
 			env: {
 				gw2: {

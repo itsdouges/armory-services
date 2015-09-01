@@ -15,9 +15,7 @@ describe('unique email rule', function () {
 	});
 
 	it('should resolve if email is not found', function (done) {
-		uniqueEmail('email', {
-			nah: 'cool@email.com'
-		}, {
+		uniqueEmail('email', 'cool@email.com', {
 			models: models
 		})
 		.then(function () {
@@ -26,9 +24,7 @@ describe('unique email rule', function () {
 	});
 
 	it('should resolve if email is unique', function (done) {
-		uniqueEmail('email', {
-			email: 'cool@email.com!!'
-		}, {
+		uniqueEmail('email', 'cool@email.com!!', {
 			models: models
 		})
 		.then(function () {
@@ -44,9 +40,7 @@ describe('unique email rule', function () {
 				alias: 'swagn'
 			})
 		.then(function () {
-			uniqueEmail('email', {
-				email: 'cool@email.com'
-			}, {
+			uniqueEmail('email', 'cool@email.com', {
 				models: models
 			})
 			.then(function (e) {

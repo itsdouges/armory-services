@@ -1,19 +1,18 @@
 'use strict';
 
 var RESOURCE = Object.freeze({
-	endpoint: '/users/gw2-token'
+	post: '/users/me/gw2-token',
+	del: '/users/me/gw2-token/:token'
 });
 
 function Gw2TokenResource(server, controller) {
-	server.post(RESOURCE.endpoint, function (req, res) {
+	server.post(RESOURCE.post, function (req, res, next) {
     if (!req.username) {
         return res.sendUnauthenticated();
     }
 		
 		controller
-			.create({
-				token: req.params.token
-			})
+			.add(req.username, req.params.token)
 			.then(function () {
 				res.send(200);
 				return next();
@@ -23,15 +22,13 @@ function Gw2TokenResource(server, controller) {
 			});
 	});
 
-	server.delete(RESOURCE.endpoint, function (req, res) {
+	server.del(RESOURCE.del, function (req, res, next) {
     if (!req.username) {
         return res.sendUnauthenticated();
     }
 		
 		controller
-			.delete({
-				token: req.params.token
-			})
+			.remove(req.username, req.params.token)
 			.then(function () {
 				res.send(200);
 				return next();

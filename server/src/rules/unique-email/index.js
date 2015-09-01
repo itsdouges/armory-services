@@ -1,8 +1,7 @@
 var q = require('q');
 
-function uniqueEmail(name, object, dependencies) {
-	var email = object[name];
-	if (!email) {
+function uniqueEmail(name, val, dependencies) {
+	if (!val) {
 		return q.resolve();
 	}
 
@@ -11,7 +10,7 @@ function uniqueEmail(name, object, dependencies) {
 	}
 
 	var promise = dependencies.models.User
-		.findOne({ where: { email: email }})
+		.findOne({ where: { email: val }})
 		.then(function (item) {
 			if (item) {
 				return {
