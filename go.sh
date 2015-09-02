@@ -222,8 +222,8 @@ task_copy_env() {
 task_copy_db_models() {
 	echo "Copying db-models to gw2-ping and server.."
 
-	cp -r db-models/ gw2-ping/models/
-	cp -r db-models/ server/models/
+	cp -r db-models/ gw2-ping/src/models/
+	cp -r db-models/ server/src/models/
 }
 
 # $1: task
