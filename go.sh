@@ -8,6 +8,9 @@
 # host machine.
 ##
 task_serve() {
+	task_copy_env
+	task_copy_db_models
+
 	echo "Starting api.armory.com.."
 	
 	task_build data
@@ -207,6 +210,20 @@ task_clean() {
 task_exited() {
 	echo "Cleaning up exited containers.."
 	docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs docker rm
+}
+
+task_copy_env() {
+	echo "Copying env to gw2-ping and server.."
+
+	cp -r environment/ gw2-ping/env/
+	cp -r environment/ server/env/
+}
+
+task_copy_db_models() {
+	echo "Copying db-models to gw2-ping and server.."
+
+	cp -r db-models/ gw2-ping/models/
+	cp -r db-models/ server/models/
 }
 
 # $1: task

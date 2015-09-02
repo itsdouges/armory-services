@@ -20,6 +20,7 @@ module.exports = function(sequelize, DataTypes) {
 			type: DataTypes.STRING,
 			required: true,
 			field: 'email',
+			unique: true,
 			allowNull: false
 		},
 		passwordHash: {
