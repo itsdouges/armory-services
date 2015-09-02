@@ -107,6 +107,7 @@ describe('gw2 token validator', function () {
 					.create({
 						token: 'ee', 
 						accountName: 'madou.1234', 
+						accountId: 'ahh',
 						UserId: e.id
 					})
 					.then(function (e) {

@@ -1,28 +1,49 @@
 'use strict';
 
+// NOTE: THIS IS A COPIED FILE FROM db-models!
+
 module.exports = function(sequelize, DataTypes) {
   var Gw2Character = sequelize.define("Gw2Character", {
-  	name: {
-  		field: 'name',
-  		type: DataTypes.STRING,
+    name: {
+      field: 'name',
+      type: DataTypes.STRING,
       allowNull: false,
-  		primaryKey: true
-  	},
+      primaryKey: true
+    },
     race: {
       field: 'race',
+      allowNull: false,
       type: DataTypes.STRING
     },
     gender: {
       field: 'gender',
+      allowNull: false,
       type: DataTypes.STRING
     },
     profession: {
       field: 'profession',
+      allowNull: false,
       type: DataTypes.STRING
     },
     level: {
       field: 'level',
-      type: DataTypes.STRING
+      allowNull: false,
+      type: DataTypes.INTEGER
+    },
+    created: {
+      field: 'created',
+      allowNull: false,
+      type: DataTypes.DATE
+    },
+    age: {
+      field: 'created',
+      allowNull: false,
+      type: DataTypes.INTEGER
+    },
+    deaths: {
+      field: 'deaths',
+      allowNull: false,
+      type: DataTypes.INTEGER
     },
     guild: {
       field: 'guild',
@@ -62,7 +83,10 @@ module.exports = function(sequelize, DataTypes) {
     classMethods: {
       associate: function(models) {
         Gw2Character.belongsTo(models.Gw2ApiToken, {
-          onDelete: "CASCADE"
+          onDelete: "CASCADE",
+           foreignKey: { 
+            allowNull: false 
+          }
         });
       }
     }

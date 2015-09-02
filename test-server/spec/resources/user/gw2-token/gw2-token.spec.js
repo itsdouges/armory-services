@@ -60,7 +60,8 @@ frisby.create('POST user with good body')
 						 * I want to add the same token to my accout
 						 * And be told that I'm not allowed to
 						 */
-						frisby.create('POST gw2 api token')
+						// TODO: This is failing. Figure out why.
+						frisby.create('POST another gw2 api token that is already taken')
 							.addHeader('Authorization', token)
 							.post(API_ENDPOINT + 'users/me/gw2-token', {
 								token: gw2token

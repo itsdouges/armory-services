@@ -7,6 +7,8 @@ function validGw2Token(name, val, dependencies) {
 		return q.resolve();
 	}
 
+	// TODO: Add validation to check account id doesnt already exist!
+
 	var promise = dependencies.models
 		.Gw2ApiToken
 		.findOne({ where: { token: val }})

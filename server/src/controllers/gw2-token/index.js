@@ -23,6 +23,7 @@ function Gw2TokenController(models, Validator, gw2Api) {
 						.create({
 							token: gw2Token,
 							UserId: id,
+							accountId: account.id,
 							accountName: account.name
 						});
 				});

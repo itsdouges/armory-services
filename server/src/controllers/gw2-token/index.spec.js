@@ -96,7 +96,8 @@ describe('gw2 token controller', function () {
 								expect(result.token).toBe('token');
 								expect(result.UserId).toBe(e.id);
 								expect(result.accountName).toBe('nameee');
-
+								expect(result.accountId).toBe('eeee');
+								
 								done();
 							});
 					});
@@ -104,7 +105,8 @@ describe('gw2 token controller', function () {
 			defer.resolve();
 
 			accountDefer.resolve({
-				name: 'nameee'
+				name: 'nameee',
+				id: 'eeee',
 			});
 		});
 	});
@@ -140,6 +142,7 @@ describe('gw2 token controller', function () {
 								expect(result.token).toBe('token');
 								expect(result.UserId).toBe(e.id);
 								expect(result.accountName).toBe('nameee');
+								expect(result.accountId).toBe('aaaa');
 
 								systemUnderTest
 									.remove('cool@email.com', 'token')
@@ -163,7 +166,8 @@ describe('gw2 token controller', function () {
 			defer.resolve();
 
 			accountDefer.resolve({
-				name: 'nameee'
+				name: 'nameee',
+				id: 'aaaa',
 			});
 		});
 	});

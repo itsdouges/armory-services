@@ -140,10 +140,10 @@ task_run() {
 			run_container "server" "-p 8082:8082 --link armory-db:db --file=\"PATH/Dockerfile-dev\"";;
 		acceptance)
 			run_container $1;;
-		ping) 
+		fetch) 
 			run_daemon_container $1 "-p 8081:8081 --link armory-db:db";;
 		*)
-			echo "Supported run: {acceptance|db|ping|devserver|server}";;
+			echo "Supported run: {acceptance|db|fetch|devserver|server}";;
 	esac
 }
 
@@ -167,10 +167,10 @@ task_build() {
 			build_container $1 "./db-data/";;
 		server)
 			build_container $1 "./server/";;
-		ping)
-			build_container $1 "./gw2-ping/";;
+		fetch)
+			build_container $1 "./gw2-fetch/";;
 		*)
-			echo "Supported build: {acceptance|server|db|data|ping}";;
+			echo "Supported build: {acceptance|server|db|data|fetch}";;
 	esac
 }
 
@@ -184,10 +184,10 @@ task_remove() {
 			remove_container $1;;
 		server)
 			remove_container $1;;
-		ping)
+		fetch)
 			remove_container $1;;
 		*)
-			echo "Supported removes: {acceptance|server|db|data|ping}";;
+			echo "Supported removes: {acceptance|server|db|data|fetch}";;
 	esac
 }
 
@@ -213,29 +213,29 @@ task_exited() {
 }
 
 task_copy_env() {
-	echo "Copying env to gw2-ping and server.."
+	echo "Copying env to gw2-fetch and server.."
 
-	rm -r gw2-ping/env/
-	cp -r environment/ gw2-ping/env/
+	rm -r gw2-fetch/env/
+	cp -r environment/ gw2-fetch/env/
 
 	rm -r server/env/
 	cp -r environment/ server/env/
 }
 
 task_copy_db_models() {
-	echo "Copying db-models to gw2-ping and server.."
+	echo "Copying db-models to gw2-fetch and server.."
 
-	rm -r gw2-ping/src/models/
-	cp -r db-models/ gw2-ping/src/models/
+	rm -r gw2-fetch/src/models/
+	cp -r db-models/ gw2-fetch/src/models/
 
 	rm -r server/src/models/
 	cp -r db-models/ server/src/models/
 }
 
-task_run_ping() {
-	task_build ping
-	remove_container ping
-	task_run ping
+task_run_fetch() {
+	task_build fetch
+	remove_container fetch
+	task_run fetch
 }
 
 # $1: task
@@ -257,9 +257,12 @@ case "$1" in
 		task_serve_dev;;
 	acceptance)
 		task_acceptance;;
-	ping) 
-		task_run_ping;;
+	fetch) 
+		task_run_fetch;;
+	copy)
+		task_copy_env
+		task_copy_db_models;;
 	*)
-		echo "Available tasks: {acceptance|ping|run|serve|remove|clean|create|build|servedev}"
+		echo "Available tasks: {acceptance|copy|fetch|run|serve|remove|clean|create|build|servedev}"
 		exit 1;;
 esac

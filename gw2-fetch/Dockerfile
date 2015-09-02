@@ -2,7 +2,7 @@ FROM node:0.12.7
 
 MAINTAINER madou <laheen@gmail.com>
 
-LABEL Description="Gw2 ping container for api.armory.net.au"
+LABEL Description="Gw2 fetch container for api.armory.net.au"
 
 WORKDIR /opt
 

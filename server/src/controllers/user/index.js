@@ -86,6 +86,7 @@ function UsersResource(models, Validator, gw2Api) {
 										var tokenItem = {
 											token: token,
 											accountName: account.name,
+											accountId: account.id,
 											UserId: e.id
 										};
 

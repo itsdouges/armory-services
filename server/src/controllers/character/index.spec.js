@@ -61,6 +61,7 @@ describe('character controller', function () {
 					.create({
 						token: 'swag',
 						accountName: 'nameyname',
+						accountId: 'haah',
 						UserId: data.id
 					});
 			})
@@ -69,7 +70,14 @@ describe('character controller', function () {
 					.Gw2Character
 					.create({
 						Gw2ApiTokenToken: 'swag',
-						name: 'blastrn'
+						name: 'blastrn',
+						gender: 'ay',
+						profession: 'hehe',
+						level: 123,
+						created: new Date(),
+						age: 1,
+						race: 'ay',
+						deaths: 1
 					});
 			})
 			.then(function () {
@@ -120,6 +128,7 @@ describe('character controller', function () {
 					.create({
 						token: 'swag',
 						accountName: 'nameyname',
+						accountId: 'aaaa',
 						UserId: data.id
 					});
 			})
@@ -128,7 +137,14 @@ describe('character controller', function () {
 					.Gw2Character
 					.create({
 						Gw2ApiTokenToken: 'swag',
-						name: 'blastrn'
+						name: 'blastrn',
+						gender: 'ay',
+						profession: 'hehe',
+						level: 123,
+						created: new Date(),
+						age: 1,
+						race: 'ay',
+						deaths: 1
 					});
 			})
 			.then(function () {

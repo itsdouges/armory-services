@@ -240,9 +240,11 @@ describe('user resource', function () {
 							expect(e.email).toBe(user.email);
 							expect(e.gw2_api_tokens[0].token).toBe('haha');
 							expect(e.gw2_api_tokens[0].accountName).toBe('cool name.1234');
+							expect(e.gw2_api_tokens[0].accountId).toBe('ahh');
 							expect(e.gw2_api_tokens[0].UserId).toBe(e.id);
 							expect(e.gw2_api_tokens[1].token).toBe('nahhman');
 							expect(e.gw2_api_tokens[1].accountName).toBe('cool name.4321');
+							expect(e.gw2_api_tokens[1].accountId).toBe('eee');
 							expect(e.gw2_api_tokens[1].UserId).toBe(e.id);
 
 							expect(e.passwordHash).toBe(user.passwordHash);
@@ -254,11 +256,13 @@ describe('user resource', function () {
 
 			defer.resolve();
 			accountNameDefer.resolve({
-				name: 'cool name.1234'
+				name: 'cool name.1234',
+				id: 'ahh'
 			});
 
 			accountName2Defer.resolve({
-				name: 'cool name.4321'
+				name: 'cool name.4321',
+				id: 'eee'
 			});
 		});
 	});

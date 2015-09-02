@@ -1,5 +1,7 @@
 "use strict";
 
+// NOTE: THIS IS A COPIED FILE FROM db-models!
+
 var fs = require("fs");
 var path = require("path");
 
