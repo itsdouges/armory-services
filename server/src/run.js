@@ -2,8 +2,7 @@ var Models = require("./models");
 var Server = require('./server');
 var Sequelize = require("sequelize");
 
-var env = process.env.ENVIRONMENT || 'dev';
-var config = require(__dirname + '/../env/' + env + '.json');
+var config = require(__dirname + '/../env/env_config');
 config.db.options.host = process.env[config.db.options.host_env_name];
 
 console.log('Connecting to mysql host: ' + config.db.options.host);
@@ -13,6 +12,6 @@ var server = Server(models, config);
 
 console.log('Syncing sequelize models..');
 models.sequelize.sync().then(function () {
-	console.log('Starting server on port ' + config.port + '..');
-  	server.listen(config.port);
+	console.log('Starting server on port ' + config.server.port + '..');
+  	server.listen(config.server.port);
 });

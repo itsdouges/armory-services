@@ -2,14 +2,17 @@ FROM node:0.12.7
 
 MAINTAINER madou <laheen@gmail.com>
 
-LABEL Description="User ping container for api.armory.net.au"
-
-ADD package.json /tmp/package.json
-RUN cd /tmp && npm install
-RUN mkdir -p /opt/app && cp -a /tmp/node_modules /opt/app/ && cp -a /tmp/package.json /opt/package.json
-
-COPY /src /opt/app
+LABEL Description="Gw2 ping container for api.armory.net.au"
 
 WORKDIR /opt
 
-ENTRYPOINT ["node", "app/runner.js"]
+COPY package.json /opt/package.json
+RUN ["npm", "install"]
+
+COPY /env /opt/env
+COPY /spec /opt/spec
+COPY /src /opt/src
+
+RUN ["npm", "test"]
+
+ENTRYPOINT ["npm", "start"]

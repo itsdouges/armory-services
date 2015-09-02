@@ -141,7 +141,7 @@ task_run() {
 		acceptance)
 			run_container $1;;
 		ping) 
-			run_daemon_container $1 "-p 8081:8081";;
+			run_daemon_container $1 "-p 8081:8081 --link armory-db:db";;
 		*)
 			echo "Supported run: {acceptance|db|ping|devserver|server}";;
 	esac
@@ -215,15 +215,27 @@ task_exited() {
 task_copy_env() {
 	echo "Copying env to gw2-ping and server.."
 
+	rm -r gw2-ping/env/
 	cp -r environment/ gw2-ping/env/
+
+	rm -r server/env/
 	cp -r environment/ server/env/
 }
 
 task_copy_db_models() {
 	echo "Copying db-models to gw2-ping and server.."
 
+	rm -r gw2-ping/src/models/
 	cp -r db-models/ gw2-ping/src/models/
+
+	rm -r server/src/models/
 	cp -r db-models/ server/src/models/
+}
+
+task_run_ping() {
+	task_build ping
+	remove_container ping
+	task_run ping
 }
 
 # $1: task
@@ -245,7 +257,9 @@ case "$1" in
 		task_serve_dev;;
 	acceptance)
 		task_acceptance;;
+	ping) 
+		task_run_ping;;
 	*)
-		echo "Available tasks: {acceptance|run|serve|remove|clean|create|build|servedev}"
+		echo "Available tasks: {acceptance|ping|run|serve|remove|clean|create|build|servedev}"
 		exit 1;;
 esac
