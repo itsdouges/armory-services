@@ -3,8 +3,6 @@
 var q = require('q');
 
 function fetchCharacters (endpoint, token, axios, models) {
-	console.log(endpoint + 'v2/characters?page=0&page_size=200');
-
 	return axios.get(endpoint + 'v2/characters?page=0&page_size=200', {
 			headers: {
 				'Authorization' : 'Bearer ' + token

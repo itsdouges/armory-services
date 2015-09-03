@@ -21,7 +21,7 @@ module.exports = {
 		},
 		ping: {
 			port: "8081",
-			interval: 60,
+			interval: 600000,
 			retries: 5,
 			verbose: true
 		}

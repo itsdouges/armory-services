@@ -3,11 +3,11 @@ Copyright (c) 2015 Michael Dougall
 #TODO iteration 1:
 
 ## gw2-fetch
-- token invalidation
-- character name change/deletion
+- handle token invalidation
+- handle character name change/deletion edge case
 - error handling (401/402/500)
-- unit tests
-- int tests
+- update unit tests
+- implement int tests
 - create endpoint to immediately fetch user details and store to db
 
 ## token validator

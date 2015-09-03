@@ -54,8 +54,6 @@ function PingController(env, axios, models, fetchGw2) {
 				});
 
 				return q.all(dbPromises);
-			}, function () {
-
 			});
 	};
 }
