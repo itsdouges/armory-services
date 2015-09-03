@@ -14,6 +14,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: 'account_name'
     },
+    // todo: save this to db when i can ;-)
+    world: {
+      type: DataTypes.STRING,
+      field: 'world'
+    },
     accountId: {
       type: DataTypes.STRING,
       allowNull: false,

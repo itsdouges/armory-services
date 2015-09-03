@@ -24,8 +24,8 @@ function validGw2Token(name, val, dependencies) {
 		});
 
 		function checkGw2Api(token) {
-			// TODO: Put retry logic here incase the call fails.
-			return dependencies.axios.get(dependencies.env.gw2.endpoint + 'v2/tokeninfo', {
+			// TODO: Put retry logic here incase the call fails
+			var authCheck = dependencies.axios.get(dependencies.env.gw2.endpoint + 'v2/tokeninfo', {
 					headers: {
 						'Authorization' : 'Bearer ' + token
 					}
@@ -42,7 +42,45 @@ function validGw2Token(name, val, dependencies) {
 							message: 'needs characters and inventories permission'
 						};
 					}
+				});
+
+			var duplicateCheck = dependencies.axios.get(dependencies.env.gw2.endpoint + 'v2/account', {
+					headers: {
+						'Authorization' : 'Bearer ' + token
+					}
+			})
+			.then(function (response) {
+				var accountId = response.data.id;
+				var accountName = response.data.name;
+
+				return dependencies.models
+					.Gw2ApiToken
+					.findOne({
+						where: {
+							accountId: accountId
+						}
+					})
+					.then(function (item) {
+						if (item) {
+							return {
+								property: name,
+								message: 'key for ' + accountName + ' already exists'
+							}; 
+						}
+					});
+			});
+
+			return q.all([authCheck, duplicateCheck])
+				.then(function (responses) {
+					if (responses[1]) {
+						return responses[1];
+					}
+
+					if (responses[0]) {
+						return responses[0];
+					}
 				}, function (error) {
+					// todo: how do we want to handle 500s?
 					return q.resolve({
 						property: name,
 						message: 'invalid token'

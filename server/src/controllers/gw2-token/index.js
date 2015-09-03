@@ -43,7 +43,8 @@ function Gw2TokenController(models, Validator, gw2Api) {
 					where: {
 						email: email
 					}
-				}).then(function (user) {
+				})
+				.then(function (user) {
 					return user.id;
 				})
 			})

@@ -1,6 +1,6 @@
 Copyright (c) 2015 Michael Dougall
 
-#TODO:
+#TODO iteration 1:
 
 ## gw2-fetch
 - token invalidation
@@ -16,6 +16,11 @@ Copyright (c) 2015 Michael Dougall
 - list characters for alias
 - list characters for accountName
 
+## hardening
+- error handling for 500s
+- error logging
+
 ## deployment
 - setup env variables
-
+- deployment scripts for aws
+- deploy to aws!

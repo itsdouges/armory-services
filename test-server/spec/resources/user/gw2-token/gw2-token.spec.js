@@ -83,6 +83,7 @@ frisby.create('POST user with good body')
 										 * I want to check that my token is now free
 										 * So that I can feel safe
 										 */
+										// TODO: Need to use new tokens because ive implemented the account already exists check!
 										frisby.create('GET check gw2-token with bad token')
 											.get(API_ENDPOINT + 'users/check/gw2-token/'  + gw2token)
 											.expectStatus(200)

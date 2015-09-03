@@ -127,6 +127,68 @@ describe('gw2 token validator', function () {
 			});
 	});
 
+	it('should resolve error if account id is already in db', function (done) {
+		var tokenDefer = q.defer();
+		var accountDefer = q.defer();
+
+		mockAxios.get = function (endpoint) {
+			if (endpoint === mockEnv.gw2.endpoint + 'v2/tokeninfo') {
+				return tokenDefer.promise;
+			}
+
+			return accountDefer.promise;
+		};
+
+		spyOn(mockAxios, 'get').and.callThrough();
+
+		models.User
+			.create({
+				email: 'email@email',
+				passwordHash: 'lolz',
+				alias: 'swagn'
+			})
+			.then(function (e) {
+				models.Gw2ApiToken
+					.create({
+						token: 'hahahaha_token', 
+						accountName: 'madou.1234', 
+						accountId: 'ahh',
+						UserId: e.id
+					})
+					.then(function (e) {
+						token('token', 'another_token_i_generated', { 
+							axios: mockAxios,
+							env: mockEnv,
+							models: models
+						}).then(function (e) {
+							expect(e).toEqual({ 
+								property: 'token', 
+								message: 'key for madou.1234 already exists' 
+							});
+
+							done();
+						});
+					});
+			});
+
+		tokenDefer.resolve({
+			data: {
+				permissions: [
+					'account',
+					'characters',
+					'inventories'
+				]
+			}
+		});
+
+		accountDefer.resolve({
+			data: {
+				id: 'ahh',
+				name: 'madou.1234'
+			}
+		})
+	});
+
 	it('should resolve error if an error occurred during http', function (done) {
 		var defer = q.defer();
 		spyOn(mockAxios, 'get').and.returnValue(defer.promise);

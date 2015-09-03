@@ -38,6 +38,7 @@ frisby.create('GET check gw2-token with free token')
 							// TODO: What's happening here that we have to delay for a moment?
 							// If we don't pause the token is validated as free, need
 							// to understand why.
+							// Found out why. It's failing because the key already is being used. LOL! Fix it later..
 							frisby.create('GET pause for 3')
 								.get('http://httpbin.org/delay/3')
 								.expectStatus(200)
