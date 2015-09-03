@@ -8,13 +8,13 @@ Copyright (c) 2015 Michael Dougall
 - error handling (401/402/500)
 - unit tests
 - int tests
+- create endpoint to immediately fetch user details and store to db
 
 ## token validator
-- check that account id doesnt alraedy exist in database
+- check that account id doesnt alraedy exist in database [done]
 
 ## characters resource
-- list characters for alias
-- list characters for accountName
+- list characters for email [done]
 
 ## hardening
 - error handling for 500s

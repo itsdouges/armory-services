@@ -1,14 +1,14 @@
 {
-  "name": "gw2-ping",
+  "name": "gw2-fetch",
   "version": "0.0.1",
-  "description": "User ping docker file for api.armory.net.au.",
+  "description": "Gw2 fetch docker file for api.armory.net.au.",
   "main": "run.js",
   "dependencies": {
     "mysql": "^2.8.0",
     "q": "^1.4.1",
     "axios": "^0.5.4",
     "restify": "^3.0.3",
-    "sequelize": "^3.6.0",
+    "sequelize": "^3.6.0"
   },
   "devDependencies": {
     "jasmine-node": "^1.14.5",

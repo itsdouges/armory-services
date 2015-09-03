@@ -56,9 +56,11 @@ function Server(models, config) {
 	});
 
 	require('./resources')(server);
+	require('./resources/characters')(server, characters);
 	require('./resources/users')(server, users);
 	require('./resources/users/check')(server, checks);
 	require('./resources/users/gw2-token')(server, gw2Tokens);
+	require('./resources/users/characters')(server, characters);
 
 	return server;
 }

@@ -139,7 +139,7 @@ function UsersResource(models, Validator, gw2Api) {
 				return data.dataValues;
 			});
 	};
-
+	
 	/**
 	 * Update user resource. 
 	 * Currently only changing your password is supported.

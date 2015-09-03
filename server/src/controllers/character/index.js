@@ -66,6 +66,39 @@ function CharacterController(models, gw2Api) {
 			});
 	};
 
+	CharacterController.prototype.listByEmail = function (email) {
+		// todo: extend this for alias later.
+		return models
+			.Gw2Character
+			.findAll({
+				include: [{
+					model: models.Gw2ApiToken,
+					where: {
+						valid: true
+					},
+					include: [{
+						model: models.User,
+						where: {
+							email: email
+						}
+					}]
+				}]
+			})
+			.then(function (characters) {
+				return characters.map(function (c) {
+					return {
+						accountName: c.Gw2ApiToken.accountName,
+						world: c.Gw2ApiToken.world,
+						name: c.name,
+						gender: c.gender,
+						profession: c.profession,
+						level: c.level,
+						race: c.race
+					};
+				});
+			});
+	};
+
 	// TODO: Update character endpoint!
 	// TODO: List characters (by user) endpoint!
 	// TODO: List characters (by guild) endpoint!

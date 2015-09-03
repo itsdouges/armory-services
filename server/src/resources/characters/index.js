@@ -1,17 +1,18 @@
 'use strict';
 
-var RESOURCE = Object.freeze({
-	endpoint: '/characters'
+var RESOURCES = Object.freeze({
+	character: 'characters/:name'
 });
 
-function CharactersResource(server) {
-	server.get(RESOURCES.token_endpoint, function (req, res) {
+function CharactersResource(server, controller) {
+	server.get(RESOURCES.character, function (req, res, next) {
 		controller
 			.read(req.params.name)
 			.then(function (character) {
 				res.send(200, character);
 				return next();
 			}, function (e) {
+				// todo: error handling
 				res.send(404);
 				return next();
 			});
