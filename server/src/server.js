@@ -53,6 +53,7 @@ function Server(models, config) {
 	});
 
 	restify.CORS.ALLOW_HEADERS.push('authorization');
+	restify.CORS.ALLOW_HEADERS.push('Access-Control-Allow-Origin');
 	server.use(restify.CORS({
 		origins: config.allowed_cors
 	}));
@@ -70,6 +71,7 @@ function Server(models, config) {
 	require('./resources')(server);
 	require('./resources/characters')(server, characters);
 	require('./resources/users')(server, users);
+	require('./resources/token')(server);
 	require('./resources/users/check')(server, checks);
 	require('./resources/users/gw2-token')(server, gw2Tokens);
 	require('./resources/users/characters')(server, characters);
