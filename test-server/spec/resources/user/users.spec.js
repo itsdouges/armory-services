@@ -3,6 +3,7 @@ frisby.create('POST user without request body')
 	.expectStatus(400)
 	.afterJSON(function (response) {
 		expect(response).toEqual([
+			'[alias] is required',
 			'[email] is required',
 			'[password] is required'
 		]);
@@ -16,6 +17,7 @@ frisby.create('POST user without email and weak password')
 	.expectStatus(400)
 	.afterJSON(function (response) {
 		expect(response).toEqual([
+		'[alias] is required',
 		'[email] is required',
 		'[password] must be greater than or equal to 8 characters long, contain one or more uppercase, lowercase, numeric, and special characters'
 		]);
@@ -25,6 +27,7 @@ frisby.create('POST user without email and weak password')
 frisby.create('POST user with bad email and with strong password')
 	.post(API_ENDPOINT + 'users', {
 		email: 'bademail',
+		alias: getRandomString(),
 		password: '1MStrong321MAN!'
 	})
 	.afterJSON(function (response) {
@@ -41,17 +44,20 @@ var strongPass = '1MStrong321MAN!';
 frisby.create('POST user with good body')
 	.post(API_ENDPOINT + 'users', {
 		email: randomEmail,
-		password: strongPass
+		password: strongPass,
+		alias: 'madou'
 	})
 	.expectStatus(200)
 	.after(function () {
 		frisby.create('POST user again and fail because email is taken')
 			.post(API_ENDPOINT + 'users', {
 				email: randomEmail,
-				password: '1MStrong321MAN!'
+				password: '1MStrong321MAN!',
+				alias: 'madou'
 			})
 			.expectStatus(400)
 			.expectJSON([
+				'[alias] is taken',
 				'[email] is taken'
 			])
 			.toss();
@@ -98,6 +104,7 @@ frisby.create('POST user with good body')
 						frisby.create('PUT user resource with token with wrong password')
 							.put(API_ENDPOINT + 'users/me', {
 								password: newPassword,
+								alias: 'hahaha',
 								currentPassword: 'wrong'
 							})
 							.addHeader('Authorization', token)
@@ -108,6 +115,7 @@ frisby.create('POST user with good body')
 							frisby.create('PUT user resource with token with weak password')
 								.put(API_ENDPOINT + 'users/me', {
 									password: 'weak',
+									alias: 'hahaha',
 									currentPassword: strongPass
 								})
 								.addHeader('Authorization', token)
@@ -122,6 +130,7 @@ frisby.create('POST user with good body')
 								frisby.create('PUT user resource with token and succeed')
 									.put(API_ENDPOINT + 'users/me', {
 										password: newPassword,
+										alias: 'new-alias',
 										currentPassword: strongPass
 									})
 									.addHeader('Authorization', token)

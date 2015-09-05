@@ -13,6 +13,12 @@ function CheckResource(Validator) {
 			rules: {
 				email: ['unique-email', 'required', 'no-white-space']
 			}
+		}).addResource({
+			name: 'check',
+			mode: 'alias',
+			rules: {
+				alias: ['unique-alias', 'required', 'no-white-space']
+			}
 		});
 
 	CheckResource.prototype.gw2Token = function (token) {
@@ -31,6 +37,15 @@ function CheckResource(Validator) {
 		});
 
 		return validator.validate(email);
+	};
+
+	CheckResource.prototype.alias = function (alias) {
+		var validator = Validator({
+			resource: 'check',
+			mode: 'alias'
+		});
+
+		return validator.validate(alias);
 	};
 }
 

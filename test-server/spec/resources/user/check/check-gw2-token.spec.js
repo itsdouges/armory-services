@@ -1,4 +1,4 @@
-var token = '3990C73C-18C1-6345-9184-1F99E1FF1F94F74DBE68-D2A7-4C32-908D-4AA1E513B39A';
+var token = '14AEEFFA-F207-BA49-9590-1B48E024DF2734665877-34A0-4A8C-81CA-F8A083D20B63';
 
 /**
  * As a user
@@ -14,6 +14,7 @@ frisby.create('GET check gw2-token with free token')
 			.post(API_ENDPOINT + 'users', {
 				email: getRandomEmail(),
 				password: strongPass,
+				alias: getRandomString(),
 				gw2ApiTokens: [
 					'invalid'
 				]
@@ -28,6 +29,7 @@ frisby.create('GET check gw2-token with free token')
 				frisby.create('POST user with valid gw2 token')
 						.post(API_ENDPOINT + 'users', {
 							email: getRandomEmail(),
+							alias: getRandomString(),
 							password: strongPass,
 							gw2ApiTokens: [
 								token

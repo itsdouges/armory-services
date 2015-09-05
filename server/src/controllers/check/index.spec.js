@@ -49,6 +49,18 @@ describe('check resource', function () {
 				}
 			});
 		});
+
+		it('should add alias resource to validator', function () {
+			systemUnderTest = new CheckResource(mockValidator);
+
+			expect(mockValidator.addResource).toHaveBeenCalledWith({
+				name: 'check',
+				mode: 'alias',
+				rules: {
+					alias: ['unique-alias', 'required', 'no-white-space']
+				}
+			});
+		});
 	});
 
 	describe('gw2-token', function () {
@@ -113,6 +125,42 @@ describe('check resource', function () {
 			spyOn(mocks, 'validate').and.returnValue(defer.promise);
 
 			systemUnderTest.email('email')
+				.then(null, function (e) {
+					expect(e).toBe('ahh!!!');
+
+					done();
+				});
+
+			defer.reject('ahh!!!');
+		});
+	});
+
+	describe('alias', function () {
+		it('should resolve', function (done) {
+			systemUnderTest = new CheckResource(mockValidator);
+
+			var defer = q.defer();
+
+			spyOn(mocks, 'validate').and.returnValue(defer.promise);
+
+			systemUnderTest.alias('a')
+				.then(function () {
+					expect(mocks.validate).toHaveBeenCalledWith('a');
+
+					done();
+				});
+
+			defer.resolve();
+		});
+
+		it('should reject', function (done) {
+			systemUnderTest = new CheckResource(mockValidator);
+
+			var defer = q.defer();
+
+			spyOn(mocks, 'validate').and.returnValue(defer.promise);
+
+			systemUnderTest.alias('b')
 				.then(null, function (e) {
 					expect(e).toBe('ahh!!!');
 

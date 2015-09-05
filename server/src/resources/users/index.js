@@ -28,6 +28,7 @@ function UserResource(server, controller) {
     var user = {
     	email: req.username,
     	password: req.params.password,
+    	alias: req.params.alias,
     	currentPassword: req.params.currentPassword
     };
 

@@ -18,6 +18,7 @@ var email = getRandomEmail();
 frisby.create('POST user with good body')
 	.post(API_ENDPOINT + 'users', {
 		email: email,
+		alias: getRandomString(),
 		password: strongPass
 	})
 	.expectStatus(200)
