@@ -44,7 +44,8 @@ describe('character controller', function () {
 			.User
 			.create({
 				email: 'cool@email',
-				passwordHash: 'coolpassword'
+				passwordHash: 'coolpassword',
+				alias: 'madou'
 			})
 			.then(function () {
 				return models
@@ -111,7 +112,8 @@ describe('character controller', function () {
 			.User
 			.create({
 				email: 'cool@email',
-				passwordHash: 'coolpassword'
+				passwordHash: 'coolpassword',
+				alias: 'madou'
 			})
 			.then(function () {
 				return models
@@ -174,7 +176,8 @@ describe('character controller', function () {
 			.User
 			.create({
 				email: 'cool@email',
-				passwordHash: 'coolpassword'
+				passwordHash: 'coolpassword',
+				alias: 'madou'
 			})
 			.then(function () {
 				return models

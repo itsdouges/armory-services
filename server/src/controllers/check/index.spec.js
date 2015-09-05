@@ -13,14 +13,6 @@ describe('check resource', function () {
 
 	var mockValidator;
 
-	function setupTestData(user, cb) {
-		systemUnderTest
-			.createUser(user)
-			.then(function () {
-				cb();
-			});
-	}
-
 	beforeEach(function () {
 		mockValidator = function () {
 			return {

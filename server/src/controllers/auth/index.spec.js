@@ -33,7 +33,8 @@ describe('auth controller', function () {
 				.User
 				.create({
 					email: 'cool@email',
-					passwordHash: hash
+					passwordHash: hash,
+					alias: 'madou'
 				})
 				.then(function () {
 					defer.resolve();

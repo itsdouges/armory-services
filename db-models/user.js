@@ -13,7 +13,10 @@ module.exports = function(sequelize, DataTypes) {
 		},
 		alias: {
 			type: DataTypes.STRING,
-			field: 'alias'
+			field: 'alias',
+			unique: true,
+			required: true,
+			allowNull: false
 		},
 		email: {
 			type: DataTypes.STRING,

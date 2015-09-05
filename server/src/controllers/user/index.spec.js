@@ -79,7 +79,8 @@ describe('user resource', function () {
 		it('should return user data', function (done) {
 			var user = {
 				email: 'cool@email.com',
-				password: 'password'
+				password: 'password',
+				alias: 'madou'
 			};
 
 			var defer = q.resolve();
@@ -95,7 +96,8 @@ describe('user resource', function () {
 					expect(data.email).toBe(user.email);
 					expect(data.id).toBeDefined();
 					expect(data.passwordHash).toBeDefined();
-
+					expect(data.alias).toBe(user.alias);
+					
 					done();
 				});
 		});
@@ -105,7 +107,8 @@ describe('user resource', function () {
 		it('should reject promise if passwords don\'t matach', function (done) {
 			var user = {
 				email: 'cool@email.com',
-				password: 'password'
+				password: 'password',
+				alias: 'madou'
 			};
 
 			var promise = q.resolve();
@@ -128,7 +131,8 @@ describe('user resource', function () {
 		it('should resolve promise if passwords matach and commit to db', function (done) {
 			var user = {
 				email: 'cool@email.com',
-				password: 'password'
+				password: 'password',
+				alias: 'madou'
 			};
 
 			var promise = q.resolve();
@@ -199,6 +203,7 @@ describe('user resource', function () {
 			var user = {
 				email: 'cool@email.com',
 				password: 'password',
+				alias: 'madou',
 				gw2ApiTokens: [
 					'haha',
 					'nahhman'
@@ -238,6 +243,7 @@ describe('user resource', function () {
 						.then(function (e) {
 							expect(e.id).toBeDefined();
 							expect(e.email).toBe(user.email);
+							expect(e.alias).toBe(user.alias);
 							expect(e.gw2_api_tokens[0].token).toBe('haha');
 							expect(e.gw2_api_tokens[0].accountName).toBe('cool name.1234');
 							expect(e.gw2_api_tokens[0].accountId).toBe('ahh');
