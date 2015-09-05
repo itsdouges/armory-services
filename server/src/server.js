@@ -31,6 +31,12 @@ function Server(models, config) {
 			dependencies: {
 				models: models
 			}
+		}).addRule({
+			name: 'unique-alias',
+			func: require('./rules/unique-alias'),
+			dependencies: {
+				models: models
+			}
 		});
 
 	var gw2Api = Gw2Api(axios, config);
