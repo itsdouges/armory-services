@@ -24,7 +24,10 @@ module.exports = {
 			interval: 600000,
 			retries: 5,
 			verbose: true
-		}
+		},
+		allowed_cors: [
+			'http://localhost:3030'
+		]
 	},
 	prod: {
 		

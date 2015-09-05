@@ -52,8 +52,14 @@ function Server(models, config) {
 	    version: config.version
 	});
 
+	restify.CORS.ALLOW_HEADERS.push('authorization');
+	server.use(restify.CORS({
+		origins: config.allowed_cors
+	}));
+
 	server.use(restify.authorizationParser());
 	server.use(restify.bodyParser());
+	server.use(restify.gzipResponse());
 
 	restifyOAuth2.ropc(server, {
 		tokenEndpoint: '/token', 
