@@ -108,6 +108,7 @@ describe('gw2 token validator', function () {
 						token: 'ee', 
 						accountName: 'madou.1234', 
 						accountId: 'ahh',
+						world: 'haha',
 						UserId: e.id
 					})
 					.then(function (e) {
@@ -153,6 +154,7 @@ describe('gw2 token validator', function () {
 						token: 'hahahaha_token', 
 						accountName: 'madou.1234', 
 						accountId: 'ahh',
+						world: 'yoloo',
 						UserId: e.id
 					})
 					.then(function (e) {
@@ -184,7 +186,8 @@ describe('gw2 token validator', function () {
 		accountDefer.resolve({
 			data: {
 				id: 'ahh',
-				name: 'madou.1234'
+				name: 'madou.1234',
+				world: 'yoloooo'
 			}
 		})
 	});

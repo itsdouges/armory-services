@@ -17,7 +17,8 @@ module.exports = function(sequelize, DataTypes) {
     // todo: save this to db when i can ;-)
     world: {
       type: DataTypes.STRING,
-      field: 'world'
+      field: 'world',
+      allowNull: false
     },
     accountId: {
       type: DataTypes.STRING,
@@ -36,12 +37,12 @@ module.exports = function(sequelize, DataTypes) {
     classMethods: {
       associate: function(models) {
         Gw2ApiToken.hasMany(models.Gw2Character, { 
-        as: 'gw2_characters',
-        foreignKey: { 
-          allowNull: false 
-        }, 
-        onDelete: 'CASCADE' 
-      });
+          as: 'gw2_characters',
+          foreignKey: { 
+            allowNull: false 
+          }, 
+          onDelete: 'CASCADE' 
+        });
         
         Gw2ApiToken.belongsTo(models.User, {
           onDelete: "CASCADE",

@@ -1,10 +1,10 @@
 frisby.create('POST gw2-token with no jwt')
-	.post(API_ENDPOINT + 'users/me/gw2-token')
+	.post(API_ENDPOINT + 'users/me/gw2-tokens')
 	.expectStatus(401)
 	.toss();
 
 frisby.create('DELETE gw2-token with taken token valid jwt')
-	.delete(API_ENDPOINT + 'users/me/gw2-token/im-a-token')
+	.delete(API_ENDPOINT + 'users/me/gw2-tokens/im-a-token')
 	.expectStatus(401)
 	.toss();
 
@@ -51,7 +51,7 @@ frisby.create('POST user with good body')
 				 */
 				frisby.create('POST gw2 api token')
 					.addHeader('Authorization', token)
-					.post(API_ENDPOINT + 'users/me/gw2-token', {
+					.post(API_ENDPOINT + 'users/me/gw2-tokens', {
 						token: gw2token
 					})
 					.expectStatus(200)
@@ -64,7 +64,7 @@ frisby.create('POST user with good body')
 						// TODO: This is failing. Figure out why.
 						frisby.create('POST another gw2 api token that is already taken')
 							.addHeader('Authorization', token)
-							.post(API_ENDPOINT + 'users/me/gw2-token', {
+							.post(API_ENDPOINT + 'users/me/gw2-tokens', {
 								token: gw2token
 							})
 							.expectStatus(400)
@@ -76,7 +76,7 @@ frisby.create('POST user with good body')
 								 */
 								frisby.create('DELETE gw2 api token')
 									.addHeader('Authorization', token)
-									.delete(API_ENDPOINT + 'users/me/gw2-token/' + gw2token)
+									.delete(API_ENDPOINT + 'users/me/gw2-tokens/' + gw2token)
 									.expectStatus(200)
 									.after(function () {
 										/**
@@ -86,7 +86,7 @@ frisby.create('POST user with good body')
 										 */
 										// TODO: Need to use new tokens because ive implemented the account already exists check!
 										frisby.create('GET check gw2-token with bad token')
-											.get(API_ENDPOINT + 'users/check/gw2-token/'  + gw2token)
+											.get(API_ENDPOINT + 'users/check/gw2-tokens/'  + gw2token)
 											.expectStatus(200)
 											.toss();
 									})

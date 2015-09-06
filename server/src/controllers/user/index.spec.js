@@ -55,8 +55,7 @@ describe('user resource', function () {
 				rules: {
 					alias: ['required', 'unique-alias'],
 					email: ['required', 'unique-email', 'no-white-space'],
-					password: ['required', 'password', 'no-white-space'],
-					gw2ApiTokens: ['valid-gw2-token', 'no-white-space']
+					password: ['required', 'password', 'no-white-space']
 				}
 			});
 		});
@@ -205,29 +204,25 @@ describe('user resource', function () {
 			var user = {
 				email: 'cool@email.com',
 				password: 'password',
-				alias: 'madou',
-				gw2ApiTokens: [
-					'haha',
-					'nahhman'
-				]
+				alias: 'madou'
 			};
 
 			var defer = q.defer();
-			var accountNameDefer = q.defer();
-			var accountName2Defer = q.defer();
+			// var accountNameDefer = q.defer();
+			// var accountName2Defer = q.defer();
 
-			mocks.gw2Api.readAccount = function (token) {
-				if (token === 'haha') {
-					return accountNameDefer.promise; 
-				}
+			// mocks.gw2Api.readAccount = function (token) {
+			// 	if (token === 'haha') {
+			// 		return accountNameDefer.promise; 
+			// 	}
 
-				if (token === 'nahhman') {
-					return accountName2Defer.promise;
-				}
-			};
+			// 	if (token === 'nahhman') {
+			// 		return accountName2Defer.promise;
+			// 	}
+			// };
 
 			spyOn(mocks, 'validate').and.returnValue(defer.promise);
-			spyOn(mocks.gw2Api, 'readAccount').and.callThrough();
+			// spyOn(mocks.gw2Api, 'readAccount').and.callThrough();
 
 			systemUnderTest = new UserResource(models, mockValidator, mocks.gw2Api);
 			systemUnderTest
@@ -246,14 +241,14 @@ describe('user resource', function () {
 							expect(e.id).toBeDefined();
 							expect(e.email).toBe(user.email);
 							expect(e.alias).toBe(user.alias);
-							expect(e.gw2_api_tokens[0].token).toBe('haha');
-							expect(e.gw2_api_tokens[0].accountName).toBe('cool name.1234');
-							expect(e.gw2_api_tokens[0].accountId).toBe('ahh');
-							expect(e.gw2_api_tokens[0].UserId).toBe(e.id);
-							expect(e.gw2_api_tokens[1].token).toBe('nahhman');
-							expect(e.gw2_api_tokens[1].accountName).toBe('cool name.4321');
-							expect(e.gw2_api_tokens[1].accountId).toBe('eee');
-							expect(e.gw2_api_tokens[1].UserId).toBe(e.id);
+							// expect(e.gw2_api_tokens[0].token).toBe('haha');
+							// expect(e.gw2_api_tokens[0].accountName).toBe('cool name.1234');
+							// expect(e.gw2_api_tokens[0].accountId).toBe('ahh');
+							// expect(e.gw2_api_tokens[0].UserId).toBe(e.id);
+							// expect(e.gw2_api_tokens[1].token).toBe('nahhman');
+							// expect(e.gw2_api_tokens[1].accountName).toBe('cool name.4321');
+							// expect(e.gw2_api_tokens[1].accountId).toBe('eee');
+							// expect(e.gw2_api_tokens[1].UserId).toBe(e.id);
 
 							expect(e.passwordHash).toBe(user.passwordHash);
 							expect(e.emailValidated).toBe(false);
@@ -263,15 +258,15 @@ describe('user resource', function () {
 				});
 
 			defer.resolve();
-			accountNameDefer.resolve({
-				name: 'cool name.1234',
-				id: 'ahh'
-			});
+			// accountNameDefer.resolve({
+			// 	name: 'cool name.1234',
+			// 	id: 'ahh'
+			// });
 
-			accountName2Defer.resolve({
-				name: 'cool name.4321',
-				id: 'eee'
-			});
+			// accountName2Defer.resolve({
+			// 	name: 'cool name.4321',
+			// 	id: 'eee'
+			// });
 		});
 	});
 });

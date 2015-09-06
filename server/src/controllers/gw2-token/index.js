@@ -23,6 +23,7 @@ function Gw2TokenController(models, Validator, gw2Api) {
 						.create({
 							token: gw2Token,
 							UserId: id,
+							world: account.world,
 							accountId: account.id,
 							accountName: account.name
 						});
@@ -50,6 +51,29 @@ function Gw2TokenController(models, Validator, gw2Api) {
 			})
 			.then(function (id) {
 				return addTokenToUser(id, token);
+			});
+	};
+
+	Gw2TokenController.prototype.list = function (email) {
+		return models
+			.Gw2ApiToken
+			.findAll({
+				include: [{
+					model: models.User,
+					where: {
+						email: email
+					}
+				}]
+			})
+			.then(function (tokens) {
+				return tokens.map(function (token) {
+					return {
+						token: token.token,
+						accountName: token.accountName,
+						world: token.world,
+						valid: token.valid
+					};
+				});
 			});
 	};
 

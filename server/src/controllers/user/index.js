@@ -48,8 +48,7 @@ function UsersResource(models, Validator, gw2Api) {
 			rules: {
 				alias: ['required', 'unique-alias'],
 				email: ['required', 'unique-email', 'no-white-space'],
-				password: ['required', 'password', 'no-white-space'],
-				gw2ApiTokens: ['valid-gw2-token', 'no-white-space']
+				password: ['required', 'password', 'no-white-space']
 			}
 		}).addResource({
 			name: 'users',
@@ -76,34 +75,34 @@ function UsersResource(models, Validator, gw2Api) {
 			return models.User
 				.create(user)
 				.then(function (e) {
-					if (!user.gw2ApiTokens) {
-						return;
-					}
+					// if (!user.gw2ApiTokens) {
+					// 	return;
+					// }
 
-					user.gw2ApiTokens.forEach(function (token) {
-						promise.then(function () {
-								return gw2Api
-									.readAccount(token)
-									.then(function (account) {
-										var tokenItem = {
-											token: token,
-											accountName: account.name,
-											accountId: account.id,
-											UserId: e.id
-										};
+					// user.gw2ApiTokens.forEach(function (token) {
+					// 	promise.then(function () {
+					// 			return gw2Api
+					// 				.readAccount(token)
+					// 				.then(function (account) {
+					// 					var tokenItem = {
+					// 						token: token,
+					// 						accountName: account.name,
+					// 						accountId: account.id,
+					// 						UserId: e.id
+					// 					};
 
-										return addApiToken(tokenItem);
-									});
-						});
-					});
+					// 					return addApiToken(tokenItem);
+					// 				});
+					// 	});
+					// });
 				});
 		};
 
-		var addApiToken = function (token) {
-			return models
-				.Gw2ApiToken
-				.create(token);
-		};
+		// var addApiToken = function (token) {
+		// 	return models
+		// 		.Gw2ApiToken
+		// 		.create(token);
+		// };
 
 		var loadInitialCharacters = function (token, userId) {
 			// todo: this logic will be duplicated into gw2-ping

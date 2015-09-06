@@ -63,6 +63,7 @@ describe('character controller', function () {
 						token: 'swag',
 						accountName: 'nameyname',
 						accountId: 'haah',
+						world: 'a-world',
 						UserId: data.id
 					});
 			})
@@ -131,6 +132,7 @@ describe('character controller', function () {
 						token: 'swag',
 						accountName: 'nameyname',
 						accountId: 'aaaa',
+						world: 'cool-world',
 						UserId: data.id
 					});
 			})

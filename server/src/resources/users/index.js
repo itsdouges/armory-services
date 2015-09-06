@@ -12,6 +12,8 @@ function UserResource(server, controller) {
         return res.sendUnauthenticated();
     }
 
+    // TODO: Stop sending password hash.
+
 		controller
 			.read(req.username)
 			.then(function (data) {

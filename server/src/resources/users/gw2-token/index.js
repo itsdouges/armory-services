@@ -1,12 +1,30 @@
 'use strict';
 
 var RESOURCE = Object.freeze({
-	post: '/users/me/gw2-token',
-	del: '/users/me/gw2-token/:token'
+	main: '/users/me/gw2-tokens',
+	item: '/users/me/gw2-tokens/:token'
 });
 
 function Gw2TokenResource(server, controller) {
-	server.post(RESOURCE.post, function (req, res, next) {
+	server.get(RESOURCE.main, function (req, res, next) {
+		// TODO: TEST
+
+    if (!req.username) {
+        return res.sendUnauthenticated();
+    }
+		
+		controller
+			.list(req.username)
+			.then(function () {
+				res.send(200);
+				return next();
+			}, function (e) {
+				res.send(400, e);
+				return next();
+			});
+	});
+
+	server.post(RESOURCE.main, function (req, res, next) {
     if (!req.username) {
         return res.sendUnauthenticated();
     }
@@ -22,7 +40,7 @@ function Gw2TokenResource(server, controller) {
 			});
 	});
 
-	server.del(RESOURCE.del, function (req, res, next) {
+	server.del(RESOURCE.item, function (req, res, next) {
     if (!req.username) {
         return res.sendUnauthenticated();
     }
