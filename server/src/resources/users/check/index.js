@@ -12,8 +12,8 @@ function CheckResource(server, controller) {
 			.gw2Token({
 				token: req.params.token
 			})
-			.then(function () {
-				res.send(200);
+			.then(function (data) {
+				res.send(200, data);
 				return next();
 			}, function (e) {
 				res.send(400, e);

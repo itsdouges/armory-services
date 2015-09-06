@@ -15,8 +15,8 @@ function Gw2TokenResource(server, controller) {
 		
 		controller
 			.list(req.username)
-			.then(function () {
-				res.send(200);
+			.then(function (tokens) {
+				res.send(200, tokens);
 				return next();
 			}, function (e) {
 				res.send(400, e);

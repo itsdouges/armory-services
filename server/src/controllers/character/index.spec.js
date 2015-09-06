@@ -96,7 +96,8 @@ describe('character controller', function () {
 				expect(mockGw2Api.readCharacter).toHaveBeenCalledWith('blastrn', {
 					token: 'swag',
 					showBags: true,
-					showCrafting: true
+					showCrafting: true,
+					showEquipment: true
 				});
 
 				done();

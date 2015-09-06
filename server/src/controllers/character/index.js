@@ -30,17 +30,20 @@ function CharacterController(models, gw2Api) {
 					name: name,
 					token: result.Gw2ApiTokenToken,
 					showCrafting: result.showCrafting,
-					showBags: result.showBags
+					showBags: result.showBags,
+					showEquipment: result.showEquipment
 				};
 			})
 			.then(function (data) {
 				return gw2Api.readCharacter(data.name, {
 					token: data.token,
 					showBags: data.showBags,
-					showCrafting: data.showCrafting
+					showCrafting: data.showCrafting,
+					// TODO: Test show equipment
+					showEquipment: data.showEquipment
 				})
 				.then(null, function (response) {
-					if (response.status === 403) {
+					if (response.status === 403 || response.status === 401) {
 						return models.Gw2ApiToken
 							.update({
 								valid: false

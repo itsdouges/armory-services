@@ -2,7 +2,7 @@
 
 var RESOURCES = Object.freeze({
 	personal_characters: 'users/me/characters',
-	user_characters: ':user/characters'
+	user_characters: 'users/:user/characters'
 });
 
 function CharactersResource(server, controller) {

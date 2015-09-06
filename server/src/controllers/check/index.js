@@ -1,6 +1,6 @@
 var q = require('q');
 
-function CheckResource(Validator) {
+function CheckController(Validator) {
 	Validator.addResource({
 			name: 'check',
 			mode: 'gw2-token',
@@ -21,7 +21,7 @@ function CheckResource(Validator) {
 			}
 		});
 
-	CheckResource.prototype.gw2Token = function (token) {
+	CheckController.prototype.gw2Token = function (token) {
 		var validator = Validator({
 			resource: 'check',
 			mode: 'gw2-token'
@@ -30,7 +30,7 @@ function CheckResource(Validator) {
 		return validator.validate(token);
 	};
 
-	CheckResource.prototype.email = function (email) {
+	CheckController.prototype.email = function (email) {
 		var validator = Validator({
 			resource: 'check',
 			mode: 'email'
@@ -39,7 +39,7 @@ function CheckResource(Validator) {
 		return validator.validate(email);
 	};
 
-	CheckResource.prototype.alias = function (alias) {
+	CheckController.prototype.alias = function (alias) {
 		var validator = Validator({
 			resource: 'check',
 			mode: 'alias'
@@ -49,4 +49,4 @@ function CheckResource(Validator) {
 	};
 }
 
-module.exports = CheckResource;
+module.exports = CheckController;
