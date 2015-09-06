@@ -63,7 +63,7 @@ describe('character controller', function () {
 						token: 'swag',
 						accountName: 'nameyname',
 						accountId: 'haah',
-						world: 'a-world',
+						world: 1234,
 						UserId: data.id
 					});
 			})
@@ -132,7 +132,7 @@ describe('character controller', function () {
 						token: 'swag',
 						accountName: 'nameyname',
 						accountId: 'aaaa',
-						world: 'cool-world',
+						world: 4444,
 						UserId: data.id
 					});
 			})
@@ -197,7 +197,7 @@ describe('character controller', function () {
 						token: 'swag',
 						accountName: 'nameyname',
 						accountId: 'aaaa',
-						world: 'aylmao',
+						world: 1111,
 						UserId: data.id
 					});
 			})
@@ -242,7 +242,7 @@ describe('character controller', function () {
 						var c2 = list[1];
 
 						expect(c1.accountName).toBe('nameyname');
-						expect(c1.world).toBe('aylmao');
+						expect(c1.world).toBe(1111);
 						expect(c1.name).toBe('blastrn');
 						expect(c1.gender).toBe('ay');
 						expect(c1.profession).toBe('hehe');
@@ -250,7 +250,7 @@ describe('character controller', function () {
 						expect(c1.race).toBe('ay');
 
 						expect(c2.accountName).toBe('nameyname');
-						expect(c2.world).toBe('aylmao');
+						expect(c2.world).toBe(1111);
 						expect(c2.name).toBe('ayyyyy');
 						expect(c2.gender).toBe('aay');
 						expect(c2.profession).toBe('heehe');

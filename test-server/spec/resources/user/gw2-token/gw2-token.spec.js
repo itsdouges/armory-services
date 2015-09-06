@@ -86,7 +86,7 @@ frisby.create('POST user with good body')
 										 */
 										// TODO: Need to use new tokens because ive implemented the account already exists check!
 										frisby.create('GET check gw2-token with bad token')
-											.get(API_ENDPOINT + 'users/check/gw2-tokens/'  + gw2token)
+											.get(API_ENDPOINT + 'users/check/gw2-token/'  + gw2token)
 											.expectStatus(200)
 											.toss();
 									})

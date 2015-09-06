@@ -51,7 +51,7 @@ describe('gw2 token controller', function () {
 						token: 'cool_token',
 						accountName: 'madou.0',
 						accountId: '12341234',
-						world: 'australia',
+						world: 1234,
 						UserId: user.id
 					}).then(function () {
 						return models
@@ -60,7 +60,7 @@ describe('gw2 token controller', function () {
 								token: 'another_token',
 								accountName: 'madou.1',
 								accountId: '4321431',
-								world: 'iceland',
+								world: 4321,
 								UserId: user.id,
 								valid: false
 							});
@@ -82,12 +82,12 @@ describe('gw2 token controller', function () {
 
 							expect('cool_token').toBe(token1.token);
 							expect('madou.0').toBe(token1.accountName);
-							expect('australia').toBe(token1.world);
+							expect(1234).toBe(token1.world);
 							expect(true).toBe(token1.valid);
 
 							expect('another_token').toBe(token2.token);
 							expect('madou.1').toBe(token2.accountName);
-							expect('iceland').toBe(token2.world);
+							expect(4321).toBe(token2.world);
 							expect(false).toBe(token2.valid);
 
 							done();
@@ -168,7 +168,7 @@ describe('gw2 token controller', function () {
 				accountDefer.resolve({
 					name: 'nameee',
 					id: 'eeee',
-					world: 'cool-world'
+					world: 1122
 				});
 			});
 		});
@@ -232,7 +232,7 @@ describe('gw2 token controller', function () {
 				accountDefer.resolve({
 					name: 'nameee',
 					id: 'aaaa',
-					world: 'cool-world'
+					world: 2233
 				});
 			});
 		});
