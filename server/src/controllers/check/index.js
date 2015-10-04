@@ -1,5 +1,7 @@
 var q = require('q');
 
+var validGw2Token = require('../../rules/valid-gw2-token');
+
 function CheckController(Validator) {
 	Validator.addResource({
 			name: 'check',

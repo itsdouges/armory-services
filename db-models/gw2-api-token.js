@@ -2,7 +2,7 @@
 
 // NOTE: THIS IS A COPIED FILE FROM db-models!
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
   var Gw2ApiToken = sequelize.define("Gw2ApiToken", {
     token: {
       field: 'token',
@@ -13,6 +13,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false,
       field: 'account_name'
+    },
+    permissions: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: 'permissions'
     },
     world: {
       type: DataTypes.INTEGER,

@@ -107,6 +107,7 @@ describe('gw2 token validator', function () {
 					.create({
 						token: 'ee', 
 						accountName: 'madou.1234', 
+						permissions: 'he,he',
 						accountId: 'ahh',
 						world: 1122,
 						UserId: e.id
@@ -152,7 +153,8 @@ describe('gw2 token validator', function () {
 				models.Gw2ApiToken
 					.create({
 						token: 'hahahaha_token', 
-						accountName: 'madou.1234', 
+						accountName: 'madou.1234',
+						permissions: 'he,he', 
 						accountId: 'ahh',
 						world: 3344,
 						UserId: e.id

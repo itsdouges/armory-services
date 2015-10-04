@@ -2,7 +2,7 @@
 
 // NOTE: THIS IS A COPIED FILE FROM db-models!
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
   var User = sequelize.define('User', {
 		id: {
 			type: DataTypes.UUID,

@@ -1,8 +1,10 @@
 'use strict';
 
-function Gw2Api(axios, env) {
+var q = require('q');
+
+function Gw2Api (axios, env) {
 	function readAccount (token) {
-		var promise = axios.get(env.gw2.endpoint + 'v2/account', {
+		return axios.get(env.gw2.endpoint + 'v2/account', {
 				headers: {
 					'Authorization' : 'Bearer ' + token
 				}
@@ -10,8 +12,33 @@ function Gw2Api(axios, env) {
 		.then(function (e) {
 			return e.data;
 		});
+	}
 
-		return promise;
+	function readTokenInfo (token) {
+		return axios.get(env.gw2.endpoint + 'v2/tokeninfo', {
+				headers: {
+					'Authorization' : 'Bearer ' + token
+				}
+		})
+		.then(function (e) {
+			return e.data;
+		});
+	}
+
+	function readTokenInfoWithAccount (token) {
+		var accountPromise = readAccount(token);
+		var infoPromise = readTokenInfo(token);
+
+		return q.all([accountPromise, infoPromise])
+			.spread(function (acc, info) {
+				return q.resolve({
+					//name: info.name,
+					info: info.permissions,
+					world: acc.world,
+					accountId: acc.id,
+					accountName: acc.name
+				});
+			});
 	}
 
 	function readCharacters (token) {
@@ -55,7 +82,8 @@ function Gw2Api(axios, env) {
 	var exports = {
 		readCharacters: readCharacters,
 		readCharacter: readCharacter,
-		readAccount: readAccount
+		readAccount: readAccount,
+		readTokenInfoWithAccount: readTokenInfoWithAccount
 	};
 
 	return exports;

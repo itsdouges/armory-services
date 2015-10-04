@@ -2,7 +2,7 @@
 
 // NOTE: THIS IS A COPIED FILE FROM db-models!
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
   var Gw2Character = sequelize.define("Gw2Character", {
     name: {
       field: 'name',
@@ -48,7 +48,13 @@ module.exports = function(sequelize, DataTypes) {
     guild: {
       field: 'guild',
       type: DataTypes.STRING
-    },    
+    },   
+    showPvp: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+      field: 'show_pvp'
+    },
     showBags: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

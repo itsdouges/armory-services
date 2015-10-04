@@ -10,7 +10,7 @@ var path = require("path");
  * Returns an object containing all models used in armory, as well
  * as a reference to the sequelize db object passed in.
  */
-function Models(sequelize) {
+function Models (sequelize) {
   var db = {};
 
   fs

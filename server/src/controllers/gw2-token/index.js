@@ -2,7 +2,7 @@
 
 var q = require('q');
 
-function Gw2TokenController(models, Validator, gw2Api) {
+function Gw2TokenController (models, Validator, gw2Api) {
 	Validator.addResource({
 		name: 'gw2-token',
 		mode: 'add',
@@ -14,19 +14,22 @@ function Gw2TokenController(models, Validator, gw2Api) {
 	// TODO: Clean up messy async code.
 
 	Gw2TokenController.prototype.add = function (email, token) {
-		function addTokenToUser(id, gw2Token) {
+		function addTokenToUser (id, gw2Token) {
 			return gw2Api
-				.readAccount(gw2Token)
-				.then(function (account) {
-					models
+				.readTokenInfoWithAccount(gw2Token)
+				.then(function (tokenInfo) {
+					var wrappedToken = {
+						token: gw2Token,
+						UserId: id,
+						permissions: tokenInfo.info.join(','),
+						world: tokenInfo.world,
+						accountId: tokenInfo.accountId,
+						accountName: tokenInfo.accountName
+					};
+
+					return models
 						.Gw2ApiToken
-						.create({
-							token: gw2Token,
-							UserId: id,
-							world: account.world,
-							accountId: account.id,
-							accountName: account.name
-						});
+						.create(wrappedToken);
 				});
 		}
 
@@ -44,13 +47,22 @@ function Gw2TokenController(models, Validator, gw2Api) {
 					where: {
 						email: email
 					}
-				})
-				.then(function (user) {
+				});
+			})
+			.then(function (user) {
 					return user.id;
-				})
 			})
 			.then(function (id) {
 				return addTokenToUser(id, token);
+			})
+			.then(function (createdToken) {
+				return {
+					token: createdToken.token,
+					accountName: createdToken.accountName,
+					permissions: createdToken.permissions,
+					world: createdToken.world,
+					valid: createdToken.valid
+				};
 			});
 	};
 
@@ -70,6 +82,7 @@ function Gw2TokenController(models, Validator, gw2Api) {
 					return {
 						token: token.token,
 						accountName: token.accountName,
+						permissions: token.permissions,
 						world: token.world,
 						valid: token.valid
 					};

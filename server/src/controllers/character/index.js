@@ -94,6 +94,7 @@ function CharacterController(models, gw2Api) {
 						world: c.Gw2ApiToken.world,
 						name: c.name,
 						gender: c.gender,
+						permissions: c.permissions,
 						profession: c.profession,
 						level: c.level,
 						race: c.race

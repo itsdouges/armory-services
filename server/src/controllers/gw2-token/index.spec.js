@@ -21,7 +21,7 @@ describe('gw2 token controller', function () {
 		});
 
 		mockGw2Api = {
-			readAccount: function () {}
+			readTokenInfoWithAccount: function () {}
 		};
 
 		mockValidator = function () {
@@ -50,6 +50,7 @@ describe('gw2 token controller', function () {
 					.create({
 						token: 'cool_token',
 						accountName: 'madou.0',
+						permissions: 'he,he',
 						accountId: '12341234',
 						world: 1234,
 						UserId: user.id
@@ -59,6 +60,7 @@ describe('gw2 token controller', function () {
 							.create({
 								token: 'another_token',
 								accountName: 'madou.1',
+								permissions: 'he,he',
 								accountId: '4321431',
 								world: 4321,
 								UserId: user.id,
@@ -132,7 +134,7 @@ describe('gw2 token controller', function () {
 			var accountDefer = q.defer();
 
 			spyOn(mocks, 'validate').and.returnValue(defer.promise);
-			spyOn(mockGw2Api, 'readAccount').and.returnValue(accountDefer.promise);
+			spyOn(mockGw2Api, 'readTokenInfoWithAccount').and.returnValue(accountDefer.promise);
 
 			models
 				.User
@@ -144,31 +146,23 @@ describe('gw2 token controller', function () {
 				.then(function (e) {
 					systemUnderTest
 						.add('cool@email.com', 'token')
-						.then(function (res) {
-							expect(res).toBe(undefined);
-
-							models
-								.Gw2ApiToken
-								.findOne({
-									where: {
-										token: 'token'
-									}
-								}).then(function (result) {
-									expect(result.token).toBe('token');
-									expect(result.UserId).toBe(e.id);
-									expect(result.accountName).toBe('nameee');
-									expect(result.accountId).toBe('eeee');
-									
-									done();
-								});
+						.then(function (result) {
+							expect(result.token).toBe('token');
+							// expect(result.UserId).toBe(e.id);
+							expect(result.permissions).toBe('cool,yeah!');
+							expect(result.accountName).toBe('nameee');
+							// expect(result.accountId).toBe('eeee');
+							
+							done();
 						});
 
 				defer.resolve();
 
 				accountDefer.resolve({
-					name: 'nameee',
-					id: 'eeee',
-					world: 1122
+					accountName: 'nameee',
+					accountId: 'eeee',
+					world: 1122,
+					info: ['cool', 'yeah!']
 				});
 			});
 		});
@@ -181,7 +175,7 @@ describe('gw2 token controller', function () {
 			var accountDefer = q.defer();
 
 			spyOn(mocks, 'validate').and.returnValue(defer.promise);
-			spyOn(mockGw2Api, 'readAccount').and.returnValue(accountDefer.promise);
+			spyOn(mockGw2Api, 'readTokenInfoWithAccount').and.returnValue(accountDefer.promise);
 
 			models
 				.User
@@ -193,36 +187,26 @@ describe('gw2 token controller', function () {
 				.then(function (e) {
 					systemUnderTest
 						.add('cool@email.com', 'token')
-						.then(function (res) {
-							expect(res).toBe(undefined);
+						.then(function (result) {
+							expect(result.token).toBe('token');
+							// expect(result.UserId).toBe(e.id);
+							expect(result.accountName).toBe('nameee');
+							// expect(result.accountId).toBe('eeee');
 
-							models
-								.Gw2ApiToken
-								.findOne({
-									where: {
-										token: 'token'
-									}
-								}).then(function (result) {
-									expect(result.token).toBe('token');
-									expect(result.UserId).toBe(e.id);
-									expect(result.accountName).toBe('nameee');
-									expect(result.accountId).toBe('aaaa');
+							systemUnderTest
+								.remove('cool@email.com', 'token')
+								.then(function (rez) {
+									expect(rez).toBe(1);
 
-									systemUnderTest
-										.remove('cool@email.com', 'token')
-										.then(function (rez) {
-											expect(rez).toBe(1);
-
-											models
-												.Gw2ApiToken
-												.findOne({
-													where: {
-														token: 'token'
-													}
-												}).then(function (result) {
-													expect(result).toBe(null);
-													done();
-												});
+									models
+										.Gw2ApiToken
+										.findOne({
+											where: {
+												token: 'token'
+											}
+										}).then(function (result) {
+											expect(result).toBe(null);
+											done();
 										});
 								});
 						});
@@ -230,9 +214,10 @@ describe('gw2 token controller', function () {
 				defer.resolve();
 
 				accountDefer.resolve({
-					name: 'nameee',
-					id: 'aaaa',
-					world: 2233
+					accountName: 'nameee',
+					accountId: 'eeee',
+					world: 1122,
+					info: ['cool', 'yeah!']
 				});
 			});
 		});

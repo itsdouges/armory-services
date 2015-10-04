@@ -63,6 +63,7 @@ describe('character controller', function () {
 						token: 'swag',
 						accountName: 'nameyname',
 						accountId: 'haah',
+						permissions: 'cool,permissions',
 						world: 1234,
 						UserId: data.id
 					});
@@ -133,6 +134,7 @@ describe('character controller', function () {
 						token: 'swag',
 						accountName: 'nameyname',
 						accountId: 'aaaa',
+						permissions: 'cool,permissions',
 						world: 4444,
 						UserId: data.id
 					});
@@ -198,6 +200,7 @@ describe('character controller', function () {
 						token: 'swag',
 						accountName: 'nameyname',
 						accountId: 'aaaa',
+						permissions: 'cool,permissions',
 						world: 1111,
 						UserId: data.id
 					});
