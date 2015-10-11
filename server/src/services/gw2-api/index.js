@@ -73,6 +73,10 @@ function Gw2Api (axios, env) {
 				character.equipment = undefined;
 			}
 
+			if (!options.showBuilds) {
+				character.specializations = undefined;
+			}
+
 			return character;
 		});
 

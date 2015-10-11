@@ -49,6 +49,12 @@ module.exports = function (sequelize, DataTypes) {
       field: 'guild',
       type: DataTypes.STRING
     },   
+    showBuilds: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+      field: 'show_builds'
+    },
     showPvp: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

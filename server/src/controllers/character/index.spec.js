@@ -98,7 +98,8 @@ describe('character controller', function () {
 					token: 'swag',
 					showBags: true,
 					showCrafting: true,
-					showEquipment: true
+					showEquipment: true,
+					showBuilds: true // TODO: Fix
 				});
 
 				done();

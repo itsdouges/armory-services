@@ -57,7 +57,8 @@ function validGw2Token(name, val, dependencies) {
 					.Gw2ApiToken
 					.findOne({
 						where: {
-							accountId: accountId
+							accountId: accountId,
+							valid: true
 						}
 					})
 					.then(function (item) {

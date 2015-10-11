@@ -4,7 +4,7 @@ var Gw2Api = require('./index');
 var axios = require('axios');
 
 describe('gw2 api', function () {
-	var testToken = '3990C73C-18C1-6345-9184-1F99E1FF1F94F74DBE68-D2A7-4C32-908D-4AA1E513B39A';
+	var testToken = '14FE67AD-1780-F442-9BB0-CDB823F9EDACCDC70614-CB2F-4A09-A0C0-66F3BA3082CD';
 
 	var sut;
 	var env = {

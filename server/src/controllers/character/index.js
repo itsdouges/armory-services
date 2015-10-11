@@ -40,7 +40,8 @@ function CharacterController(models, gw2Api) {
 					showBags: data.showBags,
 					showCrafting: data.showCrafting,
 					// TODO: Test show equipment
-					showEquipment: data.showEquipment
+					showEquipment: data.showEquipment,
+					showBuilds: data.showBuilds || true
 				})
 				.then(null, function (response) {
 					if (response.status === 403 || response.status === 401) {
