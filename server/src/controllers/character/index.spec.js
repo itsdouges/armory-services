@@ -91,7 +91,8 @@ describe('character controller', function () {
 					authorization: {
 						showPublic: true,
 						showGuild: true
-					}
+					},
+					accountName: 'nameyname'
 				});
 
 				expect(mockGw2Api.readCharacter).toHaveBeenCalledWith('blastrn', {

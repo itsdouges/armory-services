@@ -2,7 +2,7 @@
 
 var q = require('q');
 
-function CharacterController(models, gw2Api) {
+function CharacterController (models, gw2Api) {
 	CharacterController.prototype.read = function (name) {
 		var characterFromDb;
 
@@ -65,6 +65,8 @@ function CharacterController(models, gw2Api) {
 					showPublic: characterFromDb.showPublic,
 					showGuild: characterFromDb.showGuild
 				};
+
+				data.accountName = characterFromDb.Gw2ApiToken.accountName;
 
 				return data;
 			});
