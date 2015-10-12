@@ -1,6 +1,8 @@
 'use strict';
 
 var q = require('q');
+var axios = require('axios');
+var config = require('../../../env/env_config');
 
 function Gw2TokenController (models, Validator, gw2Api) {
 	Validator.addResource({
@@ -54,6 +56,15 @@ function Gw2TokenController (models, Validator, gw2Api) {
 			})
 			.then(function (id) {
 				return addTokenToUser(id, token);
+			})
+			.then(function (createdToken) {
+				console.log('Posting to: ' + config.ping.host + ':' + config.ping.port + '/fetch-characters');
+
+				return axios.post('http://' + config.ping.host + ':' + config.ping.port + '/fetch-characters', {
+					token: token
+				}).then(function () {
+					return createdToken;
+				});
 			})
 			.then(function (createdToken) {
 				return {

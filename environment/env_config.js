@@ -23,11 +23,15 @@ module.exports = {
 			port: "8081",
 			interval: 600000,
 			retries: 5,
-			verbose: true
+			verbose: true,
+			host_env_name: "FETCH_PORT_8081_TCP_ADDR"
 		},
 		allowed_cors: [
 			'http://localhost:3030'
 		]
+	},
+	beta: {
+
 	},
 	prod: {
 		

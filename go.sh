@@ -13,37 +13,41 @@ task_serve() {
 
 	echo "Starting api.armory.com.."
 	
-	task_build data
 	remove_container data
+	task_build data
 	task_create data
 
-	task_build db
 	remove_container db
+	task_build db
 	task_run db
 
 	echo "Short pause to let db container finish starting up.."
 	pause_for 10
 
-	task_build server
+	remove_container fetch
+	task_build fetch
+	task_run fetch
+
 	remove_container server
+	task_build server
 	task_run server
 }
 
 task_serve_dev() {
 	echo "Starting dev api.armory.com.."
 
-	task_build data
 	remove_container data
+	task_build data
 	task_create data
 
-	task_build db
 	remove_container db
+	task_build db
 	task_run db
 
 	pause_for 5
 
-	task_build devserver
 	remove_container devserver
+	task_build devserver
 	task_run devserver
 }
 
@@ -135,13 +139,13 @@ task_run() {
 			run_daemon_container $1 "--volumes-from armory-data -e MYSQL_ROOT_PASSWORD=password -e MYSQL_PASSWORD=password -e MYSQL_USER=admin -e MYSQL_DATABASE=armory";;
 		server)
 			# docker run -p 8082:8082 --link armory-db:db armory/server
-			run_daemon_container $1 "-p 8082:8082 --link armory-db:db";;
+			run_daemon_container $1 "-p 8082:8082 --link armory-db:db --link armory-fetch:fetch";;
 		devserver)
 			run_container "server" "-p 8082:8082 --link armory-db:db --file=\"PATH/Dockerfile-dev\"";;
 		acceptance)
 			run_container $1;;
 		fetch) 
-			run_daemon_container $1 "-p 8081:8081 --link armory-db:db";;
+			run_daemon_container $1 "--link armory-db:db";;
 		*)
 			echo "Supported run: {acceptance|db|fetch|devserver|server}";;
 	esac

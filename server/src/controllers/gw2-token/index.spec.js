@@ -1,7 +1,7 @@
-var Controller = require('./index');
 var Models = require('../../models');
 var q = require('q');
 var testDb = require('../../../spec/helpers/db');
+var mockery = require('mockery');
 
 describe('gw2 token controller', function () {
 	var systemUnderTest;
@@ -12,6 +12,10 @@ describe('gw2 token controller', function () {
 		validate: function () {}
 	};
 
+	var mockAxios = {
+		post: function () {}
+	};
+
 	beforeEach(function (done) {
 		models = new Models(testDb());
 		models.sequelize.sync({
@@ -19,6 +23,9 @@ describe('gw2 token controller', function () {
 		}).then(function () {
 			done();
 		});
+
+		mockery.enable();
+		mockery.registerMock('axios', mockAxios);
 
 		mockGw2Api = {
 			readTokenInfoWithAccount: function () {}
@@ -33,7 +40,13 @@ describe('gw2 token controller', function () {
 		mockValidator.addResource = function () {};
 
 		spyOn(mockValidator, 'addResource').and.returnValue(mockValidator);
+
+		var Controller = require('./index');
 		systemUnderTest = new Controller(models, mockValidator, mockGw2Api);
+	});
+
+	afterEach(function () {
+		mockery.disable();
 	});
 
 	var seedDb = function (email) {
@@ -135,6 +148,7 @@ describe('gw2 token controller', function () {
 
 			spyOn(mocks, 'validate').and.returnValue(defer.promise);
 			spyOn(mockGw2Api, 'readTokenInfoWithAccount').and.returnValue(accountDefer.promise);
+			spyOn(mockAxios, 'post').and.returnValue(q.resolve());
 
 			models
 				.User
@@ -153,6 +167,10 @@ describe('gw2 token controller', function () {
 							expect(result.accountName).toBe('nameee');
 							// expect(result.accountId).toBe('eeee');
 							
+							expect(mockAxios.post).toHaveBeenCalledWith('http://undefined:8081/fetch-characters', {
+								token: 'token'
+							});
+
 							done();
 						});
 
@@ -176,6 +194,7 @@ describe('gw2 token controller', function () {
 
 			spyOn(mocks, 'validate').and.returnValue(defer.promise);
 			spyOn(mockGw2Api, 'readTokenInfoWithAccount').and.returnValue(accountDefer.promise);
+			spyOn(mockAxios, 'post').and.returnValue(q.resolve());
 
 			models
 				.User

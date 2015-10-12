@@ -7,17 +7,18 @@ function fetchCharacters (endpoint, token, axios, models) {
 			headers: {
 				'Authorization' : 'Bearer ' + token
 			}
-	})
-	.then(function (characters) {
+	}).then(function (characters) {
 		return characters.data;
 	}, function (response) {
 		if (response.status === 401 || response.status === 402) {
 			// invalidate the token !
-		} else  if (response === 500) {
-			return fetchCharacters (endpoint, token, axios, models);
+		} else if (response === 500) {
+			//return fetchCharacters (endpoint, token, axios, models);
+
+			// log and try again.
 		}
 
-		// unhandled
+		return q.reject(response);
 	});
 }
 

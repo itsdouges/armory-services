@@ -4,6 +4,7 @@ var Sequelize = require("sequelize");
 
 var config = require(__dirname + '/../env/env_config');
 config.db.options.host = process.env[config.db.options.host_env_name];
+config.ping.host = process.env[config.ping.host_env_name];
 
 console.log('Connecting to mysql host: ' + config.db.options.host);
 var db = new Sequelize(config.db.name, config.db.user, config.db.password, config.db.options);

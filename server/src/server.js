@@ -48,7 +48,7 @@ function Server(models, config) {
 	var auths = AuthController(models, config);
 
 	var server = restify.createServer({
-	    name: "api.armory.net.au",
+	    name: "api.gw2armory.com",
 	    version: config.version
 	});
 
