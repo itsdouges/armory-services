@@ -3,7 +3,7 @@ services:
   - docker
 install:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-build:
+script:
   - go.sh build data
   - go.sh push data
   - go.sh build db
