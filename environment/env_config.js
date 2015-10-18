@@ -1,20 +1,20 @@
-if (!process.env.ENV) {
-	throw 'Evironment variable "ENV" is not defined!';
-}
+// if (!process.env.ENV) {
+// 	throw 'Environment variable "ENV" is not defined!';
+// }
 
-switch (process.env.ENV) {
-	case 'DEV':
-	case 'BETA':
-	case 'PROD':
-		break;
+// switch (process.env.ENV) {
+// 	case 'DEV':
+// 	case 'BETA':
+// 	case 'PROD':
+// 		break;
 
-	default:
-		throw process.env.ENV + ' is not a supported environment!';
-}
+// 	default:
+// 		throw process.env.ENV + ' is not a supported environment!';
+// }
 
-if (process.env.ENV) {
-	throw 'Evironment variable "ENV" is not defined!';
-}
+// if (process.env.ENV) {
+// 	throw 'Evironment variable "ENV" is not defined!';
+// }
 
 var DEV = {
 		db: {
@@ -27,7 +27,7 @@ var DEV = {
 			}
 		},
 		server: {
-			port: "8082",
+			port: "80",
 		},
 		gw2: {
 			"endpoint": "https://api.guildwars2.com/"
@@ -44,7 +44,7 @@ var DEV = {
 			host_env_name: "FETCH_PORT_8081_TCP_ADDR"
 		},
 		allowed_cors: [
-			'http://localhost:3030'
+			'*'
 		]
 	};
 

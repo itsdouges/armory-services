@@ -138,10 +138,8 @@ task_run() {
 			# TODO: Replace user/pass with environment variables passed in.
 			run_daemon_container $1 "--volumes-from gw2armory-data -e MYSQL_ROOT_PASSWORD=password -e MYSQL_PASSWORD=password -e MYSQL_USER=admin -e MYSQL_DATABASE=armory";;
 		server)
-			# docker run -p 8082:8082 --link gw2armory-db:db agrmory/server
-			run_daemon_container $1 "-p 8082:8082 --link gw2armory-db:db --link gw2armory-fetch:fetch";;
-		devserver)
-			run_container "server" "-p 8082:8082 --link gw2armory-db:db --file=\"PATH/Dockerfile-dev\"";;
+			# docker run -p 80:80 --link gw2armory-db:db agrmory/server
+			run_daemon_container $1 "-p 80:80 --link gw2armory-db:db --link gw2armory-fetch:fetch";;
 		acceptance)
 			run_container $1;;
 		fetch) 
