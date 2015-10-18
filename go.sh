@@ -63,7 +63,7 @@ build_container() {
 	echo "Building $1.."
 
 	docker build \
-		-t "armory/$1:latest" \
+		-t "gw2armory/$1:latest" \
 		$2
 }
 
@@ -93,14 +93,14 @@ create_container() {
 
 	docker create \
 		$2 \
-		--name "armory-$1" \
-		-t "armory/$1:latest"
+		--name "gw2armory-$1" \
+		-t "gw2armory/$1:latest"
 }
 
 remove_container() {
-	echo "Removing container armory-$1.."
+	echo "Removing container gw2armory-$1.."
 
-	docker rm -f "armory-$1"
+	docker rm -f "gw2armory-$1"
 }
 
 remove_image() {
@@ -117,8 +117,8 @@ run_daemon_container() {
 	docker run \
 		-d \
 		$2 \
-		--name "armory-$1" \
-		"armory/$1:latest"
+		--name "gw2armory-$1" \
+		"gw2armory/$1:latest"
 }
 
 run_container() {
@@ -126,8 +126,8 @@ run_container() {
 
 	docker run \
 		$2 \
-		--name "armory-$1" \
-		"armory/$1:latest"
+		--name "gw2armory-$1" \
+		"gw2armory/$1:latest"
 }
 
 # -p x:y x=host-port, y=container-port
@@ -136,16 +136,16 @@ task_run() {
 	case "$1" in
 		db)
 			# TODO: Replace user/pass with environment variables passed in.
-			run_daemon_container $1 "--volumes-from armory-data -e MYSQL_ROOT_PASSWORD=password -e MYSQL_PASSWORD=password -e MYSQL_USER=admin -e MYSQL_DATABASE=armory";;
+			run_daemon_container $1 "--volumes-from gw2armory-data -e MYSQL_ROOT_PASSWORD=password -e MYSQL_PASSWORD=password -e MYSQL_USER=admin -e MYSQL_DATABASE=armory";;
 		server)
-			# docker run -p 8082:8082 --link armory-db:db armory/server
-			run_daemon_container $1 "-p 8082:8082 --link armory-db:db --link armory-fetch:fetch";;
+			# docker run -p 8082:8082 --link gw2armory-db:db agrmory/server
+			run_daemon_container $1 "-p 8082:8082 --link gw2armory-db:db --link gw2armory-fetch:fetch";;
 		devserver)
-			run_container "server" "-p 8082:8082 --link armory-db:db --file=\"PATH/Dockerfile-dev\"";;
+			run_container "server" "-p 8082:8082 --link gw2armory-db:db --file=\"PATH/Dockerfile-dev\"";;
 		acceptance)
 			run_container $1;;
 		fetch) 
-			run_daemon_container $1 "--link armory-db:db";;
+			run_daemon_container $1 "--link gw2armory-db:db";;
 		*)
 			echo "Supported run: {acceptance|db|fetch|devserver|server}";;
 	esac
@@ -243,7 +243,7 @@ task_run_fetch() {
 }
 
 task_push() {
-	docker push "madou/$1"
+	docker push "madou/gw2armory-$1"
 }
 
 # $1: task
