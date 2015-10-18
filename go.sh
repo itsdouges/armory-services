@@ -11,7 +11,7 @@ task_serve() {
 	task_copy_env
 	task_copy_db_models
 
-	echo "Starting api.armory.com.."
+	echo "Starting api containers.."
 	
 	remove_container data
 	task_build data
@@ -242,6 +242,10 @@ task_run_fetch() {
 	task_run fetch
 }
 
+task_push() {
+	docker push "armory/$1"
+}
+
 # $1: task
 # $2: container-name
 case "$1" in
@@ -251,6 +255,8 @@ case "$1" in
 		task_create $2;;
 	build)
 		task_build $2;;
+	push)
+		task_push $2;;
 	serve)
 		task_serve;;
 	remove)
@@ -267,6 +273,6 @@ case "$1" in
 		task_copy_env
 		task_copy_db_models;;
 	*)
-		echo "Available tasks: {acceptance|copy|fetch|run|serve|remove|clean|create|build|servedev}"
+		echo "Available tasks: {acceptance|copy|fetch|run|serve|remove|push|clean|create|build|servedev}"
 		exit 1;;
 esac

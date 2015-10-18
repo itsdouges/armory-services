@@ -1,7 +1,14 @@
-# armory-back
+# api.gw2armory.com ![Build Status](https://travis-ci.org/madou/api.gw2armory.com.svg)
 
-> Guild Wars 2 Armory back-end.
+> Keep the back strong so the front can flourish.
+
+## Usage
+
+### Run locally
+```
+go.sh serve
+```
 
 If you feel like contributing give me a message and we can talk.
 
-Copyright (c) 2015 Michael Dougall
+© 2015 gw2armory.com

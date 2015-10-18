@@ -1,5 +1,23 @@
+if (!process.env.ENV) {
+	throw 'Evironment variable "ENV" is not defined!';
+}
+
+switch (process.env.ENV) {
+	case 'DEV':
+	case 'BETA':
+	case 'PROD':
+		break;
+
+	default:
+		throw process.env.ENV + ' is not a supported environment!';
+}
+
+if (process.env.ENV) {
+	throw 'Evironment variable "ENV" is not defined!';
+}
+
 module.exports = {
-	dev: {
+	DEV: {
 		db: {
 			name: "armory",
 			user: "admin", // move out of config into a env variable
@@ -30,10 +48,10 @@ module.exports = {
 			'http://localhost:3030'
 		]
 	},
-	beta: {
+	BETA: {
 
 	},
-	prod: {
+	PROD: {
 		
 	}
-}[process.env.ENVIRONMENT || 'dev'];
+}[process.env.ENV || 'DEV'];
