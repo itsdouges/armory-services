@@ -50,13 +50,8 @@ var DEV = {
 
 Object.freeze(DEV);
 
-var BETA = DEV;
-BETA.server.port = "443";
-
-var PROD = BETA;
-
 module.exports = {
 	DEV: DEV,
-	BETA: BETA,
-	PROD: PROD
+	BETA: DEV,
+	PROD: DEV
 }[process.env.ENV || 'DEV'];

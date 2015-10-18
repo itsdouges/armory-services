@@ -1,0 +1,74 @@
+{
+	"AWSEBDockerrunVersion": 2,
+	"volumes": [
+		{
+		  "name": "gw2armory-data",
+		  "host": {
+		    "sourcePath": "/var/lib/mysql"
+		  }
+		}
+	],
+	"containerDefinitions": [
+		{
+			"name": "gw2armory-data",
+			"image": "madou/gw2armory-data",
+			"essential": true,
+			"mountPoints": [
+				{
+					"sourceVolume": "gw2armory-data",
+					"containerPath": "/var/lib/mysql",
+					"readOnly": false
+				}
+			]
+		},
+		{
+			"name": "gw2armory-db",
+			"image": "madou/gw2armory-db",
+			"essential": true,
+			"memory": 128,
+			"mountPoints": [
+				{
+					"sourceVolume": "gw2armory-data",
+					"containerPath": "/var/lib/mysql",
+					"readOnly": false
+				}
+			]
+		},
+		{
+			"name": "gw2armory-fetch",
+			"image": "madou/gw2armory-fetch",
+			"essential": true,
+			"memory": 128,
+			"links": [
+        "gw2armory-db"
+      ],
+			"mountPoints": [
+				{
+					"sourceVolume": "gw2armory-db",
+					"containerPath": "/var/lib/mysql",
+					"readOnly": false
+				}
+			]
+		},
+		{
+			"name": "gw2armory-server",
+			"image": "madou/gw2armory-server",
+			"essential": true,
+			"memory": 128,
+			"links": [
+        "gw2armory-db"
+      ],
+      "portMappings": {
+      	"hostPort": 443,
+      	"containerPort": 8082
+    	},
+			"mountPoints": [
+				{
+					"sourceVolume": "gw2armory-db",
+					"containerPath": "/var/lib/mysql",
+					"readOnly": false
+				}
+			]
+		}
+	]
+}
