@@ -63,7 +63,7 @@ build_container() {
 	echo "Building $1.."
 
 	docker build \
-		-t "gw2armory/$1:latest" \
+		-t "madou/gw2armory-$1:latest" \
 		$2
 }
 
@@ -94,7 +94,7 @@ create_container() {
 	docker create \
 		$2 \
 		--name "gw2armory-$1" \
-		-t "gw2armory/$1:latest"
+		-t "madou/gw2armory-$1:latest"
 }
 
 remove_container() {
@@ -118,7 +118,7 @@ run_daemon_container() {
 		-d \
 		$2 \
 		--name "gw2armory-$1" \
-		"gw2armory/$1:latest"
+		"madou/gw2armory-$1:latest"
 }
 
 run_container() {
@@ -127,7 +127,7 @@ run_container() {
 	docker run \
 		$2 \
 		--name "gw2armory-$1" \
-		"gw2armory/$1:latest"
+		"madou/gw2armory-$1:latest"
 }
 
 # -p x:y x=host-port, y=container-port
