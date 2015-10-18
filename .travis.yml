@@ -4,11 +4,11 @@ services:
 install:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 script:
-  - go.sh build data
-  - go.sh push data
-  - go.sh build db
-  - go.sh push db
-  - go.sh build fetch
-  - go.sh push fetch
-  - go.sh build server
-  - go.sh push server
+  - bash go.sh build data
+  - bash go.sh push data
+  - bash go.sh build db
+  - bash go.sh push db
+  - bash go.sh build fetch
+  - bash go.sh push fetch
+  - bash go.sh build server
+  - bash go.sh push server
