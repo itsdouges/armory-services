@@ -1,7 +1,7 @@
 FROM node:0.12.7
 
 MAINTAINER madou <laheen@gmail.com>
-LABEL Description="Server container for api.armory.net.au"
+LABEL Description="Server container for api.gw2armory.com"
 
 WORKDIR /opt
 

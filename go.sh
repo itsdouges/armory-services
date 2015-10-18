@@ -243,7 +243,7 @@ task_run_fetch() {
 }
 
 task_push() {
-	docker push "armory/$1"
+	docker push "madou/$1"
 }
 
 # $1: task
