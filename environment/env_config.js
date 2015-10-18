@@ -16,8 +16,7 @@ if (process.env.ENV) {
 	throw 'Evironment variable "ENV" is not defined!';
 }
 
-module.exports = {
-	DEV: {
+var DEV = {
 		db: {
 			name: "armory",
 			user: "admin", // move out of config into a env variable
@@ -47,11 +46,17 @@ module.exports = {
 		allowed_cors: [
 			'http://localhost:3030'
 		]
-	},
-	BETA: {
+	};
 
-	},
-	PROD: {
-		
-	}
+Object.freeze(DEV);
+
+var BETA = DEV;
+BETA.server.port = "443";
+
+var PROD = BETA;
+
+module.exports = {
+	DEV: DEV,
+	BETA: BETA,
+	PROD: PROD
 }[process.env.ENV || 'DEV'];

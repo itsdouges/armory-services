@@ -12,6 +12,13 @@ describe('gw2 token controller', function () {
 		validate: function () {}
 	};
 
+	var mockConfig = {
+		ping: {
+			host: 'host',
+			port: 'port'
+		}
+	};
+
 	var mockAxios = {
 		post: function () {}
 	};
@@ -26,7 +33,7 @@ describe('gw2 token controller', function () {
 
 		mockery.enable();
 		mockery.registerMock('axios', mockAxios);
-
+		mockery.registerMock('../../../env/env_config', mockConfig);
 		mockGw2Api = {
 			readTokenInfoWithAccount: function () {}
 		};
@@ -167,7 +174,7 @@ describe('gw2 token controller', function () {
 							expect(result.accountName).toBe('nameee');
 							// expect(result.accountId).toBe('eeee');
 							
-							expect(mockAxios.post).toHaveBeenCalledWith('http://undefined:8081/fetch-characters', {
+							expect(mockAxios.post).toHaveBeenCalledWith('http://host:port/fetch-characters', {
 								token: 'token'
 							});
 
