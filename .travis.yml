@@ -2,13 +2,13 @@ sudo: required
 services:
   - docker
 install:
-  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 script:
-  - bash go.sh build data
-  - bash go.sh push data
-  - bash go.sh build db
-  - bash go.sh push db
-  - bash go.sh build fetch
-  - bash go.sh push fetch
-  - bash go.sh build server
-  - bash go.sh push server
+  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - bash go.sh build data && \ 
+    bash go.sh push data && \ 
+    bash go.sh build db && \
+    bash go.sh build fetch && \
+    bash go.sh build server && \ 
+    bash go.sh push db && \ 
+    bash go.sh push fetch && \ 
+    bash go.sh push server
