@@ -14,7 +14,7 @@ switch (ENVIRONMENT) {
 		throw ENVIRONMENT + ' is not a supported environment!';
 }
 
-console.log('Running in' + ENVIRONMENT + ' mode!');
+console.log('Running in ' + ENVIRONMENT + ' mode!');
 
 var DEV = {
 		db: {
@@ -55,7 +55,7 @@ var BETA = {
 			password: "password", // move out of config into a env variable
 			options: {
 				dialect: "mysql",
-				host: "https://gw2armory-beta.czyc9rwqas2f.us-west-2.rds.amazonaws.com:3306"
+				host: "gw2armory-beta.czyc9rwqas2f.us-west-2.rds.amazonaws.com:3306"
 			}
 		},
 		server: {
