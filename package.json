@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ./deploy/transform"
+    "build:beta": "ENV=BETA node ./deploy",
+    "build:prod": "ENV=PROD node ./deploy",
+    "build:beta:win": "set ENV=BETA&& node ./deploy",
+    "build:prod:win": "set ENV=PROD&& node ./deploy"
   },
   "repository": {
     "type": "git",

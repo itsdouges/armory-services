@@ -10,7 +10,7 @@ var data = {
 	ENV: ENVIRONMENT
 };
 
-console.log('Building dockerrun template');
+console.log('Starting deployment for ' + ENVIRONMENT);
 
 function readModuleFile (path, callback) {
     try {
@@ -21,12 +21,16 @@ function readModuleFile (path, callback) {
     }
 }
 
+console.log('Building dockerrun template');
+
 readModuleFile('./Dockerrun.aws.json.mustache', function (err, template) {
 	var output = mustache.render(template, data);
 
-	var ws = fs.createWriteStream('./Dockerrun.aws.json');
+	var ws = fs.createWriteStream('./deploy/Dockerrun.aws.json');
 	ws.write(output);
 
-	console.log('Finished!');
+    console.log('Finished!');
+
+    // TODO: Eb call
 });
 

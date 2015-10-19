@@ -4,6 +4,7 @@
 
 #####
 ### THIS BASH SCRIPT IS JUST FOR LOCAL DEVELOPMENT. We are using AWS Dockerrun for beta/prod orchestration.
+### TODO: Use local eb cli if it becomes available for windows..
 #####
 
 # Good read for aws dockerrun config (its just an ECS config!)`
