@@ -1,7 +1,14 @@
 language: node_js
+node_js:
+  - "0.12"
 sudo: required
 services:
   - docker
+cache:
+  directories:
+    - node_modules
+install:
+  - npm install
 script:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - bash go.sh copy &&
@@ -13,3 +20,7 @@ script:
     bash go.sh push db &&
     bash go.sh push fetch &&
     bash go.sh push server
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: bash deploy/deploy.sh

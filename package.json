@@ -1,0 +1,23 @@
+{
+  "name": "api.gw2armory.com",
+  "version": "0.0.1",
+  "description": "Backend containers for api.gw2armory.com",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node ./deploy/transform"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/madou/api.gw2armory.com.git"
+  },
+  "author": "madou",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/madou/api.gw2armory.com/issues"
+  },
+  "homepage": "https://github.com/madou/api.gw2armory.com#readme",
+  "devDependencies": {
+    "mustache": "^2.2.0"
+  }
+}
