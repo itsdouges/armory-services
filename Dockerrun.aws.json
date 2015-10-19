@@ -1,48 +1,17 @@
 {
 	"AWSEBDockerrunVersion": 2,
-	"volumes": [
-		{
-		  "name": "data",
-		  "host": {
-		    "sourcePath": "/var/lib/mysql"
-		  }
-		}
-	],
 	"containerDefinitions": [
-		{
-			"name": "data",
-			"image": "madou/gw2armory-data",
-			"essential": true,
-			"memory": 128,
-			"mountPoints": [
-				{
-					"sourceVolume": "data",
-					"containerPath": "/var/lib/mysql",
-					"readOnly": false
-				}
-			]
-		},
-		{
-			"name": "db",
-			"image": "madou/gw2armory-db",
-			"essential": true,
-			"memory": 128,
-			"mountPoints": [
-				{
-					"sourceVolume": "data",
-					"containerPath": "/var/lib/mysql",
-					"readOnly": false
-				}
-			]
-		},
 		{
 			"name": "fetch",
 			"image": "madou/gw2armory-fetch",
 			"essential": true,
 			"memory": 128,
-			"links": [
-        "db"
-      ]
+			"environment": [
+				{
+					"name": "ENV",
+					"value": "BETA"
+				}
+			]
 		},
 		{
 			"name": "server",
@@ -50,13 +19,20 @@
 			"essential": true,
 			"memory": 128,
 			"links": [
-        "db",
         "fetch"
       ],
-      "portMappings": {
-      	"hostPort": 80,
-      	"containerPort": 80
-    	}
+			"environment": [
+				{
+					"name": "ENV",
+					"value": "BETA"
+				}
+			],
+      "portMappings": [
+	      {
+	      	"hostPort": 80,
+	      	"containerPort": 80
+	    	}
+    	]
 		}
 	]
 }

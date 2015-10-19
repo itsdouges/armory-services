@@ -2,11 +2,20 @@
 
 # Inspiration: http://ypereirareis.github.io/blog/2015/05/04/docker-with-shell-script-or-makefile/
 
+#####
+### THIS BASH SCRIPT IS JUST FOR LOCAL DEVELOPMENT. We are using AWS Dockerrun for beta/prod orchestration.
+#####
+
+# Good read for aws dockerrun config (its just an ECS config!)`
+# http://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_defintions.html
+# http://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html
+
 ##
 # TASK_SERVE
 # Run this task to get all containers to a working "running" state on a 
 # host machine.
 ##
+
 task_serve() {
 	task_copy_env
 	task_copy_db_models
@@ -118,6 +127,7 @@ run_daemon_container() {
 		-d \
 		$2 \
 		--name "gw2armory-$1" \
+		-e "ENV=DEV" \
 		"madou/gw2armory-$1:latest"
 }
 
@@ -127,6 +137,7 @@ run_container() {
 	docker run \
 		$2 \
 		--name "gw2armory-$1" \
+		-e "ENV=DEV" \
 		"madou/gw2armory-$1:latest"
 }
 
