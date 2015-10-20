@@ -109,7 +109,7 @@ describe('character controller', function () {
 			defer.resolve({});
 	});
 
-	it('should set token to invalid if we recieved a 403 response', function (done) {
+	it('should remove token if we recieved a 403 response', function (done) {
 		var defer = q.defer();
 		spyOn(mockGw2Api, 'readCharacter').and.returnValue(defer.promise);
 
@@ -168,7 +168,7 @@ describe('character controller', function () {
 					});
 			})
 			.then(function (data) {
-				expect(data.valid).toBe(false);
+				expect(data).toBe(null);
 
 				done();
 			});

@@ -56,6 +56,20 @@ function PingController(env, axios, models, fetchGw2) {
 				});
 
 				return q.all(dbPromises);
+			})
+			.catch(function (response) {
+				switch (response.status) {
+					case 401:
+					case 403:
+						return models.Gw2ApiToken
+							.destroy({
+								where: {
+									token: token.token
+								}
+							});
+				}
+
+				return q.reject(response);
 			});
 	};
 }

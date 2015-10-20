@@ -46,9 +46,7 @@ function CharacterController (models, gw2Api) {
 				.then(null, function (response) {
 					if (response.status === 403 || response.status === 401) {
 						return models.Gw2ApiToken
-							.update({
-								valid: false
-							}, {
+							.destroy({
 								where: {
 									token: characterFromDb.Gw2ApiToken.token
 								}
