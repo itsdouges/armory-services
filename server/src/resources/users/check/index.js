@@ -24,7 +24,7 @@ function CheckResource(server, controller) {
 	server.get(RESOURCE.email_endpoint, function (req, res, next) {
 		controller
 			.email({
-				email: req.params.email
+				email: req.params.email.toLowerCase()
 			})
 			.then(function () {
 				res.send(200);

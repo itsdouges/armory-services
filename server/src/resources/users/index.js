@@ -48,7 +48,7 @@ function UserResource(server, controller) {
 	server.post(RESOURCE.post, function (req, res, next) {
 		var user = {
 			alias: req.params.alias,
-			email: req.params.email,
+			email: req.params.email.toLowerCase(),
 			password: req.params.password,
 			gw2ApiTokens: req.params.gw2ApiTokens
 		};

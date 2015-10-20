@@ -53,7 +53,7 @@ describe('user resource', function () {
 				name: 'users',
 				mode: 'create',
 				rules: {
-					alias: ['required', 'unique-alias'],
+					alias: ['required', 'unique-alias', 'no-white-space', 'min5'],
 					email: ['required', 'unique-email', 'no-white-space'],
 					password: ['required', 'password', 'no-white-space']
 				}
@@ -67,7 +67,7 @@ describe('user resource', function () {
 				name: 'users',
 				mode: 'update',
 				rules: {
-					alias: ['required', 'unique-alias'],
+					alias: ['required', 'unique-alias', 'no-white-space', 'min5'],
 					email: 'required',
 					currentPassword: ['required'],
 					password: ['required', 'password', 'no-white-space']

@@ -37,6 +37,9 @@ function Server(models, config) {
 			dependencies: {
 				models: models
 			}
+		}).addRule({
+			name: 'min5',
+			func: require('./rules/min').five
 		});
 
 	var gw2Api = Gw2Api(axios, config);

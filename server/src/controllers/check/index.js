@@ -19,7 +19,7 @@ function CheckController(Validator) {
 			name: 'check',
 			mode: 'alias',
 			rules: {
-				alias: ['unique-alias', 'required', 'no-white-space']
+				alias: ['unique-alias', 'required', 'no-white-space', 'min5']
 			}
 		});
 
