@@ -59,6 +59,7 @@ function PingController(env, axios, models, fetchGw2) {
 			})
 			.catch(function (response) {
 				switch (response.status) {
+					case 400:
 					case 401:
 					case 403:
 						return models.Gw2ApiToken

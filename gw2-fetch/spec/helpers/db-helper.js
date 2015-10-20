@@ -28,7 +28,7 @@ module.exports = {
 				return models
 					.Gw2ApiToken
 					.create({
-						token: '14FE67AD-1780-F442-9BB0-CDB823F9EDACCDC70614-CB2F-4A09-A0C0-66F3BA3082CD',
+						token: '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15',
 						accountName: 'cool.4321',
 						accountId: 'haha_id',
 						permissions: 'cool,permissions',
