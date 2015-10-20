@@ -4,7 +4,6 @@
   "description": "Backend containers for api.gw2armory.com",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build:beta": "ENV=BETA node ./deploy",
     "build:prod": "ENV=PROD node ./deploy",
     "build:beta:win": "set ENV=BETA&& node ./deploy",
@@ -21,6 +20,9 @@
   },
   "homepage": "https://github.com/madou/api.gw2armory.com#readme",
   "devDependencies": {
+    "beanstalkify": "0.0.9",
+    "easy-zip": "0.0.4",
+    "hash-files": "^1.0.0",
     "mustache": "^2.2.0"
   }
 }
