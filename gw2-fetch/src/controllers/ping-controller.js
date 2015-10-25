@@ -22,6 +22,8 @@ function PingController(env, axios, models, fetchGw2) {
 			})
 			.then(function () {
 				console.log('Finished fetch!');
+			}, function (e) {
+				console.log(e);
 			});
 
 		return promise;

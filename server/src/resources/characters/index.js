@@ -7,7 +7,7 @@ var RESOURCES = Object.freeze({
 function CharactersResource(server, controller) {
 	server.get(RESOURCES.character, function (req, res, next) {
 		controller
-			.read(req.params.name)
+			.read(req.params.name, false)
 			.then(function (character) {
 				res.send(200, character);
 				return next();

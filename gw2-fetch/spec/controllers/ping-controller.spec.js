@@ -32,6 +32,8 @@ describe('ping controller', function () {
 			})
 			.then(function () {
 				done();
+			}, function (e) {
+				console.log(e)
 			});
-	});
+	}, 20000);
 });

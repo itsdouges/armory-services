@@ -23,8 +23,10 @@ describe('gw2 api', function () {
 				expect(account.name).toBe('stress level zero.4907');
 				
 				done();
+			}, function (e) {
+				console.log(e);
 			});
-	});
+	}, 40000);
 
 	it('should return character data as expected', function (done) {
 		sut.readCharacter('Blastrn', {
@@ -48,7 +50,7 @@ describe('gw2 api', function () {
 
 				done();
 			});
-	});
+	}, 40000);
 
 	it('should return invalid token error', function (done) {
 		sut.readCharacter('Blastrn', {
@@ -59,7 +61,7 @@ describe('gw2 api', function () {
 
 				done();
 			});
-	});
+	}, 40000);
 
 	it('should return characters data as expected', function (done) {
 		sut.readCharacters(testToken)
@@ -68,5 +70,5 @@ describe('gw2 api', function () {
 
 				done();
 			});
-	});
+	}, 40000);
 });

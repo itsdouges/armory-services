@@ -3,7 +3,8 @@
 var RESOURCE = Object.freeze({
 	get: '/users/me',
 	put: '/users/me',
-	post: '/users'
+	post: '/users',
+	publicGet: '/users/:alias'
 });
 
 function UserResource(server, controller) {
@@ -13,11 +14,23 @@ function UserResource(server, controller) {
     }
 
     // TODO: Stop sending password hash.
-
 		controller
 			.read(req.username)
 			.then(function (data) {
 				res.send(200, data);
+				return next();
+			});
+	});
+
+	server.get(RESOURCE.publicGet, function (req, res, next) {
+		controller
+			.readPublic(req.params.alias)
+			.then(function (data) {
+				res.send(200, data);
+				return next();
+			}, function () {
+				// todo: error handling
+				res.send(404);
 				return next();
 			});
 	});

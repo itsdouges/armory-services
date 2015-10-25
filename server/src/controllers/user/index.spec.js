@@ -2,7 +2,7 @@ var UserResource = require('./index');
 var Models = require('../../models');
 var q = require('q');
 var testDb = require('../../../spec/helpers/db');
-
+var i = 0;
 describe('user resource', function () {
 	var systemUnderTest;
 	var models;
@@ -15,14 +15,6 @@ describe('user resource', function () {
 	};
 
 	var mockValidator;
-
-	function setupTestData(user, cb) {
-		systemUnderTest
-			.createUser(user)
-			.then(function () {
-				cb();
-			});
-	}
 
 	beforeEach(function (done) {
 		mockValidator = function () {
@@ -38,6 +30,8 @@ describe('user resource', function () {
 		models.sequelize.sync({
 			force: true
 		}).then(function () {
+			systemUnderTest = new UserResource(models, mockValidator);
+
 			done();
 		});
 
@@ -47,8 +41,6 @@ describe('user resource', function () {
 
 	describe('initialisation', function () {
 		it('should add users resource in create mode to validator', function () {
-			systemUnderTest = new UserResource(models, mockValidator);
-
 			expect(mockValidator.addResource).toHaveBeenCalledWith({
 				name: 'users',
 				mode: 'create',
@@ -61,8 +53,6 @@ describe('user resource', function () {
 		});
 
 		it('should add users resource in update mode to validator', function () {
-			systemUnderTest = new UserResource(models, mockValidator);
-
 			expect(mockValidator.addResource).toHaveBeenCalledWith({
 				name: 'users',
 				mode: 'update',
@@ -87,18 +77,79 @@ describe('user resource', function () {
 			var defer = q.resolve();
 			spyOn(mocks, 'validate').and.returnValue(defer);
 
-			systemUnderTest = new UserResource(models, mockValidator);
 			systemUnderTest
 				.create(user)
-				.then(function (e) {
-					return systemUnderTest.read(user.email);
-				})
 				.then(function (data) {
 					expect(data.email).toBe(user.email);
 					expect(data.id).toBeDefined();
 					expect(data.passwordHash).toBeDefined();
 					expect(data.alias).toBe(user.alias);
 					
+					done();
+				});
+		});
+
+		function initialiseUserData () {
+			var promise = q.resolve();
+			spyOn(mocks, 'validate').and.returnValue(promise);
+
+			var user = {
+				email: 'cool@email.com',
+				password: 'password',
+				alias: 'madou'
+			};
+
+			return systemUnderTest.create(user)
+				.then(function (result) {
+					var token = {
+						token: 'i-am-token',
+						accountName: 'coolaccount.1234',
+						permissions: 'abc,def',
+						world: 'aus',
+						accountId: 'i-am-id',
+						UserId: result.id
+						// todo: permission testing
+					};
+
+					return models.Gw2ApiToken.create(token);
+				})
+				.then(function (result) {
+					var character = {
+						name: 'madoubie',
+						race: 'yolon',
+						gender: 'male',
+						profession: 'elementalist',
+						level: '69',
+						created: 'Sat Oct 24 2015 19:30:34',
+						age: 1234,
+						guild: 'a-guild',
+						deaths: 0,
+						Gw2ApiTokenToken: result.token
+						// todo: permission testing
+					};
+
+					return models.Gw2Character.create(character);
+				});
+		}
+
+		it('should return public user data', function (done) {
+			initialiseUserData()
+				.then(function (data) {
+					return systemUnderTest.readPublic('madou');
+				})
+				.then(function (data) {
+					expect(data.alias).toBe('madou');
+					expect(data.createdAt).toBeDefined();
+					expect(data.characters).toEqual([{
+						accountName: 'coolaccount.1234',
+						world: 'aus',
+						name: 'madoubie',
+						gender: 'male',
+						profession: 'elementalist',
+						level: 69,
+						race: 'yolon'
+					}]);
+
 					done();
 				});
 		});
@@ -115,7 +166,6 @@ describe('user resource', function () {
 			var promise = q.resolve();
 			spyOn(mocks, 'validate').and.returnValue(promise);
 
-			systemUnderTest = new UserResource(models, mockValidator);
 			systemUnderTest
 				.create(user)
 				.then(function (e) {
@@ -139,7 +189,6 @@ describe('user resource', function () {
 			var promise = q.resolve();
 			spyOn(mocks, 'validate').and.returnValue(promise);
 
-			systemUnderTest = new UserResource(models, mockValidator);
 			systemUnderTest
 				.create(user)
 				.then(function (e) {
@@ -166,7 +215,6 @@ describe('user resource', function () {
 
 			var user = {};
 
-			systemUnderTest = new UserResource(models, mockValidator);
 			systemUnderTest
 				.update(user)
 				.then(null, function (e) {
@@ -187,8 +235,6 @@ describe('user resource', function () {
 
 			spyOn(mocks, 'validate').and.returnValue(defer.promise);
 
-			systemUnderTest = new UserResource(models, mockValidator);
-
 			systemUnderTest
 				.create(user)
 				.then(null, function (e) {
@@ -208,23 +254,9 @@ describe('user resource', function () {
 			};
 
 			var defer = q.defer();
-			// var accountNameDefer = q.defer();
-			// var accountName2Defer = q.defer();
-
-			// mocks.gw2Api.readAccount = function (token) {
-			// 	if (token === 'haha') {
-			// 		return accountNameDefer.promise; 
-			// 	}
-
-			// 	if (token === 'nahhman') {
-			// 		return accountName2Defer.promise;
-			// 	}
-			// };
 
 			spyOn(mocks, 'validate').and.returnValue(defer.promise);
-			// spyOn(mocks.gw2Api, 'readAccount').and.callThrough();
 
-			systemUnderTest = new UserResource(models, mockValidator, mocks.gw2Api);
 			systemUnderTest
 				.create(user)
 				.then(function () {
@@ -241,15 +273,6 @@ describe('user resource', function () {
 							expect(e.id).toBeDefined();
 							expect(e.email).toBe(user.email);
 							expect(e.alias).toBe(user.alias);
-							// expect(e.gw2_api_tokens[0].token).toBe('haha');
-							// expect(e.gw2_api_tokens[0].accountName).toBe('cool name.1234');
-							// expect(e.gw2_api_tokens[0].accountId).toBe('ahh');
-							// expect(e.gw2_api_tokens[0].UserId).toBe(e.id);
-							// expect(e.gw2_api_tokens[1].token).toBe('nahhman');
-							// expect(e.gw2_api_tokens[1].accountName).toBe('cool name.4321');
-							// expect(e.gw2_api_tokens[1].accountId).toBe('eee');
-							// expect(e.gw2_api_tokens[1].UserId).toBe(e.id);
-
 							expect(e.passwordHash).toBe(user.passwordHash);
 							expect(e.emailValidated).toBe(false);
 
@@ -258,15 +281,6 @@ describe('user resource', function () {
 				});
 
 			defer.resolve();
-			// accountNameDefer.resolve({
-			// 	name: 'cool name.1234',
-			// 	id: 'ahh'
-			// });
-
-			// accountName2Defer.resolve({
-			// 	name: 'cool name.4321',
-			// 	id: 'eee'
-			// });
 		});
 	});
 });

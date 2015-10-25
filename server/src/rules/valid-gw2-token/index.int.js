@@ -27,8 +27,10 @@ describe('gw2 token validator', function () {
 		}).then(function (e) {
 			expect(e).not.toBeDefined();
 			done();
+		}, function (e) {
+			console.log(e);
 		});
-	});
+	}, 40000);
 
 	it('should call real endpoint and resolve error', function (done) {
 		token('token', 'invalid', { 
@@ -47,5 +49,5 @@ describe('gw2 token validator', function () {
 
 			done();
 		});
-	});
+	}, 40000);
 });

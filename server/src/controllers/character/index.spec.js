@@ -84,7 +84,7 @@ describe('character controller', function () {
 					});
 			})
 			.then(function () {
-				return sut.read('blastrn');
+				return sut.read('blastrn', true);
 			})
 			.then(function (data) {
 				expect(data).toEqual({
@@ -100,7 +100,80 @@ describe('character controller', function () {
 					showBags: true,
 					showCrafting: true,
 					showEquipment: true,
-					showBuilds: true // TODO: Fix
+					showBuilds: true
+				});
+
+				done();
+			});
+
+			defer.resolve({});
+	});
+
+	it('should call api with show all', function (done) {
+		var defer = q.defer();
+		spyOn(mockGw2Api, 'readCharacter').and.returnValue(defer.promise);
+
+		models
+			.User
+			.create({
+				email: 'cool@email',
+				passwordHash: 'coolpassword',
+				alias: 'madou'
+			})
+			.then(function () {
+				return models
+					.User
+					.findOne({
+						where: {
+							email: 'cool@email'
+						}
+					});
+			})
+			.then(function (data) {
+				return models
+					.Gw2ApiToken
+					.create({
+						token: 'swag',
+						accountName: 'nameyname',
+						accountId: 'haah',
+						permissions: 'cool,permissions',
+						world: 1234,
+						UserId: data.id
+					});
+			})
+			.then(function () {
+				return models
+					.Gw2Character
+					.create({
+						Gw2ApiTokenToken: 'swag',
+						name: 'blastrn',
+						gender: 'ay',
+						profession: 'hehe',
+						level: 123,
+						created: new Date(),
+						age: 1,
+						race: 'ay',
+						deaths: 1
+					});
+			})
+			.then(function () {
+				return sut.read('blastrn', false);
+			})
+			.then(function (data) {
+				expect(data).toEqual({
+					authorization: {
+						showPublic: true,
+						showGuild: true
+					},
+					accountName: 'nameyname'
+				});
+
+				expect(mockGw2Api.readCharacter).toHaveBeenCalledWith('blastrn', {
+					token: 'swag',
+					showBags: true,
+					showCrafting: true,
+					showEquipment: true,
+					showBuilds: true
 				});
 
 				done();
@@ -242,7 +315,7 @@ describe('character controller', function () {
 	it('should return all characters by alias', function (done) {
 		setupTestData()
 			.then(function () {
-				sut.listByEmail('cool@email')
+				sut.list('cool@email')
 					.then(function (list) {
 						var c1 = list[0];
 						var c2 = list[1];

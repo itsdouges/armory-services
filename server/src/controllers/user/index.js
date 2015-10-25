@@ -4,6 +4,8 @@
 var password = require('password-hash-and-salt');
 var q = require('q');
 
+var CharacterController = require('../character');
+
 function UsersResource(models, Validator, gw2Api) {
 	var scope = this;
 
@@ -71,55 +73,14 @@ function UsersResource(models, Validator, gw2Api) {
 			mode: 'create'
 		});
 
-		var createUser = function (user) {
-			return models.User
-				.create(user)
-				.then(function (e) {
-					// if (!user.gw2ApiTokens) {
-					// 	return;
-					// }
-
-					// user.gw2ApiTokens.forEach(function (token) {
-					// 	promise.then(function () {
-					// 			return gw2Api
-					// 				.readAccount(token)
-					// 				.then(function (account) {
-					// 					var tokenItem = {
-					// 						token: token,
-					// 						accountName: account.name,
-					// 						accountId: account.id,
-					// 						UserId: e.id
-					// 					};
-
-					// 					return addApiToken(tokenItem);
-					// 				});
-					// 	});
-					// });
-				});
-		};
-
-		// var addApiToken = function (token) {
-		// 	return models
-		// 		.Gw2ApiToken
-		// 		.create(token);
-		// };
-
-		var loadInitialCharacters = function (token, userId) {
-			// todo: this logic will be duplicated into gw2-ping
-			// perhaps it will be beneficial to create an endpoint and ping 
-			// it internally instead
-		};
-
-		var promise = validator.validate(user)
+		return validator.validate(user)
 			.then(function () {
 				return hashPassword(user.password);
 			})
 			.then(function (passwordHash) {
 				user.passwordHash = passwordHash;
-				return createUser(user);
+				return models.User.create(user);
 			});
-
-		return promise;
 	};
 
 	/**
@@ -134,10 +95,57 @@ function UsersResource(models, Validator, gw2Api) {
 				where: {
 					email: email
 				}
-				// TODO: Bring back all gw2 api tokens.
 			})
 			.then(function (data) {
 				return data.dataValues;
+			})
+			.then(function (data) {
+				var characterController = new CharacterController(models, gw2Api);
+
+				return characterController
+					.list(email)
+					.then(function (characters) {
+						data.characters = characters;
+
+						return data;
+					});
+			});
+	};
+
+	/**
+	 * Read user resource.
+	 * Finding by email as that is what the user will be using for their
+	 * login credentials.
+	 */
+	UsersResource.prototype.readPublic = function (alias) {
+		return models
+			.User
+			.findOne({
+				where: {
+					alias: alias
+				}
+			})
+			.then(function (result) {
+				if (!result) {
+					return Promise.reject();
+				}
+
+				return result.dataValues;
+			})
+			.then(function (data) {
+				var characterController = new CharacterController(models, gw2Api);
+
+				return characterController
+					.list(null, data.alias)
+					.then(function (characters) {
+						var dataOut = {
+							alias: data.alias,
+							createdAt: data.createdAt,
+							characters: characters
+						};
+
+						return dataOut;
+					});
 			});
 	};
 	

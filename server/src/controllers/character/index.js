@@ -3,7 +3,9 @@
 var q = require('q');
 
 function CharacterController (models, gw2Api) {
-	CharacterController.prototype.read = function (name) {
+	// TODO: Add in where email = xyz so authenticated users can only
+	// Gain access to their own characters.
+	CharacterController.prototype.read = function (name, ignorePrivacy) {
 		var characterFromDb;
 
 		return models
@@ -31,17 +33,20 @@ function CharacterController (models, gw2Api) {
 					token: result.Gw2ApiTokenToken,
 					showCrafting: result.showCrafting,
 					showBags: result.showBags,
-					showEquipment: result.showEquipment
+					showEquipment: result.showEquipment,
+					showBuilds: result.showBuilds,
+					showPvp: result.showPvp,
+					showGuild: result.showGuild,
+					showPublic: result.showPublic
 				};
 			})
 			.then(function (data) {
 				return gw2Api.readCharacter(data.name, {
 					token: data.token,
-					showBags: data.showBags,
-					showCrafting: data.showCrafting,
-					// TODO: Test show equipment
-					showEquipment: data.showEquipment,
-					showBuilds: data.showBuilds || true
+					showBags: ignorePrivacy || data.showBags,
+					showCrafting: ignorePrivacy || data.showCrafting,
+					showEquipment: ignorePrivacy || data.showEquipment,
+					showBuilds: ignorePrivacy || data.showBuilds
 				})
 				.then(null, function (response) {
 					if (response.status === 403 || response.status === 401) {
@@ -70,8 +75,17 @@ function CharacterController (models, gw2Api) {
 			});
 	};
 
-	CharacterController.prototype.listByEmail = function (email) {
-		// todo: extend this for alias later.
+	CharacterController.prototype.list = function (email, alias) {
+		var where = {};
+
+		if (email) {
+			where.email = email;
+		}
+
+		if (alias) {
+			where.alias = alias;
+		}
+
 		return models
 			.Gw2Character
 			.findAll({
@@ -82,9 +96,7 @@ function CharacterController (models, gw2Api) {
 					},
 					include: [{
 						model: models.User,
-						where: {
-							email: email
-						}
+						where: where
 					}]
 				}]
 			})
@@ -95,7 +107,6 @@ function CharacterController (models, gw2Api) {
 						world: c.Gw2ApiToken.world,
 						name: c.name,
 						gender: c.gender,
-						permissions: c.permissions,
 						profession: c.profession,
 						level: c.level,
 						race: c.race
