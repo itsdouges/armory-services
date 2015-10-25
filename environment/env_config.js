@@ -76,7 +76,7 @@ var BETA = {
 			host_env_name: "FETCH_PORT_8081_TCP_ADDR"
 		},
 		allowed_cors: [
-			'beta.gw2armory.com'
+			'*'
 		]
 	};
 
