@@ -38,7 +38,7 @@ var DEV = {
 		},
 		ping: {
 			port: "8081",
-			interval: 600000,
+			interval: minutesToMs(10),
 			retries: 5,
 			verbose: true,
 			host_env_name: "FETCH_PORT_8081_TCP_ADDR"
@@ -70,7 +70,7 @@ var BETA = {
 		},
 		ping: {
 			port: "8081",
-			interval: 600000,
+			interval: minutesToMs(720),
 			retries: 5,
 			verbose: true,
 			host_env_name: "FETCH_PORT_8081_TCP_ADDR"
@@ -80,7 +80,9 @@ var BETA = {
 		]
 	};
 
-Object.freeze(DEV);
+function minutesToMs (min) {
+	return min * 60000;
+}
 
 module.exports = {
 	DEV: DEV,
