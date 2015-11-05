@@ -2,7 +2,7 @@
 
 var RESOURCE = Object.freeze({
 	get: '/users/me',
-	put: '/users/me',
+	put: '/users/me/password',
 	post: '/users',
 	publicGet: '/users/:alias'
 });
@@ -43,12 +43,11 @@ function UserResource(server, controller) {
     var user = {
     	email: req.username,
     	password: req.params.password,
-    	alias: req.params.alias,
     	currentPassword: req.params.currentPassword
     };
 
 		controller
-			.update(user)
+			.updatePassword(user)
 			.then(function () {
 				res.send(200);
 				return next();
@@ -62,8 +61,7 @@ function UserResource(server, controller) {
 		var user = {
 			alias: req.params.alias,
 			email: req.params.email.toLowerCase(),
-			password: req.params.password,
-			gw2ApiTokens: req.params.gw2ApiTokens
+			password: req.params.password
 		};
 
 		controller

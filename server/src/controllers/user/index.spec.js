@@ -55,9 +55,8 @@ describe('user resource', function () {
 		it('should add users resource in update mode to validator', function () {
 			expect(mockValidator.addResource).toHaveBeenCalledWith({
 				name: 'users',
-				mode: 'update',
+				mode: 'update-password',
 				rules: {
-					alias: ['required', 'unique-alias', 'no-white-space', 'min5'],
 					email: 'required',
 					currentPassword: ['required'],
 					password: ['required', 'password', 'no-white-space']
@@ -170,7 +169,7 @@ describe('user resource', function () {
 				.create(user)
 				.then(function (e) {
 					user.currentPassword = 'WRONGPASS';
-					return systemUnderTest.update(user);
+					return systemUnderTest.updatePassword(user);
 				})
 				.then(null, function (e) {
 					expect(e).toBe('Bad password');
@@ -196,7 +195,7 @@ describe('user resource', function () {
 					user.password = 'NewPass123';
 					user.oldHash = user.passwordHash;
 
-					return systemUnderTest.update(user);
+					return systemUnderTest.updatePassword(user);
 				})
 				.then(function (e) {
 					return systemUnderTest.read(user.email);
@@ -216,7 +215,7 @@ describe('user resource', function () {
 			var user = {};
 
 			systemUnderTest
-				.update(user)
+				.updatePassword(user)
 				.then(null, function (e) {
 					expect(e).toBe('errorrr');
 

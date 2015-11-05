@@ -54,9 +54,8 @@ function UsersResource(models, Validator, gw2Api) {
 			}
 		}).addResource({
 			name: 'users',
-			mode: 'update',
+			mode: 'update-password',
 			rules: {
-				alias: ['required', 'unique-alias', 'no-white-space', 'min5'],
 				email: 'required',
 				currentPassword: ['required'],
 				password: ['required', 'password', 'no-white-space']
@@ -153,10 +152,10 @@ function UsersResource(models, Validator, gw2Api) {
 	 * Update user resource. 
 	 * Currently only changing your password is supported.
 	 */
-	UsersResource.prototype.update = function (user) {
+	UsersResource.prototype.updatePassword = function (user) {
 		var validator = Validator({
 			resource: 'users',
-			mode: 'update'
+			mode: 'update-password'
 		});
 
 		var promise = validator
