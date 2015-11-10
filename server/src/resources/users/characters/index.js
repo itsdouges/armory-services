@@ -43,7 +43,7 @@ function CharactersResource(server, controller) {
     }
 		
 		controller
-			.read(req.params.name, true)
+			.read(req.params.name, true, req.username)
 			.then(function (character) {
 				res.send(200, character);
 				return next();

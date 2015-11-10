@@ -33,6 +33,58 @@ describe('character controller', function () {
 			});
 	});
 
+	it('should reject if email doesnt match', function (done) {
+		models
+			.User
+			.create({
+				email: 'cool@email',
+				passwordHash: 'coolpassword',
+				alias: 'madou'
+			})
+			.then(function () {
+				return models
+					.User
+					.findOne({
+						where: {
+							email: 'cool@email'
+						}
+					});
+			})
+			.then(function (data) {
+				return models
+					.Gw2ApiToken
+					.create({
+						token: 'swag',
+						accountName: 'nameyname',
+						accountId: 'haah',
+						permissions: 'cool,permissions',
+						world: 1234,
+						UserId: data.id
+					});
+			})
+			.then(function () {
+				return models
+					.Gw2Character
+					.create({
+						Gw2ApiTokenToken: 'swag',
+						name: 'blastrn',
+						gender: 'ay',
+						profession: 'hehe',
+						level: 123,
+						created: new Date(),
+						age: 1,
+						race: 'ay',
+						deaths: 1
+					});
+			})
+			.then(function () {
+				return sut.read('blastrn', true, 'notcool@email');
+			})
+			.then(null, function (data) {
+				done();
+			});
+	});
+
 	// the orchestration to get this unit test running is a bit crazy.. 
 	// dont really want to mock out the db though. no point when we can
 	// test in memory. ill think about it.
@@ -84,7 +136,7 @@ describe('character controller', function () {
 					});
 			})
 			.then(function () {
-				return sut.read('blastrn', true);
+				return sut.read('blastrn', true, 'cool@email');
 			})
 			.then(function (data) {
 				expect(data).toEqual({

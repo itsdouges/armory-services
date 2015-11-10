@@ -5,12 +5,10 @@ var q = require('q');
 function CharacterController (models, gw2Api) {
 	// TODO: Add in where email = xyz so authenticated users can only
 	// Gain access to their own characters.
-	CharacterController.prototype.read = function (name, ignorePrivacy) {
+	CharacterController.prototype.read = function (name, ignorePrivacy, email) {
 		var characterFromDb;
 
-		return models
-			.Gw2Character
-			.findOne({
+		var query = {
 				include: [{
 					model: models.Gw2ApiToken,
 					where: {
@@ -20,7 +18,20 @@ function CharacterController (models, gw2Api) {
 				where: {
 					name: name
 				}
-			})
+			};
+
+		if (email) {
+			query.include[0].include = [{
+				model: models.User,
+				where: {
+					email: email
+				}
+			}];
+		}
+
+		return models
+			.Gw2Character
+			.findOne(query)
 			.then(function (result) {
 				if (!result) {
 					return q.reject();
