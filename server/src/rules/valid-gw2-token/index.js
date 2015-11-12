@@ -7,8 +7,6 @@ function validGw2Token(name, val, dependencies) {
 		return q.resolve();
 	}
 
-	// TODO: Add validation to check account id doesnt already exist!
-
 	var promise = dependencies.models
 		.Gw2ApiToken
 		.findOne({ where: { token: val }})
@@ -24,7 +22,6 @@ function validGw2Token(name, val, dependencies) {
 		});
 
 		function checkGw2Api(token) {
-			// TODO: Put retry logic here incase the call fails
 			var authCheck = dependencies.axios.get(dependencies.env.gw2.endpoint + 'v2/tokeninfo', {
 					headers: {
 						'Authorization' : 'Bearer ' + token

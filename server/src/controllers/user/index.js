@@ -50,7 +50,7 @@ function UsersResource(models, Validator, gw2Api) {
 			rules: {
 				alias: ['required', 'unique-alias', 'no-white-space', 'min5'],
 				email: ['required', 'unique-email', 'no-white-space'],
-				password: ['required', 'password', 'no-white-space']
+				password: ['required', 'ezpassword', 'no-white-space']
 			}
 		}).addResource({
 			name: 'users',
@@ -58,7 +58,7 @@ function UsersResource(models, Validator, gw2Api) {
 			rules: {
 				email: 'required',
 				currentPassword: ['required'],
-				password: ['required', 'password', 'no-white-space']
+				password: ['required', 'ezpassword', 'no-white-space']
 			}
 		});
 

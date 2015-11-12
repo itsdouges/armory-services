@@ -47,7 +47,7 @@ describe('user resource', function () {
 				rules: {
 					alias: ['required', 'unique-alias', 'no-white-space', 'min5'],
 					email: ['required', 'unique-email', 'no-white-space'],
-					password: ['required', 'password', 'no-white-space']
+					password: ['required', 'ezpassword', 'no-white-space']
 				}
 			});
 		});
@@ -59,7 +59,7 @@ describe('user resource', function () {
 				rules: {
 					email: 'required',
 					currentPassword: ['required'],
-					password: ['required', 'password', 'no-white-space']
+					password: ['required', 'ezpassword', 'no-white-space']
 				}
 			});
 		});
