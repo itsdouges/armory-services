@@ -76,7 +76,7 @@ function deployToEb (zipPath, environmentName) {
     application.deploy({
         archiveFilePath: zipPath,
         environmentName: environmentName,
-        awsStackName: '64bit Amazon Linux 2015.03 v2.0.2 running Multi-container Docker 1.7.1 (Generic)',
+        awsStackName: '64bit Amazon Linux 2015.03 v2.0.4 running Multi-container Docker 1.7.1 (Generic)',
         // http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html
         beanstalkConfig: [
         {
