@@ -1,39 +1,79 @@
 'use strict';
 
 var q = require('q');
-var axios = require('axios');
+
 var Models = require('../../src/models');
 var Controller = require('../../src/controllers/ping-controller');
 
-var fetchGw2 = require('../../src/services/fetch-gw2');
+var mockFetchGw2 = {};
 
 describe('ping controller', function () {
 	var models;
 	var sut;
 
 	beforeEach(function (done) {
+		mockFetchGw2.fetchCharacters = function () {};
+
 		models = new Models(TestDb());
 		models.sequelize.sync({
 			force: true
 		}).then(function () {
 			sut = new Controller({
 				gw2: {
-					endpoint: 'https://api.guildwars2.com/'
+					endpoint: 'api-tho'
 				}
-			}, axios, models, fetchGw2);
+			}, {}, models, mockFetchGw2);
 			done();
 		});
 	});
 
-	it('should hit the characters endpoint for every valid token and add character data to db', function (done) {
+	it('should delete characters not brought back from the gw2 api', function (done) {
+		spyOn(mockFetchGw2, 'fetchCharacters').andReturn(q.resolve([{
+			name: 'character1',
+			race: 'race',
+			gender: 'gender',
+			profession: 'profession',
+			level: 69,
+			created: '01/01/90',
+			age: 20,
+			deaths: 2,
+			Gw2ApiTokenToken: '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15'
+		}]));
+
 		seedData(models)
 			.then(function () {
-				return sut.ping();
+				return models.Gw2Character.findOne({
+					where: {
+						name: 'character'
+					}
+				});
+			})
+			.then(function (character) {
+				expect(character).toBeDefined();
 			})
 			.then(function () {
+				return sut.fetchUserCharacterData({ token: '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15' });
+			})
+			.then(function () {
+				return models.Gw2Character.findOne({
+					where: {
+						name: 'character'
+					}
+				});
+			})
+			.then(function (character) {
+				expect(character).toBe(null);
+			})			
+			.then(function () {
+				return models.Gw2Character.findOne({
+					where: {
+						name: 'character1'
+					}
+				});
+			})
+			.then(function (character) {
+				expect(character).toBeDefined();
 				done();
-			}, function (e) {
-				console.log(e)
 			});
-	}, 20000);
+	});
 });

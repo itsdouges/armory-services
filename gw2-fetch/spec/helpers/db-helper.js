@@ -35,43 +35,21 @@ module.exports = {
 						world: 1234,
 						UserId: user.id
 					});
-					// .then(function () {
-					// 	return models
-					// 		.Gw2ApiToken
-					// 		.create({
-					// 			token: 'another5real',
-					// 			accountName: 'cool.1234',
-					// 			accountId: 'realiddoe',
-					// 			permissions: 'cool,permissions',
-					// 			world: 1234,
-					// 			UserId: user.id,
-					// 			valid: false
-					// 		});
-					// })
-					// .then(function () {
-					// 	return models
-					// 		.Gw2ApiToken
-					// 		.create({
-					// 			token: '25E6FAC3-1912-7E47-9420-2965C5E4D63DEAA54B0F-092E-48A8-A2AE-9E197DF4BC8B',
-					// 			accountName: 'cool.aaaa',
-					// 			accountId: 'heheid',
-					// 			permissions: 'cool,permissions',
-					// 			world: 1234,
-					// 			UserId: user.id
-					// 		});
-					// })
-					// .then(function () {
-					// 	return models
-					// 		.Gw2ApiToken
-					// 		.create({
-					// 			token: '70EC1A3F-5EF3-3C46-B367-79248F7C8DD241FB192B-DA7E-499D-8A54-8675470F1F71',
-					// 			accountName: 'cool.aaaa',
-					// 			world: 1234,
-					// 			permissions: 'cool,permissions',
-					// 			accountId: 'hheid',
-					// 			UserId: user.id
-					// 		});
-					// });
+			})
+			.then(function (token) {
+				return models
+					.Gw2Character
+					.create({
+						name: 'character',
+						race: 'race',
+						gender: 'gender',
+						profession: 'profession',
+						level: 69,
+						created: '01/01/90',
+						age: 20,
+						deaths: 2,
+						Gw2ApiTokenToken: token.token
+					});
 			});
 	}
 };

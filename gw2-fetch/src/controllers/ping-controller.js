@@ -32,32 +32,35 @@ function PingController(env, axios, models, fetchGw2) {
 	PingController.prototype.fetchUserCharacterData = function (token) {
 		return fetchGw2.fetchCharacters(env.gw2.endpoint, token.token, axios, models)
 			.then(function (characters) {
-				var dbPromises = []; 
+				return models.Gw2Character.destroy({
+					where: {
+						Gw2ApiTokenToken: token.token
+					}
+				})
+				.then(function () {
+					var dbPromises = []; 
 
-				// edge cases
-				// 1. user deletes a character
-				// 2. user renames a character (aka delete)
-				// 3. token is invalid
+					characters.forEach(function (char) {
+						var promise = models
+							.Gw2Character
+							.upsert({
+								name: char.name,
+								race: char.race,
+								gender: char.gender,
+								profession: char.profession,
+								level: char.level,
+								guild: char.guild,
+								created: char.created,
+								age: char.age,
+								deaths: char.deaths,
+								Gw2ApiTokenToken: token.token
+						});
 
-				characters.forEach(function (char) {
-					var promise = models.Gw2Character
-						.upsert({
-							name: char.name,
-							race: char.race,
-							gender: char.gender,
-							profession: char.profession,
-							level: char.level,
-							guild: char.guild,
-							created: char.created,
-							age: char.age,
-							deaths: char.deaths,
-							Gw2ApiTokenToken: token.token
+						dbPromises.push(promise);
 					});
 
-					dbPromises.push(promise);
+					return q.all(dbPromises);
 				});
-
-				return q.all(dbPromises);
 			})
 			.catch(function (response) {
 				switch (response.status) {

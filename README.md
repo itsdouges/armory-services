@@ -1,6 +1,6 @@
 # api.gw2armory.com ![Build Status](https://travis-ci.org/madou/api.gw2armory.com.svg)
 
-> Keep the back strong so the front can flourish.
+> Get your baby back-end ribs right here.
 
 ## Usage
 
