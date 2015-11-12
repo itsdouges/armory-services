@@ -3,8 +3,6 @@
 var q = require('q');
 
 function CharacterController (models, gw2Api) {
-	// TODO: Add in where email = xyz so authenticated users can only
-	// Gain access to their own characters.
 	CharacterController.prototype.read = function (name, ignorePrivacy, email) {
 		var characterFromDb;
 
@@ -66,15 +64,17 @@ function CharacterController (models, gw2Api) {
 								where: {
 									token: characterFromDb.Gw2ApiToken.token
 								}
-							}).then(function () {
-								return q.reject();
-							})
+							});
 					}
 
 					return q.reject(response);
 				});
 			})
 			.then(function (data) {
+				if (data === 1) {
+					return undefined;
+				}
+
 				data.authorization = {
 					showPublic: characterFromDb.showPublic,
 					showGuild: characterFromDb.showGuild

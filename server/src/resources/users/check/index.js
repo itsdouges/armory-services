@@ -6,6 +6,8 @@ var RESOURCE = Object.freeze({
     alias_endpoint: "/users/check/alias/:alias"
 });
 
+// TODO: Refactor validator to resolve errors not reject.
+
 function CheckResource(server, controller) {
 	server.get(RESOURCE.token_endpoint, function (req, res, next) {
 		controller

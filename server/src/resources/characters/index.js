@@ -9,11 +9,15 @@ function CharactersResource(server, controller) {
 		controller
 			.read(req.params.name, false)
 			.then(function (character) {
-				res.send(200, character);
+				if (character) {
+					res.send(200, character);
+				} else {
+					res.send(404);
+				}
+
 				return next();
-			}, function (e) {
-				// todo: error handling
-				res.send(404);
+			}, function (error) {
+				res.send(500, error);
 				return next();
 			});
 	});

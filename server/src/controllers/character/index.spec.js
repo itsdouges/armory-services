@@ -284,7 +284,9 @@ describe('character controller', function () {
 			.then(function () {
 				return sut.read('blastrn');
 			})
-			.then(null, function (data) {
+			.then(function (data) {
+				expect(data).toBe(undefined);
+				
 				return models.Gw2ApiToken
 					.findOne({
 						where: {

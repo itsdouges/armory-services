@@ -13,8 +13,6 @@ function Gw2TokenController (models, Validator, gw2Api) {
 		}
 	});
 
-	// TODO: Clean up messy async code.
-
 	Gw2TokenController.prototype.add = function (email, token) {
 		function addTokenToUser (id, gw2Token) {
 			return gw2Api

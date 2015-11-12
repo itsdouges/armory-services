@@ -7,8 +7,6 @@ var RESOURCE = Object.freeze({
 
 function Gw2TokenResource(server, controller) {
 	server.get(RESOURCE.main, function (req, res, next) {
-		// TODO: TEST
-
     if (!req.username) {
         return res.sendUnauthenticated();
     }
@@ -18,11 +16,13 @@ function Gw2TokenResource(server, controller) {
 			.then(function (tokens) {
 				res.send(200, tokens);
 				return next();
-			}, function (e) {
-				res.send(400, e);
+			}, function (err) {
+				res.send(500, err);
 				return next();
 			});
 	});
+
+	// TODO: Refactor validator to resolve errors not reject.
 
 	server.post(RESOURCE.main, function (req, res, next) {
     if (!req.username) {
@@ -50,8 +50,8 @@ function Gw2TokenResource(server, controller) {
 			.then(function () {
 				res.send(200);
 				return next();
-			}, function (e) {
-				res.send(400, e);
+			}, function (err) {
+				res.send(500, err);
 				return next();
 			});
 	});

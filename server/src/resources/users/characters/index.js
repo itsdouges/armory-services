@@ -17,9 +17,8 @@ function CharactersResource(server, controller) {
 			.then(function (characters) {
 				res.send(200, characters);
 				return next();
-			}, function (e) {
-				// todo: error handling
-				res.send(404);
+			}, function (error) {
+				res.send(500, error);
 				return next();
 			});
 	});
@@ -30,9 +29,8 @@ function CharactersResource(server, controller) {
 			.then(function (characters) {
 				res.send(200, characters);
 				return next();
-			}, function (e) {
-				// todo: error handling
-				res.send(404);
+			}, function (error) {
+				res.send(500, error);
 				return next();
 			});
 	});
@@ -45,10 +43,15 @@ function CharactersResource(server, controller) {
 		controller
 			.read(req.params.name, true, req.username)
 			.then(function (character) {
-				res.send(200, character);
+				if (character) {
+					res.send(200, character);
+				} else {
+					res.send(404);
+				}
+
 				return next();
-			}, function (e) {
-				res.send(404);
+			}, function (error) {
+				res.send(500, error);
 				return next();
 			});
 	});
