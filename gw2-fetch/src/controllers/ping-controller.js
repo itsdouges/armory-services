@@ -30,7 +30,8 @@ function PingController(env, axios, models, fetchGw2) {
 	};
 
 	PingController.prototype.fetchUserCharacterData = function (token) {
-		return fetchGw2.fetchCharacters(env.gw2.endpoint, token, axios)
+		return fetchGw2
+			.fetchCharacters(env.gw2.endpoint, token, axios)
 			.then(function (characters) {
 				// TODO: Diff and remove characters NOT in array, instead of removing everything.
 				return models.Gw2Character.destroy({
@@ -39,10 +40,10 @@ function PingController(env, axios, models, fetchGw2) {
 					}
 				})
 				.then(function () {
-					var dbPromises = []; 
+					var promises = []; 
 
 					characters.forEach(function (char) {
-						var promise = models
+						var dbPromise = models
 							.Gw2Character
 							.upsert({
 								name: char.name,
@@ -57,10 +58,37 @@ function PingController(env, axios, models, fetchGw2) {
 								Gw2ApiTokenToken: token
 						});
 
-						dbPromises.push(promise);
+						promises.push(dbPromise);
+
+						if (!char.guild) {
+							return;
+						}
+
+						var guildPromise = models.Gw2Guild.findOne({
+							where: {
+								id: char.guild
+							}
+						})
+						.then(function (guild) {
+							if (guild) {
+								return;
+							}
+
+							return fetchGw2
+								.guild(char.guild)
+								.then(function (guild) {
+									return models.Gw2Guild.create({
+										id: guild.guild_id,
+										name: guild.guild_name,
+										tag: guild.tag
+									});
+								});
+						});
+
+						promises.push(guildPromise);
 					});
 
-					return q.allSettled(dbPromises);
+					return q.allSettled(promises);
 				});
 			})
 			.catch(function (response) {

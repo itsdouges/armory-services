@@ -2,6 +2,27 @@
 
 var q = require('q');
 
+var env = require('../../env/env_config');
+var axios = require('axios');
+
+function guild (id, retries) {
+	if (retries === undefined) {
+		retries = 5;
+	}
+
+	return axios.get(env.gw2.endpoint + 'v1/guild_details.json?guild_id=' + id)
+		.then(function (response) {
+			return response.data;
+		}, function (response) {
+			if (response.status >= 500 && retries > 1) {
+				console.log('Recieved response status of ' + response.status + ', retrying. ' + retries + ' retries left.');
+				return guild(id, retries - 1);
+			}
+
+			return q.reject(response);
+		});
+}
+
 function fetchCharacters (endpoint, token, axios, retries) {
 	if (retries === undefined) {
 		retries = 5;
@@ -25,5 +46,6 @@ function fetchCharacters (endpoint, token, axios, retries) {
 }
 
 module.exports = {
+	guild: guild,
 	fetchCharacters: fetchCharacters
 };

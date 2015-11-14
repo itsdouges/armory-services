@@ -1,6 +1,6 @@
 'use strict';
 
-function fetchTokens(models) {
+function readTokens (models) {
 	return models.Gw2ApiToken
 		.findAll({
 			where: {
@@ -17,4 +17,4 @@ function fetchTokens(models) {
 		});
 }
 
-module.exports = fetchTokens;
+module.exports = readTokens;
