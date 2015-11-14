@@ -82,7 +82,25 @@ function CharacterController (models, gw2Api) {
 
 				data.accountName = characterFromDb.Gw2ApiToken.accountName;
 
-				return data;
+				if (characterFromDb.guild) {
+					return models.Gw2Guild.findOne({
+						where: {
+							id: characterFromDb.guild
+						}
+					})
+					.then(function (guild) {
+						if (!guild) {
+							return data;
+						}
+
+						data.guild_tag = guild.tag
+						data.guild_name = guild.name;
+
+						return data;
+					});
+				} else {
+					return data;
+				}
 			});
 	};
 

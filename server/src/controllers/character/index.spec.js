@@ -122,11 +122,21 @@ describe('character controller', function () {
 			})
 			.then(function () {
 				return models
+					.Gw2Guild
+					.create({
+						name: 'Guild Name',
+						id: 'guild',
+						tag: '[tag]'
+					})
+			})
+			.then(function () {
+				return models
 					.Gw2Character
 					.create({
 						Gw2ApiTokenToken: 'swag',
 						name: 'blastrn',
 						gender: 'ay',
+						guild: 'guild',
 						profession: 'hehe',
 						level: 123,
 						created: new Date(),
@@ -144,7 +154,9 @@ describe('character controller', function () {
 						showPublic: true,
 						showGuild: true
 					},
-					accountName: 'nameyname'
+					accountName: 'nameyname',
+					guild_tag: '[tag]',
+					guild_name: 'Guild Name'
 				});
 
 				expect(mockGw2Api.readCharacter).toHaveBeenCalledWith('blastrn', {
@@ -234,7 +246,7 @@ describe('character controller', function () {
 			defer.resolve({});
 	});
 
-	it('should remove token if we recieved a 403 response', function (done) {
+	it('should remove token if we recieved a 401/403 response', function (done) {
 		var defer = q.defer();
 		spyOn(mockGw2Api, 'readCharacter').and.returnValue(defer.promise);
 
@@ -345,9 +357,19 @@ describe('character controller', function () {
 						level: 123,
 						created: new Date(),
 						age: 1,
+						guild: 'guild',
 						race: 'ay',
 						deaths: 1
 					});
+			})
+			.then(function () {
+				return models
+					.Gw2Guild
+					.create({
+						name: 'Guild Name',
+						id: 'guild',
+						tag: '[tag]'
+					})
 			})
 			.then(function () {
 				return models
@@ -363,7 +385,7 @@ describe('character controller', function () {
 						race: 'ayay',
 						deaths: 1
 					});
-			});;
+			});
 	};
 
 	it('should return all characters by alias', function (done) {
