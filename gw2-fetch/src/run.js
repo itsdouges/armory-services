@@ -31,9 +31,7 @@ server.get('/', function (req, res, next) {
 server.post('/fetch-characters', function (req, res, next) {
 	console.log('Single fetch triggered for', req.params.token);
 
-	pinger.fetchUserCharacterData({
-			token: req.params.token
-		})
+	pinger.fetchUserCharacterData(req.params.token)
 		.then(function () {
 	    res.send(200);
 	    return next();
