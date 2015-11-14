@@ -35,7 +35,7 @@ describe('ping controller', function () {
 			}, function (e) {
 				console.log(e)
 			});
-	}, 20000);
+	}, 40000);
 
 	it('should be able to call gw2 api 1,000 times and resolve', function (done) {
 		seedData(models)

@@ -7,7 +7,7 @@ module.exports = {
         logging: false
     });
 	},
-	seedData:	function (models, addBadTokens) {
+	seedData:	function (models) {
 		var userId;
 			
 		return models
