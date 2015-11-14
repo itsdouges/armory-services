@@ -30,7 +30,7 @@ function PingController(env, axios, models, fetchGw2) {
 	};
 
 	PingController.prototype.fetchUserCharacterData = function (token) {
-		return fetchGw2.fetchCharacters(env.gw2.endpoint, token, axios, models)
+		return fetchGw2.fetchCharacters(env.gw2.endpoint, token, axios)
 			.then(function (characters) {
 				// TODO: Diff and remove characters NOT in array, instead of removing everything.
 				return models.Gw2Character.destroy({
