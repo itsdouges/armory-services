@@ -7,7 +7,9 @@ module.exports = {
         logging: false
     });
 	},
-	seedData:	function (models) {
+	seedData:	function (models, addBadTokens) {
+		var userId;
+			
 		return models
 			.User
 			.create({
@@ -15,16 +17,9 @@ module.exports = {
 				passwordHash: 'realhashseriously',
 				alias: 'huedwell'
 			})
-			.then(function () {
-				return models
-					.User
-					.findOne({
-						where: {
-							email: 'cool@email.com'
-						}
-					});
-			})
 			.then(function (user) {
+				userId = user.id;
+
 				return models
 					.Gw2ApiToken
 					.create({
@@ -33,7 +28,7 @@ module.exports = {
 						accountId: 'haha_id',
 						permissions: 'cool,permissions',
 						world: 1234,
-						UserId: user.id
+						UserId: userId
 					});
 			})
 			.then(function (token) {
@@ -49,6 +44,18 @@ module.exports = {
 						age: 20,
 						deaths: 2,
 						Gw2ApiTokenToken: token.token
+					});
+			})
+			.then(function () {
+				return models
+					.Gw2ApiToken
+					.create({
+						token: '25E6FAC3-1912-7E47-9420-2965C5E4D63DEAA54B0F-092E-48A8-A2AE-9E197DF4BC8B',
+						accountName: 'cool.4322',
+						accountId: 'haha_iddd',
+						permissions: 'cool,permissions',
+						world: 1234,
+						UserId: userId
 					});
 			});
 	}

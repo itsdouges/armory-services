@@ -20,7 +20,6 @@ describe('fetch token service', function () {
 		.then(function (userId) {
 			fetchTokens(models)
 				.then(function (items) {
-					expect(items.length).toBe(1);
 					expect(items[0].token).toBe('938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15');
 
 					done();

@@ -52,7 +52,7 @@ describe('ping controller', function () {
 				expect(character).toBeDefined();
 			})
 			.then(function () {
-				return sut.fetchUserCharacterData({ token: '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15' });
+				return sut.fetchUserCharacterData('938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15');
 			})
 			.then(function () {
 				return models.Gw2Character.findOne({

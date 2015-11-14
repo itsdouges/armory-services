@@ -36,4 +36,22 @@ describe('ping controller', function () {
 				console.log(e)
 			});
 	}, 20000);
+
+	it('should be able to call gw2 api 1,000 times and resolve', function (done) {
+		seedData(models)
+			.then(function () {
+				var tokens = [];
+
+				for(var i = 0; i < 1000; i++) {
+					tokens.push('938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15');
+				}
+
+				return sut.mapTokensAndCallApi(tokens);
+			})
+			.then(function () {
+				done();
+			}, function (e) {
+				console.log(e)
+			});
+	}, 500000);
 });

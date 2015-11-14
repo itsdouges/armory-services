@@ -4,11 +4,12 @@
   "description": "Gw2 fetch docker file for api.armory.net.au.",
   "main": "run.js",
   "dependencies": {
+    "axios": "^0.5.4",
     "mysql": "^2.8.0",
     "q": "^1.4.1",
-    "axios": "^0.5.4",
     "restify": "^3.0.3",
-    "sequelize": "^3.6.0"
+    "sequelize": "^3.6.0",
+    "throat": "^2.0.2"
   },
   "devDependencies": {
     "jasmine-node": "^1.14.5",

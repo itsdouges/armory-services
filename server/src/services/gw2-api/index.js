@@ -32,7 +32,6 @@ function Gw2Api (axios, env) {
 		return q.all([accountPromise, infoPromise])
 			.spread(function (acc, info) {
 				return q.resolve({
-					//name: info.name,
 					info: info.permissions,
 					world: acc.world,
 					accountId: acc.id,

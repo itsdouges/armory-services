@@ -1,6 +1,7 @@
 'use strict';
 
 var q = require('q');
+var throat = require('throat');
 var fetchTokens = require('../services/fetch-tokens');
 
 /**
@@ -9,32 +10,32 @@ var fetchTokens = require('../services/fetch-tokens');
 function PingController(env, axios, models, fetchGw2) {
 	var that = this;
 
+	PingController.prototype.mapTokensAndCallApi = function (tokens) {
+		return q.allSettled(tokens.map(throat(function (token) {
+			return that.fetchUserCharacterData(token.token);
+		}, 20)));
+	};
+
 	PingController.prototype.ping = function () {
 		var promise = fetchTokens(models)
-			.then(function (tokens) {
-				var userPromises = [];
-
-				tokens.forEach(function (token) {
-					userPromises.push(that.fetchUserCharacterData(token));
-				});
-
-				return q.all(userPromises);
-			})
+			.then(that.mapTokensAndCallApi)
 			.then(function () {
 				console.log('Finished fetch!');
 			}, function (e) {
-				console.log(e);
+				console.trace(e);
+				console.error('Something bad happened', e);
 			});
 
 		return promise;
 	};
 
 	PingController.prototype.fetchUserCharacterData = function (token) {
-		return fetchGw2.fetchCharacters(env.gw2.endpoint, token.token, axios, models)
+		return fetchGw2.fetchCharacters(env.gw2.endpoint, token, axios, models)
 			.then(function (characters) {
+				// TODO: Diff and remove characters NOT in array, instead of removing everything.
 				return models.Gw2Character.destroy({
 					where: {
-						Gw2ApiTokenToken: token.token
+						Gw2ApiTokenToken: token
 					}
 				})
 				.then(function () {
@@ -53,13 +54,13 @@ function PingController(env, axios, models, fetchGw2) {
 								created: char.created,
 								age: char.age,
 								deaths: char.deaths,
-								Gw2ApiTokenToken: token.token
+								Gw2ApiTokenToken: token
 						});
 
 						dbPromises.push(promise);
 					});
 
-					return q.all(dbPromises);
+					return q.allSettled(dbPromises);
 				});
 			})
 			.catch(function (response) {
@@ -70,7 +71,7 @@ function PingController(env, axios, models, fetchGw2) {
 						return models.Gw2ApiToken
 							.destroy({
 								where: {
-									token: token.token
+									token: token
 								}
 							});
 				}
