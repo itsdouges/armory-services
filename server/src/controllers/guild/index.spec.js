@@ -101,7 +101,8 @@ describe('guild controller', function () {
 							gender: 'gender', 
 							profession: 'profession', 
 							level: 69, 
-							race: 'race' 
+							race: 'race',
+							userAlias: 'huedwell' 
 						},
 						{ 
 							accountName: 'accname', 
@@ -110,7 +111,8 @@ describe('guild controller', function () {
 							gender: 'gender', 
 							profession: 'profession', 
 							level: 69, 
-							race: 'race' 
+							race: 'race',
+							userAlias: 'huedwell'
 						}
 					]
 				});

@@ -22,7 +22,13 @@ function guildController (models) {
 			return models.Gw2Character.findAll({
 					where: {
 						guild: guild.id
-					}
+					},
+					include: [{
+						model: models.Gw2ApiToken,
+						include: [{
+							model: models.User
+						}]
+					}]
 				})
 				.then(function (characters) {
 					var mappedCharacters = characters.map(function (c) {
@@ -33,7 +39,8 @@ function guildController (models) {
 							gender: c.gender,
 							profession: c.profession,
 							level: c.level,
-							race: c.race
+							race: c.race,
+							userAlias: c.Gw2ApiToken.User.alias
 						};
 					});
 
