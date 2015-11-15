@@ -77,6 +77,7 @@ function Server(models, config) {
 
 	require('./resources')(server);
 	require('./resources/characters')(server, characters);
+	require('./resources/guilds')(server, models);
 	require('./resources/users')(server, users);
 	require('./resources/users/check')(server, checks);
 	require('./resources/users/gw2-token')(server, gw2Tokens);

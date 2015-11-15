@@ -143,10 +143,6 @@ function CharacterController (models, gw2Api) {
 				});
 			});
 	};
-
-	// TODO: Update character endpoint!
-	// TODO: List characters (by user) endpoint!
-	// TODO: List characters (by guild) endpoint!
 }
 
 module.exports = CharacterController;
