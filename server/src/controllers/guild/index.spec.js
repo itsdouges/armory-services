@@ -95,7 +95,7 @@ describe('guild controller', function () {
 					id: 'im-guild', 
 					tag: 'tag', 
 					characters: [{ 
-							accountName: 'accname', 
+							accountName: 'cool.4321', 
 							world: 'world', 
 							name: 'character', 
 							gender: 'gender', 
@@ -105,7 +105,7 @@ describe('guild controller', function () {
 							userAlias: 'huedwell' 
 						},
 						{ 
-							accountName: 'accname', 
+							accountName: 'cool.4321', 
 							world: 'world', 
 							name: 'character!', 
 							gender: 'gender', 

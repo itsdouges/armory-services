@@ -33,14 +33,14 @@ function guildController (models) {
 				.then(function (characters) {
 					var mappedCharacters = characters.map(function (c) {
 						return {
-							accountName: 'accname',
 							world: 'world',
 							name: c.name,
 							gender: c.gender,
 							profession: c.profession,
 							level: c.level,
 							race: c.race,
-							userAlias: c.Gw2ApiToken.User.alias
+							userAlias: c.Gw2ApiToken.User.alias,
+							accountName: c.Gw2ApiToken.accountName
 						};
 					});
 
