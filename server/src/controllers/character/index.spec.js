@@ -156,7 +156,8 @@ describe('character controller', function () {
 					},
 					accountName: 'nameyname',
 					guild_tag: '[tag]',
-					guild_name: 'Guild Name'
+					guild_name: 'Guild Name',
+					alias: 'madou'
 				});
 
 				expect(mockGw2Api.readCharacter).toHaveBeenCalledWith('blastrn', {
@@ -229,7 +230,8 @@ describe('character controller', function () {
 						showPublic: true,
 						showGuild: true
 					},
-					accountName: 'nameyname'
+					accountName: 'nameyname',
+					alias: 'madou'
 				});
 
 				expect(mockGw2Api.readCharacter).toHaveBeenCalledWith('blastrn', {

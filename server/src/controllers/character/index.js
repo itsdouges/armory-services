@@ -9,9 +9,9 @@ function CharacterController (models, gw2Api) {
 		var query = {
 				include: [{
 					model: models.Gw2ApiToken,
-					where: {
-						valid: true
-					}
+					include: [{
+						model: models.User
+					}]
 				}],
 				where: {
 					name: name
@@ -81,6 +81,7 @@ function CharacterController (models, gw2Api) {
 				};
 
 				data.accountName = characterFromDb.Gw2ApiToken.accountName;
+				data.alias = characterFromDb.Gw2ApiToken.User.alias;
 
 				if (characterFromDb.guild) {
 					return models.Gw2Guild.findOne({
