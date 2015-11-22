@@ -67,6 +67,7 @@ function Server(models, config) {
 
 	server.use(restify.authorizationParser());
 	server.use(restify.bodyParser());
+	server.use(restify.queryParser());
 	server.use(restify.gzipResponse());
 
 	restifyOAuth2.ropc(server, {
@@ -78,6 +79,7 @@ function Server(models, config) {
 	require('./resources')(server);
 	require('./resources/characters')(server, characters);
 	require('./resources/guilds')(server, models);
+	require('./resources/search')(server, models);
 	require('./resources/users')(server, users);
 	require('./resources/users/check')(server, checks);
 	require('./resources/users/gw2-token')(server, gw2Tokens);
