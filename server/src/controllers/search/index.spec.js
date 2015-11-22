@@ -69,7 +69,10 @@ describe('search controller', function () {
 							resource: 'characters',
 							name: 'aaamadouuuu',
 							accountName: 'accName',
-							alias: 'madou'
+							alias: 'madou',
+							level: 1,
+							profession: 'carpenter',
+							race: 'girl'
 						}, {
 							resource: 'guilds',
 							name: 'guildOfMadou'

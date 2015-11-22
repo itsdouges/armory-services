@@ -38,7 +38,10 @@ function controller (models) {
 					resource: 'characters',
 					name: result.name,
 					alias: result.Gw2ApiToken.User.alias,
-					accountName: result.Gw2ApiToken.accountName
+					accountName: result.Gw2ApiToken.accountName,
+					profession: result.profession,
+					level: result.level,
+					race: result.race
 				};
 			});
 		});
