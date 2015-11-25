@@ -55,7 +55,7 @@ var BETA = {
 			password: "password", // move out of config into a env variable
 			options: {
 				dialect: "mysql",
-				host: "gw2armory-beta.czyc9rwqas2f.us-west-2.rds.amazonaws.com"
+				host: "gw2armory-beta-1.czyc9rwqas2f.us-west-2.rds.amazonaws.com"
 			}
 		},
 		server: {
