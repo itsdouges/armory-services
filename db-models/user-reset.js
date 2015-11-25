@@ -3,7 +3,7 @@
 // NOTE: THIS IS A COPIED FILE FROM db-models!
 
 module.exports = function (sequelize, DataTypes) {
-  var UserRest = sequelize.define('UserReset', {
+  var UserReset = sequelize.define('UserReset', {
 		id: {
 			type: DataTypes.UUID,
 			field: 'id',
@@ -19,5 +19,5 @@ module.exports = function (sequelize, DataTypes) {
 		}
   });
 
-  return User;
+  return UserReset;
 };
