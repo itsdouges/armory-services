@@ -22,10 +22,6 @@ task_serve() {
 	task_copy_db_models
 
 	echo "Starting api containers.."
-	
-	remove_container data
-	task_build data
-	task_create data
 
 	remove_container db
 	task_build db
@@ -148,7 +144,7 @@ task_run() {
 	case "$1" in
 		db)
 			# TODO: Replace user/pass with environment variables passed in.
-			run_daemon_container $1 "--volumes-from gw2armory-data -e MYSQL_ROOT_PASSWORD=password -e MYSQL_PASSWORD=password -e MYSQL_USER=admin -e MYSQL_DATABASE=armory";;
+			run_daemon_container $1 "-e MYSQL_ROOT_PASSWORD=password -e MYSQL_PASSWORD=password -e MYSQL_USER=admin -e MYSQL_DATABASE=armory";;
 		server)
 			# docker run -p 80:80 --link gw2armory-db:db agrmory/server
 			run_daemon_container $1 "-p 80:80 --link gw2armory-db:db --link gw2armory-fetch:fetch";;
@@ -177,8 +173,6 @@ task_build() {
 			build_container $1 "./test-server/";;
 		db)
 			build_container $1 "./db-server/";;
-		data) 
-			build_container $1 "./db-data/";;
 		server)
 			build_container $1 "./server/";;
 		fetch)
