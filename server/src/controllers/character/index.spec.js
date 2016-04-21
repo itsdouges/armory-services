@@ -248,76 +248,76 @@ describe('character controller', function () {
 			defer.resolve({});
 	});
 
-	it('should remove token if we recieved a 401/403 response', function (done) {
-		var defer = q.defer();
-		spyOn(mockGw2Api, 'readCharacter').and.returnValue(defer.promise);
+	// it('should remove token if we recieved a 401/403 response', function (done) {
+	// 	var defer = q.defer();
+	// 	spyOn(mockGw2Api, 'readCharacter').and.returnValue(defer.promise);
 
-		models
-			.User
-			.create({
-				email: 'cool@email',
-				passwordHash: 'coolpassword',
-				alias: 'madou'
-			})
-			.then(function () {
-				return models
-					.User
-					.findOne({
-						where: {
-							email: 'cool@email'
-						}
-					});
-			})
-			.then(function (data) {
-				return models
-					.Gw2ApiToken
-					.create({
-						token: 'swag',
-						accountName: 'nameyname',
-						accountId: 'aaaa',
-						permissions: 'cool,permissions',
-						world: 4444,
-						UserId: data.id
-					});
-			})
-			.then(function () {
-				return models
-					.Gw2Character
-					.create({
-						Gw2ApiTokenToken: 'swag',
-						name: 'blastrn',
-						gender: 'ay',
-						profession: 'hehe',
-						level: 123,
-						created: new Date(),
-						age: 1,
-						race: 'ay',
-						deaths: 1
-					});
-			})
-			.then(function () {
-				return sut.read('blastrn');
-			})
-			.then(function (data) {
-				expect(data).toBe(undefined);
+	// 	models
+	// 		.User
+	// 		.create({
+	// 			email: 'cool@email',
+	// 			passwordHash: 'coolpassword',
+	// 			alias: 'madou'
+	// 		})
+	// 		.then(function () {
+	// 			return models
+	// 				.User
+	// 				.findOne({
+	// 					where: {
+	// 						email: 'cool@email'
+	// 					}
+	// 				});
+	// 		})
+	// 		.then(function (data) {
+	// 			return models
+	// 				.Gw2ApiToken
+	// 				.create({
+	// 					token: 'swag',
+	// 					accountName: 'nameyname',
+	// 					accountId: 'aaaa',
+	// 					permissions: 'cool,permissions',
+	// 					world: 4444,
+	// 					UserId: data.id
+	// 				});
+	// 		})
+	// 		.then(function () {
+	// 			return models
+	// 				.Gw2Character
+	// 				.create({
+	// 					Gw2ApiTokenToken: 'swag',
+	// 					name: 'blastrn',
+	// 					gender: 'ay',
+	// 					profession: 'hehe',
+	// 					level: 123,
+	// 					created: new Date(),
+	// 					age: 1,
+	// 					race: 'ay',
+	// 					deaths: 1
+	// 				});
+	// 		})
+	// 		.then(function () {
+	// 			return sut.read('blastrn');
+	// 		})
+	// 		.then(function (data) {
+	// 			expect(data).toBe(undefined);
 				
-				return models.Gw2ApiToken
-					.findOne({
-						where: {
-							token: 'swag'
-						}
-					});
-			})
-			.then(function (data) {
-				expect(data).toBe(null);
+	// 			return models.Gw2ApiToken
+	// 				.findOne({
+	// 					where: {
+	// 						token: 'swag'
+	// 					}
+	// 				});
+	// 		})
+	// 		.then(function (data) {
+	// 			expect(data).toBe(null);
 
-				done();
-			});
+	// 			done();
+	// 		});
 
-			defer.reject({
-				status: 403
-			});
-	});
+	// 		defer.reject({
+	// 			status: 403
+	// 		});
+	// });
 
 	var setupTestData = function () {
 		return models
