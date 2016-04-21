@@ -92,21 +92,17 @@ function PingController(env, axios, models, fetchGw2) {
 				});
 			})
 			.catch(function (response) {
-				switch (response.status) {
-					case 400:
-					case 401:
-						console.error('Recieved ' + response.status + ' during fetch @ ' + new Date().toGMTString() + ', removing token.');
-
-						return models.Gw2ApiToken
-							.destroy({
-								where: {
-									token: token
-								}
-							});
-
-					console.error('Problem fetching token, recieved status of ' + response.status + ' with message ' + response.data + ' @ ' + new Date().toGMTString());
-					console.error(response);
+				if (response.status === 400 || response.status === 401) {
+					console.error('Recieved ' + response.status + ' during fetch @ ' + new Date().toGMTString() + ', removing token.');
+					return models.Gw2ApiToken
+						.destroy({
+							where: {
+								token: token
+							}
+						});
 				}
+
+				console.error('Problem fetching token, recieved status of ' + response.status + ' with message ' + response.data + ' @ ' + new Date().toGMTString());
 
 				return q.reject(response);
 			});

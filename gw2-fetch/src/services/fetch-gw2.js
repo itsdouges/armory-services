@@ -15,7 +15,7 @@ function guild (id, retries) {
 			return response.data;
 		}, function (response) {
 			if (response.status >= 500 && retries > 1) {
-				console.log('Recieved response status of ' + response.status + ', retrying. ' + retries + ' retries left.');
+				console.log('Recieved response status of ' + response.status + ' when fetching guild, retrying. ' + retries + ' retries left.');
 				return guild(id, retries - 1);
 			}
 
@@ -37,7 +37,7 @@ function fetchCharacters (endpoint, token, axios, retries) {
 			return characters.data;
 		}, function (response) {
 			if (response.status >= 500 && retries > 1) {
-				console.log('Recieved response status of ' + response.status + ', retrying. ' + retries + ' retries left.');
+				console.log('Recieved response status of ' + response.status + ' when fetching character, retrying. ' + retries + ' retries left.');
 				return fetchCharacters(endpoint, token, axios, retries - 1);
 			}
 
