@@ -20,6 +20,9 @@ if (!SECRET_ACCESS_KEY) {
     throw 'Environment variable "SECRET_ACCESS_KEY" is not defined.';
 }
 
+var applicationName = 'gw2armory-api';
+var environmentName = 'gw2armory-api-' + ENVIRONMENT.toLowerCase();
+
 console.log('Starting deployment for ' + ENVIRONMENT + '!!');
 
 function readModuleFile (path, callback) {
@@ -45,8 +48,6 @@ readModuleFile('./Dockerrun.aws.json.mustache', function (err, template) {
 
     console.log('Done!');
 
-    var applicationName = 'gw2armory-api';
-    var environmentName = 'gw2armory-api-' + ENVIRONMENT.toLowerCase();
     var datetime = new Date();
 
     zipConfigs(applicationName, environmentName, datetime);
@@ -172,5 +173,11 @@ function deployToEb (zipPath, environmentName) {
     }).then(function (data) {
         console.log(data);
         console.log('Finished deployment!');
+
+        return application.cleanApplicationVersions(applicationName);
+    }, function (error) {
+        console.error('An error occurred deploying to elastic beanstalk.');
+        console.error(error);
+        throw error;
     });
 }
