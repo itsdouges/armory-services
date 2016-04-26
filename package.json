@@ -4,7 +4,7 @@
   "description": "Backend containers for api.gw2armory.com",
   "main": "index.js",
   "scripts": {
-    "deploy": "ENV=BETA node ./deploy"
+    "deploy": "ENV=PROD node ./deploy"
   },
   "repository": {
     "type": "git",
