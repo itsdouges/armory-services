@@ -1,5 +1,5 @@
 if [ "$TRAVIS_BRANCH" == "master" ]; then
-  npm run build:beta;
+  npm run deploy;
 else
-	echo "BRANCH_NOT_SUPPORTED for build"
+	echo "BRANCH_NOT_SUPPORTED for deploy"
 fi
