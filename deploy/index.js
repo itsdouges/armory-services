@@ -76,7 +76,7 @@ function deployToEb (zipPath, environmentName) {
     application.deploy({
         archiveFilePath: zipPath,
         environmentName: environmentName,
-        awsStackName: '64bit Amazon Linux 2015.09 v2.0.4 running Multi-container Docker 1.7.1 (Generic)',
+        awsStackName: '64bit Amazon Linux 2016.03 v2.1.0 running Multi-container Docker 1.9.1 (Generic)',
         // http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html
         beanstalkConfig: [
         {
@@ -135,9 +135,29 @@ function deployToEb (zipPath, environmentName) {
             Value: '/'
         },
         {
-            Namespace: 'aws:elb:listener',
+            Namespace : 'aws:elb:listener:443',
+            OptionName : 'SSLCertificateId',
+            Value : 'arn:aws:acm:us-east-1:521573301669:certificate/07c5ada9-db12-4e2d-ba97-69b36d41cf9e'
+        },
+        {
+            Namespace: 'aws:elb:listener:443',
             OptionName: 'ListenerProtocol',
-            Value: 'HTTP' // Change to https when prod.
+            Value: 'HTTPS'
+        },
+        {
+            Namespace : 'aws:elb:listener:443',
+            OptionName : 'InstancePort',
+            Value : '80'
+        },
+        {
+            Namespace : 'aws:elb:listener:443',
+            OptionName : 'InstanceProtocol',
+            Value : 'HTTP'
+        },
+        {
+            Namespace : 'aws:elb:listener:80',
+            OptionName : 'ListenerEnabled',
+            Value : 'false'
         },
         {
             Namespace: 'aws:elasticbeanstalk:sns:topics',
