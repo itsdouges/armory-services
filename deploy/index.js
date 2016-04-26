@@ -100,11 +100,11 @@ function deployToEb (zipPath, environmentName) {
             OptionName: 'MaxSize',
             Value: '1'
         }, 
-        {
-            Namespace: 'aws:autoscaling:launchconfiguration',
-            OptionName: 'EC2KeyName',
-            Value: 'svc_deploy'
-        }, 
+        // {
+        //     Namespace: 'aws:autoscaling:launchconfiguration',
+        //     OptionName: 'EC2KeyName',
+        //     Value: 'svc_deploy'
+        // }, 
         {
             Namespace: 'aws:autoscaling:launchconfiguration',
             OptionName: 'IamInstanceProfile',
