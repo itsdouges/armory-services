@@ -118,7 +118,7 @@ function deployToEb (zipPath, environmentName) {
         {
             Namespace: 'aws:ec2:vpc',
             OptionName: 'VPCId',
-            Value: 'vpc-347a2f51'
+            Value: 'vpc-7857f31c'
         },
         {
             Namespace: 'aws:ec2:vpc',

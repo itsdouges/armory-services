@@ -48,14 +48,14 @@ var DEV = {
 		]
 	};
 
-var BETA = {
+var PROD = {
 		db: {
 			name: "armory",
 			user: "admin", // move out of config into a env variable
 			password: "password", // move out of config into a env variable
 			options: {
 				dialect: "mysql",
-				host: "gw2armory.czyc9rwqas2f.us-west-2.rds.amazonaws.com"
+				host: "gw2armory-db-prod.cekbcmynaoxp.us-east-1.rds.amazonaws.com"
 			}
 		},
 		server: {
@@ -86,6 +86,5 @@ function minutesToMs (min) {
 
 module.exports = {
 	DEV: DEV,
-	BETA: BETA,
-	PROD: BETA
+	PROD: PROD
 }[ENVIRONMENT];
