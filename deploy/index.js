@@ -178,6 +178,6 @@ function deployToEb (zipPath, environmentName) {
     }, function (error) {
         console.error('An error occurred deploying to elastic beanstalk.');
         console.error(error);
-        throw error;
+        process.exit(1);
     });
 }
