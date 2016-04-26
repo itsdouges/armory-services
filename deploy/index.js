@@ -68,7 +68,7 @@ function deployToEb (zipPath, environmentName) {
     var application = new EBApplication({
         accessKeyId: ACCESS_KEY_ID,
         secretAccessKey: SECRET_ACCESS_KEY,
-        region: 'us-west-2'
+        region: 'us-east-1'
     });
 
     console.log('Pushing to EB');
