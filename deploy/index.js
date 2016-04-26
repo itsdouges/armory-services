@@ -136,11 +136,6 @@ function deployToEb (zipPath, environmentName) {
             Value: '/'
         },
         {
-            Namespace: 'aws:elasticbeanstalk:application',
-            OptionName: 'Ping Protocol',
-            Value: 'HTTPS'
-        },
-        {
             Namespace : 'aws:elb:listener:443',
             OptionName : 'SSLCertificateId',
             Value : 'arn:aws:acm:us-east-1:521573301669:certificate/07c5ada9-db12-4e2d-ba97-69b36d41cf9e'
@@ -163,7 +158,7 @@ function deployToEb (zipPath, environmentName) {
         {
             Namespace : 'aws:elb:listener:80',
             OptionName : 'ListenerEnabled',
-            Value : 'false'
+            Value : 'true'
         },
         {
             Namespace: 'aws:elasticbeanstalk:sns:topics',
