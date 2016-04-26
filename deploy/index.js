@@ -77,7 +77,7 @@ function deployToEb (zipPath, environmentName) {
     application.deploy({
         archiveFilePath: zipPath,
         environmentName: environmentName,
-        awsStackName: '64bit Amazon Linux 2015.09 v2.0.4 running Multi-container Docker 1.7.1 (Generic)',
+        awsStackName: '64bit Amazon Linux 2016.03 v2.1.0 running Multi-container Docker 1.9.1 (Generic)',
         // http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html
         beanstalkConfig: [
         {
@@ -134,6 +134,11 @@ function deployToEb (zipPath, environmentName) {
             Namespace: 'aws:elasticbeanstalk:application',
             OptionName: 'Application Healthcheck URL',
             Value: '/'
+        },
+        {
+            Namespace: 'aws:elasticbeanstalk:application',
+            OptionName: 'Ping Protocol',
+            Value: 'HTTPS'
         },
         {
             Namespace : 'aws:elb:listener:443',
