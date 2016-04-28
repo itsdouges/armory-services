@@ -128,7 +128,7 @@ function deployToEb (zipPath, environmentName) {
         {
             Namespace: 'aws:ec2:vpc',
             OptionName: 'Subnets',
-            Value: 'subnet-851e20dc'
+            Value: 'subnet-75f4db5e,subnet-e235d194,subnet-02e5363f,subnet-851e20dc'
         },
         {
             Namespace: 'aws:elasticbeanstalk:application',
