@@ -59,7 +59,7 @@ var PROD = {
 		password: "password", // move out of config into a env variable
 		options: {
 			dialect: "mysql",
-			host: "gw2armory-db.cekbcmynaoxp.us-east-1.rds.amazonaws.com"
+			host: "gw2armory-prod.cekbcmynaoxp.us-east-1.rds.amazonaws.com"
 		}
 	},
 	server: {
