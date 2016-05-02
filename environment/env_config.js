@@ -27,7 +27,8 @@ var DEV = {
 		password: "password", // move out of config into a env variable
 		options: {
 			dialect: "mysql",
-			host_env_name: "DB_PORT_3306_TCP_ADDR"
+			// host: "localhost", // Uncomment this if developing locally.
+			host_env_name: "DB_PORT_3306_TCP_ADDR" // Comment this out if developing locally.
 		}
 	},
 	server: {
