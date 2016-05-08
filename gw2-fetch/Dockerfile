@@ -13,7 +13,7 @@ COPY /env /opt/env
 COPY /spec /opt/spec
 COPY /src /opt/src
 
-# RUN npm test
+RUN npm test
 
 # Make sure this links up to the env config
 EXPOSE 8081

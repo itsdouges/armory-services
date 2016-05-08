@@ -26,9 +26,6 @@ function controller (models) {
 			},
 			include: [{
 				model: models.Gw2ApiToken,
-				where: {
-					valid: true
-				},
 				include: models.User
 			}]
 		})

@@ -30,12 +30,11 @@ module.exports = function (sequelize, DataTypes) {
       unique: true,
       field: 'account_id'
     },
-    valid: {
+    primary: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      // expectation is that only valid tokens can be added, that can then become invalid.
-      defaultValue: true,
-      field: 'valid'
+      defaultValue: false,
+      field: 'primary'
     },
   }, {
     classMethods: {

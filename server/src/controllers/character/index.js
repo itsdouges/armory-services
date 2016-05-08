@@ -121,9 +121,6 @@ function CharacterController (models, gw2Api) {
 			.findAll({
 				include: [{
 					model: models.Gw2ApiToken,
-					where: {
-						valid: true
-					},
 					include: [{
 						model: models.User,
 						where: where

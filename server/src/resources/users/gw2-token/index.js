@@ -22,8 +22,6 @@ function Gw2TokenResource(server, controller) {
 			});
 	});
 
-	// TODO: Refactor validator to resolve errors not reject.
-
 	server.post(RESOURCE.main, function (req, res, next) {
     if (!req.username) {
         return res.sendUnauthenticated();
@@ -47,6 +45,22 @@ function Gw2TokenResource(server, controller) {
 		
 		controller
 			.remove(req.username, req.params.token)
+			.then(function () {
+				res.send(200);
+				return next();
+			}, function (err) {
+				res.send(500, err);
+				return next();
+			});
+	});
+
+	server.put(RESOURCE.item + '/set-primary', function (req, res, next) {
+    if (!req.username) {
+        return res.sendUnauthenticated();
+    }
+
+		controller
+			.selectPrimary(req.username, req.params.token)
 			.then(function () {
 				res.send(200);
 				return next();
