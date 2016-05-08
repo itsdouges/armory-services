@@ -211,7 +211,8 @@ task_clean() {
 		exited) 
 			task_exited $1;;
 		*)
-			echo "Supported removes: {exited|untagged}";;
+			task_untagged && task_exited;;
+
 	esac
 }
 

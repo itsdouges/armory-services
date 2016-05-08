@@ -56,7 +56,11 @@ describe('gw2 token controller', function () {
 		mockery.disable();
 	});
 
-	var seedDb = function (email) {
+	var seedDb = function (email, addTokens) {
+		if (addTokens === undefined) {
+			addTokens = true;
+		}
+
 		return models
 			.User
 			.create({
@@ -65,6 +69,10 @@ describe('gw2 token controller', function () {
 				alias: 'swagn'
 			})
 			.then(function (user) {
+				if (!addTokens) {
+					return user.id;
+				}
+
 				return models
 					.Gw2ApiToken
 					.create({
@@ -74,7 +82,8 @@ describe('gw2 token controller', function () {
 						accountId: '12341234',
 						world: 1234,
 						UserId: user.id
-					}).then(function () {
+					})
+					.then(function () {
 						return models
 							.Gw2ApiToken
 							.create({
@@ -84,8 +93,10 @@ describe('gw2 token controller', function () {
 								accountId: '4321431',
 								world: 4321,
 								UserId: user.id,
-								valid: false
 							});
+					})
+					.then(function () {
+						return user.id;
 					});
 			});
 	};
@@ -105,12 +116,12 @@ describe('gw2 token controller', function () {
 							expect('cool_token').toBe(token1.token);
 							expect('madou.0').toBe(token1.accountName);
 							expect(1234).toBe(token1.world);
-							expect(true).toBe(token1.valid);
+							expect(false).toBe(token1.primary);
 
 							expect('another_token').toBe(token2.token);
 							expect('madou.1').toBe(token2.accountName);
 							expect(4321).toBe(token2.world);
-							expect(false).toBe(token2.valid);
+							expect(false).toBe(token2.primary);
 
 							done();
 						});
@@ -149,7 +160,57 @@ describe('gw2 token controller', function () {
 			defer.reject('failed');
 		});
 
-		it('should add token to db if validation succeeds', function (done) {
+		it('should return true if user has tokens', function (done) {
+			seedDb('email@email.com')
+				.then(function (id) {
+					return systemUnderTest.doesUserHaveTokens(id);
+				})
+				.then(function (result) {
+					expect(result).toBe(true);
+					done();
+				});
+		});
+
+		it('should return false if user has no tokens', function (done) {
+			seedDb('email@stuff.com', false)
+				.then(function (id) {
+					return systemUnderTest.doesUserHaveTokens(id);
+				})
+				.then(function (result) {
+					expect(result).toBe(false);
+					done();
+				});
+		});
+
+		it('should add token to db as not primary', function (done) {
+			var defer = q.defer();
+			var accountDefer = q.defer();
+
+			spyOn(mocks, 'validate').and.returnValue(defer.promise);
+			spyOn(mockGw2Api, 'readTokenInfoWithAccount').and.returnValue(accountDefer.promise);
+			spyOn(mockAxios, 'post').and.returnValue(q.resolve());
+
+			seedDb('cool@email.com')
+				.then(function (e) {
+					systemUnderTest
+						.add('cool@email.com', 'token')
+						.then(function (result) {
+							expect(result.primary).toBe(false);
+							done();
+						});
+
+				defer.resolve();
+
+				accountDefer.resolve({
+					accountName: 'nameee',
+					accountId: 'eeee',
+					world: 1122,
+					info: ['cool', 'yeah!']
+				});
+			});
+		});
+
+		it('should add token to db as primary if first token', function (done) {
 			var defer = q.defer();
 			var accountDefer = q.defer();
 
@@ -163,17 +224,16 @@ describe('gw2 token controller', function () {
 					email: 'cool@email.com',
 					passwordHash: 'lolz',
 					alias: 'swagn'
-				})
+				}) 
 				.then(function (e) {
 					systemUnderTest
 						.add('cool@email.com', 'token')
 						.then(function (result) {
 							expect(result.token).toBe('token');
-							// expect(result.UserId).toBe(e.id);
+							expect(result.primary).toBe(true);
 							expect(result.permissions).toBe('cool,yeah!');
 							expect(result.accountName).toBe('nameee');
-							// expect(result.accountId).toBe('eeee');
-							
+
 							expect(mockAxios.post).toHaveBeenCalledWith('http://host:port/fetch-characters', {
 								token: 'token'
 							});
@@ -190,6 +250,34 @@ describe('gw2 token controller', function () {
 					info: ['cool', 'yeah!']
 				});
 			});
+		});
+	});
+
+	describe('primary', function () {
+		it('should set all tokens primary to false except for target', function (done) {
+			seedDb('email@email.com')
+				.then(function () {
+					return systemUnderTest.selectPrimary('email@email.com', 'another_token');
+				})
+				.then(function (data) {
+					expect(data).toEqual([1]);
+				})
+				.then(function () {
+					return models
+						.Gw2ApiToken
+						.findAll();
+				})
+				.then(function (data) {
+					data.forEach(function (token) {
+						if (token.token === 'another_token') {
+							expect(token.primary).toBe(true);
+						} else {
+							expect(token.primary).toBe(false);
+						}
+					});
+
+					done();
+				});
 		});
 	});
 

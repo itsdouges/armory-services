@@ -55,7 +55,6 @@ function validGw2Token(name, val, dependencies) {
 					.findOne({
 						where: {
 							accountId: accountId,
-							valid: true
 						}
 					})
 					.then(function (item) {

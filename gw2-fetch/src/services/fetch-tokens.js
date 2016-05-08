@@ -2,11 +2,7 @@
 
 function readTokens (models) {
 	return models.Gw2ApiToken
-		.findAll({
-			where: {
-				valid: true
-			}
-		})
+		.findAll()
 		.then(function (items) {
 			return items.map(function (item) {
 				return {
