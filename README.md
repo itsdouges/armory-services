@@ -14,24 +14,25 @@ Starts three docker containers, fetch, server, and db.
 
 The developer experience is kind of shitty at the moment. You need to start the node servers manually in watch mode, as well as hook up a database. Currently there isn't an automated way to do this - so install `mysql 3.6`, using docker or directly on your host, and then modify the `./environment/env_config.js` DEV object.
 
+### Copy config
+
 ```
-// Copies ./db-models and ./environment to ./gw2-fetch and ./server folders.
 ./go.sh copy
 ```
 
+### Api server
+
 ```
-// Start api server.
 cd ./server
 npm install
-gulp serve:auto
 gulp test:unit:auto
 ```
 
+## Fetch server
+
 ```
-// Start fetch server.
 cd ./gw2-fetch
 npm install
-npm start
 npm test
 ```
 
