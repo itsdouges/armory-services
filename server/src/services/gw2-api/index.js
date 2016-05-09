@@ -3,93 +3,105 @@
 var q = require('q');
 
 function Gw2Api (axios, env) {
-	function readAccount (token) {
-		return axios.get(env.gw2.endpoint + 'v2/account', {
-				headers: {
-					'Authorization' : 'Bearer ' + token
-				}
-		})
-		.then(function (e) {
-			return e.data;
-		});
-	}
+  function readPvpStats (token) {
+    return axios.get(env.gw2.endpoint + 'v2/pvp/stats', {
+      headers: {
+        'Authorization' : 'Bearer ' + token
+      }
+    })
+    .then(function (e) {
+      return e.data;
+    });
+  }
 
-	function readTokenInfo (token) {
-		return axios.get(env.gw2.endpoint + 'v2/tokeninfo', {
-				headers: {
-					'Authorization' : 'Bearer ' + token
-				}
-		})
-		.then(function (e) {
-			return e.data;
-		});
-	}
+  function readAccount (token) {
+    return axios.get(env.gw2.endpoint + 'v2/account', {
+        headers: {
+          'Authorization' : 'Bearer ' + token
+        }
+    })
+    .then(function (e) {
+      return e.data;
+    });
+  }
 
-	function readTokenInfoWithAccount (token) {
-		var accountPromise = readAccount(token);
-		var infoPromise = readTokenInfo(token);
+  function readTokenInfo (token) {
+    return axios.get(env.gw2.endpoint + 'v2/tokeninfo', {
+        headers: {
+          'Authorization' : 'Bearer ' + token
+        }
+    })
+    .then(function (e) {
+      return e.data;
+    });
+  }
 
-		return q.all([accountPromise, infoPromise])
-			.spread(function (acc, info) {
-				return q.resolve({
-					info: info.permissions,
-					world: acc.world,
-					accountId: acc.id,
-					accountName: acc.name
-				});
-			});
-	}
+  function readTokenInfoWithAccount (token) {
+    var accountPromise = readAccount(token);
+    var infoPromise = readTokenInfo(token);
 
-	function readCharacters (token) {
-		return axios.get(env.gw2.endpoint + 'v2/characters', {
-				headers: {
-					'Authorization' : 'Bearer ' + token
-				}
-		})
-		.then(function (e) {
-			return e.data;
-		});
-	}
+    return q.all([accountPromise, infoPromise])
+      .spread(function (acc, info) {
+        return q.resolve({
+          info: info.permissions,
+          world: acc.world,
+          accountId: acc.id,
+          accountName: acc.name
+        });
+      });
+  }
 
-	function readCharacter (name, options) {
-		var promise = axios.get(env.gw2.endpoint + 'v2/characters/' + name, {
-				headers: {
-					'Authorization' : 'Bearer ' + options.token
-				}
-		})
-		.then(function (data) {
-			var character = data.data;
+  function readCharacters (token) {
+    return axios.get(env.gw2.endpoint + 'v2/characters', {
+        headers: {
+          'Authorization' : 'Bearer ' + token
+        }
+    })
+    .then(function (e) {
+      return e.data;
+    });
+  }
 
-			if (!options.showBags) {
-				character.bags = undefined;
-			}
+  function readCharacter (name, options) {
+    var promise = axios.get(env.gw2.endpoint + 'v2/characters/' + name, {
+        headers: {
+          'Authorization' : 'Bearer ' + options.token
+        }
+    })
+    .then(function (data) {
+      var character = data.data;
 
-			if (!options.showCrafting) {
-				character.crafting = undefined;
-			}
+      if (!options.showBags) {
+        character.bags = undefined;
+      }
 
-			if (!options.showEquipment) {
-				character.equipment = undefined;
-			}
+      if (!options.showCrafting) {
+        character.crafting = undefined;
+      }
 
-			if (!options.showBuilds) {
-				character.specializations = undefined;
-			}
+      if (!options.showEquipment) {
+        character.equipment = undefined;
+      }
 
-			return character;
-		});
+      if (!options.showBuilds) {
+        character.specializations = undefined;
+      }
 
-		return promise;
-	}
+      return character;
+    });
 
-	var exports = {
-		readCharacters: readCharacters,
-		readCharacter: readCharacter,
-		readAccount: readAccount,
-		readTokenInfoWithAccount: readTokenInfoWithAccount
-	};
+    return promise;
+  }
 
-	return exports;
+  var exports = {
+    readCharacters: readCharacters,
+    readCharacter: readCharacter,
+    readAccount: readAccount,
+    readTokenInfoWithAccount: readTokenInfoWithAccount,
+    readPvpStats: readPvpStats,
+  };
+
+  return exports;
 }
 
 module.exports = Gw2Api;

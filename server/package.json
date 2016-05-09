@@ -32,7 +32,7 @@
     "sqlite3": "^3.0.10"
   },
   "scripts": {
-    "start": "sequelize db:migrate --env production && gulp serve",
+    "start": "gulp serve",
     "test": "gulp test"
   },
   "author": "madou",

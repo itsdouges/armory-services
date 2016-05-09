@@ -58,15 +58,6 @@ function CharacterController (models, gw2Api) {
 					showBuilds: ignorePrivacy || data.showBuilds
 				})
 				.then(null, function (response) {
-					// if (response.status === 403 || response.status === 401) {
-					// 	return models.Gw2ApiToken
-					// 		.destroy({
-					// 			where: {
-					// 				token: characterFromDb.Gw2ApiToken.token
-					// 			}
-					// 		});
-					// }
-
 					return q.reject(response);
 				});
 			})
