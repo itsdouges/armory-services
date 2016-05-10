@@ -14,6 +14,13 @@ function PvpController (models, gw2Api) {
         return gw2Api.readPvpGames(token);
       });
   };
+
+  PvpController.prototype.standings = function (alias) {
+    return userHelper.getUserPrimaryToken(models, alias)
+      .then(function (token) {
+        return gw2Api.readPvpStandings(token);
+      });
+  };
 }
 
 module.exports = PvpController;

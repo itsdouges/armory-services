@@ -14,6 +14,28 @@ function Gw2Api (axios, env) {
     });
   }
 
+  function readPvpStandings (token) {
+    return axios.get(env.gw2.endpoint + 'v2/pvp/standings', {
+      headers: {
+        'Authorization' : 'Bearer ' + token
+      }
+    })
+    .then(function (e) {
+      return e.data;
+    });
+  }
+
+  function readPvpGames (token) {
+    return axios.get(env.gw2.endpoint + 'v2/pvp/games', {
+      headers: {
+        'Authorization' : 'Bearer ' + token
+      }
+    })
+    .then(function (e) {
+      return e.data;
+    });
+  }
+
   function readAccount (token) {
     return axios.get(env.gw2.endpoint + 'v2/account', {
         headers: {
@@ -99,6 +121,8 @@ function Gw2Api (axios, env) {
     readAccount: readAccount,
     readTokenInfoWithAccount: readTokenInfoWithAccount,
     readPvpStats: readPvpStats,
+    readPvpStandings: readPvpStandings,
+    readPvpGames: readPvpGames,
   };
 
   return exports;
