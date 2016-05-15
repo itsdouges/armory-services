@@ -31,8 +31,16 @@ function Gw2Api (axios, env) {
         'Authorization' : 'Bearer ' + token
       }
     })
-    .then(function (e) {
-      return e.data;
+    .then(function (response) {
+      var ids = response.data.join(',');
+      return axios.get(env.gw2.endpoint + 'v2/pvp/games?ids=' + ids, {
+        headers: {
+          'Authorization' : 'Bearer ' + token
+        }
+      });
+    })
+    .then(function (response) {
+      return response.data;
     });
   }
 
