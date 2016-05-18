@@ -100,6 +100,7 @@ function PingController(env, axios, models, fetchGw2) {
 					// 			token: token
 					// 		}
 					// 	});
+					return;
 				}
 
 				console.error('Problem fetching token, recieved status of ' + response.status + ' with message ' + response.data + ' @ ' + new Date().toGMTString());
