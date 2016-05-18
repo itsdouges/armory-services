@@ -7,11 +7,11 @@
  */
 
 frisby.create('GET check alias with good alias')
-	.get(API_ENDPOINT + 'users/check/alias/madoooo')
-	.expectStatus(200)
-	.toss();
+    .get(API_ENDPOINT + 'users/check/alias/madoooo')
+    .expectStatus(200)
+    .toss();
 
 frisby.create('GET check alias with bad alias')
-	.get(API_ENDPOINT + 'users/check/alias/bade mail')
-	.expectStatus(400)
-	.toss();
+    .get(API_ENDPOINT + 'users/check/alias/bade mail')
+    .expectStatus(400)
+    .toss();

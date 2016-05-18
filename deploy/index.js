@@ -9,7 +9,7 @@ var ACCESS_KEY_ID = process.env.ACCESS_KEY_ID;
 var SECRET_ACCESS_KEY = process.env.SECRET_ACCESS_KEY;
 
 if (!ENVIRONMENT) {
-	throw 'Environment variable "ENV" is not defined.';
+    throw 'Environment variable "ENV" is not defined.';
 }
 
 if (!ACCESS_KEY_ID) {
@@ -41,10 +41,10 @@ readModuleFile('./Dockerrun.aws.json.mustache', function (err, template) {
         ENV: ENVIRONMENT
     };
 
-	var output = mustache.render(template, data);
+    var output = mustache.render(template, data);
 
-	var ws = fs.createWriteStream('./deploy/Dockerrun.aws.json');
-	ws.write(output);
+    var ws = fs.createWriteStream('./deploy/Dockerrun.aws.json');
+    ws.write(output);
 
     console.log('Done!');
 

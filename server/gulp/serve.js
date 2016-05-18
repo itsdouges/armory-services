@@ -1,6 +1,6 @@
 var gulp = require('gulp')
-	shell = require('gulp-shell'),
-	config = require('./config.json');
+    shell = require('gulp-shell'),
+    config = require('./config.json');
 
 /**
  * Start server

@@ -6,6 +6,6 @@
  */
 
 frisby.create('GET my characters')
-	.get(API_ENDPOINT + 'users/me/characters')
-	.expectStatus(401)
-	.toss();
+    .get(API_ENDPOINT + 'users/me/characters')
+    .expectStatus(401)
+    .toss();

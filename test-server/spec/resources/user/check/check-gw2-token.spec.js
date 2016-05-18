@@ -10,11 +10,11 @@ var token = '14AEEFFA-F207-BA49-9590-1B48E024DF2734665877-34A0-4A8C-81CA-F8A083D
 // TODO: Orchestrate user creation -> add token -> add new token from same account
 
 frisby.create('GET check gw2-token with free token')
-	.get(API_ENDPOINT + 'users/check/gw2-token/' + token)
-	.expectStatus(200)
-	.toss();
+    .get(API_ENDPOINT + 'users/check/gw2-token/' + token)
+    .expectStatus(200)
+    .toss();
 
 frisby.create('GET check gw2-token with bad token')
-	.get(API_ENDPOINT + 'users/check/gw2-token/imbadtoken')
-	.expectStatus(400)
-	.toss();
+    .get(API_ENDPOINT + 'users/check/gw2-token/imbadtoken')
+    .expectStatus(400)
+    .toss();

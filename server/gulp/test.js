@@ -1,34 +1,34 @@
 var gulp = require('gulp'),
-	jasmine = require('gulp-jasmine'),
-	config = require('./config.json'),
-	runSequence = require('run-sequence');
+    jasmine = require('gulp-jasmine'),
+    config = require('./config.json'),
+    runSequence = require('run-sequence');
 
 /**
  * Run all tests
  */
 gulp.task('test', function (cb) {
-	runSequence('test:unit', 
-		'test:int', 
-		cb);
+    runSequence('test:unit', 
+        'test:int', 
+        cb);
 });
 
 /**
  * Run test once and exit
  */
 gulp.task('test:unit', function () {
-	return gulp.src([
-			__dirname + config.src + '/**/*.spec.js'
-		])
-		.pipe(jasmine({
-			includeStackTrace: true
-		}));
+    return gulp.src([
+            __dirname + config.src + '/**/*.spec.js'
+        ])
+        .pipe(jasmine({
+            includeStackTrace: true
+        }));
 });
 
 /**
  * Watch for file changes and re-run tests on each change
  */
 gulp.task('test:unit:auto', ['test:unit'], function () {
-	console.log('Watching js files..');
+    console.log('Watching js files..');
 
     return gulp.watch(__dirname + config.src + '/**/*.js', ['test:unit']);
 });
@@ -37,10 +37,10 @@ gulp.task('test:unit:auto', ['test:unit'], function () {
  * Run test once and exit
  */
 gulp.task('test:int', function () {
-	return gulp.src([
-			__dirname + config.src + '/**/*.int.js'
-		])
-		.pipe(jasmine({
-			includeStackTrace: true
-		}));
+    return gulp.src([
+            __dirname + config.src + '/**/*.int.js'
+        ])
+        .pipe(jasmine({
+            includeStackTrace: true
+        }));
 });

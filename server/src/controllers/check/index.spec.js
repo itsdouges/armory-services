@@ -4,170 +4,170 @@ var q = require('q');
 var testDb = require('../../../spec/helpers/db');
 
 describe('check resource', function () {
-	var systemUnderTest;
-	var models;
+    var systemUnderTest;
+    var models;
 
-	var mocks = {
-		validate: function () {}
-	};
+    var mocks = {
+        validate: function () {}
+    };
 
-	var mockValidator;
+    var mockValidator;
 
-	beforeEach(function () {
-		mockValidator = function () {
-			return {
-				validate: mocks.validate
-			};
-		};
+    beforeEach(function () {
+        mockValidator = function () {
+            return {
+                validate: mocks.validate
+            };
+        };
 
-		mockValidator.addResource = function () { };
+        mockValidator.addResource = function () { };
 
-		spyOn(mockValidator, 'addResource').and.returnValue(mockValidator);
-	});
+        spyOn(mockValidator, 'addResource').and.returnValue(mockValidator);
+    });
 
-	describe('initialisation', function () {
-		it('should add gw2 token resource to validator', function () {
-			systemUnderTest = new CheckResource(mockValidator);
+    describe('initialisation', function () {
+        it('should add gw2 token resource to validator', function () {
+            systemUnderTest = new CheckResource(mockValidator);
 
-			expect(mockValidator.addResource).toHaveBeenCalledWith({
-				name: 'check',
-				mode: 'gw2-token',
-				rules: {
-					token: ['valid-gw2-token', 'required', 'no-white-space']
-				}
-			});
-		});
+            expect(mockValidator.addResource).toHaveBeenCalledWith({
+                name: 'check',
+                mode: 'gw2-token',
+                rules: {
+                    token: ['valid-gw2-token', 'required', 'no-white-space']
+                }
+            });
+        });
 
-		it('should add email resource to validator', function () {
-			systemUnderTest = new CheckResource(mockValidator);
+        it('should add email resource to validator', function () {
+            systemUnderTest = new CheckResource(mockValidator);
 
-			expect(mockValidator.addResource).toHaveBeenCalledWith({
-				name: 'check',
-				mode: 'email',
-				rules: {
-					email: ['unique-email', 'required', 'no-white-space']
-				}
-			});
-		});
+            expect(mockValidator.addResource).toHaveBeenCalledWith({
+                name: 'check',
+                mode: 'email',
+                rules: {
+                    email: ['unique-email', 'required', 'no-white-space']
+                }
+            });
+        });
 
-		it('should add alias resource to validator', function () {
-			systemUnderTest = new CheckResource(mockValidator);
+        it('should add alias resource to validator', function () {
+            systemUnderTest = new CheckResource(mockValidator);
 
-			expect(mockValidator.addResource).toHaveBeenCalledWith({
-				name: 'check',
-				mode: 'alias',
-				rules: {
-					alias: ['unique-alias', 'required', 'no-white-space', 'min5']
-				}
-			});
-		});
-	});
+            expect(mockValidator.addResource).toHaveBeenCalledWith({
+                name: 'check',
+                mode: 'alias',
+                rules: {
+                    alias: ['unique-alias', 'required', 'no-white-space', 'min5']
+                }
+            });
+        });
+    });
 
-	describe('gw2-token', function () {
-		it('should resolve', function (done) {
-			systemUnderTest = new CheckResource(mockValidator);
+    describe('gw2-token', function () {
+        it('should resolve', function (done) {
+            systemUnderTest = new CheckResource(mockValidator);
 
-			var defer = q.defer();
+            var defer = q.defer();
 
-			spyOn(mocks, 'validate').and.returnValue(defer.promise);
+            spyOn(mocks, 'validate').and.returnValue(defer.promise);
 
-			systemUnderTest.gw2Token('token')
-				.then(function () {
-					expect(mocks.validate).toHaveBeenCalledWith('token');
+            systemUnderTest.gw2Token('token')
+                .then(function () {
+                    expect(mocks.validate).toHaveBeenCalledWith('token');
 
-					done();
-				});
+                    done();
+                });
 
-			defer.resolve();
-		});
+            defer.resolve();
+        });
 
-		it('should reject', function (done) {
-			systemUnderTest = new CheckResource(mockValidator);
+        it('should reject', function (done) {
+            systemUnderTest = new CheckResource(mockValidator);
 
-			var defer = q.defer();
+            var defer = q.defer();
 
-			spyOn(mocks, 'validate').and.returnValue(defer.promise);
+            spyOn(mocks, 'validate').and.returnValue(defer.promise);
 
-			systemUnderTest.gw2Token('token')
-				.then(null, function () {
-					expect(mocks.validate).toHaveBeenCalledWith('token');
+            systemUnderTest.gw2Token('token')
+                .then(null, function () {
+                    expect(mocks.validate).toHaveBeenCalledWith('token');
 
-					done();
-				});
+                    done();
+                });
 
-			defer.reject();
-		});
-	});
+            defer.reject();
+        });
+    });
 
-	describe('email', function () {
-		it('should resolve', function (done) {
-			systemUnderTest = new CheckResource(mockValidator);
+    describe('email', function () {
+        it('should resolve', function (done) {
+            systemUnderTest = new CheckResource(mockValidator);
 
-			var defer = q.defer();
+            var defer = q.defer();
 
-			spyOn(mocks, 'validate').and.returnValue(defer.promise);
+            spyOn(mocks, 'validate').and.returnValue(defer.promise);
 
-			systemUnderTest.email('email')
-				.then(function () {
-					expect(mocks.validate).toHaveBeenCalledWith('email');
+            systemUnderTest.email('email')
+                .then(function () {
+                    expect(mocks.validate).toHaveBeenCalledWith('email');
 
-					done();
-				});
+                    done();
+                });
 
-			defer.resolve();
-		});
+            defer.resolve();
+        });
 
-		it('should reject', function (done) {
-			systemUnderTest = new CheckResource(mockValidator);
+        it('should reject', function (done) {
+            systemUnderTest = new CheckResource(mockValidator);
 
-			var defer = q.defer();
+            var defer = q.defer();
 
-			spyOn(mocks, 'validate').and.returnValue(defer.promise);
+            spyOn(mocks, 'validate').and.returnValue(defer.promise);
 
-			systemUnderTest.email('email')
-				.then(null, function (e) {
-					expect(e).toBe('ahh!!!');
+            systemUnderTest.email('email')
+                .then(null, function (e) {
+                    expect(e).toBe('ahh!!!');
 
-					done();
-				});
+                    done();
+                });
 
-			defer.reject('ahh!!!');
-		});
-	});
+            defer.reject('ahh!!!');
+        });
+    });
 
-	describe('alias', function () {
-		it('should resolve', function (done) {
-			systemUnderTest = new CheckResource(mockValidator);
+    describe('alias', function () {
+        it('should resolve', function (done) {
+            systemUnderTest = new CheckResource(mockValidator);
 
-			var defer = q.defer();
+            var defer = q.defer();
 
-			spyOn(mocks, 'validate').and.returnValue(defer.promise);
+            spyOn(mocks, 'validate').and.returnValue(defer.promise);
 
-			systemUnderTest.alias('a')
-				.then(function () {
-					expect(mocks.validate).toHaveBeenCalledWith('a');
+            systemUnderTest.alias('a')
+                .then(function () {
+                    expect(mocks.validate).toHaveBeenCalledWith('a');
 
-					done();
-				});
+                    done();
+                });
 
-			defer.resolve();
-		});
+            defer.resolve();
+        });
 
-		it('should reject', function (done) {
-			systemUnderTest = new CheckResource(mockValidator);
+        it('should reject', function (done) {
+            systemUnderTest = new CheckResource(mockValidator);
 
-			var defer = q.defer();
+            var defer = q.defer();
 
-			spyOn(mocks, 'validate').and.returnValue(defer.promise);
+            spyOn(mocks, 'validate').and.returnValue(defer.promise);
 
-			systemUnderTest.alias('b')
-				.then(null, function (e) {
-					expect(e).toBe('ahh!!!');
+            systemUnderTest.alias('b')
+                .then(null, function (e) {
+                    expect(e).toBe('ahh!!!');
 
-					done();
-				});
+                    done();
+                });
 
-			defer.reject('ahh!!!');
-		});
-	});
+            defer.reject('ahh!!!');
+        });
+    });
 });
