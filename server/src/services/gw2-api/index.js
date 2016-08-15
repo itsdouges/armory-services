@@ -33,6 +33,10 @@ function Gw2Api (axios, env) {
     })
     .then(function (response) {
       var ids = response.data.join(',');
+      if (!ids) {
+        return response;
+      }
+
       return axios.get(env.gw2.endpoint + 'v2/pvp/games?ids=' + ids, {
         headers: {
           'Authorization' : 'Bearer ' + token
@@ -40,7 +44,7 @@ function Gw2Api (axios, env) {
       });
     })
     .then(function (response) {
-      return response.data;
+      return response && response.data;
     });
   }
 
