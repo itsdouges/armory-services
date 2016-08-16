@@ -75,7 +75,7 @@ var PROD = {
     },
     ping: {
         port: "8081",
-        interval: minutesToMs(30),
+        interval: minutesToMs(480), // AKA 8 Hours.
         retries: 5,
         verbose: true,
         host_env_name: "FETCH_PORT_8081_TCP_ADDR"
