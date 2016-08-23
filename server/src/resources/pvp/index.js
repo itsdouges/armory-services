@@ -13,7 +13,8 @@ function PvpResource(server, controller) {
 
         return next();
       }, function (error) {
-        res.send(404, error);
+        console.log(error);
+        res.send(404);
         return next();
       });
   });
@@ -25,7 +26,8 @@ function PvpResource(server, controller) {
         res.send(200, games);
         return next();
       }, function (error) {
-        res.send(404, error);
+        console.error(error);
+        res.send(404);
         return next();
       });
   });
@@ -37,7 +39,8 @@ function PvpResource(server, controller) {
         res.send(200, standings);
         return next();
       }, function (error) {
-        res.send(404, error);
+        console.error(error);
+        res.send(404);
         return next();
       });
   });
