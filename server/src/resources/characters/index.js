@@ -17,7 +17,8 @@ function CharactersResource(server, controller) {
 
                 return next();
             }, function (error) {
-                res.send(500, error);
+                console.log(error);
+                res.send(500);
                 return next();
             });
     });

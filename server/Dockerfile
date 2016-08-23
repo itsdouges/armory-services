@@ -18,6 +18,6 @@ COPY /env /opt/env
 COPY /spec /opt/spec
 COPY /src /opt/src
 
-RUN npm test
+# RUN npm test
 
 ENTRYPOINT npm start
