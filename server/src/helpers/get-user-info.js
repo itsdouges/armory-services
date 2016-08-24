@@ -15,6 +15,14 @@ function getUserIdByEmail (models, email) {
   .then(parseUser);
 }
 
+function getUserByEmail (models, email) {
+  return models.User.findOne({
+    where: {
+      email: email
+    }
+  });
+}
+
 function getUserIdByAlias (models, alias) {
   return models.User.findOne({
     where: {
@@ -54,4 +62,5 @@ module.exports = {
   getUserPrimaryToken: getUserPrimaryToken,
   getUserIdByEmail: getUserIdByEmail,
   getUserIdByAlias: getUserIdByAlias,
+  getUserByEmail: getUserByEmail,
 };
