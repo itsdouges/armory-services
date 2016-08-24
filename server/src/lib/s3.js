@@ -1,11 +1,11 @@
 var AWS = require('aws-sdk');
 
-var S3_BUCKET = 'gw2armory-image-uploads';
-var EXPIRY_TIME = 1200;
+var S3_BUCKET = process.env.IMAGE_BUCKET || 'gw2armory-image-uploads';
+var EXPIRY_TIME = process.env.UPLOAD_EXPIRY_TIMEOUT || 60;
 
 AWS.config.update({
-  accessKeyId: 'AKIAJW4ZF6YKXANEAK6A',
-  secretAccessKey: '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',
+  accessKeyId: process.env.ACCESS_KEY_ID,
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
   s3Bucket: S3_BUCKET,
 });
 
