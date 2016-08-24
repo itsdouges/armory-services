@@ -4,8 +4,8 @@ var S3_BUCKET = process.env.IMAGE_BUCKET || 'gw2armory-image-uploads';
 var EXPIRY_TIME = process.env.UPLOAD_EXPIRY_TIMEOUT || 60;
 
 AWS.config.update({
-  accessKeyId: process.env.ACCESS_KEY_ID,
-  secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  accessKeyId: process.env.IMAGE_UPLOAD_ACCESS_KEY_ID,
+  secretAccessKey: process.env.IMAGE_UPLOAD_SECRET_ACCESS_KEY,
   s3Bucket: S3_BUCKET,
 });
 
