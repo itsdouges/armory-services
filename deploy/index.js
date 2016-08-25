@@ -8,6 +8,9 @@ var ENVIRONMENT = process.env.ENV;
 var ACCESS_KEY_ID = process.env.ACCESS_KEY_ID;
 var SECRET_ACCESS_KEY = process.env.SECRET_ACCESS_KEY;
 
+var IMAGE_UPLOAD_ACCESS_KEY_ID = process.env.IMAGE_UPLOAD_ACCESS_KEY_ID;
+var IMAGE_UPLOAD_SECRET_ACCESS_KEY = process.env.IMAGE_UPLOAD_SECRET_ACCESS_KEY;
+
 if (!ENVIRONMENT) {
     throw 'Environment variable "ENV" is not defined.';
 }
@@ -18,6 +21,14 @@ if (!ACCESS_KEY_ID) {
 
 if (!SECRET_ACCESS_KEY) {
     throw 'Environment variable "SECRET_ACCESS_KEY" is not defined.';
+}
+
+if (!IMAGE_UPLOAD_ACCESS_KEY_ID) {
+    throw 'Environment variable "IMAGE_UPLOAD_ACCESS_KEY_ID" is not defined.';
+}
+
+if (!IMAGE_UPLOAD_SECRET_ACCESS_KEY) {
+    throw 'Environment variable "IMAGE_UPLOAD_SECRET_ACCESS_KEY" is not defined.';
 }
 
 var applicationName = 'gw2armory-api';
@@ -37,32 +48,34 @@ function readModuleFile (path, callback) {
 console.log('Building dockerrun template');
 
 readModuleFile('./Dockerrun.aws.json.mustache', function (err, template) {
-    var data = {
-        ENV: ENVIRONMENT
-    };
+  var data = {
+    ENV: ENVIRONMENT,
+    IMAGE_UPLOAD_ACCESS_KEY_ID: IMAGE_UPLOAD_ACCESS_KEY_ID,
+    IMAGE_UPLOAD_SECRET_ACCESS_KEY: IMAGE_UPLOAD_SECRET_ACCESS_KEY,
+  };
 
-    var output = mustache.render(template, data);
+  var output = mustache.render(template, data);
 
-    var ws = fs.createWriteStream('./deploy/Dockerrun.aws.json');
-    ws.write(output);
+  var ws = fs.createWriteStream('./deploy/Dockerrun.aws.json');
+  ws.write(output);
 
-    console.log('Done!');
+  console.log('Done!');
 
-    var datetime = new Date();
+  var datetime = new Date();
 
-    zipConfigs(applicationName, environmentName, datetime);
+  zipConfigs(applicationName, environmentName, datetime);
 });
 
 function zipConfigs (applicationName, environmentName, datetime) {
-    var zipPath = './deploy/' + applicationName + '-gw2armoryapi:' + new Date().getTime() + '.zip';
+  var zipPath = './deploy/' + applicationName + '-gw2armoryapi:' + new Date().getTime() + '.zip';
 
-    var zip = new EasyZip();
-    zip.addFile('Dockerrun.aws.json', './deploy/Dockerrun.aws.json', function () {
-        zip.zipFolder('./deploy/.ebextensions', function () {
-            zip.writeToFile(zipPath);
-            deployToEb(zipPath, environmentName);
-        });
+  var zip = new EasyZip();
+  zip.addFile('Dockerrun.aws.json', './deploy/Dockerrun.aws.json', function () {
+    zip.zipFolder('./deploy/.ebextensions', function () {
+      zip.writeToFile(zipPath);
+      deployToEb(zipPath, environmentName);
     });
+  });
 }
 
 function deployToEb (zipPath, environmentName) {
@@ -84,27 +97,27 @@ function deployToEb (zipPath, environmentName) {
             Namespace: 'aws:autoscaling:asg',
             OptionName: 'Availability Zones',
             Value: 'Any 1'
-        }, 
+        },
         {
             Namespace: 'aws:autoscaling:asg',
             OptionName: 'Availability Zones',
             Value: 'Any 1'
-        }, 
+        },
         {
             Namespace: 'aws:autoscaling:asg',
             OptionName: 'MinSize',
             Value: '1'
-        }, 
+        },
         {
             Namespace: 'aws:autoscaling:asg',
             OptionName: 'MaxSize',
             Value: '1'
-        }, 
+        },
         {
             Namespace: 'aws:autoscaling:launchconfiguration',
             OptionName: 'EC2KeyName',
             Value: 'gw2armory-ssh'
-        }, 
+        },
         {
             Namespace: 'aws:autoscaling:launchconfiguration',
             OptionName: 'IamInstanceProfile',

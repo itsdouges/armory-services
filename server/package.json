@@ -8,6 +8,7 @@
     "url": "https://github.com/madou/armory-back"
   },
   "dependencies": {
+    "aws-sdk": "^2.5.3",
     "axios": "^0.5.4",
     "fs": "0.0.2",
     "gotta-validate": "^0.2.x",

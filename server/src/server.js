@@ -74,7 +74,7 @@ function Server(models, config) {
   server.use(restify.gzipResponse());
 
   restifyOAuth2.ropc(server, {
-    tokenEndpoint: '/token', 
+    tokenEndpoint: '/token',
     hooks: auths,
     tokenExpirationTime: config.jwt_tokens.expires_in,
   });
@@ -88,6 +88,7 @@ function Server(models, config) {
   require('./resources/users/check')(server, checks);
   require('./resources/users/gw2-token')(server, gw2Tokens);
   require('./resources/users/characters')(server, characters);
+  require('./resources/sign-upload')(server, models);
 
   return server;
 }
