@@ -1,6 +1,6 @@
 var AWS = require('aws-sdk');
 
-var S3_BUCKET = process.env.IMAGE_BUCKET || 'gw2armory-image-uploads';
+var S3_BUCKET = process.env.IMAGE_BUCKET || 'images.gw2armory.com';
 var EXPIRY_TIMEOUT = 60;
 
 if (!process.env.IMAGE_UPLOAD_ACCESS_KEY_ID) {
@@ -27,7 +27,6 @@ function getSignedUrl (options) {
       Key: key,
       Expires: EXPIRY_TIMEOUT,
       ContentType: options.contentType,
-      ACL: 'public-read',
     };
 
     s3.getSignedUrl('putObject', params, function (err, data) {
@@ -35,7 +34,7 @@ function getSignedUrl (options) {
         reject(err);
       else {
         var signedData = {
-          url: 'https://' + S3_BUCKET + '.s3.amazonaws.com/' + key,
+          url: 'https://images.gw2armory.com/' + key,
           signedRequest: data,
         };
 
