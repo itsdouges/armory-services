@@ -1,7 +1,15 @@
 var AWS = require('aws-sdk');
 
 var S3_BUCKET = process.env.IMAGE_BUCKET || 'gw2armory-image-uploads';
-var EXPIRY_TIME = process.env.UPLOAD_EXPIRY_TIMEOUT || 60;
+var EXPIRY_TIMEOUT = 60;
+
+if (!process.env.IMAGE_UPLOAD_ACCESS_KEY_ID) {
+  throw 'Environment variable "IMAGE_UPLOAD_ACCESS_KEY_ID" is not defined!';
+}
+
+if (!process.env.IMAGE_UPLOAD_SECRET_ACCESS_KEY) {
+  throw 'Environment variable "IMAGE_UPLOAD_SECRET_ACCESS_KEY" is not defined!';
+}
 
 AWS.config.update({
   accessKeyId: process.env.IMAGE_UPLOAD_ACCESS_KEY_ID,
@@ -17,7 +25,7 @@ function getSignedUrl (options) {
     var params = {
       Bucket: S3_BUCKET,
       Key: key,
-      Expires: EXPIRY_TIME,
+      Expires: EXPIRY_TIMEOUT,
       ContentType: options.contentType,
       ACL: 'public-read',
     };

@@ -13,7 +13,7 @@
 
 ##
 # TASK_SERVE
-# Run this task to get all containers to a working "running" state on a 
+# Run this task to get all containers to a working "running" state on a
 # host machine.
 ##
 
@@ -124,7 +124,9 @@ run_daemon_container() {
     -d \
     $2 \
     --name "gw2armory-$1" \
-    -e "ENV=DEV" \
+    -e "ENV" \
+    -e "IMAGE_UPLOAD_ACCESS_KEY_ID" \
+    -e "IMAGE_UPLOAD_SECRET_ACCESS_KEY" \
     "madou/gw2armory-$1:latest"
 }
 
@@ -134,7 +136,9 @@ run_container() {
   docker run \
     $2 \
     --name "gw2armory-$1" \
-    -e "ENV=DEV" \
+    -e "ENV" \
+    -e "IMAGE_UPLOAD_ACCESS_KEY_ID" \
+    -e "IMAGE_UPLOAD_SECRET_ACCESS_KEY" \
     "madou/gw2armory-$1:latest"
 }
 
@@ -150,7 +154,7 @@ task_run() {
       run_daemon_container $1 "-p 80:80 --link gw2armory-db:db --link gw2armory-fetch:fetch";;
     acceptance)
       run_container $1;;
-    fetch) 
+    fetch)
       run_daemon_container $1 "--link gw2armory-db:db";;
     *)
       echo "Supported run: {acceptance|db|fetch|devserver|server}";;
@@ -188,7 +192,7 @@ task_remove() {
       remove_container $1;;
     db)
       remove_container $1;;
-    data) 
+    data)
       remove_container $1;;
     server)
       remove_container $1;;
@@ -208,7 +212,7 @@ task_clean() {
   case "$1" in
     untagged)
       task_untagged $1;;
-    exited) 
+    exited)
       task_exited $1;;
     *)
       task_untagged && task_exited;;
@@ -272,7 +276,7 @@ case "$1" in
     task_serve_dev;;
   acceptance)
     task_acceptance;;
-  fetch) 
+  fetch)
     task_run_fetch;;
   copy)
     task_copy_env
