@@ -1,7 +1,7 @@
 {
   "name": "gw2-fetch",
   "version": "0.0.1",
-  "description": "Gw2 fetch docker file for api.armory.net.au.",
+  "description": "Fetch server for api.gw2armory.com",
   "main": "run.js",
   "dependencies": {
     "axios": "^0.5.4",

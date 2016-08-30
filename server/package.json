@@ -1,7 +1,7 @@
 {
   "name": "armory-server",
   "version": "0.0.1",
-  "description": "Backend for api.armory.net.au.",
+  "description": "Api for api.gw2armory.com",
   "main": "node run.js",
   "repository": {
     "type": "git",

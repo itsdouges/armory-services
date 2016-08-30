@@ -12,7 +12,7 @@ function UsersResource(models, Validator, gw2Api) {
     // move to helper?
     var hashPassword = function (userPass) {
         var defer = q.defer();
-                        
+
         password(userPass).hash(function (error, hash) {
             if (error) {
                 defer.reject(error);
@@ -147,9 +147,9 @@ function UsersResource(models, Validator, gw2Api) {
                     });
             });
     };
-    
+
     /**
-     * Update user resource. 
+     * Update user resource.
      * Currently only changing your password is supported.
      */
     UsersResource.prototype.updatePassword = function (user) {
@@ -174,7 +174,7 @@ function UsersResource(models, Validator, gw2Api) {
             })
             .then(function (newHash) {
                 user.passwordHash = newHash;
-                                
+
                 return models.User.update({
                     passwordHash: newHash
                 }, {
@@ -186,6 +186,20 @@ function UsersResource(models, Validator, gw2Api) {
 
         return promise;
     };
+
+  UsersResource.prototype.forgotMyPassword = function (email) {
+    // find user with email
+    // if exists create row in user reset table
+    //  send email with id from fresh row
+    // return 200
+  };
+
+  UsersResource.prototype. = function (token, newPassword, newPasswordConfirm) {
+    // validate token
+    // validate passwords
+    // change password if everything is A-OK
+    // set user-reset row to used
+  };
 }
 
 module.exports = UsersResource;
