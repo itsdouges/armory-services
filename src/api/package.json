@@ -9,6 +9,11 @@
     "type": "git",
     "url": "https://github.com/madou/armory-back"
   },
+  "scripts": {
+    "start": "gulp serve",
+    "test": "gulp test",
+    "tdd": "gulp test:unit:auto"
+  },
   "dependencies": {
     "aws-sdk": "^2.5.3",
     "axios": "^0.5.4",
@@ -33,9 +38,5 @@
     "nodemon": "^1.4.1",
     "run-sequence": "^1.1.2",
     "sqlite3": "^3.0.10"
-  },
-  "scripts": {
-    "start": "gulp serve",
-    "test": "gulp test"
   }
 }

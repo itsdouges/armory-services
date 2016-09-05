@@ -1,21 +1,18 @@
 module.exports = {
-  up: function(queryInterface, Sequelize) {
-    return queryInterface.describeTable('Gw2ApiTokens').then(function (attributes) {
-      if (attributes.hasOwnProperty('valid')) {
+  up (queryInterface, Sequelize) {
+    return queryInterface.describeTable('Gw2ApiTokens')
+      .then((attributes) => {
+        if (Object.prototype.hasOwnProperty.call(attributes, 'valid')) {
+          return undefined;
+        }
+
         return queryInterface.removeColumn('Gw2ApiTokens', 'valid')
-          .then(function () {
-            return queryInterface.addColumn(
-              'Gw2ApiTokens',
-              'primary',
-              {
-                type: Sequelize.BOOLEAN,
-                allowNull: false,
-                defaultValue: false,
-                field: 'primary'
-              }
-            );
-          });
-      }
-    });
-  }
+          .then(() => queryInterface.addColumn('Gw2ApiTokens', 'primary', {
+            type: Sequelize.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+            field: 'primary',
+          }));
+      });
+  },
 };

@@ -1,8 +1,8 @@
 'use strict';
 
 var token = require('./index');
-var Models = require('../../models');
-var testDb = require('../../../spec/helpers/db');
+var Models = require('../../../models');
+var testDb = require('../../../../spec/helpers/db');
 var axios = require('axios');
 
 describe('gw2 token validator', function () {
@@ -14,9 +14,9 @@ describe('gw2 token validator', function () {
             done();
         });
     });
-    
+
     it('should call real endpoint and resolve', function (done) {
-        token('token', '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15', { 
+        token('token', '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15', {
             axios: axios,
             env: {
                 gw2: {
@@ -33,7 +33,7 @@ describe('gw2 token validator', function () {
     }, 40000);
 
     it('should call real endpoint and resolve error', function (done) {
-        token('token', 'invalid', { 
+        token('token', 'invalid', {
             axios: axios,
             env: {
                 gw2: {
@@ -42,9 +42,9 @@ describe('gw2 token validator', function () {
             },
             models: models
         }).then(function (e) {
-            expect(e).toEqual({ 
-                property: 'token', 
-                message: 'invalid token' 
+            expect(e).toEqual({
+                property: 'token',
+                message: 'invalid token'
             });
 
             done();

@@ -2,8 +2,6 @@
 
 ## Usage
 
-Ensure you have node `6.3.1` installed.
-
 ### Fire and forget
 
 Starts up three docker containers, fetch, server, and db.
@@ -24,28 +22,14 @@ IMAGE_UPLOAD_ACCESS_KEY_ID=ACCESSKEYHERE IMAGE_UPLOAD_SECRET_ACCESS_KEY=IMAGEKEY
 
 The developer experience is kind of shitty at the moment. You need to start the node servers manually in watch mode, as well as hook up a database. Currently there isn't an automated way to do this - so install `mysql 3.6`, using docker or directly on your host, and then modify the `./src/common/env/env_config.js` DEV object.
 
-### Copy config
+### Copy common files
 
-Copies `db models` and `env_config.js` to `src/fetch` and `src/api` folders.
+As docker can't access files in a parent directory, and we need them for local develoment, this script is used.
 
-```
-./go.sh copy
-```
-
-### Api server
+It copies `db models` and `env_config.js` to `src/fetch` and `src/api` folders.
 
 ```
-cd /src/api
-npm install
-gulp test:unit:auto
-```
-
-## Fetch server
-
-```
-cd ./src/fetch
-npm install
-npm test
+npm run copy-common
 ```
 
 ## Pull Requests

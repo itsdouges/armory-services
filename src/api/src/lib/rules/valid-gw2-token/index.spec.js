@@ -5,8 +5,8 @@ var q = require('q');
 
 var axios = require('axios');
 
-var Models = require('../../models');
-var testDb = require('../../../spec/helpers/db');
+var Models = require('../../../models');
+var testDb = require('../../../../spec/helpers/db');
 
 describe('gw2 token validator', function () {
     var mockAxios;
@@ -43,7 +43,7 @@ describe('gw2 token validator', function () {
         var defer = q.defer();
         spyOn(mockAxios, 'get').and.returnValue(defer.promise);
 
-        token('token', 'ee', { 
+        token('token', 'ee', {
             axios: mockAxios,
             env: mockEnv,
             models: models
@@ -73,14 +73,14 @@ describe('gw2 token validator', function () {
         var defer = q.defer();
         spyOn(mockAxios, 'get').and.returnValue(defer.promise);
 
-        token('token', 'ee', { 
+        token('token', 'ee', {
             axios: mockAxios,
             env: mockEnv,
             models: models
         }).then(function (e) {
-            expect(e).toEqual({ 
-                property: 'token', 
-                message: 'needs characters and inventories permission' 
+            expect(e).toEqual({
+                property: 'token',
+                message: 'needs characters and inventories permission'
             });
 
             done();
@@ -105,22 +105,22 @@ describe('gw2 token validator', function () {
             .then(function (e) {
                 models.Gw2ApiToken
                     .create({
-                        token: 'ee', 
-                        accountName: 'madou.1234', 
+                        token: 'ee',
+                        accountName: 'madou.1234',
                         permissions: 'he,he',
                         accountId: 'ahh',
                         world: 1122,
                         UserId: e.id
                     })
                     .then(function (e) {
-                        token('token', 'ee', { 
+                        token('token', 'ee', {
                             axios: mockAxios,
                             env: mockEnv,
                             models: models
                         }).then(function (e) {
-                            expect(e).toEqual({ 
-                                property: 'token', 
-                                message: 'is already being used' 
+                            expect(e).toEqual({
+                                property: 'token',
+                                message: 'is already being used'
                             });
 
                             done();
@@ -152,22 +152,22 @@ describe('gw2 token validator', function () {
             .then(function (e) {
                 models.Gw2ApiToken
                     .create({
-                        token: 'hahahaha_token', 
+                        token: 'hahahaha_token',
                         accountName: 'madou.1234',
-                        permissions: 'he,he', 
+                        permissions: 'he,he',
                         accountId: 'ahh',
                         world: 3344,
                         UserId: e.id
                     })
                     .then(function (e) {
-                        token('token', 'another_token_i_generated', { 
+                        token('token', 'another_token_i_generated', {
                             axios: mockAxios,
                             env: mockEnv,
                             models: models
                         }).then(function (e) {
-                            expect(e).toEqual({ 
-                                property: 'token', 
-                                message: 'key for madou.1234 already exists' 
+                            expect(e).toEqual({
+                                property: 'token',
+                                message: 'key for madou.1234 already exists'
                             });
 
                             done();
@@ -198,14 +198,14 @@ describe('gw2 token validator', function () {
         var defer = q.defer();
         spyOn(mockAxios, 'get').and.returnValue(defer.promise);
 
-        token('token', 'ee', { 
+        token('token', 'ee', {
             axios: mockAxios,
             env: mockEnv,
             models: models
         }).then(function (e) {
-            expect(e).toEqual({ 
-                property: 'token', 
-                message: 'invalid token' 
+            expect(e).toEqual({
+                property: 'token',
+                message: 'invalid token'
             });
 
             done();

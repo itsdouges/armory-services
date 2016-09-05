@@ -1,8 +1,9 @@
-var Sequelize = require('sequelize');
+const Sequelize = require('sequelize');
 
 module.exports = function () {
-  return new Sequelize('database', 'username', 'password', {                                                                                                                                                             
+  return new Sequelize('database', 'username', 'password', {
     dialect: 'sqlite',
-    logging: false
+    logging: false,
   });
-}
+};
+

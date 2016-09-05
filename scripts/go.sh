@@ -17,17 +17,21 @@
 # host machine.
 ##
 
+log() {
+  printf "\n\n== $1 ==\n\n"
+}
+
 task_serve() {
   task_copy_env
   task_copy_db_models
 
-  echo "Starting api containers.."
+  log "Starting api containers.."
 
   remove_container db
   task_build db
   task_run db
 
-  echo "Short pause to let db container finish starting up.."
+  log "Short pause to let db container finish starting up.."
   pause_for 10
 
   remove_container fetch
@@ -40,7 +44,7 @@ task_serve() {
 }
 
 task_serve_dev() {
-  echo "Starting dev api.armory.com.."
+  log "Starting dev api.armory.com.."
 
   remove_container data
   task_build data
@@ -66,7 +70,7 @@ task_acceptance() {
 # $1: container-name
 # $2: relative location for dockerfile
 build_container() {
-  echo "Building $1.."
+  log "Building $1.."
 
   docker build \
     -t "madou/gw2armory-$1:latest" \
@@ -84,7 +88,7 @@ pause_for() {
       ((t -= 1))
   done
 
-  echo " Finished!"
+  log " Finished!"
 }
 
 ##
@@ -95,7 +99,7 @@ pause_for() {
 # $2: extra commands
 ##
 create_container() {
-  echo "Creating $1.."
+  log "Creating $1.."
 
   docker create \
     $2 \
@@ -104,13 +108,13 @@ create_container() {
 }
 
 remove_container() {
-  echo "Removing container gw2armory-$1.."
+  log "Removing container gw2armory-$1.."
 
   docker rm -f "gw2armory-$1"
 }
 
 remove_image() {
-  echo "Removing image $1.."
+  log "Removing image $1.."
 
   docker rmi -f $1
 }
@@ -118,7 +122,7 @@ remove_image() {
 # $1: container-name
 # $2: extra commands
 run_daemon_container() {
-  echo "Running daemon $1.."
+  log "Running daemon $1.."
 
   docker run \
     -d \
@@ -131,7 +135,7 @@ run_daemon_container() {
 }
 
 run_container() {
-  echo "Running $1.."
+  log "Running $1.."
 
   docker run \
     $2 \
@@ -157,7 +161,7 @@ task_run() {
     fetch)
       run_daemon_container $1 "--link gw2armory-db:db";;
     *)
-      echo "Supported run: {acceptance|db|fetch|devserver|server}";;
+      log "Supported run: {acceptance|db|fetch|devserver|server}";;
   esac
 }
 
@@ -166,7 +170,7 @@ task_create() {
     data)
       create_container $1;;
     *)
-      echo "Supported create: {data}";;
+      log "Supported create: {data}";;
   esac
 }
 
@@ -182,7 +186,7 @@ task_build() {
     fetch)
       build_container $1 "./src/fetch/";;
     *)
-      echo "Supported build: {acceptance|server|db|data|fetch}";;
+      log "Supported build: {acceptance|server|db|data|fetch}";;
   esac
 }
 
@@ -199,12 +203,12 @@ task_remove() {
     fetch)
       remove_container $1;;
     *)
-      echo "Supported removes: {acceptance|server|db|data|fetch}";;
+      log "Supported removes: {acceptance|server|db|data|fetch}";;
   esac
 }
 
 task_untagged() {
-  echo "Cleaning up untagged images.."
+  log "Cleaning up untagged images.."
   docker images | grep "<none>" | awk '{print $3}' | xargs docker rmi -f
 }
 
@@ -221,12 +225,12 @@ task_clean() {
 }
 
 task_exited() {
-  echo "Cleaning up exited containers.."
+  log "Cleaning up exited containers.."
   docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs docker rm
 }
 
 task_copy_env() {
-  echo "Copying env to gw2-fetch and server.."
+  log "Copying env to gw2-fetch and server.."
 
   rm -r src/fetch/env/
   cp -r src/common/env/ src/fetch/env/
@@ -236,7 +240,7 @@ task_copy_env() {
 }
 
 task_copy_db_models() {
-  echo "Copying db-models to gw2-fetch and server.."
+  log "Copying db-models to gw2-fetch and server.."
 
   rm -r src/fetch/src/models/
   cp -r src/common/models/ src/fetch/src/models/
@@ -282,6 +286,6 @@ case "$1" in
     task_copy_env
     task_copy_db_models;;
   *)
-    echo "Available tasks: {acceptance|copy|fetch|run|serve|remove|push|clean|create|build|servedev}"
+    log "Available tasks: {acceptance|copy|fetch|run|serve|remove|push|clean|create|build|servedev}"
     exit 1;;
 esac

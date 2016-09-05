@@ -6,7 +6,8 @@
   "scripts": {
     "start": "ENV=PROD bash scripts/go.sh serve",
     "dev": "ENV=DEV bash scripts/go.sh serve",
-    "deploy": "node ./scripts/deploy"
+    "deploy": "node ./scripts/deploy",
+    "copy-common": "bash scripts/go.sh copy"
   },
   "repository": {
     "type": "git",

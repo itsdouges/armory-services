@@ -20,7 +20,7 @@
     "sqlite3": "^3.0.10"
   },
   "scripts": {
-    "test": "jasmine-node .",
-    "start": "node ./src/run"
+    "start": "node ./src/run",
+    "test": "jasmine-node ."
   }
 }
