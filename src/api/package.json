@@ -1,8 +1,10 @@
 {
-  "name": "armory-server",
+  "name": "armory-api",
   "version": "0.0.1",
-  "description": "Api for api.gw2armory.com",
+  "description": "Api server for api.gw2armory.com",
   "main": "node run.js",
+  "author": "madou",
+  "license": "ISC",
   "repository": {
     "type": "git",
     "url": "https://github.com/madou/armory-back"
@@ -35,7 +37,5 @@
   "scripts": {
     "start": "gulp serve",
     "test": "gulp test"
-  },
-  "author": "madou",
-  "license": "ISC"
+  }
 }

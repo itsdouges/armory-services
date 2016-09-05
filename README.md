@@ -4,7 +4,7 @@
 
 ### Fire and forget
 
-Starts three docker containers, fetch, server, and db.
+Starts up three docker containers, fetch, server, and db.
 
 ```
 npm run dev
@@ -20,9 +20,11 @@ IMAGE_UPLOAD_ACCESS_KEY_ID=ACCESSKEYHERE IMAGE_UPLOAD_SECRET_ACCESS_KEY=IMAGEKEY
 
 ### Local development
 
-The developer experience is kind of shitty at the moment. You need to start the node servers manually in watch mode, as well as hook up a database. Currently there isn't an automated way to do this - so install `mysql 3.6`, using docker or directly on your host, and then modify the `./environment/env_config.js` DEV object.
+The developer experience is kind of shitty at the moment. You need to start the node servers manually in watch mode, as well as hook up a database. Currently there isn't an automated way to do this - so install `mysql 3.6`, using docker or directly on your host, and then modify the `./src/common/env/env_config.js` DEV object.
 
 ### Copy config
+
+Copies `db models` and `env_config.js` to `src/fetch` and `src/api` folders.
 
 ```
 ./go.sh copy
@@ -31,7 +33,7 @@ The developer experience is kind of shitty at the moment. You need to start the 
 ### Api server
 
 ```
-cd ./server
+cd /src/api
 npm install
 gulp test:unit:auto
 ```
@@ -39,7 +41,7 @@ gulp test:unit:auto
 ## Fetch server
 
 ```
-cd ./gw2-fetch
+cd ./src/fetch
 npm install
 npm test
 ```

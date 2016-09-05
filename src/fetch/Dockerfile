@@ -1,8 +1,8 @@
-FROM node:0.12.7
+FROM node:6.3.1
 
 MAINTAINER madou <laheen@gmail.com>
 
-LABEL Description="Gw2-fetch container for api.gw2armory.com"
+LABEL Description="Fetch micro-service for api.gw2armory.com"
 
 WORKDIR /opt
 

@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "0.12"
+  - "6.3.1"
 branches:
   only:
   - master
@@ -14,11 +14,11 @@ install:
   - npm install
 script:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - bash go.sh copy &&
-    bash go.sh build fetch &&
-    bash go.sh build server &&
-    bash go.sh push fetch &&
-    bash go.sh push server
+  - bash scripts/go.sh copy &&
+    bash scripts/go.sh build fetch &&
+    bash scripts/go.sh build server &&
+    bash scripts/go.sh push fetch &&
+    bash scripts/go.sh push server
 deploy:
   skip_cleanup: true
   provider: script

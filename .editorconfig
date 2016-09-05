@@ -10,7 +10,7 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 
 # Tab indentation (no size specified)
-[Makefile]
+[Makefile, Dockerfile]
 indent_style = tab
 
 # Indentation override for all JS under lib directory
