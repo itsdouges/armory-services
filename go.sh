@@ -174,13 +174,13 @@ task_create() {
 task_build() {
   case "$1" in
     acceptance)
-      build_container $1 "./test-server/";;
+      build_container $1 "./test/e2e/api/";;
     db)
-      build_container $1 "./db-server/";;
+      build_container $1 "./src/db/";;
     server)
-      build_container $1 "./server/";;
+      build_container $1 "./src/api/";;
     fetch)
-      build_container $1 "./gw2-fetch/";;
+      build_container $1 "./src/fetch/";;
     *)
       echo "Supported build: {acceptance|server|db|data|fetch}";;
   esac
@@ -228,21 +228,21 @@ task_exited() {
 task_copy_env() {
   echo "Copying env to gw2-fetch and server.."
 
-  rm -r gw2-fetch/env/
-  cp -r environment/ gw2-fetch/env/
+  rm -r src/fetch/env/
+  cp -r env/ src/fetch/env/
 
-  rm -r server/env/
-  cp -r environment/ server/env/
+  rm -r src/api/env/
+  cp -r env/ src/api/env/
 }
 
 task_copy_db_models() {
   echo "Copying db-models to gw2-fetch and server.."
 
-  rm -r gw2-fetch/src/models/
-  cp -r db-models/ gw2-fetch/src/models/
+  rm -r src/fetch/src/models/
+  cp -r src/db/models/ src/fetch/src/models/
 
-  rm -r server/src/models/
-  cp -r db-models/ server/src/models/
+  rm -r src/api/src/models/
+  cp -r src/db/models/ src/api/src/models/
 }
 
 task_run_fetch() {

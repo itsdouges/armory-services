@@ -8,3 +8,7 @@ models/
 Dockerrun.aws.json
 *.zip
 .cmds
+src/api/env
+src/api/src/models
+src/fetch/env
+src/fetch/src/models
