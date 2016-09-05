@@ -1,5 +1,3 @@
-'use strict';
-
 var q = require('q');
 
 function Gw2Api (axios, env) {

@@ -12,7 +12,7 @@ describe('gw2 api', function () {
       endpoint: 'https://api.guildwars2.com/'
     }
   };
-  
+
   beforeEach(function () {
     sut = Gw2Api(axios, env);
   });
@@ -21,7 +21,7 @@ describe('gw2 api', function () {
     sut.readAccount(testToken)
       .then(function (account) {
         expect(account.name).toBe('stress level zero.4907');
-        
+
         done();
       }, function (e) {
         console.log(e);

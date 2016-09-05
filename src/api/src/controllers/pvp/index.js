@@ -1,4 +1,4 @@
-var userHelper = require('../../helpers/get-user-info');
+var userHelper = require('../../lib/get-user-info');
 
 function handleBadToken (defaultValue, error) {
   if (error === 'Token not found' || error.data && error.data.text === 'requires scope pvp') {

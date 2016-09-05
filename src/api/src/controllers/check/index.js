@@ -1,6 +1,6 @@
 var q = require('q');
 
-var validGw2Token = require('../../rules/valid-gw2-token');
+var validGw2Token = require('../../lib/rules/valid-gw2-token');
 
 function CheckController(Validator) {
     Validator.addResource({

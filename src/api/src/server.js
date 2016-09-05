@@ -1,5 +1,3 @@
-"use strict";
-
 var restify = require("restify"),
   restifyOAuth2 = require("restify-oauth2"),
   GottaValidate = require('gotta-validate'),
@@ -9,7 +7,7 @@ var restify = require("restify"),
   Gw2TokenController = require('./controllers/gw2-token'),
   CharacterController = require('./controllers/character'),
   AuthController = require('./controllers/auth'),
-  Gw2Api = require('./services/gw2-api'),
+  Gw2Api = require('./lib/gw2'),
   PvpController = require('./controllers/pvp');
 
 function Server(models, config) {
@@ -17,7 +15,7 @@ function Server(models, config) {
   GottaValidate
     .addRule({
       name: 'valid-gw2-token',
-      func: require('./rules/valid-gw2-token'),
+      func: require('./lib/rules/valid-gw2-token'),
       dependencies: {
         axios: axios,
         models: models,
@@ -26,7 +24,7 @@ function Server(models, config) {
     })
     .addRule({
       name: 'unique-email',
-      func: require('./rules/unique-email'),
+      func: require('./lib/rules/unique-email'),
       inherits: 'email',
       dependencies: {
         models: models
@@ -34,18 +32,18 @@ function Server(models, config) {
     })
     .addRule({
       name: 'unique-alias',
-      func: require('./rules/unique-alias'),
+      func: require('./lib/rules/unique-alias'),
       dependencies: {
         models: models
       }
     })
     .addRule({
       name: 'min5',
-      func: require('./rules/min').five
+      func: require('./lib/rules/min').five
     })
     .addRule({
       name: 'ezpassword',
-      func: require('./rules/password')
+      func: require('./lib/rules/password')
     });
 
   var gw2Api = Gw2Api(axios, config);

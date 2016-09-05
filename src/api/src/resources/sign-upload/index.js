@@ -1,5 +1,5 @@
 var s3 = require('../../lib/s3');
-var userHelper = require('../../helpers/get-user-info');
+var userHelper = require('../../lib/get-user-info');
 
 module.exports = function (server, models) {
   server.get('/sign-upload', function (req, res, next) {
