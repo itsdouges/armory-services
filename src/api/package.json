@@ -1,6 +1,6 @@
 {
   "name": "armory-api",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Api server for api.gw2armory.com",
   "main": "node run.js",
   "author": "madou",

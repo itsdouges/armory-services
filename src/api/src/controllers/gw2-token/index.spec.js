@@ -33,7 +33,7 @@ describe('gw2 token controller', function () {
 
         mockery.enable();
         mockery.registerMock('axios', mockAxios);
-        mockery.registerMock('../../../env/env_config', mockConfig);
+        mockery.registerMock('../../../env', mockConfig);
         mockGw2Api = {
             readTokenInfoWithAccount: function () {}
         };
@@ -151,7 +151,7 @@ describe('gw2 token controller', function () {
                     expect(mocks.validate).toHaveBeenCalledWith({
                         token: 'token'
                     });
-                    
+
                     expect(e).toBe('failed');
 
                     done();
@@ -224,7 +224,7 @@ describe('gw2 token controller', function () {
                     email: 'cool@email.com',
                     passwordHash: 'lolz',
                     alias: 'swagn'
-                }) 
+                })
                 .then(function (e) {
                     systemUnderTest
                         .add('cool@email.com', 'token')

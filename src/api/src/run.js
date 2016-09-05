@@ -2,7 +2,7 @@ var Models = require("./models");
 var Server = require('./server');
 var Sequelize = require("sequelize");
 
-var config = require(__dirname + '/../env/env_config');
+var config = require(__dirname + '/../env');
 config.ping.host = process.env[config.ping.host_env_name];
 
 if (!config.db.options.host) {

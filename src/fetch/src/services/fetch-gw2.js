@@ -2,7 +2,7 @@
 
 var q = require('q');
 
-var env = require('../../env/env_config');
+var env = require('../../env');
 var axios = require('axios');
 
 function guild (id, retries) {

@@ -2,7 +2,7 @@
 
 var q = require('q');
 var axios = require('axios');
-var config = require('../../../env/env_config');
+var config = require('../../../env');
 
 function Gw2TokenController (models, Validator, gw2Api) {
     var that = this;

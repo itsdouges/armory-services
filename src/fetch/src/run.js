@@ -6,7 +6,7 @@ var Controller = require('./controllers/ping-controller'),
     http = require('http'),
     restify = require("restify");
 
-var config = require(__dirname + '/../env/env_config');
+var config = require(__dirname + '/../env');
 
 if (!config.db.options.host) {
     config.db.options.host = process.env[config.db.options.host_env_name];
@@ -46,7 +46,7 @@ models.sequelize.sync().then(function () {
     server.listen(config.ping.port);
 
     console.log('Starting ping..');
-    
+
     pinger.ping();
     setInterval(function () {
         pinger.ping();

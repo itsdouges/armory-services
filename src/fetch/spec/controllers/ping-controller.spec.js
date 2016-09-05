@@ -19,7 +19,7 @@ describe('ping controller', function () {
 
         mockery.enable();
         mockery.registerMock('axios', mockAxios);
-        mockery.registerMock('../../../env/env_config', mockConfig);
+        mockery.registerMock('../../../env', mockConfig);
 
         models = new Models(TestDb());
         models.sequelize.sync({
@@ -72,7 +72,7 @@ describe('ping controller', function () {
             })
             .then(function (character) {
                 expect(character).toBe(null);
-            })          
+            })
             .then(function () {
                 return models.Gw2Character.findOne({
                     where: {
