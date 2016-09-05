@@ -1,6 +1,8 @@
-# api.gw2armory.com [![Build Status](https://travis-ci.org/madou/armory-api.svg?branch=master)](https://travis-ci.org/madou/armory-api)
+# api.gw2armory.com [![Build Status](https://travis-ci.org/madou/armory-back.svg?branch=master)](https://travis-ci.org/madou/armory-api)
 
 ## Usage
+
+Ensure you have node `6.3.1` installed.
 
 ### Fire and forget
 
