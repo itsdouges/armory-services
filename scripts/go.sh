@@ -229,20 +229,20 @@ task_copy_env() {
   echo "Copying env to gw2-fetch and server.."
 
   rm -r src/fetch/env/
-  cp -r env/ src/fetch/env/
+  cp -r src/common/env/ src/fetch/env/
 
   rm -r src/api/env/
-  cp -r env/ src/api/env/
+  cp -r src/common/env/ src/api/env/
 }
 
 task_copy_db_models() {
   echo "Copying db-models to gw2-fetch and server.."
 
   rm -r src/fetch/src/models/
-  cp -r src/db/models/ src/fetch/src/models/
+  cp -r src/common/models/ src/fetch/src/models/
 
   rm -r src/api/src/models/
-  cp -r src/db/models/ src/api/src/models/
+  cp -r src/common/models/ src/api/src/models/
 }
 
 task_run_fetch() {

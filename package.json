@@ -1,10 +1,11 @@
 {
   "name": "api.gw2armory.com",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Backend containers for api.gw2armory.com",
   "main": "index.js",
   "scripts": {
-    "deploy": "node ./deploy"
+    "dev": "ENV=DEV bash scripts/go.sh serve",
+    "deploy": "node ./scripts/deploy"
   },
   "repository": {
     "type": "git",

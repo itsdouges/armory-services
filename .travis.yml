@@ -22,4 +22,4 @@ script:
 deploy:
   skip_cleanup: true
   provider: script
-  script: bash deploy/deploy.sh
+  script: bash scripts/deploy/deploy.sh

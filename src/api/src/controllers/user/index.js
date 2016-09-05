@@ -148,53 +148,53 @@ function UsersResource(models, Validator, gw2Api) {
             });
     };
 
-    /**
-     * Update user resource.
-     * Currently only changing your password is supported.
-     */
-    UsersResource.prototype.updatePassword = function (user) {
-        var validator = Validator({
-            resource: 'users',
-            mode: 'update-password'
-        });
+  /**
+   * Update user resource.
+   * Currently only changing your password is supported.
+   */
+  UsersResource.prototype.updatePassword = function (user) {
+      var validator = Validator({
+          resource: 'users',
+          mode: 'update-password'
+      });
 
-        var promise = validator
-            .validate(user)
-            .then(function () {
-                return scope.read(user.email);
-            })
-            .then(function (userData) {
-                return verifyHash(userData.passwordHash, user.currentPassword)
-                    .then(function () {
-                        return user.password;
-                    });
-            })
-            .then(function (newPassword) {
-                return hashPassword(newPassword);
-            })
-            .then(function (newHash) {
-                user.passwordHash = newHash;
+      var promise = validator
+          .validate(user)
+          .then(function () {
+              return scope.read(user.email);
+          })
+          .then(function (userData) {
+              return verifyHash(userData.passwordHash, user.currentPassword)
+                  .then(function () {
+                      return user.password;
+                  });
+          })
+          .then(function (newPassword) {
+              return hashPassword(newPassword);
+          })
+          .then(function (newHash) {
+              user.passwordHash = newHash;
 
-                return models.User.update({
-                    passwordHash: newHash
-                }, {
-                    where: {
-                        email: user.email
-                    }
-                });
-            });
+              return models.User.update({
+                  passwordHash: newHash
+              }, {
+                  where: {
+                      email: user.email
+                  }
+              });
+          });
 
-        return promise;
-    };
+      return promise;
+  };
 
-  UsersResource.prototype.forgotMyPassword = function (email) {
+  UsersResource.prototype.initForgotMyPassword = function (email) {
     // find user with email
     // if exists create row in user reset table
-    //  send email with id from fresh row
+    // send email with id from fresh row
     // return 200
   };
 
-  UsersResource.prototype. = function (token, newPassword, newPasswordConfirm) {
+  UsersResource.prototype.completeForgotMyPassword = function (guid, newPassword, newPasswordConfirm) {
     // validate token
     // validate passwords
     // change password if everything is A-OK

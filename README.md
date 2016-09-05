@@ -7,7 +7,7 @@
 Starts three docker containers, fetch, server, and db.
 
 ```
-./go.sh serve
+npm run dev
 ```
 
 #### User image uploads
@@ -15,7 +15,7 @@ Starts three docker containers, fetch, server, and db.
 To have image uploads working locally you'll need a valid aws key/secret pair. Run it like so:
 
 ```
-ENV=DEV IMAGE_UPLOAD_ACCESS_KEY_ID=ACCESSKEYHERE IMAGE_UPLOAD_SECRET_ACCESS_KEY=IMAGEKEYHERE bash go.sh serve
+IMAGE_UPLOAD_ACCESS_KEY_ID=ACCESSKEYHERE IMAGE_UPLOAD_SECRET_ACCESS_KEY=IMAGEKEYHERE npm run dev
 ```
 
 ### Local development
