@@ -3,8 +3,6 @@ node_modules/
 .tmp/
 .npm-debug.log
 npm-debug.log
-env/
-models/
 Dockerrun.aws.json
 *.zip
 .cmds
