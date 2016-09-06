@@ -1,5 +1,5 @@
 const TABLE_NAME = 'UserResets';
-const USER_ID_COLUMN_NAME = 'userId';
+const USER_ID_COLUMN_NAME = 'UserId';
 const EXPIRES_COLUMN_NAME = 'expires';
 
 module.exports = {
