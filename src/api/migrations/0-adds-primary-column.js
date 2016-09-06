@@ -3,7 +3,7 @@ module.exports = {
     return queryInterface.describeTable('Gw2ApiTokens')
       .then((attributes) => {
         if (Object.prototype.hasOwnProperty.call(attributes, 'valid')) {
-          return undefined;
+          return Promise.resolve();
         }
 
         return queryInterface.removeColumn('Gw2ApiTokens', 'valid')

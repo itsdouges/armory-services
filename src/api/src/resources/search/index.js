@@ -1,26 +1,21 @@
-'use strict';
+const searchFactory = require('../../controllers/search');
 
-var Controller  = require('../../controllers/search');
+module.exports = function searchResource (server, models) {
+  const controller = searchFactory(models);
 
-function search (server, models) {
-    var controller = Controller(models);
+  server.get('/search', (req, res, next) =>
+    controller
+      .search(req.params.filter)
+      .then((results) => {
+        if (results) {
+          res.send(200, results);
+        } else {
+          res.send(404);
+        }
 
-    server.get('/search', function (req, res, next) {
-        controller
-            .search(req.params.filter)
-            .then(function (results) {
-                if (results) {
-                    res.send(200, results);
-                } else {
-                    res.send(404);
-                }
-
-                return next();
-            }, function (error) {
-                res.send(500, error);
-                return next();
-            });
-    });
-}
-
-module.exports = search;
+        return next();
+      }, (error) => {
+        res.send(500, error);
+        return next();
+      }));
+};

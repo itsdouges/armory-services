@@ -1,12 +1,10 @@
-'use strict';
-
 // todo: use sequelize transactions where appropriate!
-var password = require('password-hash-and-salt');
-var q = require('q');
+const password = require('password-hash-and-salt');
+const q = require('q');
 
-var CharacterController = require('../character');
+const CharacterController = require('../character');
 
-function UsersResource(models, Validator, gw2Api) {
+function UsersResource (models, Validator, gw2Api) {
     var scope = this;
 
     // move to helper?
