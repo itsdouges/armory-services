@@ -1,6 +1,6 @@
 const TABLE_NAME = 'UserResets';
-const USER_ID_FOREIGN_KEY = 'userId';
-const USER_TABLE = 'User';
+const USER_ID_COLUMN_NAME = 'userId';
+const EXPIRES_COLUMN_NAME = 'expires';
 
 module.exports = {
   up (queryInterface, Sequelize) {
@@ -16,20 +16,22 @@ module.exports = {
           allowNull: false,
         })
         .then(() => console.log('\nAdded expires\n'))
-        .then(() => queryInterface.addColumn(TABLE_NAME, USER_ID_FOREIGN_KEY, {
+        .then(() => queryInterface.addColumn(TABLE_NAME, USER_ID_COLUMN_NAME, {
           type: Sequelize.UUID,
           allowNull: false,
-          references: USER_TABLE,
-          referencesKey: 'id',
+          onDelete: 'CASCADE',
+          references: {
+            model: 'Users',
+            key: 'id',
+          },
         }))
-        .then(() => console.log('\nAdded UserId\n'));
-//         .then(() => queryInterface.sequelize.query(`
-// ALTER TABLE ${TABLE_NAME}
-// ADD CONSTRAINT ${USER_ID_FOREIGN_KEY}_fkey FOREIGN KEY (${USER_ID_FOREIGN_KEY})
-// REFERENCES ${USER_TABLE} (id) MATCH SIMPLE
-// ON UPDATE CASCADE ON DELETE CASCADE;`
-//         ))
-//         .then(() => console.log('\nAdded foreign key constaint for UserId\n'));
+        .then(() => console.log('\nAdded UserId constraint\n'), (e) => console.error(e));
       });
+  },
+  down (queryInterface) {
+    return queryInterface.removeColumn(TABLE_NAME, EXPIRES_COLUMN_NAME)
+      .then(() => console.log('\nRemoved expires column\n'))
+      .then(() => queryInterface.removeColumn(TABLE_NAME, USER_ID_COLUMN_NAME))
+      .then(() => console.log('\nRemoved user_id column\n'));
   },
 };
