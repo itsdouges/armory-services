@@ -1,30 +1,21 @@
-"use strict";
+/* THIS IS COPIED FROM COMMON/MODELS */
 
-// NOTE: THIS IS A COPIED FILE FROM db-models!
+const fs = require('fs');
+const path = require('path');
 
-var fs = require("fs");
-var path = require("path");
-
-/**
- * Models(sequelize)
- * Returns an object containing all models used in armory, as well
- * as a reference to the sequelize db object passed in.
- */
 function Models (sequelize) {
-  var db = {};
+  const db = {};
 
   fs
     .readdirSync(__dirname)
-    .filter(function(file) {
-      return (file.indexOf(".") !== 0) && (file !== "index.js");
-    })
-    .forEach(function(file) {
-      var model = sequelize.import(path.join(__dirname, file));
+    .filter((file) => (file.indexOf('.') !== 0) && (file !== 'index.js'))
+    .forEach((file) => {
+      const model = sequelize.import(path.join(__dirname, file));
       db[model.name] = model;
     });
 
-  Object.keys(db).forEach(function(modelName) {
-    if ("associate" in db[modelName]) {
+  Object.keys(db).forEach((modelName) => {
+    if ('associate' in db[modelName]) {
       db[modelName].associate(db);
     }
   });

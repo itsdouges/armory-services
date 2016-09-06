@@ -1,9 +1,7 @@
-'use strict';
-
-// NOTE: THIS IS A COPIED FILE FROM db-models!
+/* THIS IS COPIED FROM COMMON/MODELS */
 
 module.exports = function (sequelize, DataTypes) {
-  var UserReset = sequelize.define('UserReset', {
+  return sequelize.define('UserReset', {
     id: {
       type: DataTypes.UUID,
       field: 'id',
@@ -15,9 +13,7 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       field: 'used',
       required: true,
-      defaultValue: false
+      defaultValue: false,
     },
   });
-
-  return UserReset;
 };

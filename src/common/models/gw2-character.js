@@ -1,107 +1,105 @@
-'use strict';
-
-// NOTE: THIS IS A COPIED FILE FROM db-models!
+/* THIS IS COPIED FROM COMMON/MODELS */
 
 module.exports = function (sequelize, DataTypes) {
-  var Gw2Character = sequelize.define("Gw2Character", {
+  const Gw2Character = sequelize.define('Gw2Character', {
     name: {
       field: 'name',
       type: DataTypes.STRING,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
     },
     race: {
       field: 'race',
       allowNull: false,
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     gender: {
       field: 'gender',
       allowNull: false,
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     profession: {
       field: 'profession',
       allowNull: false,
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     level: {
       field: 'level',
       allowNull: false,
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
     },
     created: {
       field: 'created',
       allowNull: false,
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
     },
     age: {
       field: 'created',
       allowNull: false,
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
     },
     deaths: {
       field: 'deaths',
       allowNull: false,
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
     },
     guild: {
       field: 'guild',
-      type: DataTypes.STRING
-    },   
+      type: DataTypes.STRING,
+    },
     showBuilds: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      field: 'show_builds'
+      field: 'show_builds',
     },
     showPvp: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      field: 'show_pvp'
+      field: 'show_pvp',
     },
     showBags: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      field: 'show_bags'
+      field: 'show_bags',
     },
     showCrafting: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      field: 'show_crafting'
+      field: 'show_crafting',
     },
     showEquipment: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      field: 'show_equipment'
+      field: 'show_equipment',
     },
     showPublic: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      field: 'show_public'
+      field: 'show_public',
     },
     showGuild: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      field: 'show_guild'
-    }
+      field: 'show_guild',
+    },
   }, {
     classMethods: {
-      associate: function(models) {
+      associate (models) {
         Gw2Character.belongsTo(models.Gw2ApiToken, {
-          onDelete: "CASCADE",
-           foreignKey: { 
-            allowNull: false 
-          }
+          onDelete: 'CASCADE',
+          foreignKey: {
+            allowNull: false,
+          },
         });
-      }
-    }
+      },
+    },
   });
 
   return Gw2Character;

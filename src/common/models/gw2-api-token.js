@@ -1,9 +1,7 @@
-'use strict';
-
-// NOTE: THIS IS A COPIED FILE FROM db-models!
+/* THIS IS COPIED FROM COMMON/MODELS */
 
 module.exports = function (sequelize, DataTypes) {
-  var Gw2ApiToken = sequelize.define("Gw2ApiToken", {
+  const Gw2ApiToken = sequelize.define('Gw2ApiToken', {
     token: {
       field: 'token',
       type: DataTypes.STRING,
@@ -12,49 +10,49 @@ module.exports = function (sequelize, DataTypes) {
     accountName: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: 'account_name'
+      field: 'account_name',
     },
     permissions: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: 'permissions'
+      field: 'permissions',
     },
     world: {
       type: DataTypes.INTEGER,
       field: 'world',
-      allowNull: false
+      allowNull: false,
     },
     accountId: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      field: 'account_id'
+      field: 'account_id',
     },
     primary: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
-      field: 'primary'
+      field: 'primary',
     },
   }, {
     classMethods: {
-      associate: function(models) {
-        Gw2ApiToken.hasMany(models.Gw2Character, { 
+      associate (models) {
+        Gw2ApiToken.hasMany(models.Gw2Character, {
           as: 'gw2_characters',
-          foreignKey: { 
-            allowNull: false 
-          }, 
-          onDelete: 'CASCADE' 
+          foreignKey: {
+            allowNull: false,
+          },
+          onDelete: 'CASCADE',
         });
-        
+
         Gw2ApiToken.belongsTo(models.User, {
-          onDelete: "CASCADE",
-          foreignKey: { 
-            allowNull: false 
-          }
+          onDelete: 'CASCADE',
+          foreignKey: {
+            allowNull: false,
+          },
         });
-      }
-    }
+      },
+    },
   });
 
   return Gw2ApiToken;
