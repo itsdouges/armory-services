@@ -2,13 +2,11 @@
 
 module.exports = {
   db: {
-    name: 'armory',
-    user: 'admin',
+    database: 'armory',
+    username: 'admin',
     password: 'password',
-    options: {
-      dialect: 'mysql',
-      host: 'gw2armory-prod.cekbcmynaoxp.us-east-1.rds.amazonaws.com',
-    },
+    dialect: 'mysql',
+    host: 'gw2armory-prod.cekbcmynaoxp.us-east-1.rds.amazonaws.com',
   },
   ping: {
     port: '8081',

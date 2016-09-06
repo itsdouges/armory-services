@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Fetch micro-service for api.gw2armory.com",
   "author": "madou",
-  "license": "ISC",
   "scripts": {
     "start": "node ./src/run",
     "test": "jasmine-node ."

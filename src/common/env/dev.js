@@ -2,13 +2,11 @@
 
 module.exports = {
   db: {
-    name: 'armory',
-    user: 'admin',
+    database: 'armory',
+    username: 'admin',
     password: 'password',
-    options: {
-      dialect: 'mysql',
-      host: process.env.DB_PORT_3306_TCP_ADDR,
-    },
+    dialect: 'mysql',
+    host: process.env.DB_PORT_3306_TCP_ADDR,
   },
   ping: {
     port: '8081',

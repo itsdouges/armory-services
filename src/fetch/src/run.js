@@ -8,12 +8,8 @@ var Controller = require('./controllers/ping-controller'),
 
 var config = require(__dirname + '/../env');
 
-if (!config.db.options.host) {
-    config.db.options.host = process.env[config.db.options.host_env_name];
-}
-
-console.log('Connecting to mysql host: ' + config.db.options.host);
-var db = new Sequelize(config.db.name, config.db.user, config.db.password, config.db.options);
+console.log('Connecting to mysql host: ' + config.db.host);
+var db = new Sequelize(config.db.database, config.db.username, config.db.password, config.db);
 var models = new Models(db);
 var pinger = new Controller(config, axios, models, fetchGw2);
 
