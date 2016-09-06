@@ -10,10 +10,9 @@ RUN npm install -g gulp
 COPY package.json /opt/package.json
 RUN npm install
 
+COPY .sequelizerc /opt/.sequelizerc
 COPY gulpfile.js /opt/gulpfile.js
-COPY /gulp /opt/gulp
-COPY /config /opt/config
-COPY /migrations /opt/migrations
+COPY /scripts /opt/scripts
 COPY /env /opt/env
 COPY /spec /opt/spec
 COPY /src /opt/src

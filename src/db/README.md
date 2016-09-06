@@ -1,3 +1,3 @@
-http://www.javacodegeeks.com/2015/04/docker-mysql-persistence.html
+# db
 
-Copyright (c) 2015 Michael Dougall
+http://www.javacodegeeks.com/2015/04/docker-mysql-persistence.html

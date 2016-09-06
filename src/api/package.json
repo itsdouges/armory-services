@@ -2,7 +2,6 @@
   "name": "armory-api",
   "version": "1.0.0",
   "description": "Api server for api.gw2armory.com",
-  "main": "node run.js",
   "author": "madou",
   "license": "ISC",
   "repository": {
@@ -12,7 +11,8 @@
   "scripts": {
     "start": "gulp serve",
     "test": "gulp test",
-    "tdd": "gulp test:unit:auto"
+    "tdd": "gulp test:unit:auto",
+    "db:migrate": "node_modules/.bin/sequelize db:migrate"
   },
   "dependencies": {
     "aws-sdk": "^2.5.3",

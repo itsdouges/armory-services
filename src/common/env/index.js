@@ -1,3 +1,5 @@
+/* THIS IS COPIED FROM COMMON/ENV */
+
 const ENVIRONMENT = process.env.ENV || 'DEV';
 
 switch (ENVIRONMENT) {
@@ -11,4 +13,8 @@ switch (ENVIRONMENT) {
 
 console.log(`\n== Running with ${ENVIRONMENT} settings. ==\n`);
 
-module.exports = require(`./${ENVIRONMENT.toLowerCase()}`);
+module.exports = Object.assign(
+  {},
+  require('./default'),
+  require(`./${ENVIRONMENT.toLowerCase()}`)
+);

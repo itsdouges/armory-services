@@ -2,7 +2,6 @@
   "name": "armory-fetch",
   "version": "1.0.0",
   "description": "Fetch micro-service for api.gw2armory.com",
-  "main": "run.js",
   "author": "madou",
   "license": "ISC",
   "scripts": {

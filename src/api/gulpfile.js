@@ -1,4 +1,3 @@
-var gulp = require('gulp');
-
-require('./gulp/test');
-require('./gulp/serve');
+require('gulp');
+require('./scripts/gulp/test');
+require('./scripts/gulp/serve');
