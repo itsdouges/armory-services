@@ -2,7 +2,7 @@ var restify = require("restify"),
   restifyOAuth2 = require("restify-oauth2"),
   GottaValidate = require('gotta-validate'),
   axios = require('axios'),
-  UsersController = require('./controllers/user'),
+  usersControllerFactory = require('./controllers/user'),
   CheckController = require('./controllers/check'),
   Gw2TokenController = require('./controllers/gw2-token'),
   CharacterController = require('./controllers/character'),
@@ -48,7 +48,6 @@ function Server(models, config) {
 
   var gw2Api = Gw2Api(axios, config);
 
-  var users = new UsersController(models, GottaValidate, gw2Api);
   var gw2Tokens = new Gw2TokenController(models, GottaValidate, gw2Api);
   var characters = new CharacterController(models, gw2Api);
   var checks = new CheckController(GottaValidate);
@@ -82,7 +81,7 @@ function Server(models, config) {
   require('./resources/characters')(server, characters);
   require('./resources/guilds')(server, models);
   require('./resources/search')(server, models);
-  require('./resources/users')(server, users);
+  require('./resources/users')(server, usersControllerFactory(models, GottaValidate, gw2Api));
   require('./resources/users/check')(server, checks);
   require('./resources/users/gw2-token')(server, gw2Tokens);
   require('./resources/users/characters')(server, characters);

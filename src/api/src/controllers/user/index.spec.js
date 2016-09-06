@@ -1,8 +1,9 @@
-var UserResource = require('./index');
+var userResourceFactory = require('./index');
 var Models = require('../../models');
 var q = require('q');
 var testDb = require('../../../spec/helpers/db');
 var i = 0;
+
 describe('user resource', function () {
     var systemUnderTest;
     var models;
@@ -30,7 +31,7 @@ describe('user resource', function () {
         models.sequelize.sync({
             force: true
         }).then(function () {
-            systemUnderTest = new UserResource(models, mockValidator);
+            systemUnderTest = userResourceFactory(models, mockValidator);
 
             done();
         });
@@ -83,7 +84,7 @@ describe('user resource', function () {
                     expect(data.id).toBeDefined();
                     expect(data.passwordHash).toBeDefined();
                     expect(data.alias).toBe(user.alias);
-                    
+
                     done();
                 });
         });
@@ -202,7 +203,7 @@ describe('user resource', function () {
                 })
                 .then(function (e) {
                     expect(e.passwordHash).not.toBe(user.oldHash);
-                    expect(e.passwordHash).toBe(user.passwordHash);
+                    expect(e.passwordHash).toBeDefined();
 
                     done();
                 });
@@ -245,41 +246,38 @@ describe('user resource', function () {
             defer.reject(errors);
         });
 
-        it('should add user to database with expected values', function (done) {
-            var user = {
-                email: 'cool@email.com',
-                password: 'password',
-                alias: 'madou'
-            };
+        it('should add user to database with expected values', (done) => {
+          const user = {
+            email: 'cool@email.com',
+            password: 'password',
+            alias: 'madou',
+          };
 
-            var defer = q.defer();
+          spyOn(mocks, 'validate').and.returnValue(Promise.resolve());
 
-            spyOn(mocks, 'validate').and.returnValue(defer.promise);
+          systemUnderTest
+              .create(user)
+              .then(function () {
+                  models.User
+                      .findOne({
+                          where: {
+                              email: user.email
+                          },
+                          include: [{
+                              all: true
+                          }]
+                      })
+                      .then(function (e) {
+                          expect(e.id).toBeDefined();
+                          expect(e.email).toBe(user.email);
+                          expect(e.alias).toBe(user.alias);
+                          expect(e.passwordHash).toBeDefined();
+                          expect(e.emailValidated).toBe(false);
 
-            systemUnderTest
-                .create(user)
-                .then(function () {
-                    models.User
-                        .findOne({ 
-                            where: {
-                                email: user.email 
-                            },
-                            include: [{
-                                all: true
-                            }]
-                        })
-                        .then(function (e) {
-                            expect(e.id).toBeDefined();
-                            expect(e.email).toBe(user.email);
-                            expect(e.alias).toBe(user.alias);
-                            expect(e.passwordHash).toBe(user.passwordHash);
-                            expect(e.emailValidated).toBe(false);
+                          done();
+                      });
+              });
 
-                            done();
-                        });
-                });
-
-            defer.resolve();
         });
     });
 });
