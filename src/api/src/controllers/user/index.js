@@ -133,11 +133,13 @@ function userControllerFactory (models, createValidator, gw2Api) {
   }
 
   function forgotMyPasswordStart () {
-
+    // create entry in table if email exist
+    // then send email
   }
 
   function forgotMyPasswordFinish () {
-
+    // take guid, check if exists in forgot my pass table
+    // then validate password, update db with new (hashed) password
   }
 
   return {

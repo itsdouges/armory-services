@@ -13,5 +13,14 @@
     "global-require": 0,
     "import/no-unresolved": 0,
     "import/no-extraneous-dependencies": 0
+  },
+  "globals": {
+    "describe": true,
+    "it": true,
+    "context": true,
+    "spyOn": true,
+    "beforeEach": true,
+    "afterEach": true,
+    "expect": true
   }
 }

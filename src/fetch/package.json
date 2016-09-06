@@ -5,6 +5,10 @@
   "main": "run.js",
   "author": "madou",
   "license": "ISC",
+  "scripts": {
+    "start": "node ./src/run",
+    "test": "jasmine-node ."
+  },
   "dependencies": {
     "axios": "^0.5.4",
     "mysql": "^2.8.0",
@@ -18,9 +22,5 @@
     "jasmine-node": "^1.14.5",
     "mockery": "^1.4.0",
     "sqlite3": "^3.0.10"
-  },
-  "scripts": {
-    "start": "node ./src/run",
-    "test": "jasmine-node ."
   }
 }
