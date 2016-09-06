@@ -1,7 +1,7 @@
 /* THIS IS COPIED FROM COMMON/MODELS */
 
 module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('UserReset', {
+  const UserReset = sequelize.define('UserReset', {
     id: {
       type: DataTypes.UUID,
       field: 'id',
@@ -15,5 +15,25 @@ module.exports = function (sequelize, DataTypes) {
       required: true,
       defaultValue: false,
     },
+    // NEW
+    expires: {
+      field: 'expires',
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+  }, {
+    classMethods: {
+      associate (models) {
+        // NEW
+        UserReset.belongsTo(models.User, {
+          onDelete: 'CASCADE',
+          foreignKey: {
+            allowNull: false,
+          },
+        });
+      },
+    },
   });
+
+  return UserReset;
 };
