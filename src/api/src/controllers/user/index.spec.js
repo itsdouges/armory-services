@@ -1,6 +1,5 @@
 const userResourceFactory = require('./index');
 const Models = require('../../models');
-const q = require('q');
 const testDb = require('../../../spec/helpers/db');
 
 describe('user resource', () => {
