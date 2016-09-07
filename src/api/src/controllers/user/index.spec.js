@@ -1,6 +1,6 @@
-const userResourceFactory = require('./index');
 const Models = require('../../models');
 const testDb = require('../../../spec/helpers/db');
+const proxyquire = require('proxyquire');
 
 describe('user resource', () => {
   let systemUnderTest;
@@ -9,6 +9,7 @@ describe('user resource', () => {
 
   const mocks = {
     validate () {},
+    sendEmail () {},
     gw2Api: {
       readAccount () {},
     },
@@ -24,33 +25,34 @@ describe('user resource', () => {
     };
 
     return systemUnderTest.create(user)
-      .then((result) => {
+      .then((userRow) => {
         const token = {
           token: 'i-am-token',
           accountName: 'coolaccount.1234',
           permissions: 'abc,def',
           world: 'aus',
           accountId: 'i-am-id',
-          UserId: result.id,
+          UserId: userRow.id,
         };
 
-        return models.Gw2ApiToken.create(token);
-      })
-      .then((result) => {
-        const character = {
-          name: 'madoubie',
-          race: 'yolon',
-          gender: 'male',
-          profession: 'elementalist',
-          level: '69',
-          created: 'Sat Oct 24 2015 19:30:34',
-          age: 1234,
-          guild: 'a-guild',
-          deaths: 0,
-          Gw2ApiTokenToken: result.token,
-        };
+        return models.Gw2ApiToken.create(token)
+        .then((result) => {
+          const character = {
+            name: 'madoubie',
+            race: 'yolon',
+            gender: 'male',
+            profession: 'elementalist',
+            level: '69',
+            created: 'Sat Oct 24 2015 19:30:34',
+            age: 1234,
+            guild: 'a-guild',
+            deaths: 0,
+            Gw2ApiTokenToken: result.token,
+          };
 
-        return models.Gw2Character.create(character);
+          return models.Gw2Character.create(character);
+        })
+        .then(() => userRow);
       });
   }
 
@@ -69,7 +71,16 @@ describe('user resource', () => {
       force: true,
     })
     .then(() => {
+      spyOn(mocks, 'sendEmail').and.returnValue(Promise.resolve('sent!'));
+
+      const userResourceFactory = proxyquire('./index', {
+        '../../lib/email': {
+          send: mocks.sendEmail,
+        },
+      });
+
       systemUnderTest = userResourceFactory(models, mockValidator);
+
       done();
     });
 
@@ -256,6 +267,41 @@ describe('user resource', () => {
               done();
             });
         });
+    });
+  });
+
+  describe('forgot my password', () => {
+    it('should create a new record in the user resets table', (done) => {
+      initialiseUserData()
+        .then((user) => systemUnderTest.forgotMyPasswordStart(user.email)
+          .then(() => models.UserReset.findAll({
+            where: {
+              UserId: user.id,
+            },
+          }))
+        )
+        .then((results) => {
+          expect(results.length).toBe(1);
+          const row = results[0];
+          expect(row.expires).toBeDefined();
+          expect(row.UserId).toBeDefined();
+          expect(row.used).toBeDefined();
+          expect(row.id).toBeDefined();
+        })
+        .then(done);
+    });
+
+    it('should send an email', (done) => {
+      initialiseUserData()
+        .then((user) => systemUnderTest.forgotMyPasswordStart(user.email)
+          .then(() => models.UserReset.findAll({
+            where: {
+              UserId: user.id,
+            },
+          }))
+        )
+        .then(() => expect(mocks.sendEmail).toHaveBeenCalled())
+        .then(done);
     });
   });
 });

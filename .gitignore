@@ -10,3 +10,4 @@ src/api/env
 src/api/src/models
 src/fetch/env
 src/fetch/src/models
+.env

@@ -1,6 +1,10 @@
 const password = require('password-hash-and-salt');
+const moment = require('moment');
 
+const emailClient = require('../../lib/email');
 const CharacterController = require('../character');
+const getUserIdByEmail = require('../../lib/get-user-info').getUserIdByEmail;
+const config = require('../../../env');
 
 function userControllerFactory (models, createValidator, gw2Api) {
   createValidator.addResource({
@@ -18,6 +22,13 @@ function userControllerFactory (models, createValidator, gw2Api) {
     rules: {
       email: 'required',
       currentPassword: ['required'],
+      password: ['required', 'ezpassword', 'no-white-space'],
+    },
+  })
+  .addResource({
+    name: 'users',
+    mode: 'forgot-my-password',
+    rules: {
       password: ['required', 'ezpassword', 'no-white-space'],
     },
   });
@@ -132,9 +143,22 @@ function userControllerFactory (models, createValidator, gw2Api) {
         }));
   }
 
-  function forgotMyPasswordStart () {
-    // create entry in table if email exist
-    // then send email
+  function forgotMyPasswordStart (email) {
+    return getUserIdByEmail(models, email)
+      .then((userId) => {
+        return models.UserReset.create({
+          UserId: userId,
+          expires: moment().add(config.PASSWORD_RESET_TIME_LIMIT, 'minutes'),
+        });
+      })
+      .then(({ id }) => {
+        return emailClient.send({
+          subject: 'Forgot My Password | Guild Wars Armory 2',
+          to: 'laheen@gmail.com',
+          from: 'noreply@gw2armory.com',
+          text: `sup lol ${id}`,
+        });
+      });
   }
 
   function forgotMyPasswordFinish () {

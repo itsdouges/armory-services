@@ -1,79 +1,85 @@
-'use strict';
+const RESOURCE = {
+  get: '/users/me',
+  put: '/users/me/password',
+  post: '/users',
+  forgotMyPassword: '/users/forgot-my-password',
+  publicGet: '/users/:alias',
+};
 
-var RESOURCE = Object.freeze({
-    get: '/users/me',
-    put: '/users/me/password',
-    post: '/users',
-    publicGet: '/users/:alias'
-});
-
-function UserResource(server, controller) {
-    server.get(RESOURCE.get, function (req, res, next) {
+function UserResource (server, controller) {
+  server.get(RESOURCE.get, (req, res, next) => {
     if (!req.username) {
-        return res.sendUnauthenticated();
+      return res.sendUnauthenticated();
     }
 
-    // TODO: Stop sending password hash.
-        controller
-            .read(req.username)
-            .then(function (data) {
-                res.send(200, data);
-                return next();
-            });
-    });
+    return controller
+      .read(req.username)
+      .then((data) => {
+        res.send(200, data);
+        return next();
+      });
+  });
 
-    server.get(RESOURCE.publicGet, function (req, res, next) {
-        controller
-            .readPublic(req.params.alias)
-            .then(function (data) {
-                res.send(200, data);
-                return next();
-            }, function () {
-                // todo: error handling
-                res.send(404);
-                return next();
-            });
-    });
+  server.get(RESOURCE.publicGet, (req, res, next) => {
+    controller
+      .readPublic(req.params.alias)
+      .then((data) => {
+        res.send(200, data);
+        return next();
+      }, () => {
+        // todo: error handling
+        res.send(404);
+        return next();
+      });
+  });
 
-    server.put(RESOURCE.put, function (req, res, next) {
+  server.put(RESOURCE.put, (req, res, next) => {
     if (!req.username) {
-        return res.sendUnauthenticated();
+      return res.sendUnauthenticated();
     }
 
-    var user = {
+    return controller
+      .updatePassword({
         email: req.username,
         password: req.params.password,
-        currentPassword: req.params.currentPassword
-    };
+        currentPassword: req.params.currentPassword,
+      })
+      .then(() => {
+        res.send(200);
+        return next();
+      }, (e) => {
+        res.send(400, e);
+        return next();
+      });
+  });
 
-        controller
-            .updatePassword(user)
-            .then(function () {
-                res.send(200);
-                return next();
-            }, function (e) {
-                res.send(400, e);
-                return next();
-            });
-    });
+  server.post(RESOURCE.post, (req, res, next) => {
+    controller
+      .create({
+        alias: req.params.alias,
+        email: req.params.email.toLowerCase(),
+        password: req.params.password,
+      })
+      .then(() => {
+        res.send(200);
+        return next();
+      }, (e) => {
+        res.send(400, e);
+        return next();
+      });
+  });
 
-    server.post(RESOURCE.post, function (req, res, next) {
-        var user = {
-            alias: req.params.alias,
-            email: req.params.email.toLowerCase(),
-            password: req.params.password
-        };
-
-        controller
-            .create(user)
-            .then(function () {
-                res.send(200);
-                return next();
-            }, function (e) {
-                res.send(400, e);
-                return next();
-            });
-    });
+  server.post(RESOURCE.forgotMyPassword, (req, res, next) => {
+    controller
+      .forgotMyPasswordStart(req.params.email.toLowerCase())
+      .then(() => {
+        res.send(200);
+        return next();
+      }, (e) => {
+        res.send(400, e);
+        return next();
+      });
+  });
 }
 
 module.exports = UserResource;

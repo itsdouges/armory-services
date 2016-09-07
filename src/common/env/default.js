@@ -15,4 +15,12 @@ module.exports = {
     'https://gw2armory.com',
     'http://localhost:3000',
   ],
+  email: {
+    noreply: 'noreply@gw2armory.com',
+    smtp: {
+      user: process.env.SES_ACCESS_KEY_ID,
+      password: process.env.SES_SECRET_ACCESS_KEY,
+    },
+  },
+  PASSWORD_RESET_TIME_LIMIT: 5,
 };

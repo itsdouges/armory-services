@@ -6,50 +6,45 @@ function parseUser (user) {
   return user.id;
 }
 
-function getUserIdByEmail (models, email) {
-  return models.User.findOne({
-    where: {
-      email: email
-    }
-  })
-  .then(parseUser);
-}
-
 function getUserByEmail (models, email) {
   return models.User.findOne({
     where: {
-      email: email
-    }
+      email,
+    },
   });
+}
+
+function getUserIdByEmail (models, email) {
+  return getUserByEmail(models, email)
+    .then(parseUser);
 }
 
 function getUserIdByAlias (models, alias) {
   return models.User.findOne({
     where: {
-      alias: alias,
-    }
+      alias,
+    },
   })
   .then(parseUser);
 }
 
 function getUserPrimaryToken (models, alias) {
   return getUserIdByAlias(models, alias)
-    .then(function (id) {
-      return models
-        .Gw2ApiToken
-        .findOne({
+    .then((id) => models
+      .Gw2ApiToken
+      .findOne({
+        where: {
+          primary: true,
+        },
+        include: [{
+          model: models.User,
           where: {
-            primary: true,
+            id,
           },
-          include: [{
-            model: models.User,
-            where: {
-              id: id,
-            }
-          }],
-        });
-    })
-    .then(function (token) {
+        }],
+      })
+    )
+    .then((token) => {
       if (!token) {
         return Promise.reject('Token not found');
       }
@@ -59,8 +54,8 @@ function getUserPrimaryToken (models, alias) {
 }
 
 module.exports = {
-  getUserPrimaryToken: getUserPrimaryToken,
-  getUserIdByEmail: getUserIdByEmail,
-  getUserIdByAlias: getUserIdByAlias,
-  getUserByEmail: getUserByEmail,
+  getUserPrimaryToken,
+  getUserIdByEmail,
+  getUserIdByAlias,
+  getUserByEmail,
 };
