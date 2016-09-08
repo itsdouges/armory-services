@@ -26,6 +26,12 @@ To have email notification working locally you'll need a valid aws key/secret pa
 SES_ACCESS_KEY_ID=ACCESSKEYHERE SES_SECRET_ACCESS_KEY=SECRETKEYHERE npm run dev
 ```
 
+### Deployment
+
+```
+ENV=ENVNAMEHERE ACCESS_KEY_ID=ACCESSKEYHERE SECRET_ACCESS_KEY=SECRETKEY IMAGE_UPLOAD_ACCESS_KEY_ID=ACCESSKEYHERE IMAGE_UPLOAD_SECRET_ACCESS_KEY=SECRETKEYHERE SES_ACCESS_KEY_ID=ACCESSKEYHERE SES_SECRET_ACCESS_KEY=SECRETKEYHERE npm run deploy
+```
+
 ### Local development
 
 The developer experience is kind of shitty at the moment. You need to start the node servers manually in watch mode, as well as hook up a database. Currently there isn't an automated way to do this - so install `mysql 3.6`, using docker or directly on your host, and then modify the `./src/common/env/env_config.js` DEV object.

@@ -5,6 +5,7 @@ const ENVIRONMENT = process.env.ENV || 'DEV';
 switch (ENVIRONMENT) {
   case 'DEV':
   case 'PROD':
+  case 'TEST':
     break;
 
   default:

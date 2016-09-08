@@ -1,15 +1,13 @@
-var EBApplication = require('beanstalkify');
-var mustache = require('mustache');
-var fs = require('fs');
-var EasyZip = require('easy-zip').EasyZip;
-var hashFiles = require('hash-files');
+const EBApplication = require('beanstalkify');
+const mustache = require('mustache');
+const fs = require('fs');
+const EasyZip = require('easy-zip').EasyZip;
 
-var ENVIRONMENT = process.env.ENV;
-var ACCESS_KEY_ID = process.env.ACCESS_KEY_ID;
-var SECRET_ACCESS_KEY = process.env.SECRET_ACCESS_KEY;
-
-var IMAGE_UPLOAD_ACCESS_KEY_ID = process.env.IMAGE_UPLOAD_ACCESS_KEY_ID;
-var IMAGE_UPLOAD_SECRET_ACCESS_KEY = process.env.IMAGE_UPLOAD_SECRET_ACCESS_KEY;
+const ENVIRONMENT = process.env.ENV;
+const ACCESS_KEY_ID = process.env.ACCESS_KEY_ID;
+const SECRET_ACCESS_KEY = process.env.SECRET_ACCESS_KEY;
+const IMAGE_UPLOAD_ACCESS_KEY_ID = process.env.IMAGE_UPLOAD_ACCESS_KEY_ID;
+const IMAGE_UPLOAD_SECRET_ACCESS_KEY = process.env.IMAGE_UPLOAD_SECRET_ACCESS_KEY;
 
 if (!ENVIRONMENT) {
   throw 'Environment variable "ENV" is not defined.';
@@ -31,8 +29,8 @@ if (!IMAGE_UPLOAD_SECRET_ACCESS_KEY) {
   throw 'Environment variable "IMAGE_UPLOAD_SECRET_ACCESS_KEY" is not defined.';
 }
 
-var applicationName = 'gw2armory-api';
-var environmentName = 'gw2armory-api-' + ENVIRONMENT.toLowerCase();
+const applicationName = 'gw2armory-api';
+const environmentName = 'gw2armory-api-' + ENVIRONMENT.toLowerCase();
 
 console.log('Starting deployment for ' + ENVIRONMENT + '!!');
 

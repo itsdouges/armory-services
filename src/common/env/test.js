@@ -6,8 +6,7 @@ module.exports = {
     username: 'admin',
     password: 'password',
     dialect: 'mysql',
-    host: 'gw2armory-prod.cekbcmynaoxp.us-east-1.rds.amazonaws.com',
-    logging: false,
+    host: 'gw2armory-migration-test.cekbcmynaoxp.us-east-1.rds.amazonaws.com',
   },
   ping: {
     port: '8081',

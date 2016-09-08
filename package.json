@@ -4,7 +4,7 @@
   "description": "Backend containers for api.gw2armory.com",
   "main": "index.js",
   "scripts": {
-    "start": "ENV=PROD ./scripts/go.sh serve",
+    "start": "./scripts/go.sh serve",
     "dev": "ENV=DEV ./scripts/go.sh serve",
     "deploy": "node ./scripts/deploy",
     "copy-common": "./scripts/go.sh copy",
