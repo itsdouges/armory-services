@@ -131,6 +131,8 @@ run_daemon_container() {
     -e "ENV" \
     -e "IMAGE_UPLOAD_ACCESS_KEY_ID" \
     -e "IMAGE_UPLOAD_SECRET_ACCESS_KEY" \
+    -e "SES_ACCESS_KEY_ID" \
+    -e "SES_SECRET_ACCESS_KEY" \
     "madou/gw2armory-$1:latest"
 }
 
@@ -143,6 +145,8 @@ run_container() {
     -e "ENV" \
     -e "IMAGE_UPLOAD_ACCESS_KEY_ID" \
     -e "IMAGE_UPLOAD_SECRET_ACCESS_KEY" \
+    -e "SES_ACCESS_KEY_ID" \
+    -e "SES_SECRET_ACCESS_KEY" \
     "madou/gw2armory-$1:latest"
 }
 

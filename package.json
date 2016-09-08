@@ -4,11 +4,11 @@
   "description": "Backend containers for api.gw2armory.com",
   "main": "index.js",
   "scripts": {
-    "start": "ENV=PROD bash scripts/go.sh serve",
-    "dev": "ENV=DEV bash scripts/go.sh serve",
+    "start": "ENV=PROD ./scripts/go.sh serve",
+    "dev": "ENV=DEV ./scripts/go.sh serve",
     "deploy": "node ./scripts/deploy",
-    "copy-common": "bash scripts/go.sh copy",
-    "clean-docker": "bash scripts/go.sh clean"
+    "copy-common": "./scripts/go.sh copy",
+    "clean-docker": "./scripts/go.sh clean"
   },
   "repository": {
     "type": "git",

@@ -271,37 +271,57 @@ describe('user resource', () => {
   });
 
   describe('forgot my password', () => {
-    it('should create a new record in the user resets table', (done) => {
-      initialiseUserData()
-        .then((user) => systemUnderTest.forgotMyPasswordStart(user.email)
-          .then(() => models.UserReset.findAll({
-            where: {
-              UserId: user.id,
-            },
-          }))
-        )
-        .then((results) => {
-          expect(results.length).toBe(1);
-          const row = results[0];
-          expect(row.expires).toBeDefined();
-          expect(row.UserId).toBeDefined();
-          expect(row.used).toBeDefined();
-          expect(row.id).toBeDefined();
-        })
-        .then(done);
+    describe('when initiating', () => {
+      it('should create a new record in the user resets table', (done) => {
+        initialiseUserData()
+          .then((user) => systemUnderTest.forgotMyPasswordStart(user.email)
+            .then(() => models.UserReset.findAll({
+              where: {
+                UserId: user.id,
+              },
+            }))
+          )
+          .then((results) => {
+            expect(results.length).toBe(1);
+            const row = results[0];
+            expect(row.expires).toBeDefined();
+            expect(row.UserId).toBeDefined();
+            expect(row.used).toBeDefined();
+            expect(row.id).toBeDefined();
+          })
+          .then(done);
+      });
+
+      it('should send an email', (done) => {
+        initialiseUserData()
+          .then((user) => systemUnderTest.forgotMyPasswordStart(user.email)
+            .then(() => models.UserReset.findAll({
+              where: {
+                UserId: user.id,
+              },
+            }))
+          )
+          .then(() => expect(mocks.sendEmail).toHaveBeenCalled())
+          .then(done);
+      });
+    });
+  });
+
+  describe('when finishing', () => {
+    it('should reject if reset doesnt exist', () => {
+
     });
 
-    it('should send an email', (done) => {
-      initialiseUserData()
-        .then((user) => systemUnderTest.forgotMyPasswordStart(user.email)
-          .then(() => models.UserReset.findAll({
-            where: {
-              UserId: user.id,
-            },
-          }))
-        )
-        .then(() => expect(mocks.sendEmail).toHaveBeenCalled())
-        .then(done);
+    it('should validate password', () => {
+
+    });
+
+    it('should change password', () => {
+
+    });
+
+    it('should only allow reset to be used once', () => {
+
     });
   });
 });

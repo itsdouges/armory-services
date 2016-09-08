@@ -118,6 +118,19 @@ function userControllerFactory (models, createValidator, gw2Api) {
       });
   }
 
+  function changePassword (id, newPassword) {
+    return hashPassword(newPassword)
+      .then((passwordHash) => {
+        return models.User.update({
+          passwordHash,
+        }, {
+          where: {
+            id,
+          },
+        });
+      });
+  }
+
   function updatePassword (user) {
     const validator = createValidator({
       resource: 'users',
@@ -130,17 +143,12 @@ function userControllerFactory (models, createValidator, gw2Api) {
       .then((userData) => {
         /* eslint arrow-body-style:0 */
         return verifyHash(userData.passwordHash, user.currentPassword)
-        .then(() => user.password);
-      })
-      .then((newPassword) => hashPassword(newPassword))
-      .then((passwordHash) =>
-        models.User.update({
-          passwordHash,
-        }, {
-          where: {
-            email: user.email,
-          },
+        .then(() => ({
+          password: user.password,
+          id: userData.id,
         }));
+      })
+      .then((data) => changePassword(data.id, data.password));
   }
 
   function forgotMyPasswordStart (email) {
@@ -153,17 +161,33 @@ function userControllerFactory (models, createValidator, gw2Api) {
       })
       .then(({ id }) => {
         return emailClient.send({
-          subject: 'Forgot My Password | Guild Wars Armory 2',
-          to: 'laheen@gmail.com',
-          from: 'noreply@gw2armory.com',
-          text: `sup lol ${id}`,
+          subject: 'Forgot My Password',
+          to: email,
+          html: `sup lol ${id}`,
         });
       });
   }
 
-  function forgotMyPasswordFinish () {
-    // take guid, check if exists in forgot my pass table
-    // then validate password, update db with new (hashed) password
+  function forgotMyPasswordFinish (guid, newPassword) {
+    return models.UserReset.findOne({
+      where: {
+        id: guid,
+      },
+    })
+    .then((row) => {
+      if (!row) {
+        return Promise.reject('Reset doesn\'t exist.');
+      }
+
+      return createValidator({
+        resource: 'users',
+        mode: 'forgot-my-password',
+      })
+      .validate({
+        password: newPassword,
+      })
+      .then(() => changePassword(row.UserId, newPassword));
+    });
   }
 
   return {

@@ -15,7 +15,7 @@ npm run dev
 To have image uploads working locally you'll need a valid aws key/secret pair. Run it like so:
 
 ```
-IMAGE_UPLOAD_ACCESS_KEY_ID=ACCESSKEYHERE IMAGE_UPLOAD_SECRET_ACCESS_KEY=IMAGEKEYHERE npm run dev
+IMAGE_UPLOAD_ACCESS_KEY_ID=ACCESSKEYHERE IMAGE_UPLOAD_SECRET_ACCESS_KEY=SECRETKEYHERE npm run dev
 ```
 
 #### Email notifications
@@ -23,7 +23,7 @@ IMAGE_UPLOAD_ACCESS_KEY_ID=ACCESSKEYHERE IMAGE_UPLOAD_SECRET_ACCESS_KEY=IMAGEKEY
 To have email notification working locally you'll need a valid aws key/secret pair. Run it like so:
 
 ```
-SES_ACCESS_KEY_ID=ACCESSKEYHERE SES_SECRET_ACCESS_KEY=IMAGEKEYHERE npm run dev
+SES_ACCESS_KEY_ID=ACCESSKEYHERE SES_SECRET_ACCESS_KEY=SECRETKEYHERE npm run dev
 ```
 
 ### Local development

@@ -50,8 +50,10 @@ console.log('Building dockerrun template');
 readModuleFile('./Dockerrun.aws.json.mustache', function (err, template) {
   var data = {
     ENV: ENVIRONMENT,
-    IMAGE_UPLOAD_ACCESS_KEY_ID: IMAGE_UPLOAD_ACCESS_KEY_ID,
-    IMAGE_UPLOAD_SECRET_ACCESS_KEY: IMAGE_UPLOAD_SECRET_ACCESS_KEY,
+    IMAGE_UPLOAD_ACCESS_KEY_ID,
+    IMAGE_UPLOAD_SECRET_ACCESS_KEY,
+    SES_ACCESS_KEY_ID: process.env.SES_ACCESS_KEY_ID,
+    SES_SECRET_ACCESS_KEY: process.env.SES_SECRET_ACCESS_KEY,
   };
 
   var output = mustache.render(template, data);
