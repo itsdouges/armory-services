@@ -15,6 +15,10 @@ describe('user resource', () => {
     },
   };
 
+  const stubConfig = {
+    PASSWORD_RESET_TIME_LIMIT: 5,
+  };
+
   function initialiseUserData () {
     spyOn(mocks, 'validate').and.returnValue(Promise.resolve());
 
@@ -56,6 +60,36 @@ describe('user resource', () => {
       });
   }
 
+  function init (instance = systemUnderTest) {
+    return initialiseUserData()
+      .then((user) => instance.forgotMyPasswordStart(user.email)
+        .then(() => models.UserReset.findAll({
+          where: {
+            UserId: user.id,
+          },
+        }))
+        .then(([reset]) => ({
+          email: user.email,
+          id: user.id,
+          passwordHash: user.passwordHash,
+          UserId: reset.UserId,
+          resetId: reset.id,
+          expires: reset.expires,
+        }))
+      );
+  }
+
+  function createUserResource (config = stubConfig) {
+    const userResourceFactory = proxyquire('./index', {
+      '../../lib/email': {
+        send: mocks.sendEmail,
+      },
+      '../../../env': config,
+    });
+
+    return userResourceFactory(models, mockValidator);
+  }
+
   beforeEach((done) => {
     mockValidator = function () {
       return {
@@ -73,13 +107,7 @@ describe('user resource', () => {
     .then(() => {
       spyOn(mocks, 'sendEmail').and.returnValue(Promise.resolve('sent!'));
 
-      const userResourceFactory = proxyquire('./index', {
-        '../../lib/email': {
-          send: mocks.sendEmail,
-        },
-      });
-
-      systemUnderTest = userResourceFactory(models, mockValidator);
+      systemUnderTest = createUserResource();
 
       done();
     });
@@ -300,28 +328,72 @@ describe('user resource', () => {
                 UserId: user.id,
               },
             }))
+            .then(() => expect(mocks.sendEmail).toHaveBeenCalledWith({
+              subject: 'Forgot My Password',
+              to: user.email,
+              html: jasmine.any(String),
+            }))
           )
-          .then(() => expect(mocks.sendEmail).toHaveBeenCalled())
           .then(done);
       });
     });
-  });
 
-  describe('when finishing', () => {
-    it('should reject if reset doesnt exist', () => {
+    describe('when finishing', () => {
+      it('should reject if reset doesnt exist', (done) => {
+        systemUnderTest.forgotMyPasswordFinish('dontexist', 'hahpassword')
+          .then(null, (err) => expect(err).toEqual('Reset doesn\'t exist.'))
+          .then(done);
+      });
 
-    });
+      it('should validate password', (done) => {
+        const shittyPassword = 'bad';
 
-    it('should validate password', () => {
+        init()
+          .then((data) => systemUnderTest.forgotMyPasswordFinish(data.resetId, shittyPassword))
+          .then(() => expect(mocks.validate).toHaveBeenCalledWith({ password: shittyPassword }))
+          .then(done);
+      });
 
-    });
+      it('should change password', (done) => {
+        const newPassword = 'bad';
 
-    it('should change password', () => {
+        init()
+          .then((data) =>
+            systemUnderTest.forgotMyPasswordFinish(data.resetId, newPassword)
+              .then(() =>
+                models.User.findOne({
+                  where: {
+                    id: data.id,
+                  },
+                })
+              )
+              .then((user) =>
+                expect(user.passwordHash).toBeDefined() ||
+                expect(user.passwordHash).not.toEqual(data.passwordHash)
+              )
+          )
+          .then(done);
+      });
 
-    });
+      it('should not be allowed to be used if expiry time has passed', (done) => {
+        const instance = createUserResource({
+          PASSWORD_RESET_TIME_LIMIT: -5,
+        });
 
-    it('should only allow reset to be used once', () => {
+        init(instance)
+          .then((data) => instance.forgotMyPasswordFinish(data.resetId, 'bad'))
+          .then(null, (e) => expect(e).toBe('Reset has expired.'))
+          .then(done);
+      });
 
+      it('should only allow reset to be used once', (done) => {
+        init()
+          .then((data) =>
+            systemUnderTest.forgotMyPasswordFinish(data.resetId, 'bad')
+            .then(() => systemUnderTest.forgotMyPasswordFinish(data.resetId, 'bad'))
+            .then(null, (e) => expect(e).toBe('Reset has expired.') || done())
+          );
+      });
     });
   });
 });

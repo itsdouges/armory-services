@@ -179,6 +179,10 @@ function userControllerFactory (models, createValidator, gw2Api) {
         return Promise.reject('Reset doesn\'t exist.');
       }
 
+      if (moment(row.expires).isBefore(moment()) || row.used) {
+        return Promise.reject('Reset has expired.');
+      }
+
       return createValidator({
         resource: 'users',
         mode: 'forgot-my-password',
@@ -186,7 +190,14 @@ function userControllerFactory (models, createValidator, gw2Api) {
       .validate({
         password: newPassword,
       })
-      .then(() => changePassword(row.UserId, newPassword));
+      .then(() => changePassword(row.UserId, newPassword))
+      .then(() => models.UserReset.update({
+        used: true,
+      }, {
+        where: {
+          id: row.id,
+        },
+      }));
     });
   }
 
