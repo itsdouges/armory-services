@@ -2,7 +2,7 @@ const RESOURCE = {
   get: '/users/me',
   put: '/users/me/password',
   post: '/users',
-  forgotMyPassword: '/users/forgot-my-password',
+  forgotMyPassword: '/forgot-my-password',
   publicGet: '/users/:alias',
 };
 
