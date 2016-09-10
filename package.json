@@ -1,10 +1,14 @@
 {
   "name": "api.gw2armory.com",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Backend containers for api.gw2armory.com",
   "main": "index.js",
   "scripts": {
-    "deploy": "node ./deploy"
+    "start": "./scripts/go.sh serve",
+    "dev": "ENV=DEV ./scripts/go.sh serve",
+    "deploy": "node ./scripts/deploy",
+    "copy-common": "./scripts/go.sh copy",
+    "clean-docker": "./scripts/go.sh clean"
   },
   "repository": {
     "type": "git",
@@ -19,6 +23,10 @@
   "devDependencies": {
     "beanstalkify": "0.0.9",
     "easy-zip": "0.0.4",
+    "eslint": "^3.4.0",
+    "eslint-config-airbnb": "^10.0.1",
+    "eslint-plugin-import": "^1.14.0",
+    "eslint-plugin-jsx-a11y": "^2.2.0",
     "hash-files": "^1.0.0",
     "mustache": "^2.2.0"
   }

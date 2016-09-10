@@ -1,0 +1,24 @@
+{
+  "name": "armory-fetch",
+  "version": "1.0.0",
+  "description": "Fetch micro-service for api.gw2armory.com",
+  "author": "madou",
+  "scripts": {
+    "start": "node ./src/run",
+    "test": "jasmine-node ."
+  },
+  "dependencies": {
+    "axios": "^0.5.4",
+    "mysql": "^2.8.0",
+    "q": "^1.4.1",
+    "restify": "^3.0.3",
+    "sequelize": "^3.6.0",
+    "throat": "^2.0.2",
+    "yargs": "^3.29.0"
+  },
+  "devDependencies": {
+    "jasmine-node": "^1.14.5",
+    "mockery": "^1.4.0",
+    "sqlite3": "^3.0.10"
+  }
+}

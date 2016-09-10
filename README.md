@@ -1,13 +1,13 @@
-# api.gw2armory.com [![Build Status](https://travis-ci.org/madou/armory-api.svg?branch=master)](https://travis-ci.org/madou/armory-api)
+# api.gw2armory.com [![Build Status](https://travis-ci.org/madou/armory-back.svg?branch=master)](https://travis-ci.org/madou/armory-back)
 
 ## Usage
 
 ### Fire and forget
 
-Starts three docker containers, fetch, server, and db.
+Starts up three docker containers, fetch, server, and db.
 
 ```
-./go.sh serve
+npm run dev
 ```
 
 #### User image uploads
@@ -15,33 +15,35 @@ Starts three docker containers, fetch, server, and db.
 To have image uploads working locally you'll need a valid aws key/secret pair. Run it like so:
 
 ```
-ENV=DEV IMAGE_UPLOAD_ACCESS_KEY_ID=ACCESSKEYHERE IMAGE_UPLOAD_SECRET_ACCESS_KEY=IMAGEKEYHERE bash go.sh serve
+IMAGE_UPLOAD_ACCESS_KEY_ID=ACCESSKEYHERE IMAGE_UPLOAD_SECRET_ACCESS_KEY=SECRETKEYHERE npm run dev
+```
+
+#### Email notifications
+
+To have email notification working locally you'll need a valid aws key/secret pair. Run it like so:
+
+```
+SES_ACCESS_KEY_ID=ACCESSKEYHERE SES_SECRET_ACCESS_KEY=SECRETKEYHERE npm run dev
+```
+
+### Deployment
+
+```
+ENV=ENVNAMEHERE ACCESS_KEY_ID=ACCESSKEYHERE SECRET_ACCESS_KEY=SECRETKEY IMAGE_UPLOAD_ACCESS_KEY_ID=ACCESSKEYHERE IMAGE_UPLOAD_SECRET_ACCESS_KEY=SECRETKEYHERE SES_ACCESS_KEY_ID=ACCESSKEYHERE SES_SECRET_ACCESS_KEY=SECRETKEYHERE npm run deploy
 ```
 
 ### Local development
 
-The developer experience is kind of shitty at the moment. You need to start the node servers manually in watch mode, as well as hook up a database. Currently there isn't an automated way to do this - so install `mysql 3.6`, using docker or directly on your host, and then modify the `./environment/env_config.js` DEV object.
+The developer experience is kind of shitty at the moment. You need to start the node servers manually in watch mode, as well as hook up a database. Currently there isn't an automated way to do this - so install `mysql 3.6`, using docker or directly on your host, and then modify the `./src/common/env/env_config.js` DEV object.
 
-### Copy config
+### Copy common files
 
-```
-./go.sh copy
-```
+As docker can't access files in a parent directory, and we need them for local develoment, this script is used.
 
-### Api server
+It copies `db models` and `env_config.js` to `src/fetch` and `src/api` folders.
 
 ```
-cd ./server
-npm install
-gulp test:unit:auto
-```
-
-## Fetch server
-
-```
-cd ./gw2-fetch
-npm install
-npm test
+npm run copy-common
 ```
 
 ## Pull Requests

@@ -1,0 +1,54 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "containerDefinitions": [
+    {
+      "name": "fetch",
+      "image": "madou/gw2armory-fetch",
+      "essential": true,
+      "memory": 400,
+      "environment": [
+        {
+          "name": "ENV",
+          "value": "{{ ENV }}"
+        }
+      ]
+    },
+    {
+      "name": "server",
+      "image": "madou/gw2armory-server",
+      "essential": true,
+      "memory": 500,
+      "links": [
+        "fetch"
+      ],
+      "environment": [
+        {
+          "name": "ENV",
+          "value": "{{ ENV }}"
+        },
+        {
+          "name": "IMAGE_UPLOAD_ACCESS_KEY_ID",
+          "value": "{{{ IMAGE_UPLOAD_ACCESS_KEY_ID }}}"
+        },
+        {
+          "name": "IMAGE_UPLOAD_SECRET_ACCESS_KEY",
+          "value": "{{{ IMAGE_UPLOAD_SECRET_ACCESS_KEY }}}"
+        },
+        {
+          "name": "SES_ACCESS_KEY_ID",
+          "value": "{{{ SES_ACCESS_KEY_ID }}}"
+        },
+        {
+          "name": "SES_SECRET_ACCESS_KEY",
+          "value": "{{{ SES_SECRET_ACCESS_KEY }}}"
+        }
+      ],
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 80
+        }
+      ]
+    }
+  ]
+}
