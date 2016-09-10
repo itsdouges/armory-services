@@ -56,7 +56,7 @@ readModuleFile('./Dockerrun.aws.json.mustache', function (err, template) {
 
   var output = mustache.render(template, data);
 
-  var ws = fs.createWriteStream('./deploy/Dockerrun.aws.json');
+  var ws = fs.createWriteStream('./scripts/deploy/Dockerrun.aws.json');
   ws.write(output);
 
   console.log('Done!');
@@ -67,11 +67,11 @@ readModuleFile('./Dockerrun.aws.json.mustache', function (err, template) {
 });
 
 function zipConfigs (applicationName, environmentName, datetime) {
-  var zipPath = './deploy/' + applicationName + '-gw2armoryapi:' + new Date().getTime() + '.zip';
+  var zipPath = './scripts/deploy/' + applicationName + '-gw2armoryapi:' + new Date().getTime() + '.zip';
 
   var zip = new EasyZip();
-  zip.addFile('Dockerrun.aws.json', './deploy/Dockerrun.aws.json', function () {
-    zip.zipFolder('./deploy/.ebextensions', function () {
+  zip.addFile('Dockerrun.aws.json', './scripts/deploy/Dockerrun.aws.json', function () {
+    zip.zipFolder('./scripts/deploy/.ebextensions', function () {
       zip.writeToFile(zipPath);
       deployToEb(zipPath, environmentName);
     });
