@@ -8,7 +8,7 @@ WORKDIR /opt
 RUN npm install -g gulp
 
 COPY package.json /opt/package.json
-RUN npm install
+RUN npm install --silent
 
 COPY .sequelizerc /opt/.sequelizerc
 COPY gulpfile.js /opt/gulpfile.js

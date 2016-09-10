@@ -7,7 +7,7 @@ LABEL Description="Fetch micro-service for api.gw2armory.com"
 WORKDIR /opt
 
 COPY package.json /opt/package.json
-RUN npm install
+RUN npm install --silent
 
 COPY /env /opt/env
 COPY /spec /opt/spec
