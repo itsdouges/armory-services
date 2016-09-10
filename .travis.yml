@@ -11,7 +11,7 @@ cache:
   directories:
     - node_modules
 install:
-  - npm install
+  - npm install --silent
 script:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - bash scripts/go.sh copy &&
