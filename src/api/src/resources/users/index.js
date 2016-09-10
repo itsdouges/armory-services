@@ -84,14 +84,14 @@ function UserResource (server, controller) {
 
   server.put(RESOURCE.forgotMyPassword, (req, res, next) => {
     controller
-      .forgotMyPasswordFinish(req.params.guid, req.params.password)
+      .forgotMyPasswordFinish(req.params.token, req.params.password)
       .then(() => {
         res.send(200);
         return next();
       }, (e) => {
         console.error('\n== FORGOT-MY-PASSWORD-FINISH ==\n', e);
-        res.send(400);
-        return next(e);
+        res.send(400, e);
+        return next();
       });
   });
 }
