@@ -163,7 +163,24 @@ function userControllerFactory (models, createValidator, gw2Api) {
         return emailClient.send({
           subject: 'Forgot My Password',
           to: email,
-          html: `sup lol ${id}`,
+          html: `
+<h1>Guild Wars 2 Armory</h1>
+
+<h2>Forgot My Password</h2>
+
+Hi, you requested to reset your password.
+Please <a href="https://gw2armory.com/forgot-my-password?token=${id}"> click here</a> to finish
+resetting your password.
+<br />
+<br />
+Optionally copy the token into the token field: ${id}
+<br />
+<br />
+Cheers,<br />
+Guild Wars 2 Armory
+<br /><br />
+<small>Please don't reply to this email, you won't get a response.</small>
+`,
         });
       });
   }
