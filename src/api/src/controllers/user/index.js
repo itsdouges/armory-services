@@ -5,6 +5,7 @@ const emailClient = require('../../lib/email');
 const CharacterController = require('../character');
 const getUserIdByEmail = require('../../lib/get-user-info').getUserIdByEmail;
 const config = require('../../../env');
+const parseAccountName = require('../../lib/user').parseAccountName;
 
 function userControllerFactory (models, createValidator, gw2Api) {
   createValidator.addResource({
@@ -97,7 +98,12 @@ function userControllerFactory (models, createValidator, gw2Api) {
   function readPublic (alias) {
     return models
       .User
-      .findOne({ where: { alias } })
+      .findOne({
+        where: { alias },
+        include: [{
+          all: true,
+        }],
+      })
       .then((result) => {
         if (!result) {
           return Promise.reject('No user was found.');
@@ -111,6 +117,7 @@ function userControllerFactory (models, createValidator, gw2Api) {
         return characterController
           .list(null, data.alias)
           .then((characters) => ({
+            accountName: parseAccountName(data),
             alias: data.alias,
             createdAt: data.createdAt,
             characters,
@@ -164,16 +171,14 @@ function userControllerFactory (models, createValidator, gw2Api) {
           subject: 'Forgot My Password',
           to: email,
           html: `
-<h1>Guild Wars 2 Armory</h1>
-
 <h2>Forgot My Password</h2>
 
 Hi, you requested to reset your password.
-Please <a href="https://gw2armory.com/forgot-my-password?token=${id}"> click here</a> to finish
-resetting your password.
+Please <a href="https://gw2armory.com/forgot-my-password?token=${id}"> click here to finish
+resetting your password</a>.
 <br />
 <br />
-Optionally copy the token into the token field: ${id}
+Optionally copy this into the token reset field: ${id}
 <br />
 <br />
 Cheers,<br />

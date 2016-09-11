@@ -21,7 +21,8 @@ describe('search controller', function () {
                 permissions: 'stuff',
                 world: 'hah',
                 accountId: 'idid',
-                UserId: user.id
+                UserId: user.id,
+                primary: true,
             });
         })
         .then(function (token) {
@@ -64,7 +65,8 @@ describe('search controller', function () {
                     .then(function (results) {
                         expect(results).toEqual([{
                             resource: 'users',
-                            name: 'madou'
+                            name: 'madou',
+                            accountName: 'accName',
                         }, {
                             resource: 'characters',
                             name: 'aaamadouuuu',
@@ -75,7 +77,8 @@ describe('search controller', function () {
                             race: 'girl'
                         }, {
                             resource: 'guilds',
-                            name: 'guildOfMadou'
+                            name: 'guildOfMadou',
+                            tag: 'heytag'
                         }]);
 
                         done();

@@ -37,6 +37,7 @@ describe('user resource', () => {
           world: 'aus',
           accountId: 'i-am-id',
           UserId: userRow.id,
+          primary: true,
         };
 
         return models.Gw2ApiToken.create(token)
@@ -169,6 +170,7 @@ describe('user resource', () => {
         .then(() => systemUnderTest.readPublic('madou'))
         .then((data) => {
           expect(data.alias).toBe('madou');
+          expect(data.accountName).toBe('coolaccount.1234');
           expect(data.createdAt).toBeDefined();
           expect(data.characters).toEqual([{
             accountName: 'coolaccount.1234',
@@ -181,7 +183,7 @@ describe('user resource', () => {
           }]);
 
           done();
-        });
+        }, (e) => console.error(e));
     });
   });
 
