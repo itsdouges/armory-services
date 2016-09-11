@@ -13,6 +13,7 @@ module.exports = {
   },
   allowed_cors: [
     'https://gw2armory.com',
+    'https://preview.gw2armory.com',
     'http://localhost:3000',
   ],
   email: {

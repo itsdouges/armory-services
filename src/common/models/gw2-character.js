@@ -2,6 +2,18 @@
 
 module.exports = function (sequelize, DataTypes) {
   const Gw2Character = sequelize.define('Gw2Character', {
+    // Uncomment after successful migration.
+    // id: {
+    //   field: 'id',
+    //   type: DataTypes.INTEGER,
+    //   allowNull: false,
+    //   autoIncrement: true,
+    // },
+    // name: {
+    //   field: 'name',
+    //   type: DataTypes.STRING,
+    //   allowNull: false,
+    // },
     name: {
       field: 'name',
       type: DataTypes.STRING,
