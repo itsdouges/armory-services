@@ -16,4 +16,7 @@ module.exports = {
     verbose: true,
     host: process.env.FETCH_PORT_8081_TCP_ADDR,
   },
+  web: {
+    url: 'https://gw2armory.com',
+  },
 };

@@ -24,4 +24,7 @@ module.exports = {
     },
   },
   PASSWORD_RESET_TIME_LIMIT: 5,
+  web: {
+    publicUrl: 'http://localhost:3000',
+  },
 };
