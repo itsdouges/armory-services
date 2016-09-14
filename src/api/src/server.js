@@ -10,6 +10,8 @@ var restify = require("restify"),
   Gw2Api = require('./lib/gw2'),
   PvpController = require('./controllers/pvp');
 
+const sitemapControllerFactory = require('./controllers/sitemap');
+
 function Server(models, config) {
   GottaValidate.addDefaultRules();
   GottaValidate
@@ -86,6 +88,7 @@ function Server(models, config) {
   require('./resources/users/gw2-token')(server, gw2Tokens);
   require('./resources/users/characters')(server, characters);
   require('./resources/sign-upload')(server, models);
+  require('./resources/sitemap')(server, sitemapControllerFactory(models));
 
   return server;
 }
