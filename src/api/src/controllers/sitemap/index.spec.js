@@ -78,23 +78,33 @@ describe('sitemap', () => {
 `<?xml version="1.0" encoding="UTF-8"?>
   <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-  <loc>
-    http://gw2-local.com/madou
-  </loc>
-</url>
+      <loc>
+        http://gw2-local.com/join
+      </loc>
+    </url>
     <url>
-  <loc>
-    http://gw2-local.com/g/cool guild
-  </loc>
-</url>
+      <loc>
+        http://gw2-local.com/login
+      </loc>
+    </url>
     <url>
-  <loc>
-    http://gw2-local.com/madou/c/madoubie
-  </loc>
-</url>
+      <loc>
+        http://gw2-local.com/madou
+      </loc>
+    </url>
+    <url>
+      <loc>
+        http://gw2-local.com/g/cool guild
+      </loc>
+    </url>
+    <url>
+      <loc>
+        http://gw2-local.com/madou/c/madoubie
+      </loc>
+    </url>
   </sitemapindex>
 </xml>`);
       })
-      .then(done);
+      .then(done, (e) => console.error(e));
   });
 });
