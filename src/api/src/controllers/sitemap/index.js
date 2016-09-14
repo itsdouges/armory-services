@@ -8,20 +8,20 @@ const buildUrlTemplate = (relativeUrl) =>
     </url>`;
 
 const publicRoutes = [
+  '',
   'join',
   'login',
 ];
 
 const buildSitemap = (users, guilds, characters) =>
 `<?xml version="1.0" encoding="UTF-8"?>
-  <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${publicRoutes.map(buildUrlTemplate).join('\n')}
 ${users.join('\n')}
 ${guilds.join('\n')}
 ${characters.join('\n')}
-  </sitemapindex>
+  </urlset>
 </xml>`;
-
 
 module.exports = function sitemapControllerFactory (models) {
   function getAllResources () {
