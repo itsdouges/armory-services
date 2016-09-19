@@ -1,6 +1,6 @@
 module.exports = function SitemapResource (server, controller) {
   server.get('/sitemap.xml', (req, res, next) => {
-    res.setHeader('content-type', 'application/xml');
+    res.setHeader('content-type', 'text/xml; charset=utf-8');
 
     controller
       .generate()
