@@ -1,11 +1,9 @@
 const config = require('../../../env');
 
 const buildUrlTemplate = (relativeUrl) =>
-`    <url>
-      <loc>
-        ${config.web.publicUrl}/${relativeUrl}
-      </loc>
-    </url>`;
+`  <url>
+    <loc>${config.web.publicUrl}/${relativeUrl}</loc>
+  </url>`;
 
 const publicRoutes = [
   '',
@@ -15,13 +13,12 @@ const publicRoutes = [
 
 const buildSitemap = (users, guilds, characters) =>
 `<?xml version="1.0" encoding="UTF-8"?>
-  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${publicRoutes.map(buildUrlTemplate).join('\n')}
 ${users.join('\n')}
 ${guilds.join('\n')}
 ${characters.join('\n')}
-  </urlset>
-</xml>`;
+</urlset>`;
 
 module.exports = function sitemapControllerFactory (models) {
   function getAllResources () {
