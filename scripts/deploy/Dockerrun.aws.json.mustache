@@ -1,11 +1,63 @@
 {
   "AWSEBDockerrunVersion": 2,
+  "volumes": [
+    {
+      "name": "docker_sock",
+      "host": {
+        "sourcePath": "/var/run/docker.sock"
+      }
+    },
+    {
+      "name": "proc",
+      "host": {
+        "sourcePath": "/proc/"
+      }
+    },
+    {
+      "name": "cgroup",
+      "host": {
+        "sourcePath": "/cgroup/"
+      }
+    }
+  ],
   "containerDefinitions": [
+    {
+      "name": "dd-agent",
+      "image": "datadog/docker-dd-agent:latest",
+      "environment": [
+        {
+          "name": "API_KEY",
+          "value": "{{{ DATADOG_KEY }}}"
+        },
+        {
+          "name": "TAGS",
+          "value": "{{ DATADOG_TAGS }}"
+        }
+      ],
+      "memory": 100,
+      "mountPoints": [
+        {
+          "sourceVolume": "docker_sock",
+          "containerPath": "/var/run/docker.sock",
+          "readOnly": false
+        },
+        {
+          "sourceVolume": "proc",
+          "containerPath": "/host/proc",
+          "readOnly": true
+        },
+        {
+          "sourceVolume": "cgroup",
+          "containerPath": "/host/sys/fs/cgroup",
+          "readOnly": true
+        }
+      ]
+    },
     {
       "name": "fetch",
       "image": "madou/gw2armory-fetch",
       "essential": true,
-      "memory": 400,
+      "memory": 425,
       "environment": [
         {
           "name": "ENV",
@@ -17,7 +69,7 @@
       "name": "server",
       "image": "madou/gw2armory-server",
       "essential": true,
-      "memory": 500,
+      "memory": 425,
       "links": [
         "fetch"
       ],
