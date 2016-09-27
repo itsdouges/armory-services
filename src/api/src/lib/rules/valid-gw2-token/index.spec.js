@@ -63,7 +63,7 @@ describe('gw2 token validator', function () {
                 permissions: [
                     'account',
                     'characters',
-                    'inventories'
+                    'builds'
                 ]
             }
         });
@@ -80,7 +80,7 @@ describe('gw2 token validator', function () {
         }).then(function (e) {
             expect(e).toEqual({
                 property: 'token',
-                message: 'needs characters and inventories permission'
+                message: 'needs characters and builds permission'
             });
 
             done();
@@ -180,7 +180,7 @@ describe('gw2 token validator', function () {
                 permissions: [
                     'account',
                     'characters',
-                    'inventories'
+                    'builds'
                 ]
             }
         });

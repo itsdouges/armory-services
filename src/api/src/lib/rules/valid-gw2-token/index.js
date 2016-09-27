@@ -1,91 +1,80 @@
-'use strict';
+function validGw2Token (name, val, dependencies) {
+  if (!val) {
+    return Promise.resolve();
+  }
 
-var q = require('q');
+  function checkGw2Api (token) {
+    const authCheck = dependencies.axios.get(`${dependencies.env.gw2.endpoint}v2/tokeninfo`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      const permissions = response.data.permissions;
+      const hasCharacters = permissions.filter((item) => {
+        return item === 'characters' || item === 'builds';
+      });
 
-function validGw2Token(name, val, dependencies) {
-    if (!val) {
-        return q.resolve();
-    }
+      if (hasCharacters.length !== 2) {
+        return {
+          property: name,
+          message: 'needs characters and builds permission',
+        };
+      }
 
-    var promise = dependencies.models
-        .Gw2ApiToken
-        .findOne({ where: { token: val }})
-        .then(function (item) {
+      return undefined;
+    });
+
+    const duplicateCheck = dependencies.axios.get(`${dependencies.env.gw2.endpoint}v2/account`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      const accountId = response.data.id;
+      const accountName = response.data.name;
+
+      return dependencies.models
+          .Gw2ApiToken
+          .findOne({
+            where: {
+              accountId,
+            },
+          })
+          .then((item) => {
             if (item) {
-                return {
-                    property: name,
-                    message: 'is already being used'
-                };
+              return {
+                property: name,
+                message: `key for ${accountName} already exists`,
+              };
             }
-            
-            return checkGw2Api(val);
-        });
 
-        function checkGw2Api(token) {
-            var authCheck = dependencies.axios.get(dependencies.env.gw2.endpoint + 'v2/tokeninfo', {
-                    headers: {
-                        'Authorization' : 'Bearer ' + token
-                    }
-                })
-                .then(function (response) {
-                    var permissions = response.data.permissions;
-                    var hasCharacters = permissions.filter(function (item) {
-                        return item === 'characters' || item === 'inventories';
-                    });
+            return undefined;
+          });
+    });
 
-                    if (hasCharacters.length !== 2) {
-                        return {
-                            property: name,
-                            message: 'needs characters and inventories permission'
-                        };
-                    }
-                });
+    return Promise.all([authCheck, duplicateCheck])
+      .then(([authResponse, duplicateResponse]) => {
+        return authResponse || duplicateResponse;
+      }, () => Promise.resolve({
+        property: name,
+        message: 'invalid token',
+      }));
+  }
 
-            var duplicateCheck = dependencies.axios.get(dependencies.env.gw2.endpoint + 'v2/account', {
-                    headers: {
-                        'Authorization' : 'Bearer ' + token
-                    }
-            })
-            .then(function (response) {
-                var accountId = response.data.id;
-                var accountName = response.data.name;
+  return dependencies.models
+    .Gw2ApiToken
+    .findOne({ where: { token: val } })
+    .then((item) => {
+      if (item) {
+        return {
+          property: name,
+          message: 'is already being used',
+        };
+      }
 
-                return dependencies.models
-                    .Gw2ApiToken
-                    .findOne({
-                        where: {
-                            accountId: accountId,
-                        }
-                    })
-                    .then(function (item) {
-                        if (item) {
-                            return {
-                                property: name,
-                                message: 'key for ' + accountName + ' already exists'
-                            }; 
-                        }
-                    });
-            });
-
-            return q.all([authCheck, duplicateCheck])
-                .then(function (responses) {
-                    if (responses[1]) {
-                        return responses[1];
-                    }
-
-                    if (responses[0]) {
-                        return responses[0];
-                    }
-                }, function (error) {
-                    // todo: how do we want to handle 500s?
-                    return q.resolve({
-                        property: name,
-                        message: 'invalid token'
-                    });
-                });
-        }
-
-    return promise;
+      return checkGw2Api(val);
+    });
 }
 
 module.exports = validGw2Token;
