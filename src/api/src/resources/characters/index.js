@@ -1,4 +1,17 @@
 function charactersResource (server, controller) {
+  server.get('random/character', (req, res, next) => {
+    controller
+      .random()
+      .then((name) => {
+        res.send(200, name);
+        return next();
+      }, (error) => {
+        console.log(error);
+        res.send(500);
+        return next();
+      });
+  });
+
   server.get('characters/:name', (req, res, next) => {
     controller
       .read(req.params.name, false)
@@ -9,19 +22,6 @@ function charactersResource (server, controller) {
           res.send(404);
         }
 
-        return next();
-      }, (error) => {
-        console.log(error);
-        res.send(500);
-        return next();
-      });
-  });
-
-  server.get('characters/rand', (req, res, next) => {
-    controller
-      .random()
-      .then((name) => {
-        res.send(200, name);
         return next();
       }, (error) => {
         console.log(error);

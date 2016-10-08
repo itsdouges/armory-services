@@ -1,6 +1,7 @@
 /* THIS IS COPIED FROM COMMON/ENV */
 
 const ENVIRONMENT = process.env.ENV || 'DEV';
+const { merge } = require('lodash');
 
 switch (ENVIRONMENT) {
   case 'DEV':
@@ -14,7 +15,7 @@ switch (ENVIRONMENT) {
 
 console.log(`\n== Running with ${ENVIRONMENT} settings. ==\n`);
 
-module.exports = Object.assign(
+module.exports = merge(
   {},
   require('./default'),
   require(`./${ENVIRONMENT.toLowerCase()}`)

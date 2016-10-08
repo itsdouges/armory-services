@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.5.4",
+    "lodash": "^4.16.4",
     "mysql": "^2.8.0",
     "q": "^1.4.1",
     "restify": "^3.0.3",

@@ -281,12 +281,12 @@ describe('character controller', () => {
         })
         .then(() => {
           return models
-              .Gw2Guild
-              .create({
-                name: 'Guild Name',
-                id: 'guild',
-                tag: '[tag]',
-              });
+            .Gw2Guild
+            .create({
+              name: 'Guild Name',
+              id: 'guild',
+              tag: '[tag]',
+            });
         })
         .then(() => {
           return models
@@ -336,9 +336,11 @@ describe('character controller', () => {
 
   describe('reading random character name', () => {
     it('should return a character name', (done) => {
+      const expectedNames = ['blastrn', 'ayyyyy'];
+
       setupTestData()
-        .then(controller.random())
-        .then((name) => expect(name).toBeDefined())
+        .then(controller.random)
+        .then((name) => expect(expectedNames).toContain(name))
         .then(done);
     });
   });
