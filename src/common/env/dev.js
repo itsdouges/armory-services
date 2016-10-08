@@ -8,6 +8,7 @@ module.exports = {
     dialect: 'mysql',
     host: process.env.DB_PORT_3306_TCP_ADDR,
   },
+
   ping: {
     port: '8081',
     interval: 1 * 60000, // [min] * 60000

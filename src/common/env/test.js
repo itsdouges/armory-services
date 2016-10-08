@@ -8,6 +8,7 @@ module.exports = {
     dialect: 'mysql',
     host: 'gw2armory-test.cekbcmynaoxp.us-east-1.rds.amazonaws.com',
   },
+
   ping: {
     port: '8081',
     interval: 480 * 60000, // [min] * 60000

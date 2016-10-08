@@ -1,16 +1,19 @@
-var Models = require("./models");
-var Server = require('./server');
-var Sequelize = require("sequelize");
+const Sequelize = require('sequelize');
+const Models = require('./models');
+const serverFactory = require('./server');
 
-var config = require(__dirname + '/../env');
+const config = require(`${__dirname}/../env`);
 
-console.log('Connecting to mysql host: ' + config.db.host);
-var db = new Sequelize(config.db.database, config.db.username, config.db.password, config.db);
-var models = new Models(db);
-var server = Server(models, config);
+console.log(`=== Connceting to mysql host: ${config.db.host} ===`);
 
-console.log('Syncing sequelize models..');
-models.sequelize.sync().then(function () {
-  console.log('Starting server on port ' + config.server.port + '..');
-  server.listen(config.server.port);
-});
+const db = new Sequelize(config.db.database, config.db.username, config.db.password, config.db);
+const models = new Models(db);
+const server = serverFactory(models, config);
+
+console.log('=== Syncing sequelize models.. ===');
+
+models.sequelize.sync()
+  .then(() => {
+    console.log(`Starting server on port ${config.server.port}...`);
+    server.listen(config.server.port);
+  });
