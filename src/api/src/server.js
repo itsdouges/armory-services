@@ -8,10 +8,12 @@ const characterControllerFactory = require('./controllers/character');
 const authControllerFactory = require('./controllers/auth');
 const gw2ApiFactory = require('./lib/gw2');
 const sitemapControllerFactory = require('./controllers/sitemap');
+const statisticsControllerFactory = require('./controllers/statistics');
 
 const CheckController = require('./controllers/check');
 const Gw2TokenController = require('./controllers/gw2-token');
 const PvpController = require('./controllers/pvp');
+
 
 function serverFactory (models, config) {
   GottaValidate.addDefaultRules();
@@ -90,6 +92,7 @@ function serverFactory (models, config) {
   require('./resources/users/characters')(server, characters);
   require('./resources/sign-upload')(server, models);
 
+  require('./resources/statistics')(server, statisticsControllerFactory(models));
   require('./resources/users')(server, usersControllerFactory(models, GottaValidate, gw2Api));
   require('./resources/sitemap')(server, sitemapControllerFactory(models));
 
