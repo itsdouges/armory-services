@@ -24,5 +24,6 @@ module.exports = {
 
   cache: {
     findAllCharacters: 300000,
+    statistics: 60000 * 60, // 60 minutes.
   },
 };

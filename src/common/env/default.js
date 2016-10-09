@@ -35,6 +35,7 @@ module.exports = {
   },
 
   cache: {
-    findAllCharacters: 0,
+    findAllCharacters: 1,
+    statistics: 1,
   },
 };

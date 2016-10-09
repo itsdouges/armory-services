@@ -130,7 +130,8 @@ function characterControllerFactory (models, gw2Api) {
       });
   }
 
-  const findAllCharacters = memoize(() => models.Gw2Character.findAll(), {
+  const findAllCharacters = memoize(() => console.log('Reading chars') ||
+  models.Gw2Character.findAll(), {
     maxAge: config.cache.findAllCharacters,
     promise: true,
   });
