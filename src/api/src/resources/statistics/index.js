@@ -2,8 +2,6 @@ const memoize = require('memoizee');
 const config = require('../../../env');
 
 module.exports = function StatisticsResource (server, controller) {
-  console.log(`####### ${config.cache.statistics} ###########`);
-
   const getStats = memoize(() => console.log('Reading stats') || Promise.all([
     controller.users(),
     controller.guilds(),
