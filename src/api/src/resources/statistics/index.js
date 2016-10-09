@@ -1,10 +1,18 @@
+const memoize = require('memoizee');
+const config = require('../../../env');
+
 module.exports = function StatisticsResource (server, controller) {
+  const getStats = memoize(() => console.log('Reading stats') || Promise.all([
+    controller.users(),
+    controller.guilds(),
+    controller.characters(),
+  ]), {
+    maxAge: config.cache.statistics,
+    promise: true,
+  });
+
   server.get('/statistics', (req, res, next) => {
-    return Promise.all([
-      controller.users(),
-      controller.guilds(),
-      controller.characters(),
-    ])
+    return getStats()
     .then(([users, guilds, characters]) => {
       res.send(200, {
         users,
