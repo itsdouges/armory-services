@@ -9,6 +9,7 @@ const publicRoutes = [
   '',
   'join',
   'login',
+  'stats',
 ];
 
 const buildSitemap = (users, guilds, characters) =>
