@@ -34,6 +34,10 @@ module.exports = {
     publicUrl: 'http://localhost:3000',
   },
 
+  ping: {
+    concurrentCalls: 20,
+  },
+
   cache: {
     findAllCharacters: 1,
     statistics: 1,

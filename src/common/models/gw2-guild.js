@@ -3,7 +3,7 @@
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define('Gw2Guild', {
     id: {
-      field: 'token',
+      field: 'id',
       type: DataTypes.STRING,
       primaryKey: true,
     },

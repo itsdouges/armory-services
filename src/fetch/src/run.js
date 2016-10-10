@@ -1,51 +1,50 @@
-var Controller = require('./controllers/ping-controller'),
-    Models = require("./models"),
-    Sequelize = require("sequelize"),
-    axios = require('axios'),
-    fetchGw2 = require('./services/fetch-gw2')
-    http = require('http'),
-    restify = require("restify");
+const Sequelize = require('sequelize');
+const restify = require('restify');
 
-var config = require(__dirname + '/../env');
+const pingFactory = require('./ping');
+const Models = require('./models');
 
-console.log('Connecting to mysql host: ' + config.db.host);
-var db = new Sequelize(config.db.database, config.db.username, config.db.password, config.db);
-var models = new Models(db);
-var pinger = new Controller(config, axios, models, fetchGw2);
+const config = require(`${__dirname}/../env`);
 
-var server = restify.createServer({
-    name: "gw2-fetch"
+console.log(`\n=== Connecting to mysql host: ${config.db.host} ===\n`);
+
+const db = new Sequelize(config.db.database, config.db.username, config.db.password, config.db);
+const models = new Models(db);
+const fetchData = pingFactory(models);
+
+const server = restify.createServer({
+  name: 'gw2-fetch',
 });
 
 server.use(restify.bodyParser());
 
-server.get('/', function (req, res, next) {
-    res.send('I am alive');
-    return next();
+server.get('/', (req, res, next) => {
+  res.send('I am alive');
+  return next();
 });
 
-server.post('/fetch-characters', function (req, res, next) {
-    console.log('Single fetch triggered for', req.params.token);
+server.post('/fetch-characters', (req, res, next) => {
+  console.log(`\n=== Single fetch triggered for ${req.params.token} ===\n`);
 
-    pinger.fetchUserCharacterData(req.params.token)
-        .then(function () {
-        res.send(200);
-        return next();
-        }, function (err) {
-            res.send(500, err);
-            return next();
-        });
+  fetchUserCharacterData(req.params.token)
+    .then(() => {
+      res.send(200);
+      return next();
+    }, (err) => {
+      res.send(500, err);
+      return next();
+    });
 });
 
-models.sequelize.sync().then(function () {
-    console.log('Starting server on port ' + config.ping.port + '..');
+models.sequelize.sync()
+  .then(() => {
+    console.log(`\n=== Starting server on port ${config.ping.port}.. ===\n`);
+
     server.listen(config.ping.port);
 
     console.log('Starting ping..');
 
-    pinger.ping();
-    setInterval(function () {
-        pinger.ping();
-    }, config.ping.interval);
-});
+    fetchData();
 
+    setInterval(fetchData, config.ping.interval);
+  });

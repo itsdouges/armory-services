@@ -13,7 +13,8 @@
     "global-require": 0,
     "import/no-unresolved": 0,
     "import/no-extraneous-dependencies": 0,
-    "arrow-body-style": 0
+    "arrow-body-style": 0,
+    "no-unused-expressions": 0
   },
   "globals": {
     "describe": true,
@@ -23,6 +24,8 @@
     "beforeEach": true,
     "afterEach": true,
     "expect": true,
-    "jasmine": true
+    "jasmine": true,
+    "sinon": true,
+    "proxyquire": true
   }
 }

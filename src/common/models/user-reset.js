@@ -15,7 +15,6 @@ module.exports = function (sequelize, DataTypes) {
       required: true,
       defaultValue: false,
     },
-    // NEW
     expires: {
       field: 'expires',
       type: DataTypes.DATE,
@@ -24,7 +23,6 @@ module.exports = function (sequelize, DataTypes) {
   }, {
     classMethods: {
       associate (models) {
-        // NEW
         UserReset.belongsTo(models.User, {
           onDelete: 'CASCADE',
           foreignKey: {
