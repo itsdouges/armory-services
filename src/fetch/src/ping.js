@@ -6,6 +6,8 @@ const config = require('../env');
 
 function pingControllerFactory (models, fetchers) {
   return function ping () {
+    console.log('\n=== Starting fetch! ===\n');
+
     return fetchTokens(models)
       .then((tokens) => {
         return q.allSettled(
@@ -20,7 +22,7 @@ function pingControllerFactory (models, fetchers) {
       .then(() => {
         console.log('\n=== Finished fetch! ===\n');
       }, (e) => {
-        console.error('\n=== Something bad happened ===\n');
+        console.error('\n=== Something bad happened! ===\n');
         console.trace(e);
       });
   };

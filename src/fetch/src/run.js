@@ -42,8 +42,6 @@ models.sequelize.sync()
 
     server.listen(config.ping.port);
 
-    console.log('Starting ping..');
-
     fetchData();
 
     setInterval(fetchData, config.ping.interval);
