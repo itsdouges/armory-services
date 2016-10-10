@@ -1,17 +1,15 @@
 const proxyquire = require('proxyquire');
 
-const sandbox = sinon.sandbox.create();
-
-const gw2 = {
-  characters: sandbox.stub(),
-  guild: sandbox.stub(),
-};
-
-const fetchCharacters = proxyquire('./characters', {
-  '../lib/gw2': gw2,
+const createFetchCharacters = ({ characters, guild }) => proxyquire('./characters', {
+  '../lib/gw2': {
+    characters,
+    guild,
+  },
 });
 
 describe('characters fetcher', () => {
+  const token = '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15';
+
   const character = {
     name: 'character1',
     race: 'race',
@@ -33,14 +31,17 @@ describe('characters fetcher', () => {
 
   beforeEach(() => {
     return global
-      .setupDb({ seedDb: true })
+      .setupDb({ seedDb: true, token })
       .then((mdls) => (models = mdls));
   });
 
   it('should replace all characters with response from gw2 api characters', () => {
-    const token = '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15';
+    const charactersStub = sinon.stub().withArgs(token)
+      .returns(Promise.resolve([character, character]));
 
-    gw2.characters.withArgs(token).returns(Promise.resolve([character, character]));
+    const fetchCharacters = createFetchCharacters({
+      characters: charactersStub,
+    });
 
     return fetchCharacters(models, token)
       .then(() => {
@@ -57,15 +58,18 @@ describe('characters fetcher', () => {
   });
 
   it('should add guild if character is in one, only once', () => {
-    const token = '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15';
-
     const characterWithGuild = Object.assign({}, character, { guild: guild.guild_name });
 
-    gw2.characters.withArgs(token).returns(
+    const charactersStub = sinon.stub().withArgs(token).returns(
       Promise.resolve([characterWithGuild])
     );
 
-    gw2.guild.withArgs(guild.guild_name).returns(Promise.resolve(guild));
+    const guildStub = sinon.stub().withArgs(guild.guild_name).returns(Promise.resolve(guild));
+
+    const fetchCharacters = createFetchCharacters({
+      characters: charactersStub,
+      guild: guildStub,
+    });
 
     return fetchCharacters(models, token)
       .then(() => fetchCharacters(models, token))
@@ -75,13 +79,46 @@ describe('characters fetcher', () => {
 
         const [gld] = guilds;
 
-        expect(gw2.guild).to.have.been.calledOnce;
+        expect(guildStub).to.have.been.calledOnce;
 
         expect(gld).to.include({
           id: guild.guild_id,
           name: guild.guild_name,
           tag: guild.tag,
         });
+      });
+  });
+
+  it('should remove characters not brought back', () => {
+    const otherCharacter = Object.assign({}, character, { name: 'anotherName' });
+
+    const charactersStub = sinon.stub();
+
+    charactersStub.onFirstCall()
+      .returns(Promise.resolve([character, otherCharacter]))
+      .onSecondCall()
+      .returns(Promise.resolve([otherCharacter]));
+
+    const fetchCharacters = createFetchCharacters({
+      characters: charactersStub,
+    });
+
+    return fetchCharacters(models, token)
+      .then(() => models.Gw2Character.findOne({ where: { name: otherCharacter.name } }))
+      .then(({ dataValues: { id } }) => {
+        return fetchCharacters(models, token)
+          .then(() => {
+            return models.Gw2Character.findOne({ where: { name: character.name } });
+          })
+          .then((char) => {
+            expect(char).to.not.exist;
+          })
+          .then(() => {
+            return models.Gw2Character.findOne({ where: { name: otherCharacter.name } });
+          })
+          .then((char) => {
+            expect(char.dataValues.id).to.equal(id);
+          });
       });
   });
 });

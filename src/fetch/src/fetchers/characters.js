@@ -5,10 +5,12 @@ module.exports = function fetchUserCharacterData (models, token) {
   return gw2Fetch
     .characters(token)
     .then((characters) => {
-      // TODO: Diff and remove characters NOT in array, instead of removing everything.
       return models.Gw2Character.destroy({
         where: {
           Gw2ApiTokenToken: token,
+          name: {
+            $notIn: characters.map(({ name }) => name),
+          },
         },
       })
       .then(() => {
