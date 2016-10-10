@@ -1,5 +1,4 @@
 const Models = require('../../models');
-const testDb = require('../../../spec/helpers/db');
 const proxyquire = require('proxyquire');
 
 describe('user resource', () => {
@@ -20,7 +19,7 @@ describe('user resource', () => {
   };
 
   function initialiseUserData () {
-    spyOn(mocks, 'validate').and.returnValue(Promise.resolve());
+    sinon.stub(mocks, 'validate').returns(Promise.resolve());
 
     const user = {
       email: 'cool@email.com',
@@ -106,20 +105,20 @@ describe('user resource', () => {
       force: true,
     })
     .then(() => {
-      spyOn(mocks, 'sendEmail').and.returnValue(Promise.resolve('sent!'));
+      sinon.stub(mocks, 'sendEmail').returns(Promise.resolve('sent!'));
 
       systemUnderTest = createUserResource();
 
       done();
     });
 
-    spyOn(mockValidator, 'addResource').and.returnValue(mockValidator);
-    spyOn(mockValidator, 'addRule').and.returnValue(mockValidator);
+    sinon.stub(mockValidator, 'addResource').returns(mockValidator);
+    sinon.stub(mockValidator, 'addRule').returns(mockValidator);
   });
 
   describe('initialisation', () => {
     it('should add users resource in create mode to validator', () => {
-      expect(mockValidator.addResource).toHaveBeenCalledWith({
+      expect(mockValidator.addResource).to.have.been.calledWith({
         name: 'users',
         mode: 'create',
         rules: {
@@ -131,7 +130,7 @@ describe('user resource', () => {
     });
 
     it('should add users resource in update mode to validator', () => {
-      expect(mockValidator.addResource).toHaveBeenCalledWith({
+      expect(mockValidator.addResource).to.have.been.calledWith({
         name: 'users',
         mode: 'update-password',
         rules: {
@@ -151,15 +150,15 @@ describe('user resource', () => {
         alias: 'madou',
       };
 
-      spyOn(mocks, 'validate').and.returnValue(Promise.resolve());
+      sinon.stub(mocks, 'validate').returns(Promise.resolve());
 
       systemUnderTest
         .create(user)
         .then((data) => {
-          expect(data.email).toBe(user.email);
-          expect(data.id).toBeDefined();
-          expect(data.passwordHash).toBeDefined();
-          expect(data.alias).toBe(user.alias);
+          expect(data.email).to.equal(user.email);
+          expect(data.id).to.exist;
+          expect(data.passwordHash).to.exist;
+          expect(data.alias).to.equal(user.alias);
 
           done();
         });
@@ -169,10 +168,10 @@ describe('user resource', () => {
       initialiseUserData()
         .then(() => systemUnderTest.readPublic('madou'))
         .then((data) => {
-          expect(data.alias).toBe('madou');
-          expect(data.accountName).toBe('coolaccount.1234');
-          expect(data.createdAt).toBeDefined();
-          expect(data.characters).toEqual([{
+          expect(data.alias).to.equal('madou');
+          expect(data.accountName).to.equal('coolaccount.1234');
+          expect(data.createdAt).to.exist;
+          expect(data.characters).to.eql([{
             accountName: 'coolaccount.1234',
             world: 'aus',
             name: 'madoubie',
@@ -195,7 +194,7 @@ describe('user resource', () => {
         alias: 'madou',
       };
 
-      spyOn(mocks, 'validate').and.returnValue(Promise.resolve());
+      sinon.stub(mocks, 'validate').returns(Promise.resolve());
 
       systemUnderTest
         .create(user)
@@ -204,7 +203,7 @@ describe('user resource', () => {
           return systemUnderTest.updatePassword(user);
         })
         .then(null, (e) => {
-          expect(e).toBe('Bad password');
+          expect(e).to.equal('Bad password');
 
           done();
         });
@@ -217,7 +216,7 @@ describe('user resource', () => {
         alias: 'madou',
       };
 
-      spyOn(mocks, 'validate').and.returnValue(Promise.resolve());
+      sinon.stub(mocks, 'validate').returns(Promise.resolve());
 
       systemUnderTest
         .create(user)
@@ -230,8 +229,8 @@ describe('user resource', () => {
         })
         .then(() => systemUnderTest.read(user.email))
         .then((e) => {
-          expect(e.passwordHash).not.toBe(user.oldHash);
-          expect(e.passwordHash).toBeDefined();
+          expect(e.passwordHash).not.to.equal(user.oldHash);
+          expect(e.passwordHash).to.exist;
 
           done();
         });
@@ -239,12 +238,12 @@ describe('user resource', () => {
 
     it('should reject if validation fails', (done) => {
       const error = 'errorrrr';
-      spyOn(mocks, 'validate').and.returnValue(Promise.reject(error));
+      sinon.stub(mocks, 'validate').returns(Promise.reject(error));
 
       systemUnderTest
         .updatePassword({})
         .then(null, (e) => {
-          expect(e).toBe(error);
+          expect(e).to.equal(error);
           done();
         });
     });
@@ -255,12 +254,12 @@ describe('user resource', () => {
       const user = {};
       const errors = ['im a error'];
 
-      spyOn(mocks, 'validate').and.returnValue(Promise.reject(errors));
+      sinon.stub(mocks, 'validate').returns(Promise.reject(errors));
 
       systemUnderTest
           .create(user)
           .then(null, (e) => {
-            expect(e).toBe(errors);
+            expect(e).to.equal(errors);
 
             done();
           });
@@ -273,7 +272,7 @@ describe('user resource', () => {
         alias: 'madou',
       };
 
-      spyOn(mocks, 'validate').and.returnValue(Promise.resolve());
+      sinon.stub(mocks, 'validate').returns(Promise.resolve());
 
       systemUnderTest
         .create(user)
@@ -288,11 +287,11 @@ describe('user resource', () => {
               }],
             })
             .then((e) => {
-              expect(e.id).toBeDefined();
-              expect(e.email).toBe(user.email);
-              expect(e.alias).toBe(user.alias);
-              expect(e.passwordHash).toBeDefined();
-              expect(e.emailValidated).toBe(false);
+              expect(e.id).to.exist;
+              expect(e.email).to.equal(user.email);
+              expect(e.alias).to.equal(user.alias);
+              expect(e.passwordHash).to.exist;
+              expect(e.emailValidated).to.equal(false);
 
               done();
             });
@@ -312,12 +311,12 @@ describe('user resource', () => {
             }))
           )
           .then((results) => {
-            expect(results.length).toBe(1);
+            expect(results.length).to.equal(1);
             const row = results[0];
-            expect(row.expires).toBeDefined();
-            expect(row.UserId).toBeDefined();
-            expect(row.used).toBeDefined();
-            expect(row.id).toBeDefined();
+            expect(row.expires).to.exist;
+            expect(row.UserId).to.exist;
+            expect(row.used).to.exist;
+            expect(row.id).to.exist;
           })
           .then(done);
       });
@@ -330,7 +329,7 @@ describe('user resource', () => {
                 UserId: user.id,
               },
             }))
-            .then(() => expect(mocks.sendEmail).toHaveBeenCalledWith({
+            .then(() => expect(mocks.sendEmail).to.have.been.calledWith({
               subject: 'Forgot My Password',
               to: user.email,
               html: jasmine.any(String),
@@ -343,7 +342,7 @@ describe('user resource', () => {
     describe('when finishing', () => {
       it('should reject if reset doesnt exist', (done) => {
         systemUnderTest.forgotMyPasswordFinish('dontexist', 'hahpassword')
-          .then(null, (err) => expect(err).toEqual('Reset doesn\'t exist.'))
+          .then(null, (err) => expect(err).to.eql('Reset doesn\'t exist.'))
           .then(done);
       });
 
@@ -352,7 +351,7 @@ describe('user resource', () => {
 
         init()
           .then((data) => systemUnderTest.forgotMyPasswordFinish(data.resetId, shittyPassword))
-          .then(() => expect(mocks.validate).toHaveBeenCalledWith({ password: shittyPassword }))
+          .then(() => expect(mocks.validate).to.have.been.calledWith({ password: shittyPassword }))
           .then(done);
       });
 
@@ -370,8 +369,8 @@ describe('user resource', () => {
                 })
               )
               .then((user) =>
-                expect(user.passwordHash).toBeDefined() ||
-                expect(user.passwordHash).not.toEqual(data.passwordHash)
+                expect(user.passwordHash).to.exist ||
+                expect(user.passwordHash).not.to.eql(data.passwordHash)
               )
           )
           .then(done);
@@ -384,7 +383,7 @@ describe('user resource', () => {
 
         init(instance)
           .then((data) => instance.forgotMyPasswordFinish(data.resetId, 'bad'))
-          .then(null, (e) => expect(e).toBe('Reset has expired.'))
+          .then(null, (e) => expect(e).to.equal('Reset has expired.'))
           .then(done);
       });
 
@@ -393,7 +392,7 @@ describe('user resource', () => {
           .then((data) =>
             systemUnderTest.forgotMyPasswordFinish(data.resetId, 'bad')
             .then(() => systemUnderTest.forgotMyPasswordFinish(data.resetId, 'bad'))
-            .then(null, (e) => expect(e).toBe('Reset has expired.') || done())
+            .then(null, (e) => expect(e).to.equal('Reset has expired.') || done())
           );
       });
     });

@@ -1,7 +1,6 @@
 var CheckResource = require('./index');
 var Models = require('../../models');
 var q = require('q');
-var testDb = require('../../../spec/helpers/db');
 
 describe('check resource', function () {
     var systemUnderTest;
@@ -22,14 +21,14 @@ describe('check resource', function () {
 
         mockValidator.addResource = function () { };
 
-        spyOn(mockValidator, 'addResource').and.returnValue(mockValidator);
+        sinon.stub(mockValidator, 'addResource').returns(mockValidator);
     });
 
     describe('initialisation', function () {
         it('should add gw2 token resource to validator', function () {
             systemUnderTest = new CheckResource(mockValidator);
 
-            expect(mockValidator.addResource).toHaveBeenCalledWith({
+            expect(mockValidator.addResource).to.have.been.calledWith({
                 name: 'check',
                 mode: 'gw2-token',
                 rules: {
@@ -41,7 +40,7 @@ describe('check resource', function () {
         it('should add email resource to validator', function () {
             systemUnderTest = new CheckResource(mockValidator);
 
-            expect(mockValidator.addResource).toHaveBeenCalledWith({
+            expect(mockValidator.addResource).to.have.been.calledWith({
                 name: 'check',
                 mode: 'email',
                 rules: {
@@ -53,7 +52,7 @@ describe('check resource', function () {
         it('should add alias resource to validator', function () {
             systemUnderTest = new CheckResource(mockValidator);
 
-            expect(mockValidator.addResource).toHaveBeenCalledWith({
+            expect(mockValidator.addResource).to.have.been.calledWith({
                 name: 'check',
                 mode: 'alias',
                 rules: {
@@ -69,11 +68,11 @@ describe('check resource', function () {
 
             var defer = q.defer();
 
-            spyOn(mocks, 'validate').and.returnValue(defer.promise);
+            sinon.stub(mocks, 'validate').returns(defer.promise);
 
             systemUnderTest.gw2Token('token')
                 .then(function () {
-                    expect(mocks.validate).toHaveBeenCalledWith('token');
+                    expect(mocks.validate).to.have.been.calledWith('token');
 
                     done();
                 });
@@ -86,11 +85,11 @@ describe('check resource', function () {
 
             var defer = q.defer();
 
-            spyOn(mocks, 'validate').and.returnValue(defer.promise);
+            sinon.stub(mocks, 'validate').returns(defer.promise);
 
             systemUnderTest.gw2Token('token')
                 .then(null, function () {
-                    expect(mocks.validate).toHaveBeenCalledWith('token');
+                    expect(mocks.validate).to.have.been.calledWith('token');
 
                     done();
                 });
@@ -105,11 +104,11 @@ describe('check resource', function () {
 
             var defer = q.defer();
 
-            spyOn(mocks, 'validate').and.returnValue(defer.promise);
+            sinon.stub(mocks, 'validate').returns(defer.promise);
 
             systemUnderTest.email('email')
                 .then(function () {
-                    expect(mocks.validate).toHaveBeenCalledWith('email');
+                    expect(mocks.validate).to.have.been.calledWith('email');
 
                     done();
                 });
@@ -122,11 +121,11 @@ describe('check resource', function () {
 
             var defer = q.defer();
 
-            spyOn(mocks, 'validate').and.returnValue(defer.promise);
+            sinon.stub(mocks, 'validate').returns(defer.promise);
 
             systemUnderTest.email('email')
                 .then(null, function (e) {
-                    expect(e).toBe('ahh!!!');
+                    expect(e).to.equal('ahh!!!');
 
                     done();
                 });
@@ -141,11 +140,11 @@ describe('check resource', function () {
 
             var defer = q.defer();
 
-            spyOn(mocks, 'validate').and.returnValue(defer.promise);
+            sinon.stub(mocks, 'validate').returns(defer.promise);
 
             systemUnderTest.alias('a')
                 .then(function () {
-                    expect(mocks.validate).toHaveBeenCalledWith('a');
+                    expect(mocks.validate).to.have.been.calledWith('a');
 
                     done();
                 });
@@ -158,11 +157,11 @@ describe('check resource', function () {
 
             var defer = q.defer();
 
-            spyOn(mocks, 'validate').and.returnValue(defer.promise);
+            sinon.stub(mocks, 'validate').returns(defer.promise);
 
             systemUnderTest.alias('b')
                 .then(null, function (e) {
-                    expect(e).toBe('ahh!!!');
+                    expect(e).to.equal('ahh!!!');
 
                     done();
                 });

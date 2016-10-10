@@ -1,7 +1,6 @@
 var q = require('q');
 
 var Models = require('../../models');
-var testDb = require('../../../spec/helpers/db');
 var Controller = require('./index');
 
 describe('search controller', function () {
@@ -63,7 +62,7 @@ describe('search controller', function () {
             seed().then(function () {
                 systemUnderTest.search('ado')
                     .then(function (results) {
-                        expect(results).toEqual([{
+                        expect(results).to.eql([{
                             resource: 'users',
                             name: 'madou',
                             accountName: 'accName',

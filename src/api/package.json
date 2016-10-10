@@ -4,9 +4,11 @@
   "description": "Api server for api.gw2armory.com",
   "author": "madou",
   "scripts": {
-    "start": "npm run db:migrate && gulp serve",
-    "test": "gulp test",
-    "tdd": "gulp test:unit:auto",
+    "start": "npm run db:migrate && node ./src/run",
+    "test": "mocha \"src/**/*.spec.js\" && npm run test:int",
+    "test:int": "mocha \"src/**/*.int.js\"",
+    "tdd": "mocha \"src/**/*.spec.js\" --watch",
+    "tdd:int": "npm run test:int -- --watch",
     "db:migrate": "node_modules/.bin/sequelize db:migrate"
   },
   "dependencies": {
@@ -31,10 +33,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "gulp": "^3.9.0",
-    "gulp-jasmine": "^2.0.1",
-    "gulp-jshint": "^1.11.2",
-    "gulp-shell": "^0.4.2",
+    "mocha": "^3.1.1",
     "mockery": "^1.4.0",
     "nodemon": "^1.4.1",
     "proxyquire": "^1.7.10",

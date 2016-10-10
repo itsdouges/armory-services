@@ -1,12 +1,9 @@
-'use strict';
-
 var token = require('./index');
 var q = require('q');
 
 var axios = require('axios');
 
 var Models = require('../../../models');
-var testDb = require('../../../../spec/helpers/db');
 
 describe('gw2 token validator', function () {
     var mockAxios;
@@ -41,15 +38,15 @@ describe('gw2 token validator', function () {
 
     it('should resolve if token is valid', function (done) {
         var defer = q.defer();
-        spyOn(mockAxios, 'get').and.returnValue(defer.promise);
+        sinon.stub(mockAxios, 'get').returns(defer.promise);
 
         token('token', 'ee', {
             axios: mockAxios,
             env: mockEnv,
             models: models
         }).then(function (e) {
-            expect(e).not.toBeDefined();
-            expect(mockAxios.get).toHaveBeenCalledWith('gw2.com/v2/tokeninfo', {
+            expect(e).not.to.exist;
+            expect(mockAxios.get).to.have.been.calledWith('gw2.com/v2/tokeninfo', {
                 headers: {
                     'Authorization' : 'Bearer ee'
                 }
@@ -71,14 +68,14 @@ describe('gw2 token validator', function () {
 
     it('should resolve error if token doesnt have characters permission', function (done) {
         var defer = q.defer();
-        spyOn(mockAxios, 'get').and.returnValue(defer.promise);
+        sinon.stub(mockAxios, 'get').returns(defer.promise);
 
         token('token', 'ee', {
             axios: mockAxios,
             env: mockEnv,
             models: models
         }).then(function (e) {
-            expect(e).toEqual({
+            expect(e).to.eql({
                 property: 'token',
                 message: 'needs characters and builds permission'
             });
@@ -118,7 +115,7 @@ describe('gw2 token validator', function () {
                             env: mockEnv,
                             models: models
                         }).then(function (e) {
-                            expect(e).toEqual({
+                            expect(e).to.eql({
                                 property: 'token',
                                 message: 'is already being used'
                             });
@@ -141,7 +138,7 @@ describe('gw2 token validator', function () {
             return accountDefer.promise;
         };
 
-        spyOn(mockAxios, 'get').and.callThrough();
+        sinon.stub(mockAxios, 'get').and.callThrough();
 
         models.User
             .create({
@@ -165,7 +162,7 @@ describe('gw2 token validator', function () {
                             env: mockEnv,
                             models: models
                         }).then(function (e) {
-                            expect(e).toEqual({
+                            expect(e).to.eql({
                                 property: 'token',
                                 message: 'key for madou.1234 already exists'
                             });
@@ -196,14 +193,14 @@ describe('gw2 token validator', function () {
 
     it('should resolve error if an error occurred during http', function (done) {
         var defer = q.defer();
-        spyOn(mockAxios, 'get').and.returnValue(defer.promise);
+        sinon.stub(mockAxios, 'get').returns(defer.promise);
 
         token('token', 'ee', {
             axios: mockAxios,
             env: mockEnv,
             models: models
         }).then(function (e) {
-            expect(e).toEqual({
+            expect(e).to.eql({
                 property: 'token',
                 message: 'invalid token'
             });

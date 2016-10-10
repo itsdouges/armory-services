@@ -1,6 +1,5 @@
 var Models = require('../../models');
 var q = require('q');
-var testDb = require('../../../spec/helpers/db');
 var mockery = require('mockery');
 
 describe('gw2 token controller', function () {
@@ -46,7 +45,7 @@ describe('gw2 token controller', function () {
 
         mockValidator.addResource = function () {};
 
-        spyOn(mockValidator, 'addResource').and.returnValue(mockValidator);
+        sinon.stub(mockValidator, 'addResource').returns(mockValidator);
 
         var Controller = require('./index');
         systemUnderTest = new Controller(models, mockValidator, mockGw2Api);
@@ -108,20 +107,20 @@ describe('gw2 token controller', function () {
                     systemUnderTest
                         .list('email@email.com')
                         .then(function (tokens) {
-                            expect(2).toBe(tokens.length);
+                            expect(2).to.equal(tokens.length);
 
                             var token1 = tokens[0];
                             var token2 = tokens[1];
 
-                            expect('cool_token').toBe(token1.token);
-                            expect('madou.0').toBe(token1.accountName);
-                            expect(1234).toBe(token1.world);
-                            expect(false).toBe(token1.primary);
+                            expect('cool_token').to.equal(token1.token);
+                            expect('madou.0').to.equal(token1.accountName);
+                            expect(1234).to.equal(token1.world);
+                            expect(false).to.equal(token1.primary);
 
-                            expect('another_token').toBe(token2.token);
-                            expect('madou.1').toBe(token2.accountName);
-                            expect(4321).toBe(token2.world);
-                            expect(false).toBe(token2.primary);
+                            expect('another_token').to.equal(token2.token);
+                            expect('madou.1').to.equal(token2.accountName);
+                            expect(4321).to.equal(token2.world);
+                            expect(false).to.equal(token2.primary);
 
                             done();
                         });
@@ -131,7 +130,7 @@ describe('gw2 token controller', function () {
 
     describe('adding', function () {
         it('should add users resource in update-gw2-token mode to validator', function () {
-            expect(mockValidator.addResource).toHaveBeenCalledWith({
+            expect(mockValidator.addResource).to.have.been.calledWith({
                 name: 'gw2-token',
                 mode: 'add',
                 rules: {
@@ -143,16 +142,16 @@ describe('gw2 token controller', function () {
         it('should reject promise if validation fails', function (done) {
             var defer = q.defer();
 
-            spyOn(mocks, 'validate').and.returnValue(defer.promise);
+            sinon.stub(mocks, 'validate').returns(defer.promise);
 
             systemUnderTest
                 .add('1234', 'token')
                 .then(null, function (e) {
-                    expect(mocks.validate).toHaveBeenCalledWith({
+                    expect(mocks.validate).to.have.been.calledWith({
                         token: 'token'
                     });
 
-                    expect(e).toBe('failed');
+                    expect(e).to.equal('failed');
 
                     done();
                 });
@@ -166,7 +165,7 @@ describe('gw2 token controller', function () {
                     return systemUnderTest.doesUserHaveTokens(id);
                 })
                 .then(function (result) {
-                    expect(result).toBe(true);
+                    expect(result).to.equal(true);
                     done();
                 });
         });
@@ -177,7 +176,7 @@ describe('gw2 token controller', function () {
                     return systemUnderTest.doesUserHaveTokens(id);
                 })
                 .then(function (result) {
-                    expect(result).toBe(false);
+                    expect(result).to.equal(false);
                     done();
                 });
         });
@@ -186,16 +185,16 @@ describe('gw2 token controller', function () {
             var defer = q.defer();
             var accountDefer = q.defer();
 
-            spyOn(mocks, 'validate').and.returnValue(defer.promise);
-            spyOn(mockGw2Api, 'readTokenInfoWithAccount').and.returnValue(accountDefer.promise);
-            spyOn(mockAxios, 'post').and.returnValue(q.resolve());
+            sinon.stub(mocks, 'validate').returns(defer.promise);
+            sinon.stub(mockGw2Api, 'readTokenInfoWithAccount').returns(accountDefer.promise);
+            sinon.stub(mockAxios, 'post').returns(q.resolve());
 
             seedDb('cool@email.com')
                 .then(function (e) {
                     systemUnderTest
                         .add('cool@email.com', 'token')
                         .then(function (result) {
-                            expect(result.primary).toBe(false);
+                            expect(result.primary).to.equal(false);
                             done();
                         });
 
@@ -214,9 +213,9 @@ describe('gw2 token controller', function () {
             var defer = q.defer();
             var accountDefer = q.defer();
 
-            spyOn(mocks, 'validate').and.returnValue(defer.promise);
-            spyOn(mockGw2Api, 'readTokenInfoWithAccount').and.returnValue(accountDefer.promise);
-            spyOn(mockAxios, 'post').and.returnValue(q.resolve());
+            sinon.stub(mocks, 'validate').returns(defer.promise);
+            sinon.stub(mockGw2Api, 'readTokenInfoWithAccount').returns(accountDefer.promise);
+            sinon.stub(mockAxios, 'post').returns(q.resolve());
 
             models
                 .User
@@ -229,12 +228,12 @@ describe('gw2 token controller', function () {
                     systemUnderTest
                         .add('cool@email.com', 'token')
                         .then(function (result) {
-                            expect(result.token).toBe('token');
-                            expect(result.primary).toBe(true);
-                            expect(result.permissions).toBe('cool,yeah!');
-                            expect(result.accountName).toBe('nameee');
+                            expect(result.token).to.equal('token');
+                            expect(result.primary).to.equal(true);
+                            expect(result.permissions).to.equal('cool,yeah!');
+                            expect(result.accountName).to.equal('nameee');
 
-                            expect(mockAxios.post).toHaveBeenCalledWith('http://host:port/fetch-characters', {
+                            expect(mockAxios.post).to.have.been.calledWith('http://host:port/fetch-characters', {
                                 token: 'token'
                             });
 
@@ -260,7 +259,7 @@ describe('gw2 token controller', function () {
                     return systemUnderTest.selectPrimary('email@email.com', 'another_token');
                 })
                 .then(function (data) {
-                    expect(data).toEqual([1]);
+                    expect(data).to.eql([1]);
                 })
                 .then(function () {
                     return models
@@ -270,9 +269,9 @@ describe('gw2 token controller', function () {
                 .then(function (data) {
                     data.forEach(function (token) {
                         if (token.token === 'another_token') {
-                            expect(token.primary).toBe(true);
+                            expect(token.primary).to.equal(true);
                         } else {
-                            expect(token.primary).toBe(false);
+                            expect(token.primary).to.equal(false);
                         }
                     });
 
@@ -287,9 +286,9 @@ describe('gw2 token controller', function () {
             var defer = q.defer();
             var accountDefer = q.defer();
 
-            spyOn(mocks, 'validate').and.returnValue(defer.promise);
-            spyOn(mockGw2Api, 'readTokenInfoWithAccount').and.returnValue(accountDefer.promise);
-            spyOn(mockAxios, 'post').and.returnValue(q.resolve());
+            sinon.stub(mocks, 'validate').returns(defer.promise);
+            sinon.stub(mockGw2Api, 'readTokenInfoWithAccount').returns(accountDefer.promise);
+            sinon.stub(mockAxios, 'post').returns(q.resolve());
 
             models
                 .User
@@ -302,15 +301,15 @@ describe('gw2 token controller', function () {
                     systemUnderTest
                         .add('cool@email.com', 'token')
                         .then(function (result) {
-                            expect(result.token).toBe('token');
-                            // expect(result.UserId).toBe(e.id);
-                            expect(result.accountName).toBe('nameee');
-                            // expect(result.accountId).toBe('eeee');
+                            expect(result.token).to.equal('token');
+                            // expect(result.UserId).to.equal(e.id);
+                            expect(result.accountName).to.equal('nameee');
+                            // expect(result.accountId).to.equal('eeee');
 
                             systemUnderTest
                                 .remove('cool@email.com', 'token')
                                 .then(function (rez) {
-                                    expect(rez).toBe(1);
+                                    expect(rez).to.equal(1);
 
                                     models
                                         .Gw2ApiToken
@@ -319,7 +318,7 @@ describe('gw2 token controller', function () {
                                                 token: 'token'
                                             }
                                         }).then(function (result) {
-                                            expect(result).toBe(null);
+                                            expect(result).to.equal(null);
                                             done();
                                         });
                                 });

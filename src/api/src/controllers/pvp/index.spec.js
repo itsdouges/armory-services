@@ -1,5 +1,4 @@
 var PvpController = require('./');
-var setupTestDb = require('../../../spec/helpers/setup-test-db');
 
 describe('pvp controller', function () {
   var models;
@@ -10,10 +9,10 @@ describe('pvp controller', function () {
     mockGw2Api = {};
     mockGw2Api.readPvpStats = function () {};
     mockGw2Api.readPvpGames = function () {};
-    spyOn(mockGw2Api, 'readPvpStats').and.returnValue({ pvp: 'stats' });
-    spyOn(mockGw2Api, 'readPvpGames').and.returnValue({ pvp: 'games' });
+    sinon.stub(mockGw2Api, 'readPvpStats').returns({ pvp: 'stats' });
+    sinon.stub(mockGw2Api, 'readPvpGames').returns({ pvp: 'games' });
 
-    return setupTestDb(true, {
+    return seedData(true, {
       email: 'email@email.com',
       alias: 'cool-name',
       addTokens: true,
@@ -28,11 +27,11 @@ describe('pvp controller', function () {
   it('should return pvp data for primary token', function (done) {
     return systemUnderTest.stats('cool-name')
       .then(function (stats) {
-        expect(stats).toEqual({
+        expect(stats).to.eql({
           pvp: 'stats',
         });
 
-        expect(mockGw2Api.readPvpStats).toHaveBeenCalledWith('cool_token');
+        expect(mockGw2Api.readPvpStats).to.have.been.calledWith('cool_token');
 
         done();
       });
@@ -41,11 +40,11 @@ describe('pvp controller', function () {
   it('should return pvp games for primary token', function (done) {
     return systemUnderTest.games('cool-name')
       .then(function (games) {
-        expect(games).toEqual({
+        expect(games).to.eql({
           pvp: 'games',
         });
 
-        expect(mockGw2Api.readPvpGames).toHaveBeenCalledWith('cool_token');
+        expect(mockGw2Api.readPvpGames).to.have.been.calledWith('cool_token');
 
         done();
       });

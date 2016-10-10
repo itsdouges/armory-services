@@ -1,8 +1,5 @@
-'use strict';
-
 var uniqueAlias = require('./index');
 var Models = require('../../../models');
-var testDb = require('../../../../spec/helpers/db');
 
 describe('unique email rule', function () {
     var models;
@@ -44,8 +41,8 @@ describe('unique email rule', function () {
                 models: models
             })
             .then(function (e) {
-                expect(e.property).toBe('alias');
-                expect(e.message).toBe('is taken');
+                expect(e.property).to.equal('alias');
+                expect(e.message).to.equal('is taken');
                 done();
             });
         });

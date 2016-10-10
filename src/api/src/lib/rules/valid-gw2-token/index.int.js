@@ -1,8 +1,5 @@
-'use strict';
-
 var token = require('./index');
 var Models = require('../../../models');
-var testDb = require('../../../../spec/helpers/db');
 var axios = require('axios');
 
 describe('gw2 token validator', function () {
@@ -25,7 +22,7 @@ describe('gw2 token validator', function () {
             },
             models: models
         }).then(function (e) {
-            expect(e).not.toBeDefined();
+            expect(e).not.to.exist;
             done();
         }, function (e) {
             console.log(e);
@@ -42,7 +39,7 @@ describe('gw2 token validator', function () {
             },
             models: models
         }).then(function (e) {
-            expect(e).toEqual({
+            expect(e).to.eql({
                 property: 'token',
                 message: 'invalid token'
             });

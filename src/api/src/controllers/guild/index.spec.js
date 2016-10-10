@@ -2,7 +2,6 @@ var q = require('q');
 
 var controller = require('./index');
 var Models = require('../../models');
-var testDb = require('../../../spec/helpers/db');
 
 describe('guild controller', function () {
     var sut;
@@ -90,27 +89,27 @@ describe('guild controller', function () {
                 return sut.read('name')
             })
             .then(function (guild) {
-                expect(guild).toEqual({ 
-                    name: 'name', 
-                    id: 'im-guild', 
-                    tag: 'tag', 
-                    characters: [{ 
-                            accountName: 'cool.4321', 
-                            world: 'world', 
-                            name: 'character', 
-                            gender: 'gender', 
-                            profession: 'profession', 
-                            level: 69, 
+                expect(guild).to.eql({
+                    name: 'name',
+                    id: 'im-guild',
+                    tag: 'tag',
+                    characters: [{
+                            accountName: 'cool.4321',
+                            world: 'world',
+                            name: 'character',
+                            gender: 'gender',
+                            profession: 'profession',
+                            level: 69,
                             race: 'race',
-                            userAlias: 'huedwell' 
+                            userAlias: 'huedwell'
                         },
-                        { 
-                            accountName: 'cool.4321', 
-                            world: 'world', 
-                            name: 'character!', 
-                            gender: 'gender', 
-                            profession: 'profession', 
-                            level: 69, 
+                        {
+                            accountName: 'cool.4321',
+                            world: 'world',
+                            name: 'character!',
+                            gender: 'gender',
+                            profession: 'profession',
+                            level: 69,
                             race: 'race',
                             userAlias: 'huedwell'
                         }

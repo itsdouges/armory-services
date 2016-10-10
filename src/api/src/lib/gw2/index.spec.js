@@ -27,13 +27,13 @@ describe('gw2 api', function () {
             data: data
         });
 
-        spyOn(mockAxios, 'get').and.returnValue(promise);
+        sinon.stub(mockAxios, 'get').returns(promise);
 
         sut.readCharacter('Blastrn', {
                 token: 'ahh'
             })
             .then(function (character) {
-                expect(mockAxios.get).toHaveBeenCalledWith('www.site.com/v2/characters/Blastrn', {
+                expect(mockAxios.get).to.have.been.calledWith('www.site.com/v2/characters/Blastrn', {
                     headers: {
                         'Authorization' : 'Bearer ahh'
                     }
@@ -54,7 +54,7 @@ describe('gw2 api', function () {
             data: data
         });
 
-        spyOn(mockAxios, 'get').and.returnValue(promise);
+        sinon.stub(mockAxios, 'get').returns(promise);
 
         sut.readCharacter('Blastrn', {
                 token: 'ahh',
@@ -63,9 +63,9 @@ describe('gw2 api', function () {
                 showEquipment: true
             })
             .then(function (character) {
-                expect(character.crafting).toBe(data.crafting);
-                expect(character.bags).toBe(data.bags);
-                expect(character.equipment).toBe(data.equipment);
+                expect(character.crafting).to.equal(data.crafting);
+                expect(character.bags).to.equal(data.bags);
+                expect(character.equipment).to.equal(data.equipment);
 
                 done();
             });
@@ -82,7 +82,7 @@ describe('gw2 api', function () {
             data: data
         });
 
-        spyOn(mockAxios, 'get').and.returnValue(promise);
+        sinon.stub(mockAxios, 'get').returns(promise);
 
         sut.readCharacter('Blastrn', {
                 token: 'ahh',
@@ -91,9 +91,9 @@ describe('gw2 api', function () {
                 showEquipment: false
             })
             .then(function (character) {
-                expect(character.crafting).not.toBeDefined();
-                expect(character.bags).not.toBeDefined();
-                expect(character.equipment).not.toBeDefined();
+                expect(character.crafting).not.to.exist;
+                expect(character.bags).not.to.exist;
+                expect(character.equipment).not.to.exist;
 
                 done();
             });

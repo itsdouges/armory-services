@@ -1,6 +1,5 @@
 const proxyquire = require('proxyquire');
 const Models = require('../../models');
-const testDb = require('../../../spec/helpers/db');
 
 const publicUrl = 'http://gw2-local.com';
 
@@ -74,7 +73,7 @@ describe('sitemap', () => {
   it('should render user data', (done) => {
     sitemap.generate()
       .then((actual) => {
-        expect(actual).toBe(
+        expect(actual).to.equal(
 `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>

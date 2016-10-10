@@ -1,10 +1,8 @@
-'use strict';
 var q = require('q');
 
 var password = require('password-hash-and-salt');
 var Controller = require('./index');
 var Models = require('../../models');
-var testDb = require('../../../spec/helpers/db');
 
 describe('auth controller', function () {
     var sut;
@@ -51,8 +49,7 @@ describe('auth controller', function () {
                     username: 'cool@email',
                     password: 'coolpassword'
                 }, null, function (err, res) {
-                    expect(res).toBeDefined();
-                    expect(res).toBeTruthy();
+                    expect(res).to.be.truthy;
 
                     models
                         .UserToken
@@ -62,8 +59,8 @@ describe('auth controller', function () {
                             }
                         })
                         .then(function (item) {
-                            expect(item.token).toBe(res);
-                            expect(item.email).toBe('cool@email');
+                            expect(item.token).to.equal(res);
+                            expect(item.email).to.equal('cool@email');
 
                             done();
                         });
@@ -78,7 +75,7 @@ describe('auth controller', function () {
                     username: 'cool@email',
                     password: 'badpass'
                 }, null, function (err, res) {
-                    expect(res).toBe(false);
+                    expect(res).to.equal(false);
 
                     done();
                 });
@@ -90,7 +87,7 @@ describe('auth controller', function () {
                 username: 'cool@email',
                 password: 'coolpassword'
             }, null, function (err, res) {
-                expect(res).toBe(false);
+                expect(res).to.equal(false);
 
                 done();
             });
@@ -106,8 +103,8 @@ describe('auth controller', function () {
                     password: 'coolpassword'
                 }, null, function (err, token) {
                     sut.authenticateToken(token, req, function (err, validated) {
-                        expect(validated).toBe(true);
-                        expect(req.username).toBe('cool@email');
+                        expect(validated).to.equal(true);
+                        expect(req.username).to.equal('cool@email');
 
                         done();
                     });
@@ -118,8 +115,8 @@ describe('auth controller', function () {
     describe('client validation', function () {
         it('should cb true', function (done) {
             sut.validateClient(null, null, function (err, res) {
-                expect(res).toBe(true);
-                
+                expect(res).to.equal(true);
+
                 done();
             });
         });

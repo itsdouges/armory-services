@@ -1,11 +1,10 @@
 var getUserInfo = require('./get-user-info');
-var setupTestDb = require('../../spec/helpers/setup-test-db');
 
 describe('get user info', function () {
   var models;
 
   function setup (withTokens) {
-    return setupTestDb(true, {
+    return seedData(true, {
       email: 'email@email.com',
       alias: 'cool-name',
       addTokens: !!withTokens,
@@ -20,7 +19,7 @@ describe('get user info', function () {
       return getUserInfo.getUserIdByEmail(models, 'email@email.com');
     })
     .then(function (id) {
-      expect(id).toBeDefined();
+      expect(id).to.exist;
       done();
     });
   });
@@ -30,7 +29,7 @@ describe('get user info', function () {
       return getUserInfo.getUserIdByEmail(models, 'dont_exist');
     })
     .then(null, function (error) {
-      expect(error).toBe('User not found');
+      expect(error).to.equal('User not found');
       done();
     });
   });
@@ -40,7 +39,7 @@ describe('get user info', function () {
       return getUserInfo.getUserIdByAlias(models, 'cool-name');
     })
     .then(function (id) {
-      expect(id).toBeDefined();
+      expect(id).to.exist;
       done();
     });
   });
@@ -50,7 +49,7 @@ describe('get user info', function () {
       return getUserInfo.getUserPrimaryToken(models, 'cool-name');
     })
     .then(function (token) {
-      expect(token).toBe('cool_token');
+      expect(token).to.equal('cool_token');
       done();
     });
   });
@@ -63,7 +62,7 @@ describe('get user info', function () {
       return getUserInfo.getUserPrimaryToken(models, 'cool-name');
     })
     .then(null, function (token) {
-      expect(token).toBe('Token not found');
+      expect(token).to.equal('Token not found');
       done();
     });
   });

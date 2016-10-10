@@ -1,5 +1,4 @@
 const controllerFactory = require('./');
-const setupTestDb = require('../../../spec/helpers/setup-test-db');
 
 const setupTestData = (models) => {
   return models
@@ -77,7 +76,7 @@ describe('statistics', () => {
   let controller;
 
   beforeEach((done) => {
-    return setupTestDb(true, {
+    return seedData(true, {
       email: 'email@email.com',
       alias: 'cool-name',
       addTokens: true,
@@ -95,7 +94,7 @@ describe('statistics', () => {
     controller
       .users()
       .then((stats) => {
-        expect(stats).toEqual({
+        expect(stats).to.eql({
           count: 2,
         });
       })
@@ -106,7 +105,7 @@ describe('statistics', () => {
     controller
       .guilds()
       .then((stats) => {
-        expect(stats).toEqual({
+        expect(stats).to.eql({
           count: 1,
         });
       })
@@ -117,7 +116,7 @@ describe('statistics', () => {
     controller
       .characters()
       .then((stats) => {
-        expect(stats).toEqual({
+        expect(stats).to.eql({
           count: 2,
           gender: {
             male: 1,

@@ -1,6 +1,5 @@
 const controllerFactory = require('./index');
 const Models = require('../../models');
-const testDb = require('../../../spec/helpers/db');
 
 describe('character controller', () => {
   let controller;
@@ -81,7 +80,7 @@ describe('character controller', () => {
   // dont really want to mock out the db though. no point when we can
   // test in memory. ill think about it.
   it('should call gw2api if it is in our db', (done) => {
-    spyOn(mockGw2Api, 'readCharacter').and.returnValue(Promise.resolve({}));
+    sinon.stub(mockGw2Api, 'readCharacter').returns(Promise.resolve({}));
 
     models
       .User
@@ -140,7 +139,7 @@ describe('character controller', () => {
         return controller.read('blastrn', true, 'cool@email');
       })
       .then((data) => {
-        expect(data).toEqual({
+        expect(data).to.eql({
           authorization: {
             showPublic: true,
             showGuild: true,
@@ -151,7 +150,7 @@ describe('character controller', () => {
           alias: 'madou',
         });
 
-        expect(mockGw2Api.readCharacter).toHaveBeenCalledWith('blastrn', {
+        expect(mockGw2Api.readCharacter).to.have.been.calledWith('blastrn', {
           token: 'swag',
           showBags: true,
           showCrafting: true,
@@ -164,7 +163,7 @@ describe('character controller', () => {
   });
 
   it('should call api with show all', (done) => {
-    spyOn(mockGw2Api, 'readCharacter').and.returnValue(Promise.resolve({}));
+    sinon.stub(mockGw2Api, 'readCharacter').returns(Promise.resolve({}));
 
     models
       .User
@@ -213,7 +212,7 @@ describe('character controller', () => {
         return controller.read('blastrn', false);
       })
       .then((data) => {
-        expect(data).toEqual({
+        expect(data).to.eql({
           authorization: {
             showPublic: true,
             showGuild: true,
@@ -222,7 +221,7 @@ describe('character controller', () => {
           alias: 'madou',
         });
 
-        expect(mockGw2Api.readCharacter).toHaveBeenCalledWith('blastrn', {
+        expect(mockGw2Api.readCharacter).to.have.been.calledWith('blastrn', {
           token: 'swag',
           showBags: true,
           showCrafting: true,
@@ -313,21 +312,21 @@ describe('character controller', () => {
             const c1 = list[0];
             const c2 = list[1];
 
-            expect(c1.accountName).toBe('nameyname');
-            expect(c1.world).toBe(1111);
-            expect(c1.name).toBe('blastrn');
-            expect(c1.gender).toBe('ay');
-            expect(c1.profession).toBe('hehe');
-            expect(c1.level).toBe(123);
-            expect(c1.race).toBe('ay');
+            expect(c1.accountName).to.equal('nameyname');
+            expect(c1.world).to.equal(1111);
+            expect(c1.name).to.equal('blastrn');
+            expect(c1.gender).to.equal('ay');
+            expect(c1.profession).to.equal('hehe');
+            expect(c1.level).to.equal(123);
+            expect(c1.race).to.equal('ay');
 
-            expect(c2.accountName).toBe('nameyname');
-            expect(c2.world).toBe(1111);
-            expect(c2.name).toBe('ayyyyy');
-            expect(c2.gender).toBe('aay');
-            expect(c2.profession).toBe('heehe');
-            expect(c2.level).toBe(1);
-            expect(c2.race).toBe('ayay');
+            expect(c2.accountName).to.equal('nameyname');
+            expect(c2.world).to.equal(1111);
+            expect(c2.name).to.equal('ayyyyy');
+            expect(c2.gender).to.equal('aay');
+            expect(c2.profession).to.equal('heehe');
+            expect(c2.level).to.equal(1);
+            expect(c2.race).to.equal('ayay');
 
             done();
           });
@@ -340,7 +339,7 @@ describe('character controller', () => {
 
       setupTestData()
         .then(controller.random)
-        .then((name) => expect(expectedNames).toContain(name))
+        .then((name) => expect(expectedNames).to.contain(name))
         .then(done);
     });
   });
@@ -352,7 +351,7 @@ describe('character controller', () => {
 
       setupTestData({ email, characterName })
         .then(() => controller.update('bad-email', { name: characterName }))
-        .then(null, (e) => expect(e).toEqual('Not your character'))
+        .then(null, (e) => expect(e).to.eql('Not your character'))
         .then(done);
     });
 
