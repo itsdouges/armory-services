@@ -3,6 +3,7 @@ const restify = require('restify');
 
 const pingFactory = require('./ping');
 const Models = require('./models');
+const fetchCharacters = require('./fetchers/characters');
 
 const config = require(`${__dirname}/../env`);
 
@@ -26,7 +27,7 @@ server.get('/', (req, res, next) => {
 server.post('/fetch-characters', (req, res, next) => {
   console.log(`\n=== Single fetch triggered for ${req.params.token} ===\n`);
 
-  fetchUserCharacterData(req.params.token)
+  fetchCharacters(models, req.params.token)
     .then(() => {
       res.send(200);
       return next();
