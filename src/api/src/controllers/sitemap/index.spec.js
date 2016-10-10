@@ -87,6 +87,9 @@ describe('sitemap', () => {
     <loc>http://gw2-local.com/login</loc>
   </url>
   <url>
+    <loc>http://gw2-local.com/stats</loc>
+  </url>
+  <url>
     <loc>http://gw2-local.com/madou</loc>
   </url>
   <url>
