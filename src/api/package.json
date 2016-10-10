@@ -30,6 +30,7 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
     "gulp": "^3.9.0",
     "gulp-jasmine": "^2.0.1",
     "gulp-jshint": "^1.11.2",
@@ -38,6 +39,8 @@
     "nodemon": "^1.4.1",
     "proxyquire": "^1.7.10",
     "run-sequence": "^1.1.2",
+    "sinon": "^1.17.6",
+    "sinon-chai": "^2.8.0",
     "sqlite3": "^3.0.10"
   }
 }

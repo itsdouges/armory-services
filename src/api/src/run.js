@@ -4,16 +4,16 @@ const serverFactory = require('./server');
 
 const config = require(`${__dirname}/../config`);
 
-console.log(`=== Connceting to mysql host: ${config.db.host} ===`);
+console.log(`\n=== Connecting to mysql host: ${config.db.host} ===\n`);
 
 const db = new Sequelize(config.db.database, config.db.username, config.db.password, config.db);
 const models = new Models(db);
 const server = serverFactory(models, config);
 
-console.log('=== Syncing sequelize models.. ===');
+console.log('\n=== Syncing sequelize models... ===\n');
 
 models.sequelize.sync()
   .then(() => {
-    console.log(`Starting server on port ${config.server.port}...`);
+    console.log(`\n=== Starting server on port ${config.server.port}... ===\n`);
     server.listen(config.server.port);
   });

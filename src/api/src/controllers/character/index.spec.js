@@ -234,11 +234,11 @@ describe('character controller', () => {
       });
   });
 
-  const setupTestData = () => {
+  const setupTestData = ({ email, characterName } = {}) => {
     return models
         .User
         .create({
-          email: 'cool@email',
+          email: email || 'cool@email',
           passwordHash: 'coolpassword',
           alias: 'madou',
         })
@@ -247,7 +247,7 @@ describe('character controller', () => {
             .User
             .findOne({
               where: {
-                email: 'cool@email',
+                email: email || 'cool@email',
               },
             });
         })
@@ -268,7 +268,7 @@ describe('character controller', () => {
             .Gw2Character
             .create({
               Gw2ApiTokenToken: 'swag',
-              name: 'blastrn',
+              name: characterName || 'blastrn',
               gender: 'ay',
               profession: 'hehe',
               level: 123,
@@ -341,6 +341,46 @@ describe('character controller', () => {
       setupTestData()
         .then(controller.random)
         .then((name) => expect(expectedNames).toContain(name))
+        .then(done);
+    });
+  });
+
+  describe('updating character', () => {
+    it('should reject if character doesnt belong to email', (done) => {
+      const email = 'email@email.com';
+      const characterName = 'Blastrn';
+
+      setupTestData({ email, characterName })
+        .then(() => controller.update('bad-email', { name: characterName }))
+        .then(null, (e) => expect(e).toEqual('Not your character'))
+        .then(done);
+    });
+
+    it('should resolve and update if character belongs to email', (done) => {
+      const email = 'email@email.com';
+      const characterName = 'Blastrn';
+
+      setupTestData({ email, characterName })
+        .then(() => controller.update(email, {
+          name: characterName,
+          showPublic: false,
+          showBuilds: false,
+          showPvp: false,
+          showBags: false,
+          showGuild: false,
+        }))
+        .then(() => {
+          return models.Gw2Character.findOne({ where: { name: characterName } });
+        })
+        .then((character) => {
+          expect(character.dataValues).to.include({
+            showPublic: false,
+            showBuilds: false,
+            showPvp: false,
+            showBags: false,
+            showGuild: false,
+          });
+        })
         .then(done);
     });
   });

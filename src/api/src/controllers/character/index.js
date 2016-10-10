@@ -130,10 +130,11 @@ function characterControllerFactory (models, gw2Api) {
       });
   }
 
-  const findAllCharacters = memoize(() => console.log('Reading chars') ||
+  const findAllCharacters = memoize(() => console.log('\n=== Reading chars ===\n') ||
   models.Gw2Character.findAll(), {
     maxAge: config.cache.findAllCharacters,
     promise: true,
+    preFetch: true,
   });
 
   function random () {
@@ -148,10 +149,54 @@ function characterControllerFactory (models, gw2Api) {
       });
   }
 
+  function update (email, {
+    name,
+    showPublic,
+    showBuilds,
+    showPvp,
+    showBags,
+    showGuild,
+  }) {
+    return models
+      .Gw2Character
+      .findOne({
+        include: [{
+          model: models.Gw2ApiToken,
+          include: [{
+            model: models.User,
+            where: {
+              email,
+            },
+          }],
+        }],
+        where: {
+          name,
+        },
+      })
+    .then((character) => {
+      if (!character) {
+        return Promise.reject('Not your character');
+      }
+
+      return models.Gw2Character.update({
+        showPublic,
+        showBuilds,
+        showPvp,
+        showBags,
+        showGuild,
+      }, {
+        where: {
+          id: character.dataValues.id,
+        },
+      });
+    });
+  }
+
   return {
     read,
     list,
     random,
+    update,
   };
 }
 

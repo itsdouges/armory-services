@@ -14,7 +14,6 @@ const CheckController = require('./controllers/check');
 const Gw2TokenController = require('./controllers/gw2-token');
 const PvpController = require('./controllers/pvp');
 
-
 function serverFactory (models, config) {
   GottaValidate.addDefaultRules();
   GottaValidate
