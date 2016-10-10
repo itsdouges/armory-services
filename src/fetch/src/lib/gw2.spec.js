@@ -13,7 +13,7 @@ const { guild, characters } = proxyquire('./gw2', {
   axios: {
     get: httpGet,
   },
-  '../../env': config,
+  '../../config': config,
 });
 
 describe('fetch gw2 service', () => {

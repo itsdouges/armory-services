@@ -7,7 +7,7 @@ const config = {
 };
 
 const createPingFactory = (fetchTokenStub) => proxyquire('./ping', {
-  '../env': config,
+  '../config': config,
   './lib/tokens': fetchTokenStub,
 });
 

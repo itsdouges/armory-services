@@ -5,7 +5,7 @@ const pingFactory = require('./ping');
 const Models = require('./models');
 const fetchCharacters = require('./fetchers/characters');
 
-const config = require(`${__dirname}/../env`);
+const config = require(`${__dirname}/../config`);
 
 console.log(`\n=== Connecting to mysql host: ${config.db.host} ===\n`);
 

@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const Models = require('./models');
 const serverFactory = require('./server');
 
-const config = require(`${__dirname}/../env`);
+const config = require(`${__dirname}/../config`);
 
 console.log(`=== Connceting to mysql host: ${config.db.host} ===`);
 

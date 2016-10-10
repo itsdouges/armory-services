@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 const ses = require('nodemailer-ses-transport');
-const config = require('../../../env');
+const config = require('../../../config');
 
 let transporter;
 

@@ -33,7 +33,7 @@ describe('gw2 token controller', function () {
 
         mockery.enable();
         mockery.registerMock('axios', mockAxios);
-        mockery.registerMock('../../../env', mockConfig);
+        mockery.registerMock('../../../config', mockConfig);
         mockGw2Api = {
             readTokenInfoWithAccount: function () {}
         };

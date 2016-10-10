@@ -22,7 +22,7 @@ log() {
 }
 
 task_serve() {
-  task_copy_env
+  task_copy_config
   task_copy_db_models
 
   log "Starting api containers.."
@@ -233,14 +233,14 @@ task_exited() {
   docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs docker rm
 }
 
-task_copy_env() {
-  log "Copying env to gw2-fetch and server.."
+task_copy_config() {
+  log "Copying config to gw2-fetch and server.."
 
-  rm -r src/fetch/env/
-  cp -r src/common/env/ src/fetch/env/
+  rm -r src/fetch/config/
+  cp -r src/common/config/ src/fetch/config/
 
-  rm -r src/api/env/
-  cp -r src/common/env/ src/api/env/
+  rm -r src/api/config/
+  cp -r src/common/config/ src/api/config/
 }
 
 task_copy_db_models() {
@@ -287,7 +287,7 @@ case "$1" in
   fetch)
     task_run_fetch;;
   copy)
-    task_copy_env
+    task_copy_config
     task_copy_db_models;;
   *)
     log "Available tasks: {acceptance|copy|fetch|run|serve|remove|push|clean|create|build|servedev}"

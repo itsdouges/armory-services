@@ -1,5 +1,5 @@
 const memoize = require('memoizee');
-const config = require('../../../env');
+const config = require('../../../config');
 
 function characterControllerFactory (models, gw2Api) {
   function read (name, ignorePrivacy, email) {

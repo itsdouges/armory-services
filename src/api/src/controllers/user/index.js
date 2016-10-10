@@ -4,7 +4,7 @@ const moment = require('moment');
 const emailClient = require('../../lib/email');
 const CharacterController = require('../character');
 const getUserIdByEmail = require('../../lib/get-user-info').getUserIdByEmail;
-const config = require('../../../env');
+const config = require('../../../config');
 const parseAccountName = require('../../lib/user').parseAccountName;
 
 function userControllerFactory (models, createValidator, gw2Api) {

@@ -1,4 +1,4 @@
-const config = require('../../../env');
+const config = require('../../../config');
 
 const buildUrlTemplate = (relativeUrl) =>
 `  <url>

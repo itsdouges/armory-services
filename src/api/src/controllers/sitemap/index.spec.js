@@ -5,7 +5,7 @@ const testDb = require('../../../spec/helpers/db');
 const publicUrl = 'http://gw2-local.com';
 
 const createSitemapController = proxyquire('./', {
-  '../../../env': {
+  '../../../config': {
     web: {
       publicUrl,
     },

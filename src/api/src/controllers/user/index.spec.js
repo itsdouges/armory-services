@@ -85,7 +85,7 @@ describe('user resource', () => {
       '../../lib/email': {
         send: mocks.sendEmail,
       },
-      '../../../env': config,
+      '../../../config': config,
     });
 
     return userResourceFactory(models, mockValidator);

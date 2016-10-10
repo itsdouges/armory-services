@@ -2,7 +2,7 @@ const q = require('q');
 const throat = require('throat');
 
 const fetchTokens = require('./lib/tokens');
-const config = require('../env');
+const config = require('../config');
 
 function pingControllerFactory (models, fetchers) {
   return function ping () {

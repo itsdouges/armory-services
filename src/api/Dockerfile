@@ -13,7 +13,7 @@ RUN npm install --silent
 COPY .sequelizerc /opt/.sequelizerc
 COPY gulpfile.js /opt/gulpfile.js
 COPY /scripts /opt/scripts
-COPY /env /opt/env
+COPY /config /opt/config
 COPY /spec /opt/spec
 COPY /src /opt/src
 
