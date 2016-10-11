@@ -1,7 +1,7 @@
 const controllerFactory = require('./index');
 const Models = require('../../models');
 
-describe('character controller', () => {
+describe.only('character controller', () => {
   let controller;
   let mockGw2Api;
   let models;
@@ -266,7 +266,7 @@ describe('character controller', () => {
             .create({
               Gw2ApiTokenToken: 'swag',
               name: characterName || 'blastrn',
-              gender: 'ay',
+              gender: 'Female',
               profession: 'hehe',
               level: 123,
               created: new Date(),
@@ -291,7 +291,7 @@ describe('character controller', () => {
             .create({
               Gw2ApiTokenToken: 'swag',
               name: 'ayyyyy',
-              gender: 'aay',
+              gender: 'Female',
               profession: 'heehe',
               level: 1,
               created: new Date(),
@@ -299,36 +299,113 @@ describe('character controller', () => {
               race: 'ayay',
               deaths: 1,
             });
+        })
+        .then(() => {
+          return models
+            .Gw2Character
+            .create({
+              Gw2ApiTokenToken: 'swag',
+              name: 'CoolCharacter',
+              gender: 'Male',
+              profession: 'Necromancer',
+              level: 1,
+              created: new Date(),
+              age: 1,
+              showPublic: false,
+              race: 'ayay',
+              deaths: 1,
+            });
         });
   };
 
-  it('should return all characters by alias', (done) => {
-    setupTestData()
-      .then(() => {
-        controller.list('cool@email')
-          .then((list) => {
-            const c1 = list[0];
-            const c2 = list[1];
-
-            expect(c1.accountName).to.equal('nameyname');
-            expect(c1.world).to.equal(1111);
-            expect(c1.name).to.equal('blastrn');
-            expect(c1.gender).to.equal('ay');
-            expect(c1.profession).to.equal('hehe');
-            expect(c1.level).to.equal(123);
-            expect(c1.race).to.equal('ay');
-
-            expect(c2.accountName).to.equal('nameyname');
-            expect(c2.world).to.equal(1111);
-            expect(c2.name).to.equal('ayyyyy');
-            expect(c2.gender).to.equal('aay');
-            expect(c2.profession).to.equal('heehe');
-            expect(c2.level).to.equal(1);
-            expect(c2.race).to.equal('ayay');
-
-            done();
+  describe('character lists', () => {
+    context('when ignoring privacy', () => {
+      it('should return all characters by email', () => {
+        return setupTestData()
+          .then(() => {
+            controller.list({ email: 'cool@email', ignorePrivacy: true })
+              .then((list) => {
+                expect(list.length).to.equal(3);
+              });
           });
       });
+
+      it('should return all characters by alias', () => {
+        return setupTestData()
+          .then(() => {
+            controller.list({ alias: 'madou', ignorePrivacy: true })
+              .then((list) => {
+                expect(list.length).to.equal(3);
+              });
+          });
+      });
+    });
+
+    context('when privacy is on', () => {
+      it('should return all characters by email', () => {
+        return setupTestData()
+          .then(() => {
+            controller.list({ email: 'cool@email' })
+              .then((list) => {
+                expect(list.length).to.equal(2);
+
+                const [charOne, charTwo] = list;
+
+                expect(charOne).to.eql({
+                  accountName: 'nameyname',
+                  world: 1111,
+                  name: 'blastrn',
+                  gender: 'Female',
+                  profession: 'hehe',
+                  level: 123,
+                  race: 'ay',
+                });
+
+                expect(charTwo).to.eql({
+                  accountName: 'nameyname',
+                  world: 1111,
+                  name: 'ayyyyy',
+                  gender: 'Female',
+                  profession: 'heehe',
+                  level: 1,
+                  race: 'ayay',
+                });
+              });
+          });
+      });
+
+      it('should return all characters by alias', () => {
+        return setupTestData()
+          .then(() => {
+            controller.list({ alias: 'madou' })
+              .then((list) => {
+                expect(list.length).to.equal(2);
+
+                const [charOne, charTwo] = list;
+
+                expect(charOne).to.eql({
+                  accountName: 'nameyname',
+                  world: 1111,
+                  name: 'blastrn',
+                  gender: 'Female',
+                  profession: 'hehe',
+                  level: 123,
+                  race: 'ay',
+                });
+
+                expect(charTwo).to.eql({
+                  accountName: 'nameyname',
+                  world: 1111,
+                  name: 'ayyyyy',
+                  gender: 'Female',
+                  profession: 'heehe',
+                  level: 1,
+                  race: 'ayay',
+                });
+              });
+          });
+      });
+    });
   });
 
   describe('reading random character name', () => {

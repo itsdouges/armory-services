@@ -93,25 +93,27 @@ function characterControllerFactory (models, gw2Api) {
       });
   }
 
-  function list (email, alias) {
-    const where = {};
+  function list ({ email, alias, ignorePrivacy }) {
+    const userWhere = Object.assign(
+      {},
+      email && { email },
+      alias && { alias }
+    );
 
-    if (email) {
-      where.email = email;
-    }
-
-    if (alias) {
-      where.alias = alias;
-    }
+    const characterWhere = Object.assign(
+      {},
+      ignorePrivacy || { showPublic: true }
+    );
 
     return models
       .Gw2Character
       .findAll({
+        where: characterWhere,
         include: [{
           model: models.Gw2ApiToken,
           include: [{
             model: models.User,
-            where,
+            where: userWhere,
           }],
         }],
       })
@@ -131,7 +133,11 @@ function characterControllerFactory (models, gw2Api) {
   }
 
   const findAllCharacters = memoize(() => console.log('\n=== Reading chars ===\n') ||
-  models.Gw2Character.findAll(), {
+  models.Gw2Character.findAll({
+    where: {
+      showPublic: true,
+    },
+  }), {
     maxAge: config.cache.findAllCharacters,
     promise: true,
     preFetch: true,
@@ -160,6 +166,9 @@ function characterControllerFactory (models, gw2Api) {
     return models
       .Gw2Character
       .findOne({
+        where: {
+          name,
+        },
         include: [{
           model: models.Gw2ApiToken,
           include: [{
@@ -169,9 +178,6 @@ function characterControllerFactory (models, gw2Api) {
             },
           }],
         }],
-        where: {
-          name,
-        },
       })
     .then((character) => {
       if (!character) {
