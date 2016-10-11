@@ -6,24 +6,22 @@ describe('character controller', () => {
   let mockGw2Api;
   let models;
 
-  beforeEach((done) => {
+  beforeEach(() => {
     models = new Models(testDb());
-    models.sequelize.sync({
+    return models.sequelize.sync({
       force: true,
     })
-    .then(done);
+    .then(() => {
+      mockGw2Api = {
+        readCharacter () {},
+      };
 
-    mockGw2Api = {
-      readCharacter () {},
-    };
-
-    controller = controllerFactory(models, mockGw2Api);
+      controller = controllerFactory(models, mockGw2Api);
+    });
   });
 
   it('should reject if character name is not in our db', (done) => {
-    controller
-      .read('noname')
-      .then(null, done);
+    controller.read('noname').then(null, done);
   });
 
   it('should reject if email doesnt match', (done) => {
@@ -334,25 +332,23 @@ describe('character controller', () => {
   });
 
   describe('reading random character name', () => {
-    it('should return a character name', (done) => {
+    it('should return a character name', () => {
       const expectedNames = ['blastrn', 'ayyyyy'];
 
-      setupTestData()
+      return setupTestData()
         .then(controller.random)
-        .then((name) => expect(expectedNames).to.contain(name))
-        .then(done);
+        .then((name) => expect(expectedNames).to.contain(name));
     });
   });
 
   describe('updating character', () => {
-    it('should reject if character doesnt belong to email', (done) => {
+    it('should reject if character doesnt belong to email', () => {
       const email = 'email@email.com';
       const characterName = 'Blastrn';
 
-      setupTestData({ email, characterName })
+      return setupTestData({ email, characterName })
         .then(() => controller.update('bad-email', { name: characterName }))
-        .then(null, (e) => expect(e).to.eql('Not your character'))
-        .then(done);
+        .then(null, (e) => expect(e).to.eql('Not your character'));
     });
 
     it('should resolve and update if character belongs to email', (done) => {

@@ -31,6 +31,7 @@ function validGw2Token (name, val, dependencies) {
       },
     })
     .then((response) => {
+      console.log(response);
       const accountId = response.data.id;
       const accountName = response.data.name;
 

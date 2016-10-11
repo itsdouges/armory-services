@@ -5,14 +5,7 @@ describe('user resource', () => {
   let systemUnderTest;
   let models;
   let mockValidator;
-
-  const mocks = {
-    validate () {},
-    sendEmail () {},
-    gw2Api: {
-      readAccount () {},
-    },
-  };
+  let mocks;
 
   const stubConfig = {
     PASSWORD_RESET_TIME_LIMIT: 5,
@@ -90,30 +83,33 @@ describe('user resource', () => {
     return userResourceFactory(models, mockValidator);
   }
 
-  beforeEach((done) => {
+  beforeEach(() => {
+    mocks = {
+      validate () {},
+      sendEmail () {},
+      gw2Api: {
+        readAccount () {},
+      },
+    };
+
     mockValidator = function () {
       return {
         validate: mocks.validate,
       };
     };
 
-    mockValidator.addResource = function () { };
-    mockValidator.addRule = function () { };
+    mockValidator.addResource = sinon.stub().returns(mockValidator);
+    mockValidator.addRule = sinon.stub().returns(mockValidator);
 
     models = new Models(testDb());
-    models.sequelize.sync({
+    return models.sequelize.sync({
       force: true,
     })
     .then(() => {
       sinon.stub(mocks, 'sendEmail').returns(Promise.resolve('sent!'));
 
       systemUnderTest = createUserResource();
-
-      done();
     });
-
-    sinon.stub(mockValidator, 'addResource').returns(mockValidator);
-    sinon.stub(mockValidator, 'addRule').returns(mockValidator);
   });
 
   describe('initialisation', () => {
@@ -143,7 +139,7 @@ describe('user resource', () => {
   });
 
   describe('read', () => {
-    it('should return user data', (done) => {
+    it('should return user data', () => {
       const user = {
         email: 'cool@email.com',
         password: 'password',
@@ -152,20 +148,18 @@ describe('user resource', () => {
 
       sinon.stub(mocks, 'validate').returns(Promise.resolve());
 
-      systemUnderTest
+      return systemUnderTest
         .create(user)
         .then((data) => {
           expect(data.email).to.equal(user.email);
           expect(data.id).to.exist;
           expect(data.passwordHash).to.exist;
           expect(data.alias).to.equal(user.alias);
-
-          done();
         });
     });
 
-    it('should return public user data', (done) => {
-      initialiseUserData()
+    it('should return public user data', () => {
+      return initialiseUserData()
         .then(() => systemUnderTest.readPublic('madou'))
         .then((data) => {
           expect(data.alias).to.equal('madou');
@@ -180,14 +174,12 @@ describe('user resource', () => {
             level: 69,
             race: 'yolon',
           }]);
-
-          done();
-        }, (e) => console.error(e));
+        });
     });
   });
 
   describe('updating', () => {
-    it('should reject promise if passwords don\'t matach', (done) => {
+    it('should reject promise if passwords don\'t matach', () => {
       const user = {
         email: 'cool@email.com',
         password: 'password',
@@ -196,7 +188,7 @@ describe('user resource', () => {
 
       sinon.stub(mocks, 'validate').returns(Promise.resolve());
 
-      systemUnderTest
+      return systemUnderTest
         .create(user)
         .then(() => {
           user.currentPassword = 'WRONGPASS';
@@ -204,12 +196,10 @@ describe('user resource', () => {
         })
         .then(null, (e) => {
           expect(e).to.equal('Bad password');
-
-          done();
         });
     });
 
-    it('should resolve promise if passwords matach and commit to db', (done) => {
+    it('should resolve promise if passwords matach and commit to db', () => {
       const user = {
         email: 'cool@email.com',
         password: 'password',
@@ -218,7 +208,7 @@ describe('user resource', () => {
 
       sinon.stub(mocks, 'validate').returns(Promise.resolve());
 
-      systemUnderTest
+      return systemUnderTest
         .create(user)
         .then(() => {
           user.currentPassword = user.password;
@@ -231,41 +221,36 @@ describe('user resource', () => {
         .then((e) => {
           expect(e.passwordHash).not.to.equal(user.oldHash);
           expect(e.passwordHash).to.exist;
-
-          done();
         });
     });
 
-    it('should reject if validation fails', (done) => {
+    it('should reject if validation fails', () => {
       const error = 'errorrrr';
       sinon.stub(mocks, 'validate').returns(Promise.reject(error));
 
-      systemUnderTest
+      return systemUnderTest
         .updatePassword({})
         .then(null, (e) => {
           expect(e).to.equal(error);
-          done();
         });
     });
   });
 
   describe('creation', () => {
-    it('should call validator and reject promise if validator returns errors', (done) => {
+    it('should call validator and reject promise if validator returns errors', () => {
       const user = {};
       const errors = ['im a error'];
 
       sinon.stub(mocks, 'validate').returns(Promise.reject(errors));
 
-      systemUnderTest
+      return systemUnderTest
           .create(user)
           .then(null, (e) => {
             expect(e).to.equal(errors);
-
-            done();
           });
     });
 
-    it('should add user to database with expected values', (done) => {
+    it('should add user to database with expected values', () => {
       const user = {
         email: 'cool@email.com',
         password: 'password',
@@ -274,7 +259,7 @@ describe('user resource', () => {
 
       sinon.stub(mocks, 'validate').returns(Promise.resolve());
 
-      systemUnderTest
+      return systemUnderTest
         .create(user)
         .then(() => {
           models.User
@@ -292,8 +277,6 @@ describe('user resource', () => {
               expect(e.alias).to.equal(user.alias);
               expect(e.passwordHash).to.exist;
               expect(e.emailValidated).to.equal(false);
-
-              done();
             });
         });
     });
@@ -301,8 +284,8 @@ describe('user resource', () => {
 
   describe('forgot my password', () => {
     describe('when initiating', () => {
-      it('should create a new record in the user resets table', (done) => {
-        initialiseUserData()
+      it('should create a new record in the user resets table', () => {
+        return initialiseUserData()
           .then((user) => systemUnderTest.forgotMyPasswordStart(user.email)
             .then(() => models.UserReset.findAll({
               where: {
@@ -317,12 +300,11 @@ describe('user resource', () => {
             expect(row.UserId).to.exist;
             expect(row.used).to.exist;
             expect(row.id).to.exist;
-          })
-          .then(done);
+          });
       });
 
-      it('should send an email', (done) => {
-        initialiseUserData()
+      it('should send an email', () => {
+        return initialiseUserData()
           .then((user) => systemUnderTest.forgotMyPasswordStart(user.email)
             .then(() => models.UserReset.findAll({
               where: {
@@ -332,33 +314,30 @@ describe('user resource', () => {
             .then(() => expect(mocks.sendEmail).to.have.been.calledWith({
               subject: 'Forgot My Password',
               to: user.email,
-              html: jasmine.any(String),
+              html: sinon.match.string,
             }))
-          )
-          .then(done);
+          );
       });
     });
 
     describe('when finishing', () => {
-      it('should reject if reset doesnt exist', (done) => {
-        systemUnderTest.forgotMyPasswordFinish('dontexist', 'hahpassword')
-          .then(null, (err) => expect(err).to.eql('Reset doesn\'t exist.'))
-          .then(done);
+      it('should reject if reset doesnt exist', () => {
+        return systemUnderTest.forgotMyPasswordFinish('dontexist', 'hahpassword')
+          .then(null, (err) => expect(err).to.eql('Reset doesn\'t exist.'));
       });
 
-      it('should validate password', (done) => {
+      it('should validate password', () => {
         const shittyPassword = 'bad';
 
-        init()
+        return init()
           .then((data) => systemUnderTest.forgotMyPasswordFinish(data.resetId, shittyPassword))
-          .then(() => expect(mocks.validate).to.have.been.calledWith({ password: shittyPassword }))
-          .then(done);
+          .then(() => expect(mocks.validate).to.have.been.calledWith({ password: shittyPassword }));
       });
 
-      it('should change password', (done) => {
+      it('should change password', () => {
         const newPassword = 'bad';
 
-        init()
+        return init()
           .then((data) =>
             systemUnderTest.forgotMyPasswordFinish(data.resetId, newPassword)
               .then(() =>
@@ -372,27 +351,25 @@ describe('user resource', () => {
                 expect(user.passwordHash).to.exist ||
                 expect(user.passwordHash).not.to.eql(data.passwordHash)
               )
-          )
-          .then(done);
+          );
       });
 
-      it('should not be allowed to be used if expiry time has passed', (done) => {
+      it('should not be allowed to be used if expiry time has passed', () => {
         const instance = createUserResource({
           PASSWORD_RESET_TIME_LIMIT: -5,
         });
 
-        init(instance)
+        return init(instance)
           .then((data) => instance.forgotMyPasswordFinish(data.resetId, 'bad'))
-          .then(null, (e) => expect(e).to.equal('Reset has expired.'))
-          .then(done);
+          .then(null, (e) => expect(e).to.equal('Reset has expired.'));
       });
 
-      it('should only allow reset to be used once', (done) => {
-        init()
+      it('should only allow reset to be used once', () => {
+        return init()
           .then((data) =>
             systemUnderTest.forgotMyPasswordFinish(data.resetId, 'bad')
             .then(() => systemUnderTest.forgotMyPasswordFinish(data.resetId, 'bad'))
-            .then(null, (e) => expect(e).to.equal('Reset has expired.') || done())
+            .then(null, (e) => expect(e).to.equal('Reset has expired.'))
           );
       });
     });

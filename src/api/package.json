@@ -34,7 +34,6 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.1.1",
-    "mockery": "^1.4.0",
     "nodemon": "^1.4.1",
     "proxyquire": "^1.7.10",
     "run-sequence": "^1.1.2",

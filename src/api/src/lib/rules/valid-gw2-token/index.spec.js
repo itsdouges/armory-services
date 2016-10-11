@@ -1,213 +1,182 @@
-var token = require('./index');
-var q = require('q');
+const token = require('./index');
+const Models = require('../../../models');
 
-var axios = require('axios');
+describe('gw2 token validator', () => {
+  let mockAxios;
+  let mockEnv;
+  let models;
 
-var Models = require('../../../models');
+  beforeEach(() => {
+    models = new Models(testDb());
+    return models.sequelize.sync();
+  });
 
-describe('gw2 token validator', function () {
-    var mockAxios;
-    var mockEnv;
-    var models;
+  beforeEach(() => {
+    mockAxios = {
+      get () {},
+    };
 
-    beforeEach(function (done) {
-        models = new Models(testDb());
-        models.sequelize.sync().then(function () {
-            done();
-        });
+    mockEnv = {
+      gw2: {
+        endpoint: 'gw2.com/',
+      },
+    };
+  });
+
+  it('should resolve if item isnt found in object', () => {
+    return token('token', undefined);
+  });
+
+  it('should resolve if token is valid', () => {
+    sinon.stub(mockAxios, 'get').returns(Promise.resolve({
+      data: {
+        permissions: [
+          'account',
+          'characters',
+          'builds',
+        ],
+      },
+    }));
+
+    return token('token', 'ee', {
+      axios: mockAxios,
+      env: mockEnv,
+      models,
+    })
+    .then((e) => {
+      expect(e).not.to.exist;
+      expect(mockAxios.get).to.have.been.calledWith('gw2.com/v2/tokeninfo', {
+        headers: {
+          Authorization: 'Bearer ee',
+        },
+      });
     });
+  });
 
-    beforeEach(function () {
-        mockAxios = {
-            get: function () {}
-        };
+  it('should resolve error if token doesnt have characters permission', () => {
+    sinon.stub(mockAxios, 'get').returns(Promise.resolve({
+      data: {
+        permissions: [
+          'account',
+        ],
+      },
+    }));
 
-        mockEnv = {
-            gw2: {
-                endpoint: 'gw2.com/'
-            }
-        }
+    return token('token', 'ee', {
+      axios: mockAxios,
+      env: mockEnv,
+      models,
+    })
+    .then((e) => {
+      expect(e).to.eql({
+        property: 'token',
+        message: 'needs characters and builds permission',
+      });
     });
+  });
 
-    it('should resolve if item isnt found in object', function (done) {
-        token('token', undefined)
-            .then(function () {
-                done();
-            });
-    });
-
-    it('should resolve if token is valid', function (done) {
-        var defer = q.defer();
-        sinon.stub(mockAxios, 'get').returns(defer.promise);
-
-        token('token', 'ee', {
-            axios: mockAxios,
-            env: mockEnv,
-            models: models
-        }).then(function (e) {
-            expect(e).not.to.exist;
-            expect(mockAxios.get).to.have.been.calledWith('gw2.com/v2/tokeninfo', {
-                headers: {
-                    'Authorization' : 'Bearer ee'
-                }
-            });
-
-            done();
-        });
-
-        defer.resolve({
-            data: {
-                permissions: [
-                    'account',
-                    'characters',
-                    'builds'
-                ]
-            }
-        });
-    });
-
-    it('should resolve error if token doesnt have characters permission', function (done) {
-        var defer = q.defer();
-        sinon.stub(mockAxios, 'get').returns(defer.promise);
-
-        token('token', 'ee', {
-            axios: mockAxios,
-            env: mockEnv,
-            models: models
-        }).then(function (e) {
-            expect(e).to.eql({
-                property: 'token',
-                message: 'needs characters and builds permission'
-            });
-
-            done();
-        });
-
-        defer.resolve({
-            data: {
-                permissions: [
-                    'account'
-                ]
-            }
-        });
-    });
-
-    it('should resolve error if token is already taken', function (done) {
-        models.User
-            .create({
-                email: 'email@email',
-                passwordHash: 'lolz',
-                alias: 'swagn'
+  it('should resolve error if token is already taken', () => {
+    return models.User
+      .create({
+        email: 'email@email',
+        passwordHash: 'lolz',
+        alias: 'swagn',
+      })
+      .then((e) => {
+        models.Gw2ApiToken
+          .create({
+            token: 'ee',
+            accountName: 'madou.1234',
+            permissions: 'he,he',
+            accountId: 'ahh',
+            world: 1122,
+            UserId: e.id,
+          })
+          .then(() => {
+            return token('token', 'ee', {
+              axios: mockAxios,
+              env: mockEnv,
+              models,
             })
-            .then(function (e) {
-                models.Gw2ApiToken
-                    .create({
-                        token: 'ee',
-                        accountName: 'madou.1234',
-                        permissions: 'he,he',
-                        accountId: 'ahh',
-                        world: 1122,
-                        UserId: e.id
-                    })
-                    .then(function (e) {
-                        token('token', 'ee', {
-                            axios: mockAxios,
-                            env: mockEnv,
-                            models: models
-                        }).then(function (e) {
-                            expect(e).to.eql({
-                                property: 'token',
-                                message: 'is already being used'
-                            });
-
-                            done();
-                        });
-                    });
-            });
-    });
-
-    it('should resolve error if account id is already in db', function (done) {
-        var tokenDefer = q.defer();
-        var accountDefer = q.defer();
-
-        mockAxios.get = function (endpoint) {
-            if (endpoint === mockEnv.gw2.endpoint + 'v2/tokeninfo') {
-                return tokenDefer.promise;
-            }
-
-            return accountDefer.promise;
-        };
-
-        sinon.stub(mockAxios, 'get').and.callThrough();
-
-        models.User
-            .create({
-                email: 'email@email',
-                passwordHash: 'lolz',
-                alias: 'swagn'
-            })
-            .then(function (e) {
-                models.Gw2ApiToken
-                    .create({
-                        token: 'hahahaha_token',
-                        accountName: 'madou.1234',
-                        permissions: 'he,he',
-                        accountId: 'ahh',
-                        world: 3344,
-                        UserId: e.id
-                    })
-                    .then(function (e) {
-                        token('token', 'another_token_i_generated', {
-                            axios: mockAxios,
-                            env: mockEnv,
-                            models: models
-                        }).then(function (e) {
-                            expect(e).to.eql({
-                                property: 'token',
-                                message: 'key for madou.1234 already exists'
-                            });
-
-                            done();
-                        });
-                    });
-            });
-
-        tokenDefer.resolve({
-            data: {
-                permissions: [
-                    'account',
-                    'characters',
-                    'builds'
-                ]
-            }
-        });
-
-        accountDefer.resolve({
-            data: {
-                id: 'ahh',
-                name: 'madou.1234',
-                world: 4455
-            }
-        })
-    });
-
-    it('should resolve error if an error occurred during http', function (done) {
-        var defer = q.defer();
-        sinon.stub(mockAxios, 'get').returns(defer.promise);
-
-        token('token', 'ee', {
-            axios: mockAxios,
-            env: mockEnv,
-            models: models
-        }).then(function (e) {
-            expect(e).to.eql({
+            .then((error) => {
+              expect(error).to.eql({
                 property: 'token',
-                message: 'invalid token'
+                message: 'is already being used',
+              });
             });
+          });
+      });
+  });
 
-            done();
-        });
+  it('should resolve error if account id is already in db', () => {
+    const mockGet = sinon.stub();
 
-        defer.reject();
+    mockGet.withArgs(`${mockEnv.gw2.endpoint}v2/tokeninfo`, sinon.match.object)
+      .returns(Promise.resolve({
+        data: {
+          permissions: [
+            'account',
+            'characters',
+            'builds',
+          ],
+        },
+      }));
+
+    mockGet.withArgs(`${mockEnv.gw2.endpoint}v2/account`, sinon.match.object)
+      .returns(Promise.resolve({
+        data: {
+          id: 'ahh',
+          name: 'madou.1234',
+          world: 4455,
+        },
+      }));
+
+    return models.User
+      .create({
+        email: 'email@email',
+        passwordHash: 'lolz',
+        alias: 'swagn',
+      })
+      .then((e) => {
+        return models.Gw2ApiToken
+          .create({
+            token: 'hahahaha_token',
+            accountName: 'madou.1234',
+            permissions: 'he,he',
+            accountId: 'ahh',
+            world: 3344,
+            UserId: e.id,
+          })
+          .then(() => {
+            return token('token', 'another_token_i_generated', {
+              axios: { get: mockGet },
+              env: mockEnv,
+              models,
+            })
+            .then((err) => {
+              console.log(err);
+              expect(err).to.eql({
+                property: 'token',
+                message: 'key for madou.1234 already exists',
+              });
+            });
+          });
+      });
+  });
+
+  it('should resolve error if an error occurred during http', () => {
+    sinon.stub(mockAxios, 'get').returns(Promise.reject());
+
+    return token('token', 'ee', {
+      axios: mockAxios,
+      env: mockEnv,
+      models,
+    })
+    .then((e) => {
+      expect(e).to.eql({
+        property: 'token',
+        message: 'invalid token',
+      });
     });
+  });
 });

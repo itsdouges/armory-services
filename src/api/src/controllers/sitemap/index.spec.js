@@ -59,19 +59,17 @@ describe('sitemap', () => {
   let sitemap;
   let models;
 
-  beforeEach((done) => {
+  beforeEach(() => {
     models = new Models(testDb());
-    models.sequelize.sync({
+    return models.sequelize.sync({
       force: true,
     })
     .then(() => init(models))
-    .then(done);
-
-    sitemap = createSitemapController(models);
+    .then(() => (sitemap = createSitemapController(models)));
   });
 
-  it('should render user data', (done) => {
-    sitemap.generate()
+  it('should render user data', () => {
+    return sitemap.generate()
       .then((actual) => {
         expect(actual).to.equal(
 `<?xml version="1.0" encoding="UTF-8"?>
@@ -98,7 +96,6 @@ describe('sitemap', () => {
     <loc>http://gw2-local.com/madou/c/madoubie</loc>
   </url>
 </urlset>`);
-      })
-      .then(done, (e) => console.error(e));
+      });
   });
 });

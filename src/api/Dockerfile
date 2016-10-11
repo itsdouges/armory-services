@@ -5,16 +5,13 @@ LABEL Description="Api server for api.gw2armory.com"
 
 WORKDIR /opt
 
-RUN npm install -g gulp
-
 COPY package.json /opt/package.json
 RUN npm install --silent
 
 COPY .sequelizerc /opt/.sequelizerc
-COPY gulpfile.js /opt/gulpfile.js
 COPY /scripts /opt/scripts
 COPY /config /opt/config
-COPY /spec /opt/spec
+COPY /test /opt/test
 COPY /src /opt/src
 
 RUN npm test
