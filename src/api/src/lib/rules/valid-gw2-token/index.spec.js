@@ -152,7 +152,6 @@ describe('gw2 token validator', () => {
               models,
             })
             .then((err) => {
-              console.log(err);
               expect(err).to.eql({
                 property: 'token',
                 message: 'key for madou.1234 already exists',
