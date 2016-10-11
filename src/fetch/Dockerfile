@@ -9,8 +9,8 @@ WORKDIR /opt
 COPY package.json /opt/package.json
 RUN npm install --silent
 
-COPY /env /opt/env
-COPY /spec /opt/spec
+COPY /config /opt/config
+COPY /test /opt/test
 COPY /src /opt/src
 
 RUN npm test

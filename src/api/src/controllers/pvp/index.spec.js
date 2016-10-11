@@ -1,53 +1,45 @@
-var PvpController = require('./');
-var setupTestDb = require('../../../spec/helpers/setup-test-db');
+const PvpController = require('./');
 
-describe('pvp controller', function () {
-  var models;
-  var systemUnderTest;
-  var mockGw2Api;
+describe('pvp controller', () => {
+  let models;
+  let systemUnderTest;
+  let mockGw2Api;
 
-  beforeEach(function (done) {
+  beforeEach(() => {
     mockGw2Api = {};
-    mockGw2Api.readPvpStats = function () {};
-    mockGw2Api.readPvpGames = function () {};
-    spyOn(mockGw2Api, 'readPvpStats').and.returnValue({ pvp: 'stats' });
-    spyOn(mockGw2Api, 'readPvpGames').and.returnValue({ pvp: 'games' });
+    mockGw2Api.readPvpStats = sinon.stub().returns({ pvp: 'stats' });
+    mockGw2Api.readPvpGames = sinon.stub().returns({ pvp: 'games' });
 
-    return setupTestDb(true, {
+    return seedData(true, {
       email: 'email@email.com',
       alias: 'cool-name',
       addTokens: true,
     })
-    .then(function (dbModels) {
+    .then((dbModels) => {
       models = dbModels;
       systemUnderTest = new PvpController(models, mockGw2Api);
-      done();
     });
   });
 
-  it('should return pvp data for primary token', function (done) {
+  it('should return pvp data for primary token', () => {
     return systemUnderTest.stats('cool-name')
-      .then(function (stats) {
-        expect(stats).toEqual({
+      .then((stats) => {
+        expect(stats).to.eql({
           pvp: 'stats',
         });
 
-        expect(mockGw2Api.readPvpStats).toHaveBeenCalledWith('cool_token');
-
-        done();
+        expect(mockGw2Api.readPvpStats).to.have.been.calledWith('cool_token');
       });
   });
 
-  it('should return pvp games for primary token', function (done) {
+  it('should return pvp games for primary token', () => {
     return systemUnderTest.games('cool-name')
-      .then(function (games) {
-        expect(games).toEqual({
+      .then((games) => {
+        expect(games).to.eql({
           pvp: 'games',
         });
 
-        expect(mockGw2Api.readPvpGames).toHaveBeenCalledWith('cool_token');
-
-        done();
+        expect(mockGw2Api.readPvpGames).to.have.been.calledWith('cool_token');
       });
   });
 });

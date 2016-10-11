@@ -23,7 +23,7 @@ module.exports = {
   },
 
   cache: {
-    findAllCharacters: 300000,
+    findAllCharacters: 60000 * 60, // 60 minutes.
     statistics: 60000 * 60, // 60 minutes.
   },
 };

@@ -1,7 +1,7 @@
-var userHelper = require('../../lib/get-user-info');
+const userHelper = require('../../lib/get-user-info');
 
 function handleBadToken (defaultValue, error) {
-  if (error === 'Token not found' || error.data && error.data.text === 'requires scope pvp') {
+  if (error === 'Token not found' || (error.data && error.data.text === 'requires scope pvp')) {
     return defaultValue;
   }
 
@@ -11,7 +11,7 @@ function handleBadToken (defaultValue, error) {
 function PvpController (models, gw2Api) {
   PvpController.prototype.stats = function (alias) {
     return userHelper.getUserPrimaryToken(models, alias)
-      .then(function (token) {
+      .then((token) => {
         return gw2Api.readPvpStats(token);
       })
       .catch(handleBadToken.bind(null, {}));
@@ -19,7 +19,7 @@ function PvpController (models, gw2Api) {
 
   PvpController.prototype.games = function (alias) {
     return userHelper.getUserPrimaryToken(models, alias)
-      .then(function (token) {
+      .then((token) => {
         return gw2Api.readPvpGames(token);
       })
       .catch(handleBadToken.bind(null, []));
@@ -27,7 +27,7 @@ function PvpController (models, gw2Api) {
 
   PvpController.prototype.standings = function (alias) {
     return userHelper.getUserPrimaryToken(models, alias)
-      .then(function (token) {
+      .then((token) => {
         return gw2Api.readPvpStandings(token);
       })
       .catch(handleBadToken.bind(null, []));

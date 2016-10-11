@@ -5,7 +5,10 @@
   "author": "madou",
   "scripts": {
     "start": "node ./src/run",
-    "test": "jasmine-node ."
+    "test": "mocha \"src/**/*.spec.js\" && npm run test:int",
+    "test:int": "mocha \"src/**/*.int.js\"",
+    "tdd": "mocha \"src/**/*.spec.js\" --watch",
+    "tdd:int": "npm run test:int -- --watch"
   },
   "dependencies": {
     "axios": "^0.5.4",
@@ -18,8 +21,12 @@
     "yargs": "^3.29.0"
   },
   "devDependencies": {
-    "jasmine-node": "^1.14.5",
+    "chai": "^3.5.0",
+    "mocha": "^3.1.0",
     "mockery": "^1.4.0",
+    "proxyquire": "^1.7.10",
+    "sinon": "^1.17.6",
+    "sinon-chai": "^2.8.0",
     "sqlite3": "^3.0.10"
   }
 }

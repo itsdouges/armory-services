@@ -1,5 +1,4 @@
 const controllerFactory = require('./');
-const setupTestDb = require('../../../spec/helpers/setup-test-db');
 
 const setupTestData = (models) => {
   return models
@@ -76,8 +75,8 @@ describe('statistics', () => {
   let models;
   let controller;
 
-  beforeEach((done) => {
-    return setupTestDb(true, {
+  beforeEach(() => {
+    return seedData(true, {
       email: 'email@email.com',
       alias: 'cool-name',
       addTokens: true,
@@ -87,37 +86,34 @@ describe('statistics', () => {
       controller = controllerFactory(models);
 
       return setupTestData(models);
-    })
-    .then(done);
+    });
   });
 
-  it('should return user stats', (done) => {
-    controller
+  it('should return user stats', () => {
+    return controller
       .users()
       .then((stats) => {
-        expect(stats).toEqual({
+        expect(stats).to.eql({
           count: 2,
         });
-      })
-      .then(done);
+      });
   });
 
-  it('should return guild stats', (done) => {
-    controller
+  it('should return guild stats', () => {
+    return controller
       .guilds()
       .then((stats) => {
-        expect(stats).toEqual({
+        expect(stats).to.eql({
           count: 1,
         });
-      })
-      .then(done);
+      });
   });
 
-  it('should return character stats', (done) => {
-    controller
+  it('should return character stats', () => {
+    return controller
       .characters()
       .then((stats) => {
-        expect(stats).toEqual({
+        expect(stats).to.eql({
           count: 2,
           gender: {
             male: 1,
@@ -140,7 +136,6 @@ describe('statistics', () => {
             no: 1,
           },
         });
-      })
-      .then(done);
+      });
   });
 });

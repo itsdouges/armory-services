@@ -4,7 +4,7 @@ const moment = require('moment');
 const emailClient = require('../../lib/email');
 const CharacterController = require('../character');
 const getUserIdByEmail = require('../../lib/get-user-info').getUserIdByEmail;
-const config = require('../../../env');
+const config = require('../../../config');
 const parseAccountName = require('../../lib/user').parseAccountName;
 
 function userControllerFactory (models, createValidator, gw2Api) {
@@ -88,14 +88,14 @@ function userControllerFactory (models, createValidator, gw2Api) {
         const characterController = new CharacterController(models, gw2Api);
 
         return characterController
-          .list(email)
+          .list({ email })
           .then((characters) => Object.assign({}, data, {
             characters,
           }));
       });
   }
 
-  function readPublic (alias) {
+  function readPublic (alias, { email, ignorePrivacy } = {}) {
     return models
       .User
       .findOne({
@@ -115,7 +115,7 @@ function userControllerFactory (models, createValidator, gw2Api) {
         const characterController = new CharacterController(models, gw2Api);
 
         return characterController
-          .list(null, data.alias)
+          .list({ alias: data.alias, email, ignorePrivacy })
           .then((characters) => ({
             accountName: parseAccountName(data),
             alias: data.alias,

@@ -1,0 +1,3 @@
+--reporter spec
+--require test/setup
+--ui bdd

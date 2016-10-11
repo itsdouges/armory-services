@@ -100,26 +100,8 @@ function Gw2Api (axios, env) {
           'Authorization' : 'Bearer ' + options.token
         }
     })
-    .then(function (data) {
-      var character = data.data;
-
-      if (!options.showBags) {
-        character.bags = undefined;
-      }
-
-      if (!options.showCrafting) {
-        character.crafting = undefined;
-      }
-
-      if (!options.showEquipment) {
-        character.equipment = undefined;
-      }
-
-      if (!options.showBuilds) {
-        character.specializations = undefined;
-      }
-
-      return character;
+    .then(function ({ data }) {
+      return data;
     });
 
     return promise;

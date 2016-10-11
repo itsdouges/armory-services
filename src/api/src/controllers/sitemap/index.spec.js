@@ -1,11 +1,10 @@
 const proxyquire = require('proxyquire');
 const Models = require('../../models');
-const testDb = require('../../../spec/helpers/db');
 
 const publicUrl = 'http://gw2-local.com';
 
 const createSitemapController = proxyquire('./', {
-  '../../../env': {
+  '../../../config': {
     web: {
       publicUrl,
     },
@@ -60,21 +59,19 @@ describe('sitemap', () => {
   let sitemap;
   let models;
 
-  beforeEach((done) => {
+  beforeEach(() => {
     models = new Models(testDb());
-    models.sequelize.sync({
+    return models.sequelize.sync({
       force: true,
     })
     .then(() => init(models))
-    .then(done);
-
-    sitemap = createSitemapController(models);
+    .then(() => (sitemap = createSitemapController(models)));
   });
 
-  it('should render user data', (done) => {
-    sitemap.generate()
+  it('should render user data', () => {
+    return sitemap.generate()
       .then((actual) => {
-        expect(actual).toBe(
+        expect(actual).to.equal(
 `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -87,6 +84,9 @@ describe('sitemap', () => {
     <loc>http://gw2-local.com/login</loc>
   </url>
   <url>
+    <loc>http://gw2-local.com/stats</loc>
+  </url>
+  <url>
     <loc>http://gw2-local.com/madou</loc>
   </url>
   <url>
@@ -96,7 +96,6 @@ describe('sitemap', () => {
     <loc>http://gw2-local.com/madou/c/madoubie</loc>
   </url>
 </urlset>`);
-      })
-      .then(done, (e) => console.error(e));
+      });
   });
 });

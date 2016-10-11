@@ -1,8 +1,25 @@
-var Models = require('../../src/models');
-var testDb = require('./db');
+const Sequelize = require('sequelize');
+const Models = require('../src/models');
 
-var seed = function (models, options) {
+global.chai = require('chai');
+global.sinon = require('sinon');
+global.expect = require('chai').expect;
+global.AssertionError = require('chai').AssertionError;
+
+const sinonChai = require('sinon-chai');
+
+global.chai.use(sinonChai);
+
+global.testDb = function () {
+  return new Sequelize('database', 'username', 'password', {
+    dialect: 'sqlite',
+    logging: false,
+  });
+};
+
+const seed = function (models, options) {
   if (options.addTokens === undefined) {
+    // eslint-disable-next-line
     options.addTokens = true;
   }
 
@@ -13,7 +30,7 @@ var seed = function (models, options) {
       alias: options.alias,
       passwordHash: 'lolz',
     })
-    .then(function (user) {
+    .then((user) => {
       if (!options.addTokens) {
         return user.id;
       }
@@ -29,7 +46,7 @@ var seed = function (models, options) {
           UserId: user.id,
           primary: true,
         })
-        .then(function () {
+        .then(() => {
           return models
             .Gw2ApiToken
             .create({
@@ -41,23 +58,23 @@ var seed = function (models, options) {
               UserId: user.id,
             });
         })
-        .then(function () {
+        .then(() => {
           return user.id;
         });
     });
 };
 
-module.exports = function (seedDb, options) {
-  var models = new Models(testDb());
+global.seedData = function (seedDb, options) {
+  const models = new Models(testDb());
   return models.sequelize.sync({
-    force: true
+    force: true,
   })
-  .then(function () {
+  .then(() => {
     if (seedDb) {
-      return seed(models, options); 
+      return seed(models, options);
     }
+
+    return undefined;
   })
-  .then(function () {
-    return models;
-  });
+  .then(() => models);
 };
