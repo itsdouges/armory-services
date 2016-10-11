@@ -81,7 +81,7 @@ describe('gw2 token validator', () => {
         alias: 'swagn',
       })
       .then((e) => {
-        models.Gw2ApiToken
+        return models.Gw2ApiToken
           .create({
             token: 'ee',
             accountName: 'madou.1234',

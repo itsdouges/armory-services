@@ -13,7 +13,7 @@ function CharactersResource(server, controller) {
     }
 
         controller
-            .list(req.username)
+            .list({ email: req.username })
             .then(function (characters) {
                 res.send(200, characters);
                 return next();
@@ -25,7 +25,7 @@ function CharactersResource(server, controller) {
 
     server.get(RESOURCES.user_characters, function (req, res, next) {
         controller
-            .list(null, req.params.alias)
+            .list({ alias: req.params.alias })
             .then(function (characters) {
                 res.send(200, characters);
                 return next();
@@ -39,9 +39,9 @@ function CharactersResource(server, controller) {
     if (!req.username) {
         return res.sendUnauthenticated();
     }
-        
+
         controller
-            .read(req.params.name, true, req.username)
+            .read(req.params.name, { ignorePrivacy: true, email: req.username })
             .then(function (character) {
                 if (character) {
                     res.send(200, character);

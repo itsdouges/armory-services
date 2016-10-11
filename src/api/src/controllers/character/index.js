@@ -2,8 +2,11 @@ const memoize = require('memoizee');
 const config = require('../../../config');
 
 function characterControllerFactory (models, gw2Api) {
-  function read (name, ignorePrivacy, email) {
-    let characterFromDb;
+  function read (name, { ignorePrivacy, email } = {}) {
+    const characterWhere = Object.assign({}, {
+      name,
+    },
+    (email && ignorePrivacy) || { showPublic: true });
 
     const query = {
       include: [{
@@ -12,9 +15,7 @@ function characterControllerFactory (models, gw2Api) {
           model: models.User,
         }],
       }],
-      where: {
-        name,
-      },
+      where: characterWhere,
     };
 
     if (email) {
@@ -29,80 +30,57 @@ function characterControllerFactory (models, gw2Api) {
     return models
       .Gw2Character
       .findOne(query)
-      .then((result) => {
-        if (!result) {
+      .then((character) => {
+        if (!character) {
           return Promise.reject();
         }
 
-        characterFromDb = result;
+        return gw2Api.readCharacter(name, { token: character.Gw2ApiTokenToken })
+          .then((data) => {
+            if (data === 1) {
+              return undefined;
+            }
 
-        return {
-          name,
-          token: result.Gw2ApiTokenToken,
-          showCrafting: result.showCrafting,
-          showBags: result.showBags,
-          showEquipment: result.showEquipment,
-          showBuilds: result.showBuilds,
-          showPvp: result.showPvp,
-          showGuild: result.showGuild,
-          showPublic: result.showPublic,
-        };
-      })
-      .then((data) => {
-        return gw2Api.readCharacter(data.name, {
-          token: data.token,
-          showBags: ignorePrivacy || data.showBags,
-          showCrafting: ignorePrivacy || data.showCrafting,
-          showEquipment: ignorePrivacy || data.showEquipment,
-          showBuilds: ignorePrivacy || data.showBuilds,
-        });
-      })
-      .then((data) => {
-        if (data === 1) {
-          return undefined;
-        }
+            const characterResponse = Object.assign({}, data, {
+              accountName: character.Gw2ApiToken.accountName,
+              alias: character.Gw2ApiToken.User.alias,
+              authorization: {
+                showPublic: character.showPublic,
+                showGuild: character.showGuild,
+              },
+            });
 
-        const character = Object.assign({}, data);
-        character.authorization = {
-          showPublic: characterFromDb.showPublic,
-          showGuild: characterFromDb.showGuild,
-        };
+            if (!character.guild) {
+              return characterResponse;
+            }
 
-        character.accountName = characterFromDb.Gw2ApiToken.accountName;
-        character.alias = characterFromDb.Gw2ApiToken.User.alias;
+            return models.Gw2Guild.findOne({
+              where: {
+                id: character.guild,
+              },
+            })
+            .then((guild) => {
+              if (!guild) {
+                return characterResponse;
+              }
 
-        if (!characterFromDb.guild) {
-          return character;
-        }
-
-        return models.Gw2Guild.findOne({
-          where: {
-            id: characterFromDb.guild,
-          },
-        })
-        .then((guild) => {
-          if (!guild) {
-            return character;
-          }
-
-          character.guild_tag = guild.tag;
-          character.guild_name = guild.name;
-
-          return character;
-        });
+              return Object.assign({}, characterResponse, {
+                guild_tag: guild.tag,
+                guild_name: guild.name,
+              });
+            });
+          });
       });
   }
 
   function list ({ email, alias, ignorePrivacy }) {
-    const userWhere = Object.assign(
-      {},
+    const userWhere = Object.assign({},
       email && { email },
       alias && { alias }
     );
 
-    const characterWhere = Object.assign(
-      {},
-      ignorePrivacy || { showPublic: true }
+    const characterWhere = Object.assign({},
+      (email && ignorePrivacy) || { showPublic: true }
     );
 
     return models

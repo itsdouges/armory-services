@@ -1,235 +1,10 @@
 const controllerFactory = require('./index');
 const Models = require('../../models');
 
-describe.only('character controller', () => {
+describe('character controller', () => {
   let controller;
   let mockGw2Api;
   let models;
-
-  beforeEach(() => {
-    models = new Models(testDb());
-    return models.sequelize.sync({
-      force: true,
-    })
-    .then(() => {
-      mockGw2Api = {
-        readCharacter () {},
-      };
-
-      controller = controllerFactory(models, mockGw2Api);
-    });
-  });
-
-  it('should reject if character name is not in our db', (done) => {
-    controller.read('noname').then(null, done);
-  });
-
-  it('should reject if email doesnt match', (done) => {
-    models
-      .User
-      .create({
-        email: 'cool@email',
-        passwordHash: 'coolpassword',
-        alias: 'madou',
-      })
-      .then(() => {
-        return models
-          .User
-          .findOne({
-            where: {
-              email: 'cool@email',
-            },
-          });
-      })
-      .then((data) => {
-        return models
-          .Gw2ApiToken
-          .create({
-            token: 'swag',
-            accountName: 'nameyname',
-            accountId: 'haah',
-            permissions: 'cool,permissions',
-            world: 1234,
-            UserId: data.id,
-          });
-      })
-      .then(() => {
-        return models
-          .Gw2Character
-          .create({
-            Gw2ApiTokenToken: 'swag',
-            name: 'blastrn',
-            gender: 'ay',
-            profession: 'hehe',
-            level: 123,
-            created: new Date(),
-            age: 1,
-            race: 'ay',
-            deaths: 1,
-          });
-      })
-      .then(() => {
-        return controller.read('blastrn', true, 'notcool@email');
-      })
-      .then(null, done);
-  });
-
-  // the orchestration to get this unit test running is a bit crazy..
-  // dont really want to mock out the db though. no point when we can
-  // test in memory. ill think about it.
-  it('should call gw2api if it is in our db', (done) => {
-    sinon.stub(mockGw2Api, 'readCharacter').returns(Promise.resolve({}));
-
-    models
-      .User
-      .create({
-        email: 'cool@email',
-        passwordHash: 'coolpassword',
-        alias: 'madou',
-      })
-      .then(() => {
-        return models
-            .User
-            .findOne({
-              where: {
-                email: 'cool@email',
-              },
-            });
-      })
-      .then((data) => {
-        return models
-          .Gw2ApiToken
-          .create({
-            token: 'swag',
-            accountName: 'nameyname',
-            accountId: 'haah',
-            permissions: 'cool,permissions',
-            world: 1234,
-            UserId: data.id,
-          });
-      })
-      .then(() => {
-        return models
-          .Gw2Guild
-          .create({
-            name: 'Guild Name',
-            id: 'guild',
-            tag: '[tag]',
-          });
-      })
-      .then(() => {
-        return models
-          .Gw2Character
-          .create({
-            Gw2ApiTokenToken: 'swag',
-            name: 'blastrn',
-            gender: 'ay',
-            guild: 'guild',
-            profession: 'hehe',
-            level: 123,
-            created: new Date(),
-            age: 1,
-            race: 'ay',
-            deaths: 1,
-          });
-      })
-      .then(() => {
-        return controller.read('blastrn', true, 'cool@email');
-      })
-      .then((data) => {
-        expect(data).to.eql({
-          authorization: {
-            showPublic: true,
-            showGuild: true,
-          },
-          accountName: 'nameyname',
-          guild_tag: '[tag]',
-          guild_name: 'Guild Name',
-          alias: 'madou',
-        });
-
-        expect(mockGw2Api.readCharacter).to.have.been.calledWith('blastrn', {
-          token: 'swag',
-          showBags: true,
-          showCrafting: true,
-          showEquipment: true,
-          showBuilds: true,
-        });
-
-        done();
-      });
-  });
-
-  it('should call api with show all', (done) => {
-    sinon.stub(mockGw2Api, 'readCharacter').returns(Promise.resolve({}));
-
-    models
-      .User
-      .create({
-        email: 'cool@email',
-        passwordHash: 'coolpassword',
-        alias: 'madou',
-      })
-      .then(() => {
-        return models
-          .User
-          .findOne({
-            where: {
-              email: 'cool@email',
-            },
-          });
-      })
-      .then((data) => {
-        return models
-          .Gw2ApiToken
-          .create({
-            token: 'swag',
-            accountName: 'nameyname',
-            accountId: 'haah',
-            permissions: 'cool,permissions',
-            world: 1234,
-            UserId: data.id,
-          });
-      })
-      .then(() => {
-        return models
-          .Gw2Character
-          .create({
-            Gw2ApiTokenToken: 'swag',
-            name: 'blastrn',
-            gender: 'ay',
-            profession: 'hehe',
-            level: 123,
-            created: new Date(),
-            age: 1,
-            race: 'ay',
-            deaths: 1,
-          });
-      })
-      .then(() => {
-        return controller.read('blastrn', false);
-      })
-      .then((data) => {
-        expect(data).to.eql({
-          authorization: {
-            showPublic: true,
-            showGuild: true,
-          },
-          accountName: 'nameyname',
-          alias: 'madou',
-        });
-
-        expect(mockGw2Api.readCharacter).to.have.been.calledWith('blastrn', {
-          token: 'swag',
-          showBags: true,
-          showCrafting: true,
-          showEquipment: true,
-          showBuilds: true,
-        });
-
-        done();
-      });
-  });
 
   const setupTestData = ({ email, characterName } = {}) => {
     return models
@@ -318,12 +93,119 @@ describe.only('character controller', () => {
         });
   };
 
+  beforeEach(() => {
+    models = new Models(testDb());
+    return models.sequelize.sync({
+      force: true,
+    })
+    .then(() => {
+      mockGw2Api = {
+        readCharacter () {},
+      };
+
+      controller = controllerFactory(models, mockGw2Api);
+    });
+  });
+
+  describe('reading character', () => {
+    it('should reject if character name is not in our db', (done) => {
+      controller.read('noname').then(null, done);
+    });
+
+    it('should reject if email doesnt match', (done) => {
+      setupTestData()
+        .then(() => {
+          return controller.read('blastrn', { ignorePrivacy: true, email: 'notcool@email' });
+        })
+        .then(null, done);
+    });
+
+    it('should call gw2api if it is in our db', () => {
+      sinon.stub(mockGw2Api, 'readCharacter').returns(Promise.resolve({}));
+
+      return setupTestData()
+        .then(() => {
+          return controller.read('blastrn', { ignorePrivacy: true, email: 'cool@email' });
+        })
+        .then((data) => {
+          expect(data).to.eql({
+            authorization: {
+              showPublic: true,
+              showGuild: true,
+            },
+            accountName: 'nameyname',
+            guild_tag: '[tag]',
+            guild_name: 'Guild Name',
+            alias: 'madou',
+          });
+
+          expect(mockGw2Api.readCharacter).to.have.been.calledWith('blastrn', {
+            token: 'swag',
+          });
+        });
+    });
+
+    it('should call api with show all', () => {
+      sinon.stub(mockGw2Api, 'readCharacter').returns(Promise.resolve({}));
+
+      return setupTestData()
+        .then(() => {
+          return controller.read('blastrn', { ignorePrivacy: false });
+        })
+        .then((data) => {
+          expect(data).to.eql({
+            guild_tag: '[tag]',
+            guild_name: 'Guild Name',
+            authorization: {
+              showPublic: true,
+              showGuild: true,
+            },
+            accountName: 'nameyname',
+            alias: 'madou',
+          });
+
+          expect(mockGw2Api.readCharacter).to.have.been.calledWith('blastrn', {
+            token: 'swag',
+          });
+        });
+    });
+
+    it('should hide character if showPublic is false', (done) => {
+      sinon.stub(mockGw2Api, 'readCharacter').returns(Promise.resolve({}));
+
+      setupTestData()
+        .then(() => {
+          return controller.read('CoolCharacter');
+        })
+        .then(null, done);
+    });
+
+    it('should show character is showPublic is false and ignorePrivacy is true', () => {
+      sinon.stub(mockGw2Api, 'readCharacter').returns(Promise.resolve({}));
+
+      return setupTestData()
+        .then(() => {
+          return controller.read('CoolCharacter', { ignorePrivacy: true, email: 'cool@email' });
+        })
+        .then((data) => {
+          expect(data).to.eql({
+            authorization: {
+              showPublic: false,
+              showGuild: true,
+            },
+            accountName: 'nameyname',
+            alias: 'madou',
+          });
+        });
+    });
+  });
+
   describe('character lists', () => {
     context('when ignoring privacy', () => {
       it('should return all characters by email', () => {
         return setupTestData()
           .then(() => {
-            controller.list({ email: 'cool@email', ignorePrivacy: true })
+            return controller.list({ email: 'cool@email', ignorePrivacy: true })
               .then((list) => {
                 expect(list.length).to.equal(3);
               });
@@ -333,7 +215,7 @@ describe.only('character controller', () => {
       it('should return all characters by alias', () => {
         return setupTestData()
           .then(() => {
-            controller.list({ alias: 'madou', ignorePrivacy: true })
+            return controller.list({ email: 'cool@email', alias: 'madou', ignorePrivacy: true })
               .then((list) => {
                 expect(list.length).to.equal(3);
               });

@@ -88,7 +88,7 @@ function userControllerFactory (models, createValidator, gw2Api) {
         const characterController = new CharacterController(models, gw2Api);
 
         return characterController
-          .list(email)
+          .list({ email })
           .then((characters) => Object.assign({}, data, {
             characters,
           }));
@@ -115,7 +115,7 @@ function userControllerFactory (models, createValidator, gw2Api) {
         const characterController = new CharacterController(models, gw2Api);
 
         return characterController
-          .list(null, data.alias)
+          .list({ alias: data.alias })
           .then((characters) => ({
             accountName: parseAccountName(data),
             alias: data.alias,

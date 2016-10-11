@@ -14,7 +14,7 @@ function charactersResource (server, controller) {
 
   server.get('characters/:name', (req, res, next) => {
     controller
-      .read(req.params.name, false)
+      .read(req.params.name, { ignorePrivacy: false })
       .then((character) => {
         if (character) {
           res.send(200, character);
