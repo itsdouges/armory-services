@@ -7,11 +7,6 @@ describe('gw2 token validator', () => {
   let models;
 
   beforeEach(() => {
-    models = new Models(testDb());
-    return models.sequelize.sync();
-  });
-
-  beforeEach(() => {
     mockAxios = {
       get () {},
     };
@@ -21,6 +16,9 @@ describe('gw2 token validator', () => {
         endpoint: 'gw2.com/',
       },
     };
+
+    models = new Models(testDb());
+    return models.sequelize.sync();
   });
 
   it('should resolve if item isnt found in object', () => {
