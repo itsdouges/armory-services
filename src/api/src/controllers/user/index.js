@@ -95,7 +95,7 @@ function userControllerFactory (models, createValidator, gw2Api) {
       });
   }
 
-  function readPublic (alias) {
+  function readPublic (alias, { email, ignorePrivacy } = {}) {
     return models
       .User
       .findOne({
@@ -115,7 +115,7 @@ function userControllerFactory (models, createValidator, gw2Api) {
         const characterController = new CharacterController(models, gw2Api);
 
         return characterController
-          .list({ alias: data.alias })
+          .list({ alias: data.alias, email, ignorePrivacy })
           .then((characters) => ({
             accountName: parseAccountName(data),
             alias: data.alias,

@@ -88,7 +88,6 @@ function serverFactory (models, config) {
   require('./resources/search')(server, models);
   require('./resources/users/check')(server, checks);
   require('./resources/users/gw2-token')(server, gw2Tokens);
-  require('./resources/users/characters')(server, characters);
   require('./resources/sign-upload')(server, models);
 
   require('./resources/statistics')(server, statisticsControllerFactory(models));

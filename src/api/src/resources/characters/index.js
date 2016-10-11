@@ -12,9 +12,22 @@ function charactersResource (server, controller) {
       });
   });
 
+  server.get('users/:alias/characters', (req, res, next) => {
+    controller
+      .list({ alias: req.params.alias, ignorePrivacy: !!req.username, email: req.username })
+      .then((characters) => {
+        res.send(200, characters);
+        return next();
+      }, (error) => {
+        console.error(error);
+        res.send(500);
+        return next();
+      });
+  });
+
   server.get('characters/:name', (req, res, next) => {
     controller
-      .read(req.params.name, { ignorePrivacy: false })
+      .read(req.params.name, { ignorePrivacy: !!req.username, email: req.username })
       .then((character) => {
         if (character) {
           res.send(200, character);

@@ -22,7 +22,7 @@ function UserResource (server, controller) {
 
   server.get(RESOURCE.publicGet, (req, res, next) => {
     controller
-      .readPublic(req.params.alias)
+      .readPublic(req.params.alias, { email: req.username, ignorePrivacy: !!req.username })
       .then((data) => {
         res.send(200, data);
         return next();

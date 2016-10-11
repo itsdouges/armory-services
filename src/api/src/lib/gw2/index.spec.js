@@ -70,32 +70,4 @@ describe('gw2 api', function () {
                 done();
             });
     });
-
-    it('should return character with limited', function (done) {
-        var data = {
-            crafting: [],
-            bags: [],
-            equipment: []
-        };
-
-        var promise = q.resolve({
-            data: data
-        });
-
-        sinon.stub(mockAxios, 'get').returns(promise);
-
-        sut.readCharacter('Blastrn', {
-                token: 'ahh',
-                showCrafting: false,
-                showBags: false,
-                showEquipment: false
-            })
-            .then(function (character) {
-                expect(character.crafting).not.to.exist;
-                expect(character.bags).not.to.exist;
-                expect(character.equipment).not.to.exist;
-
-                done();
-            });
-    });
 });
