@@ -48,7 +48,7 @@ describe('characters fetcher', () => {
         return models.Gw2Character.findAll({});
       })
       .then((chars) => {
-        expect(chars.length).to.equal(2);
+        expect(chars.length).to.equal(1);
 
         chars.forEach((char) => {
           expect(char.Gw2ApiTokenToken).to.equal(token);
