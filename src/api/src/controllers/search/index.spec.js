@@ -23,17 +23,30 @@ describe('search controller', () => {
       });
     })
     .then((token) => {
-      return models.Gw2Character.create({
-        name: 'aaamadouuuu',
-        race: 'girl',
-        gender: 'M',
-        profession: 'carpenter',
-        level: 1,
-        created: new Date(),
-        age: 1,
-        deaths: 0,
-        Gw2ApiTokenToken: token.token,
-      });
+      return Promise.all([
+        models.Gw2Character.create({
+          name: 'aaamadouuuu',
+          race: 'girl',
+          gender: 'M',
+          profession: 'carpenter',
+          level: 1,
+          created: new Date(),
+          age: 1,
+          deaths: 0,
+          Gw2ApiTokenToken: token.token,
+        }),
+        models.Gw2Character.create({
+          name: 'adoooooo',
+          race: 'girl',
+          gender: 'M',
+          profession: 'carpenter',
+          level: 1,
+          showPublic: false,
+          created: new Date(),
+          age: 1,
+          deaths: 0,
+          Gw2ApiTokenToken: token.token,
+        })]);
     })
     .then(() => {
       return models.Gw2Guild.create({
@@ -56,7 +69,7 @@ describe('search controller', () => {
   });
 
   describe('simple', () => {
-    it('should return any resource that is like the search term', (done) => {
+    it('should expose all resources like search term that is publicly available', (done) => {
       seed().then(() => {
         systemUnderTest.search('ado')
           .then((results) => {

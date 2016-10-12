@@ -23,6 +23,7 @@ function controller (models) {
 
     const characters = models.Gw2Character.findAll({
       where: {
+        showPublic: true,
         name: {
           $like: `%${term}%`,
         },
