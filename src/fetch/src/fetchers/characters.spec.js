@@ -89,7 +89,7 @@ describe('characters fetcher', () => {
       });
   });
 
-  it('should remove characters not brought back', () => {
+  it('should remove characters not brought back and not duplicate chars', () => {
     const otherCharacter = Object.assign({}, character, { name: 'anotherName' });
 
     const charactersStub = sinon.stub();
@@ -114,10 +114,11 @@ describe('characters fetcher', () => {
             expect(char).to.not.exist;
           })
           .then(() => {
-            return models.Gw2Character.findOne({ where: { name: otherCharacter.name } });
+            return models.Gw2Character.findAll({ where: { name: otherCharacter.name } });
           })
           .then((char) => {
-            expect(char.dataValues.id).to.equal(id);
+            expect(char.length).to.equal(1);
+            expect(char[0].dataValues.id).to.equal(id);
           });
       });
   });
