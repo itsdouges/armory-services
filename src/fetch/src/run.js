@@ -11,7 +11,9 @@ console.log(`\n=== Connecting to mysql host: ${config.db.host} ===\n`);
 
 const db = new Sequelize(config.db.database, config.db.username, config.db.password, config.db);
 const models = new Models(db);
-const fetchData = pingFactory(models);
+const fetchData = pingFactory(models, [
+  fetchCharacters,
+]);
 
 const server = restify.createServer({
   name: 'gw2-fetch',

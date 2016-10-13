@@ -5,6 +5,10 @@ const fetchTokens = require('./lib/tokens');
 const config = require('../config');
 
 function pingControllerFactory (models, fetchers) {
+  if (!fetchers || !fetchers.length) {
+    throw new Error('\n=== No fetchers available! ===\n');
+  }
+
   return function ping () {
     console.log('\n=== Starting fetch! ===\n');
 

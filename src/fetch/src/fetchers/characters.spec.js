@@ -22,7 +22,7 @@ describe('characters fetcher', () => {
   };
 
   const guild = {
-    guild_id: 'cool-guild',
+    guild_id: '1234-1234-1234-1234',
     guild_name: 'name',
     tag: 'tag',
   };
@@ -58,13 +58,13 @@ describe('characters fetcher', () => {
   });
 
   it('should add guild if character is in one, only once', () => {
-    const characterWithGuild = Object.assign({}, character, { guild: guild.guild_name });
+    const characterWithGuild = Object.assign({}, character, { guild: guild.guild_id });
 
     const charactersStub = sinon.stub().withArgs(token).returns(
-      Promise.resolve([characterWithGuild])
+      Promise.resolve([characterWithGuild, characterWithGuild, characterWithGuild])
     );
 
-    const guildStub = sinon.stub().withArgs(guild.guild_name).returns(Promise.resolve(guild));
+    const guildStub = sinon.stub().withArgs(guild.guild_id).returns(Promise.resolve(guild));
 
     const fetchCharacters = createFetchCharacters({
       characters: charactersStub,
