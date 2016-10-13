@@ -310,7 +310,7 @@ describe('character controller', () => {
         .then(null, (e) => expect(e).to.eql('Not your character'));
     });
 
-    xit('should resolve and update if character belongs to email', (done) => {
+    it('should resolve and update if character belongs to email', (done) => {
       const email = 'email@email.com';
       const characterName = 'Blastrn';
 
