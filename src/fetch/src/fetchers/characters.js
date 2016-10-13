@@ -1,4 +1,6 @@
 const q = require('q');
+const unique = require('lodash/uniq');
+
 const gw2Fetch = require('../lib/gw2');
 
 module.exports = function fetchUserCharacterData (models, token) {
@@ -14,60 +16,68 @@ module.exports = function fetchUserCharacterData (models, token) {
         },
       })
       .then(() => {
-        const promises = [];
+        const guildIds = characters
+          .map((character) => character.guild)
+          .filter((guildId) => !!guildId);
 
-        characters.forEach((char) => {
-          const promiseToAddCharacter = models
-            .Gw2Character
-            .upsert({
-              name: char.name,
-              race: char.race,
-              gender: char.gender,
-              profession: char.profession,
-              level: char.level,
-              guild: char.guild,
-              created: char.created,
-              age: char.age,
-              deaths: char.deaths,
-              Gw2ApiTokenToken: token,
+        const createGuildPromises = unique(guildIds)
+          .reduce((promises, guildId) => {
+            const promise = models.Gw2Guild.findOne({
+              where: {
+                id: guildId,
+              },
+            })
+            .then((guild) => !guild && gw2Fetch.guild(guildId))
+            .then((guild) => {
+              return guild && models.Gw2Guild.create({
+                id: guild.guild_id,
+                name: guild.guild_name,
+                tag: guild.tag,
+              });
             });
 
-          promises.push(promiseToAddCharacter);
+            promises.push(promise);
 
-          if (!char.guild) {
-            return;
-          }
+            return promises;
+          }, []);
 
-          const promiseToAddGuild = models.Gw2Guild.findOne({
-            where: {
-              name: char.guild,
-            },
-          })
-          .then((guild) => {
-            if (guild) {
-              return undefined;
-            }
-
-            return gw2Fetch
-              .guild(char.guild)
-              .then((gld) => {
-                return models.Gw2Guild.create({
-                  id: gld.guild_id,
-                  name: gld.guild_name,
-                  tag: gld.tag,
+        const upsertCharactersPromises = characters.reduce((promises, char) => {
+          const findAndInsertOrUpdate = models.Gw2Character
+            .findOne({ where: { name: char.name, Gw2ApiTokenToken: token } })
+            .then((character) => {
+              return models.Gw2Character
+                .upsert({
+                  id: character && character.id,
+                  name: char.name,
+                  race: char.race,
+                  gender: char.gender,
+                  profession: char.profession,
+                  level: char.level,
+                  guild: char.guild,
+                  created: char.created,
+                  age: char.age,
+                  deaths: char.deaths,
+                  Gw2ApiTokenToken: token,
                 });
-              });
+            });
+
+          promises.push(findAndInsertOrUpdate);
+
+          return promises;
+        }, []);
+
+        return q.allSettled([...createGuildPromises, ...upsertCharactersPromises])
+          .then((results) => {
+            const errors = results.filter((result) => result.state === 'rejected');
+            if (errors.length) {
+              throw errors;
+            }
           });
-
-          promises.push(promiseToAddGuild);
-        });
-
-        return q.allSettled(promises);
       });
     })
     .catch((response) => {
       // eslint-disable-next-line
-      console.error(`\n===Recieved ${response.status} during fetch @ ${new Date().toGMTString()} ===\n`);
+      console.error(`\n=== Error fetching characters with ${token} @ ${new Date().toGMTString()} === \n`);
       console.error(response);
 
       return q.reject(response);

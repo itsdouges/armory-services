@@ -3,7 +3,8 @@
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define('Gw2Guild', {
     id: {
-      field: 'id',
+      // This has caused the field to be called token! Rename it to id.
+      field: 'token',
       type: DataTypes.STRING,
       primaryKey: true,
     },

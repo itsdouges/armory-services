@@ -22,7 +22,7 @@ describe('characters fetcher', () => {
   };
 
   const guild = {
-    guild_id: 'cool-guild',
+    guild_id: '1234-1234-1234-1234',
     guild_name: 'name',
     tag: 'tag',
   };
@@ -48,7 +48,7 @@ describe('characters fetcher', () => {
         return models.Gw2Character.findAll({});
       })
       .then((chars) => {
-        expect(chars.length).to.equal(1);
+        expect(chars.length).to.equal(2);
 
         chars.forEach((char) => {
           expect(char.Gw2ApiTokenToken).to.equal(token);
@@ -58,13 +58,13 @@ describe('characters fetcher', () => {
   });
 
   it('should add guild if character is in one, only once', () => {
-    const characterWithGuild = Object.assign({}, character, { guild: guild.guild_name });
+    const characterWithGuild = Object.assign({}, character, { guild: guild.guild_id });
 
     const charactersStub = sinon.stub().withArgs(token).returns(
-      Promise.resolve([characterWithGuild])
+      Promise.resolve([characterWithGuild, characterWithGuild, characterWithGuild])
     );
 
-    const guildStub = sinon.stub().withArgs(guild.guild_name).returns(Promise.resolve(guild));
+    const guildStub = sinon.stub().withArgs(guild.guild_id).returns(Promise.resolve(guild));
 
     const fetchCharacters = createFetchCharacters({
       characters: charactersStub,
@@ -89,7 +89,7 @@ describe('characters fetcher', () => {
       });
   });
 
-  it('should remove characters not brought back', () => {
+  it('should remove characters not brought back and not duplicate chars', () => {
     const otherCharacter = Object.assign({}, character, { name: 'anotherName' });
 
     const charactersStub = sinon.stub();
@@ -114,10 +114,11 @@ describe('characters fetcher', () => {
             expect(char).to.not.exist;
           })
           .then(() => {
-            return models.Gw2Character.findOne({ where: { name: otherCharacter.name } });
+            return models.Gw2Character.findAll({ where: { name: otherCharacter.name } });
           })
           .then((char) => {
-            expect(char.dataValues.id).to.equal(id);
+            expect(char.length).to.equal(1);
+            expect(char[0].dataValues.id).to.equal(id);
           });
       });
   });

@@ -1,13 +1,12 @@
 const memoize = require('memoizee');
 const config = require('../../../config');
 
+function canIgnorePrivacy (character, email, ignorePrivacy) {
+  return ignorePrivacy && email === character.Gw2ApiToken.User.email;
+}
+
 function characterControllerFactory (models, gw2Api) {
   function read (name, { ignorePrivacy, email } = {}) {
-    const characterWhere = Object.assign({}, {
-      name,
-    },
-    (email && ignorePrivacy) || { showPublic: true });
-
     const query = {
       include: [{
         model: models.Gw2ApiToken,
@@ -15,7 +14,9 @@ function characterControllerFactory (models, gw2Api) {
           model: models.User,
         }],
       }],
-      where: characterWhere,
+      where: {
+        name,
+      },
     };
 
     if (email) {
@@ -31,7 +32,8 @@ function characterControllerFactory (models, gw2Api) {
       .Gw2Character
       .findOne(query)
       .then((character) => {
-        if (!character) {
+        if (!character ||
+          (!character.showPublic && !canIgnorePrivacy(character, email, ignorePrivacy))) {
           return Promise.reject();
         }
 
@@ -79,14 +81,9 @@ function characterControllerFactory (models, gw2Api) {
       alias && { alias }
     );
 
-    const characterWhere = Object.assign({},
-      (email && ignorePrivacy) || { showPublic: true }
-    );
-
     return models
       .Gw2Character
       .findAll({
-        where: characterWhere,
         include: [{
           model: models.Gw2ApiToken,
           include: [{
@@ -96,17 +93,21 @@ function characterControllerFactory (models, gw2Api) {
         }],
       })
       .then((characters) => {
-        return characters.map((c) => {
-          return {
-            accountName: c.Gw2ApiToken.accountName,
-            world: c.Gw2ApiToken.world,
-            name: c.name,
-            gender: c.gender,
-            profession: c.profession,
-            level: c.level,
-            race: c.race,
-          };
-        });
+        return characters
+          .filter((character) => (
+            character.showPublic || canIgnorePrivacy(character, email, ignorePrivacy))
+          )
+          .map((c) => {
+            return {
+              accountName: c.Gw2ApiToken.accountName,
+              world: c.Gw2ApiToken.world,
+              name: c.name,
+              gender: c.gender,
+              profession: c.profession,
+              level: c.level,
+              race: c.race,
+            };
+          });
       });
   }
 
