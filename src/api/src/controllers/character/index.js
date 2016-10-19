@@ -1,5 +1,7 @@
 const memoize = require('memoizee');
 const config = require('../../../config');
+const _ = require('lodash');
+const limit = require('../../lib/math').limit;
 
 function canIgnorePrivacy (character, email, ignorePrivacy) {
   return ignorePrivacy && email === character.Gw2ApiToken.User.email;
@@ -122,15 +124,14 @@ function characterControllerFactory (models, gw2Api) {
     preFetch: true,
   });
 
-  function random () {
+  function random (n = 1) {
     return findAllCharacters()
       .then((characters) => {
         if (!characters.length) {
           return undefined;
         }
 
-        const randomIndex = Math.floor(Math.random() * characters.length);
-        return characters[randomIndex].dataValues.name;
+        return _.sampleSize(characters, limit(n, 10)).map((character) => character.name);
       });
   }
 

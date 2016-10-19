@@ -1,7 +1,7 @@
 function charactersResource (server, controller) {
-  server.get('random/character', (req, res, next) => {
+  server.get('random/characters/:n', (req, res, next) => {
     controller
-      .random()
+      .random(req.params.n)
       .then((name) => {
         res.send(200, name);
         return next();

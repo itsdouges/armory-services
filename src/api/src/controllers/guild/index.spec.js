@@ -76,6 +76,15 @@ describe('guild controller', () => {
             tag: 'tag',
             name: 'name',
           });
+      })
+      .then(() => {
+        return models
+          .Gw2Guild
+          .create({
+            id: 'im-another-guild',
+            tag: 'tagg',
+            name: 'namee',
+          });
       });
   }
 
@@ -113,5 +122,11 @@ describe('guild controller', () => {
 
         done();
       });
+  });
+
+  it('should select random guild', () => {
+    return setupTestData()
+      .then(() => sut.random(2))
+      .then((guild) => expect(guild.length).to.equal(2));
   });
 });
