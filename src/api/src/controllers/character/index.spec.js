@@ -295,8 +295,8 @@ describe('character controller', () => {
       const expectedNames = ['blastrn', 'ayyyyy'];
 
       return setupTestData()
-        .then(controller.random)
-        .then((name) => expect(expectedNames).to.contain(name));
+        .then(() => controller.random(1))
+        .then(([name]) => expect(expectedNames).to.contain(name));
     });
   });
 
@@ -310,11 +310,11 @@ describe('character controller', () => {
         .then(null, (e) => expect(e).to.eql('Not your character'));
     });
 
-    it('should resolve and update if character belongs to email', (done) => {
+    it('should resolve and update if character belongs to email', () => {
       const email = 'email@email.com';
       const characterName = 'Blastrn';
 
-      setupTestData({ email, characterName })
+      return setupTestData({ email, characterName })
         .then(() => controller.update(email, {
           name: characterName,
           showPublic: false,
@@ -334,8 +334,7 @@ describe('character controller', () => {
             showBags: false,
             showGuild: false,
           });
-        })
-        .then(done);
+        });
     });
   });
 });

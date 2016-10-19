@@ -1,26 +1,36 @@
-'use strict';
-
-var Controller  = require('../../controllers/guild');
+const controllerFactory = require('../../controllers/guild');
 
 function guildsResource (server, models) {
-    var controller = Controller(models);
+  const controller = controllerFactory(models);
 
-    server.get('guilds/:name', function (req, res, next) {
-        controller
-            .read(req.params.name)
-            .then(function (guild) {
-                if (guild) {
-                    res.send(200, guild);
-                } else {
-                    res.send(404);
-                }
+  server.get('guilds/:name', (req, res, next) => {
+    controller
+      .read(req.params.name)
+      .then((guild) => {
+        if (guild) {
+          res.send(200, guild);
+        } else {
+          res.send(404);
+        }
 
-                return next();
-            }, function (error) {
-                res.send(500, error);
-                return next();
-            });
-    });
+        return next();
+      }, (error) => {
+        res.send(500, error);
+        return next();
+      });
+  });
+
+  server.get('random/guilds/:n', (req, res, next) => {
+    controller
+      .random(req.params.n)
+      .then((guilds) => {
+        res.send(guilds);
+        return next();
+      }, (error) => {
+        res.send(500, error);
+        return next();
+      });
+  });
 }
 
 module.exports = guildsResource;
