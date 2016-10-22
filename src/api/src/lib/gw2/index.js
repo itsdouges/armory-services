@@ -1,4 +1,4 @@
-var q = require('q');
+const q = require('q');
 
 function Gw2Api (axios, env) {
   function readPvpStats (token) {
@@ -58,66 +58,74 @@ function Gw2Api (axios, env) {
   }
 
   function readTokenInfo (token) {
-    return axios.get(env.gw2.endpoint + 'v2/tokeninfo', {
-        headers: {
-          'Authorization' : 'Bearer ' + token
-        }
+    return axios.get(`${env.gw2.endpoint}v2/tokeninfo`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
-    .then(function (e) {
+    .then((e) => {
       return e.data;
     });
   }
 
   function readTokenInfoWithAccount (token) {
-    var accountPromise = readAccount(token);
-    var infoPromise = readTokenInfo(token);
+    const accountPromise = readAccount(token);
+    const infoPromise = readTokenInfo(token);
 
     return q.all([accountPromise, infoPromise])
-      .spread(function (acc, info) {
+      .spread((acc, info) => {
         return q.resolve({
           info: info.permissions,
           world: acc.world,
           accountId: acc.id,
-          accountName: acc.name
+          accountName: acc.name,
         });
       });
   }
 
   function readCharacters (token) {
-    return axios.get(env.gw2.endpoint + 'v2/characters', {
-        headers: {
-          'Authorization' : 'Bearer ' + token
-        }
+    return axios.get(`${env.gw2.endpoint}v2/characters`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
-    .then(function (e) {
-      return e.data;
+    .then(({ data }) => {
+      return data;
     });
   }
 
   function readCharacter (name, options) {
-    var promise = axios.get(env.gw2.endpoint + 'v2/characters/' + name, {
-        headers: {
-          'Authorization' : 'Bearer ' + options.token
-        }
+    return axios.get(`${env.gw2.endpoint}v2/characters/${name}`, {
+      headers: {
+        Authorization: `Bearer ${options.token}`,
+      },
     })
-    .then(function ({ data }) {
+    .then(({ data }) => {
       return data;
     });
-
-    return promise;
   }
 
-  var exports = {
-    readCharacters: readCharacters,
-    readCharacter: readCharacter,
-    readAccount: readAccount,
-    readTokenInfoWithAccount: readTokenInfoWithAccount,
-    readPvpStats: readPvpStats,
-    readPvpStandings: readPvpStandings,
-    readPvpGames: readPvpGames,
-  };
+  function readAchievements (token) {
+    return axios.get(`${env.gw2.endpoint}v2/account/achievements`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then(({ data }) => {
+      return data;
+    });
+  }
 
-  return exports;
+  return {
+    readCharacters,
+    readCharacter,
+    readAccount,
+    readTokenInfoWithAccount,
+    readPvpStats,
+    readPvpStandings,
+    readPvpGames,
+    readAchievements,
+  };
 }
 
 module.exports = Gw2Api;

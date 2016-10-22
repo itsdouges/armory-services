@@ -4,7 +4,7 @@ var RESOURCES = Object.freeze({
   standings: '/users/:alias/pvp/standings'
 });
 
-function PvpResource(server, controller) {
+function PvpResource (server, controller) {
   server.get(RESOURCES.stats, function (req, res, next) {
     controller
       .stats(req.params.alias)
@@ -39,6 +39,19 @@ function PvpResource(server, controller) {
         res.send(200, standings);
         return next();
       }, function (error) {
+        console.error(error);
+        res.send(404);
+        return next();
+      });
+  });
+
+  server.get('/users/:alias/achievements', (req, res, next) => {
+    controller
+      .achievements(req.params.alias)
+      .then((standings) => {
+        res.send(200, standings);
+        return next();
+      }, (error) => {
         console.error(error);
         res.send(404);
         return next();

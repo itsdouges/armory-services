@@ -32,6 +32,14 @@ function PvpController (models, gw2Api) {
       })
       .catch(handleBadToken.bind(null, []));
   };
+
+  PvpController.prototype.achievements = function (alias) {
+    return userHelper.getUserPrimaryToken(models, alias)
+      .then((token) => {
+        return gw2Api.readAchievements(token);
+      })
+      .catch(handleBadToken.bind(null, []));
+  };
 }
 
 module.exports = PvpController;
