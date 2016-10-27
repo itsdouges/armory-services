@@ -1,15 +1,13 @@
 const _ = require('lodash');
 
-const TABLE_NAME = 'Gw2ApiToken';
-
 function columnExists (attributes, columnName) {
   return Object.prototype.hasOwnProperty.call(attributes, columnName);
 }
 
-module.exports = (fields) => ({
+module.exports = (fields, tableName) => ({
   up (queryInterface, Sequelize) {
     return queryInterface
-      .describeTable(TABLE_NAME)
+      .describeTable(tableName)
       .then((attributes) => {
         if (columnExists(attributes, 'created')) {
           return Promise.resolve();
@@ -17,7 +15,7 @@ module.exports = (fields) => ({
 
         return _.reduce(fields(Sequelize), (promise, options, name) => {
           promise.then(() => queryInterface.addColumn(
-            TABLE_NAME,
+            tableName,
             name,
             options
           ));
@@ -29,7 +27,7 @@ module.exports = (fields) => ({
   down (queryInterface) {
     return _.reduce(fields(), (promise, options, name) => {
       promise.then(() => queryInterface.removeColumn(
-        TABLE_NAME,
+        tableName,
         name
       ));
 

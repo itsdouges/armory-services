@@ -4,11 +4,11 @@
   "description": "Api server for api.gw2armory.com",
   "author": "madou",
   "scripts": {
-    "start": "npm run db:migrate && node ./src/run",
+    "start": "node ./src/run",
     "test": "mocha \"src/**/*.spec.js\" && npm run test:int",
     "test:int": "mocha \"src/**/*.int.js\"",
     "tdd": "mocha \"src/**/*.spec.js\" --watch",
-    "tdd:int": "npm run test:int -- --watch",
+    "tdd:int": "npm run test:int -- --watch"
   },
   "dependencies": {
     "aws-sdk": "^2.5.3",

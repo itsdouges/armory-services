@@ -24,4 +24,4 @@ const fields = (Sequelize = {}) => ({
   },
 });
 
-module.exports = newFields(fields);
+module.exports = newFields(fields, 'Gw2ApiTokens');

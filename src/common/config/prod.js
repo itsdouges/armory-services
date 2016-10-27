@@ -3,8 +3,8 @@
 module.exports = {
   db: {
     database: 'armory',
-    username: 'admin',
-    password: 'password',
+    username: process.env.DB_USER || 'admin',
+    password: process.env.DB_PASS || 'password',
     dialect: 'mysql',
     host: 'gw2armory-prod.cekbcmynaoxp.us-east-1.rds.amazonaws.com',
     logging: false,
