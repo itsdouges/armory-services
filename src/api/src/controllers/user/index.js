@@ -1,5 +1,6 @@
 const password = require('password-hash-and-salt');
 const moment = require('moment');
+const _ = require('lodash');
 
 const emailClient = require('../../lib/email');
 const CharacterController = require('../character');
@@ -114,14 +115,26 @@ function userControllerFactory (models, createValidator, gw2Api) {
       .then((data) => {
         const characterController = new CharacterController(models, gw2Api);
 
+        const primaryToken = _.find(data.gw2_api_tokens, ({ primary }) => primary).dataValues;
+
         return characterController
           .list({ alias: data.alias, email, ignorePrivacy })
-          .then((characters) => ({
+          .then((characters) => Object.assign({
             accountName: parseAccountName(data),
             alias: data.alias,
             createdAt: data.createdAt,
             characters,
-          }));
+          }, _.pick(primaryToken, [
+            'alias',
+            'created',
+            'world',
+            'access',
+            'commander',
+            'fractalLevel',
+            'dailyAp',
+            'monthlyAp',
+            'wvwRank',
+          ])));
       });
   }
 

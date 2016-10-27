@@ -1,6 +1,6 @@
 /* THIS IS COPIED FROM COMMON/MODELS */
 
-module.exports = function (sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes) => {
   return sequelize.define('UserToken', {
     id: {
       type: DataTypes.UUID,

@@ -34,6 +34,28 @@ module.exports = function (sequelize, DataTypes) {
       defaultValue: false,
       field: 'primary',
     },
+    // ----------- NEW FIELDS -----------
+    created: {
+      type: DataTypes.STRING,
+    },
+    access: {
+      type: DataTypes.STRING,
+    },
+    commander: {
+      type: DataTypes.BOOLEAN,
+    },
+    fractalLevel: {
+      type: DataTypes.INTEGER,
+    },
+    dailyAp: {
+      type: DataTypes.INTEGER,
+    },
+    monthlyAp: {
+      type: DataTypes.INTEGER,
+    },
+    wvwRank: {
+      type: DataTypes.INTEGER,
+    },
   }, {
     classMethods: {
       associate (models) {

@@ -139,9 +139,7 @@ describe('character controller', () => {
             alias: 'madou',
           });
 
-          expect(mockGw2Api.readCharacter).to.have.been.calledWith('blastrn', {
-            token: 'swag',
-          });
+          expect(mockGw2Api.readCharacter).to.have.been.calledWith('swag', 'blastrn');
         });
     });
 
@@ -164,9 +162,7 @@ describe('character controller', () => {
             alias: 'madou',
           });
 
-          expect(mockGw2Api.readCharacter).to.have.been.calledWith('blastrn', {
-            token: 'swag',
-          });
+          expect(mockGw2Api.readCharacter).to.have.been.calledWith('swag', 'blastrn');
         });
     });
 

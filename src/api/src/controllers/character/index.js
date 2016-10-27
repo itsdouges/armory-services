@@ -39,7 +39,7 @@ function characterControllerFactory (models, gw2Api) {
           return Promise.reject();
         }
 
-        return gw2Api.readCharacter(name, { token: character.Gw2ApiTokenToken })
+        return gw2Api.readCharacter(character.Gw2ApiTokenToken, name)
           .then((data) => {
             if (data === 1) {
               return undefined;

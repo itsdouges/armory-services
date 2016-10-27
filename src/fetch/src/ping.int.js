@@ -21,8 +21,8 @@ describe('ping controller', () => {
   const initiatePing = (tokens = []) => {
     const fetchTokensStub = sinon.stub().returns(Promise.resolve(tokens));
 
-    const ping = createPingFactory(fetchTokensStub)(models, [characterFetcher]);
-    return ping();
+    const { batchFetch } = createPingFactory(fetchTokensStub)(models, [characterFetcher]);
+    return batchFetch();
   };
 
   it('should not explode if fetching with no tokens', () => {

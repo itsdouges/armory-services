@@ -162,9 +162,19 @@ describe('user resource', () => {
       return initialiseUserData()
         .then(() => systemUnderTest.readPublic('madou'))
         .then((data) => {
-          expect(data.alias).to.equal('madou');
-          expect(data.accountName).to.equal('coolaccount.1234');
-          expect(data.createdAt).to.exist;
+          expect(data).to.include({
+            alias: 'madou',
+            accountName: 'coolaccount.1234',
+            world: 'aus',
+            created: null,
+            access: null,
+            commander: null,
+            fractalLevel: null,
+            dailyAp: null,
+            monthlyAp: null,
+            wvwRank: null,
+          });
+
           expect(data.characters).to.eql([{
             accountName: 'coolaccount.1234',
             world: 'aus',

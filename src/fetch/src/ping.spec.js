@@ -38,9 +38,9 @@ describe('ping', () => {
       fetchOtherStuff,
     ];
 
-    const ping = pingFactory(models, fetchers);
+    const { batchFetch } = pingFactory(models, fetchers);
 
-    return ping()
+    return batchFetch()
       .then(() => {
         fetchers.forEach((fetcher) => assertCalledWithModelAndAllItems(fetcher, models, tokens));
       });

@@ -1,24 +1,12 @@
 const gw2Api = require('./index');
-const axios = require('axios');
 
 describe('gw2 api', () => {
   const testToken = '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15';
 
-  let sut;
-  const env = {
-    gw2: {
-      endpoint: 'https://api.guildwars2.com/',
-    },
-  };
-
-  beforeEach(() => {
-    sut = gw2Api(axios, env);
-  });
-
   it('should return account data', function () {
     this.timeout(40000);
 
-    return sut.readAccount(testToken)
+    return gw2Api.readAccount(testToken)
       .then((account) => {
         expect(account.name).to.equal('stress level zero.4907');
       });
@@ -27,12 +15,7 @@ describe('gw2 api', () => {
   it('should return character data as expected', function () {
     this.timeout(40000);
 
-    return sut.readCharacter('Blastrn', {
-      token: testToken,
-      showCrafting: true,
-      showBags: true,
-      showEquipment: true,
-    })
+    return gw2Api.readCharacter(testToken, 'Blastrn')
     .then((character) => {
       expect(character.name).to.equal('Blastrn');
       expect(character.race).to.equal('Asura');
@@ -51,7 +34,7 @@ describe('gw2 api', () => {
   it('should return pvp stats', function () {
     this.timeout(40000);
 
-    return sut.readPvpStats(testToken)
+    return gw2Api.readPvpStats(testToken)
       .then((pvp) => {
         expect(pvp.pvp_rank).to.exist;
         expect(pvp.pvp_rank_points).to.exist;
@@ -62,12 +45,10 @@ describe('gw2 api', () => {
       });
   });
 
-  it('should return invalid token error', function () {
+  it('should return invalid token error', function (){
     this.timeout(40000);
 
-    return sut.readCharacter('Blastrn', {
-      token: 'invalid',
-    })
+    return gw2Api.readCharacter('invalid', 'Blastrn')
     .then(null, (response) => {
       expect(response.status).to.equal(403);
     });
@@ -76,7 +57,7 @@ describe('gw2 api', () => {
   it('should return characters data as expected', function () {
     this.timeout(40000);
 
-    sut.readCharacters(testToken)
+    gw2Api.readCharacters(testToken)
       .then((data) => {
         expect(Array.isArray(data)).to.equal(true);
       });
