@@ -6,7 +6,7 @@ module.exports = {
     username: 'admin',
     password: 'password',
     dialect: 'mysql',
-    host: 'gw2armory-int1.cekbcmynaoxp.us-east-1.rds.amazonaws.com',
+    host: 'gw2armory-test.cekbcmynaoxp.us-east-1.rds.amazonaws.com',
   },
 
   ping: {

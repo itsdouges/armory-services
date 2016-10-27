@@ -3,7 +3,6 @@ const restify = require('restify');
 
 const pingFactory = require('./ping');
 const Models = require('./models');
-const fetchCharacters = require('./fetchers/characters');
 
 const config = require(`${__dirname}/../config`);
 
@@ -11,8 +10,10 @@ console.log(`\n=== Connecting to mysql host: ${config.db.host} ===\n`);
 
 const db = new Sequelize(config.db.database, config.db.username, config.db.password, config.db);
 const models = new Models(db);
-const fetchData = pingFactory(models, [
-  fetchCharacters,
+
+const { batchFetch, fetch } = pingFactory(models, [
+  require('./fetchers/characters'),
+  require('./fetchers/account'),
 ]);
 
 const server = restify.createServer({
@@ -22,14 +23,15 @@ const server = restify.createServer({
 server.use(restify.bodyParser());
 
 server.get('/', (req, res, next) => {
-  res.send('I am alive');
+  res.send(200, 'hi, im alive');
   return next();
 });
 
+// TODO: Rename to fetch.
 server.post('/fetch-characters', (req, res, next) => {
   console.log(`\n=== Single fetch triggered for ${req.params.token} ===\n`);
 
-  fetchCharacters(models, req.params.token)
+  fetch(req.params.token)
     .then(() => {
       res.send(200);
       return next();
@@ -45,7 +47,7 @@ models.sequelize.sync()
 
     server.listen(config.ping.port);
 
-    fetchData();
+    batchFetch();
 
-    setInterval(fetchData, config.ping.interval);
+    setInterval(batchFetch, config.ping.interval);
   });

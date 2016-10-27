@@ -1,131 +1,81 @@
-const q = require('q');
+const _ = require('lodash');
+const axios = require('axios');
+const config = require('../../../config');
 
-function Gw2Api (axios, env) {
-  function readPvpStats (token) {
-    return axios.get(env.gw2.endpoint + 'v2/pvp/stats', {
-      headers: {
-        'Authorization' : 'Bearer ' + token
-      }
-    })
-    .then(function (e) {
-      return e.data;
-    });
-  }
-
-  function readPvpStandings (token) {
-    return axios.get(env.gw2.endpoint + 'v2/pvp/standings', {
-      headers: {
-        'Authorization' : 'Bearer ' + token
-      }
-    })
-    .then(function (e) {
-      return e.data;
-    });
-  }
-
-  function readPvpGames (token) {
-    return axios.get(env.gw2.endpoint + 'v2/pvp/games', {
-      headers: {
-        'Authorization' : 'Bearer ' + token
-      }
-    })
-    .then(function (response) {
-      var ids = response.data.join(',');
-      if (!ids) {
-        return response;
-      }
-
-      return axios.get(env.gw2.endpoint + 'v2/pvp/games?ids=' + ids, {
-        headers: {
-          'Authorization' : 'Bearer ' + token
-        }
-      });
-    })
-    .then(function (response) {
-      return response && response.data;
-    });
-  }
-
-  function readAccount (token) {
-    return axios.get(env.gw2.endpoint + 'v2/account', {
-        headers: {
-          'Authorization' : 'Bearer ' + token
-        }
-    })
-    .then(function (e) {
-      return e.data;
-    });
-  }
-
-  function readTokenInfo (token) {
-    return axios.get(`${env.gw2.endpoint}v2/tokeninfo`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((e) => {
-      return e.data;
-    });
-  }
-
-  function readTokenInfoWithAccount (token) {
-    const accountPromise = readAccount(token);
-    const infoPromise = readTokenInfo(token);
-
-    return q.all([accountPromise, infoPromise])
-      .spread((acc, info) => {
-        return q.resolve({
-          info: info.permissions,
-          world: acc.world,
-          accountId: acc.id,
-          accountName: acc.name,
-        });
-      });
-  }
-
-  function readCharacters (token) {
-    return axios.get(`${env.gw2.endpoint}v2/characters`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then(({ data }) => {
-      return data;
-    });
-  }
-
-  function readCharacter (name, options) {
-    return axios.get(`${env.gw2.endpoint}v2/characters/${name}`, {
-      headers: {
-        Authorization: `Bearer ${options.token}`,
-      },
-    })
-    .then(({ data }) => {
-      return data;
-    });
-  }
-
-  function readAchievements (token) {
-    return axios.get(`${env.gw2.endpoint}v2/account/achievements`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then(({ data }) => {
-      return data;
-    });
-  }
-
-  return {
-    readCharacters,
-    readCharacter,
-    readAccount,
-    readTokenInfoWithAccount,
-    readPvpStats,
-    readPvpStandings,
-    readPvpGames,
-    readAchievements,
-  };
+function normaliseObject (data) {
+  return _.reduce(data, (obj, value, key) => {
+    // eslint-disable-next-line
+    obj[_.camelCase(key)] = value;
+    return obj;
+  }, {});
 }
 
-module.exports = Gw2Api;
+function addExtra (endpoint, extra) {
+  if (extra) {
+    return `${endpoint}/${extra}`;
+  }
+
+  return endpoint;
+}
+
+const simpleCalls = _.reduce({
+  readPvpGames: { resource: 'pvp/games',
+    onResult: (token, result) => {
+      const ids = result.data.join(',');
+      if (!ids) {
+        return result;
+      }
+
+      return axios.get(`${config.gw2.endpoint}v2/pvp/games?ids=${ids}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    },
+  },
+  readPvpStandings: { resource: 'pvp/standings' },
+  readPvpStats: { resource: 'pvp/stats' },
+  readAccount: { resource: 'account', normalise: true },
+  readTokenInfo: { resource: 'tokeninfo' },
+  readCharacters: { resource: 'characters' },
+  readCharacter: { resource: 'characters' },
+  readAchievements: { resource: 'account/achievements' },
+}, (obj, { resource, onResult, normalise }, key) => {
+  // eslint-disable-next-line
+  obj[key] = (token, extra = '') => axios.get(addExtra(`${config.gw2.endpoint}v2/${resource}`, extra), {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  .then((result) => {
+    if (onResult) {
+      return onResult(token, result);
+    }
+
+    return result;
+  })
+  .then(({ data }) => {
+    if (normalise) {
+      return normaliseObject(data);
+    }
+
+    return data;
+  });
+
+  return obj;
+}, {});
+
+function readTokenInfoWithAccount (token) {
+  const accountPromise = simpleCalls.readAccount(token);
+  const infoPromise = simpleCalls.readTokenInfo(token);
+
+  return Promise.all([accountPromise, infoPromise])
+    .then(([acc, info]) => ({
+      info: info.permissions,
+      world: acc.world,
+      accountId: acc.id,
+      accountName: acc.name,
+    }));
+}
+
+module.exports = Object.assign({}, simpleCalls, { readTokenInfoWithAccount });

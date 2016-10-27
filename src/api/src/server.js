@@ -6,7 +6,7 @@ const GottaValidate = require('gotta-validate');
 const usersControllerFactory = require('./controllers/user');
 const characterControllerFactory = require('./controllers/character');
 const authControllerFactory = require('./controllers/auth');
-const gw2ApiFactory = require('./lib/gw2');
+const gw2Api = require('./lib/gw2');
 const sitemapControllerFactory = require('./controllers/sitemap');
 const statisticsControllerFactory = require('./controllers/statistics');
 
@@ -50,7 +50,6 @@ function serverFactory (models, config) {
       func: require('./lib/rules/password'),
     });
 
-  const gw2Api = gw2ApiFactory(axios, config);
   const characters = characterControllerFactory(models, gw2Api);
 
   const gw2Tokens = new Gw2TokenController(models, GottaValidate, gw2Api);

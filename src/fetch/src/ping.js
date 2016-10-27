@@ -9,19 +9,19 @@ function pingControllerFactory (models, fetchers) {
     throw new Error('\n=== No fetchers available! ===\n');
   }
 
-  return function ping () {
-    console.log('\n=== Starting fetch! ===\n');
+  function fetch (token) {
+    return fetchers.reduce(
+      (promise, fetcher) => promise.then(() => fetcher(models, token)),
+      Promise.resolve()
+    );
+  }
+
+  function batchFetch () {
+    console.log('\n=== Starting batch fetch! ===\n');
 
     return fetchTokens(models)
       .then((tokens) => {
-        return q.allSettled(
-          tokens.map(throat((token) =>
-            fetchers.reduce(
-              (promise, fetcher) => promise.then(() => fetcher(models, token)),
-              Promise.resolve()
-            ),
-          config.ping.concurrentCalls))
-        );
+        return q.allSettled(tokens.map(throat(fetch, config.ping.concurrentCalls)));
       })
       .then(() => {
         console.log('\n=== Finished fetch! ===\n');
@@ -29,6 +29,11 @@ function pingControllerFactory (models, fetchers) {
         console.error('\n=== Something bad happened! ===\n');
         console.trace(e);
       });
+  }
+
+  return {
+    batchFetch,
+    fetch,
   };
 }
 
