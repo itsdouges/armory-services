@@ -4,11 +4,12 @@
   "description": "Fetch micro-service for api.gw2armory.com",
   "author": "madou",
   "scripts": {
-    "start": "node ./src/run",
+    "start": "npm run db:migrate && node ./src/run",
     "test": "mocha \"src/**/*.spec.js\" && npm run test:int",
     "test:int": "mocha \"src/**/*.int.js\"",
     "tdd": "mocha \"src/**/*.spec.js\" --watch",
-    "tdd:int": "npm run test:int -- --watch"
+    "tdd:int": "npm run test:int -- --watch",
+    "db:migrate": "node_modules/.bin/sequelize db:migrate"
   },
   "dependencies": {
     "axios": "^0.5.4",
@@ -17,6 +18,7 @@
     "q": "^1.4.1",
     "restify": "^3.0.3",
     "sequelize": "^3.6.0",
+    "sequelize-cli": "^2.4.0",
     "throat": "^2.0.2",
     "yargs": "^3.29.0"
   },

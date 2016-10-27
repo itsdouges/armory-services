@@ -9,7 +9,6 @@
     "test:int": "mocha \"src/**/*.int.js\"",
     "tdd": "mocha \"src/**/*.spec.js\" --watch",
     "tdd:int": "npm run test:int -- --watch",
-    "db:migrate": "node_modules/.bin/sequelize db:migrate"
   },
   "dependencies": {
     "aws-sdk": "^2.5.3",
