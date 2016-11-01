@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const restify = require('restify');
 
-const pingFactory = require('./ping');
+const fetchFactory = require('./fetch');
 const Models = require('./models');
 
 const config = require(`${__dirname}/../config`);
@@ -11,7 +11,8 @@ console.log(`\n=== Connecting to mysql host: ${config.db.host} ===\n`);
 const db = new Sequelize(config.db.database, config.db.username, config.db.password, config.db);
 const models = new Models(db);
 
-const { batchFetch, fetch } = pingFactory(models, [
+const { batchFetch, fetch } = fetchFactory(models, [
+  // TODO: Dynamic import of fetchers, maybe?
   require('./fetchers/characters'),
   require('./fetchers/account'),
 ]);
@@ -28,7 +29,7 @@ server.get('/', (req, res, next) => {
 });
 
 // TODO: Rename to fetch.
-server.post('/fetch-characters', (req, res, next) => {
+server.post('/fetch', (req, res, next) => {
   console.log(`\n=== Single fetch triggered for ${req.params.token} ===\n`);
 
   fetch(req.params.token)

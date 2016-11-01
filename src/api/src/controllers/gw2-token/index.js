@@ -113,9 +113,9 @@ function Gw2TokenController (models, Validator, gw2Api) {
                 return addTokenToUser(id, token);
             })
             .then(function (createdToken) {
-                console.log('Posting to: ' + config.ping.host + ':' + config.ping.port + '/fetch-characters');
+                console.log('Posting to: ' + config.ping.host + ':' + config.ping.port + '/fetch');
 
-                axios.post('http://' + config.ping.host + ':' + config.ping.port + '/fetch-characters', {
+                axios.post('http://' + config.ping.host + ':' + config.ping.port + '/fetch', {
                     token: token
                 });
 
