@@ -28,7 +28,6 @@ server.get('/', (req, res, next) => {
   return next();
 });
 
-// TODO: Rename to fetch.
 server.post('/fetch', (req, res, next) => {
   console.log(`\n=== Single fetch triggered for ${req.params.token} ===\n`);
 
