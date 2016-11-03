@@ -4,7 +4,7 @@ const throat = require('throat');
 const fetchTokens = require('./lib/tokens');
 const config = require('../config');
 
-function pingControllerFactory (models, fetchers) {
+function fetchFactory (models, fetchers) {
   if (!fetchers || !fetchers.length) {
     throw new Error('\n=== No fetchers available! ===\n');
   }
@@ -21,7 +21,7 @@ function pingControllerFactory (models, fetchers) {
 
     return fetchTokens(models)
       .then((tokens) => {
-        return q.allSettled(tokens.map(throat(fetch, config.ping.concurrentCalls)));
+        return q.allSettled(tokens.map(throat(fetch, config.fetch.concurrentCalls)));
       })
       .then(() => {
         console.log('\n=== Finished fetch! ===\n');
@@ -37,4 +37,4 @@ function pingControllerFactory (models, fetchers) {
   };
 }
 
-module.exports = pingControllerFactory;
+module.exports = fetchFactory;

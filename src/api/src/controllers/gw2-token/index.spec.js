@@ -10,7 +10,7 @@ describe('gw2 token controller', () => {
   let mocks;
 
   const mockConfig = {
-    ping: {
+    fetch: {
       host: 'host',
       port: 'port',
     },
@@ -221,7 +221,7 @@ describe('gw2 token controller', () => {
               expect(result.permissions).to.equal('cool,yeah!');
               expect(result.accountName).to.equal('nameee');
 
-              expect(mockAxios.post).to.have.been.calledWith('http://host:port/fetch-characters', {
+              expect(mockAxios.post).to.have.been.calledWith('http://host:port/fetch', {
                 token: 'token',
               });
 

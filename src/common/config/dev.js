@@ -9,7 +9,7 @@ module.exports = {
     host: process.env.DB_PORT_3306_TCP_ADDR,
   },
 
-  ping: {
+  fetch: {
     port: '8081',
     interval: 1 * 60000, // [min] * 60000
     retries: 5,
