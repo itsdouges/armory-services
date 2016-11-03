@@ -43,11 +43,11 @@ server.post('/fetch', (req, res, next) => {
 
 models.sequelize.sync()
   .then(() => {
-    console.log(`\n=== Starting server on port ${config.ping.port}.. ===\n`);
+    console.log(`\n=== Starting server on port ${config.fetch.port}.. ===\n`);
 
-    server.listen(config.ping.port);
+    server.listen(config.fetch.port);
 
     batchFetch();
 
-    setInterval(batchFetch, config.ping.interval);
+    setInterval(batchFetch, config.fetch.interval);
   });

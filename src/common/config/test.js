@@ -9,7 +9,7 @@ module.exports = {
     host: 'gw2armory-test.cekbcmynaoxp.us-east-1.rds.amazonaws.com',
   },
 
-  ping: {
+  fetch: {
     port: '8081',
     interval: 480 * 60000, // [min] * 60000
     retries: 5,

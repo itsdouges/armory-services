@@ -34,7 +34,7 @@ module.exports = {
     publicUrl: 'http://localhost:3000',
   },
 
-  ping: {
+  fetch: {
     concurrentCalls: 20,
   },
 

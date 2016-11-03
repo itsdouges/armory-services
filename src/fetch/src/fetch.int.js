@@ -1,11 +1,11 @@
 const proxyquire = require('proxyquire');
 
-const createPingFactory = (fetchTokens) => proxyquire('./ping', {
+const createFetchFactory = (fetchTokens) => proxyquire('./fetch', {
   './lib/tokens': fetchTokens,
 });
 const characterFetcher = require('./fetchers/characters');
 
-describe('ping controller', () => {
+describe('fetch integration', () => {
   const token = 'EE920D9D-F7CF-A146-A5F5-95455980577B0DC68745-969C-4ED9-8462-1299FE6FB078';
   let models;
 
@@ -18,21 +18,21 @@ describe('ping controller', () => {
       .then((mdls) => (models = mdls));
   });
 
-  const initiatePing = (tokens = []) => {
+  const initiateFetch = (tokens = []) => {
     const fetchTokensStub = sinon.stub().returns(Promise.resolve(tokens));
 
-    const { batchFetch } = createPingFactory(fetchTokensStub)(models, [characterFetcher]);
+    const { batchFetch } = createFetchFactory(fetchTokensStub)(models, [characterFetcher]);
     return batchFetch();
   };
 
   it('should not explode if fetching with no tokens', () => {
-    return initiatePing();
+    return initiateFetch();
   });
 
   it('should not explode if fetching with some bad and some good tokens', function () {
     this.timeout(40000);
 
-    return initiatePing([
+    return initiateFetch([
       'dont-exist-lol',
       token,
     ])

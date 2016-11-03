@@ -1,12 +1,12 @@
 const proxyquire = require('proxyquire');
 
 const config = {
-  ping: {
+  fetch: {
     concurrentCalls: 10,
   },
 };
 
-const createPingFactory = (fetchTokenStub) => proxyquire('./fetch', {
+const createFetchFactory = (fetchTokenStub) => proxyquire('./fetch', {
   '../config': config,
   './lib/tokens': fetchTokenStub,
 });
@@ -15,7 +15,7 @@ const assertCalledWithModelAndAllItems = (stub, models, items) => {
   items.forEach((item) => expect(stub).to.have.been.calledWith(models, item));
 };
 
-describe('ping', () => {
+describe('fetch', () => {
   let models;
 
   beforeEach(() => {
@@ -31,14 +31,14 @@ describe('ping', () => {
     const fetchCharacters = sinon.stub();
     const fetchOtherStuff = sinon.stub();
 
-    const pingFactory = createPingFactory(fetchTokenStub);
+    const fetchFactory = createFetchFactory(fetchTokenStub);
 
     const fetchers = [
       fetchCharacters,
       fetchOtherStuff,
     ];
 
-    const { batchFetch } = pingFactory(models, fetchers);
+    const { batchFetch } = fetchFactory(models, fetchers);
 
     return batchFetch()
       .then(() => {

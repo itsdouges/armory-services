@@ -10,7 +10,7 @@ describe('gw2 token controller', () => {
   let mocks;
 
   const mockConfig = {
-    ping: {
+    fetch: {
       host: 'host',
       port: 'port',
     },

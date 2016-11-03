@@ -21,7 +21,7 @@ function fetchFactory (models, fetchers) {
 
     return fetchTokens(models)
       .then((tokens) => {
-        return q.allSettled(tokens.map(throat(fetch, config.ping.concurrentCalls)));
+        return q.allSettled(tokens.map(throat(fetch, config.fetch.concurrentCalls)));
       })
       .then(() => {
         console.log('\n=== Finished fetch! ===\n');
