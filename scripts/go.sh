@@ -220,12 +220,12 @@ task_clean() {
 }
 
 task_exited() {
-  log "Cleaning up exited containers.."
+  log "Cleaning up exited containers..."
   docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs docker rm
 }
 
 task_copy_config() {
-  log "Copying config to gw2-fetch and server.."
+  log "Copying config..."
 
   rm -r src/fetch/config/
   cp -r src/common/config/ src/fetch/config/
@@ -238,7 +238,7 @@ task_copy_config() {
 }
 
 task_copy_db_models() {
-  log "Copying db-models to gw2-fetch and server.."
+  log "Copying db-models..."
 
   rm -r src/fetch/src/models/
   cp -r src/common/models/ src/fetch/src/models/
