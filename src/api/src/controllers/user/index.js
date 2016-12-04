@@ -134,6 +134,7 @@ function userControllerFactory (models, createValidator, gw2Api) {
             'dailyAp',
             'monthlyAp',
             'wvwRank',
+            'guilds',
           ])));
       });
   }

@@ -14,6 +14,7 @@ module.exports = function fetch (models, token) {
         'monthlyAp',
         'dailyAp',
         'fractalLevel',
+        'guilds',
       ]));
 
       return models.Gw2ApiToken.update(row, {

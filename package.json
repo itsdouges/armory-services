@@ -1,7 +1,7 @@
 {
-  "name": "api.gw2armory.com",
+  "name": "armory-back",
   "version": "1.0.0",
-  "description": "Backend containers for api.gw2armory.com",
+  "description": "Backend services for gw2armory",
   "main": "index.js",
   "scripts": {
     "start": "./scripts/go.sh serve",
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/madou/api.gw2armory.com.git"
+    "url": "git+https://github.com/madou/armory-back.com.git"
   },
   "author": "madou",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/madou/api.gw2armory.com/issues"
+    "url": "https://github.com/madou/armory-back/issues"
   },
-  "homepage": "https://github.com/madou/api.gw2armory.com#readme",
+  "homepage": "https://github.com/madou/armory-back#readme",
   "devDependencies": {
     "beanstalkify": "0.0.9",
     "easy-zip": "0.0.4",

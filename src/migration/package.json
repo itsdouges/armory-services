@@ -1,14 +1,10 @@
 {
-  "name": "armory-fetch",
+  "name": "armory-migration",
   "version": "1.0.0",
   "description": "Fetch micro-service for api.gw2armory.com",
   "author": "madou",
   "scripts": {
-    "start": "node ./src/run",
-    "test": "mocha \"src/**/*.spec.js\" && npm run test:int",
-    "test:int": "mocha \"src/**/*.int.js\"",
-    "tdd": "mocha \"src/**/*.spec.js\" --watch",
-    "tdd:int": "npm run test:int -- --watch",
+    "db:migrate": "sequelize db:migrate"
   },
   "dependencies": {
     "axios": "^0.5.4",

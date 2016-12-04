@@ -241,6 +241,9 @@ task_copy_config() {
 
   rm -r src/api/config/
   cp -r src/common/config/ src/api/config/
+
+  rm -r src/migration/config/
+  cp -r src/common/config/ src/migration/config/
 }
 
 task_copy_db_models() {
@@ -251,6 +254,9 @@ task_copy_db_models() {
 
   rm -r src/api/src/models/
   cp -r src/common/models/ src/api/src/models/
+
+  rm -r src/migration/src/models/
+  cp -r src/common/models/ src/migration/src/models/
 }
 
 task_run_fetch() {
