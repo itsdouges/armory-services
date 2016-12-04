@@ -8,7 +8,7 @@
     "test": "mocha \"src/**/*.spec.js\" && npm run test:int",
     "test:int": "mocha \"src/**/*.int.js\"",
     "tdd": "mocha \"src/**/*.spec.js\" --watch",
-    "tdd:int": "npm run test:int -- --watch",
+    "tdd:int": "npm run test:int -- --watch"
   },
   "dependencies": {
     "axios": "^0.5.4",

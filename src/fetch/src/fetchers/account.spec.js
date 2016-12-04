@@ -16,7 +16,7 @@ describe('account fetcher', () => {
   beforeEach(() => global.setupDb({ seedDb: true, token }).then((m) => (models = m)));
 
   it('should update token row with data fetched from gw2 account', () => {
-    const accountData = {
+    const accountInfo = {
       world: 100,
       created: '10/20/16:20:20',
       access: 'HeartOfThorns',
@@ -25,9 +25,10 @@ describe('account fetcher', () => {
       dailyAp: 30,
       monthlyAp: 40,
       wvwRank: 50,
+      guilds: ['cool', 'guild'],
     };
 
-    account.withArgs(token).returns(Promise.resolve(accountData));
+    account.withArgs(token).returns(Promise.resolve(accountInfo));
 
     return fetchAccount(models, token)
       .then(() => models.Gw2ApiToken.findOne({
@@ -36,7 +37,9 @@ describe('account fetcher', () => {
         },
       }))
       .then(({ dataValues }) => {
-        expect(dataValues).to.include(accountData);
+        expect(dataValues).to.include(Object.assign({}, accountInfo, {
+          guilds: accountInfo.guilds.join(','),
+        }));
       });
   });
 });

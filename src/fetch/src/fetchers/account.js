@@ -14,8 +14,9 @@ module.exports = function fetch (models, token) {
         'monthlyAp',
         'dailyAp',
         'fractalLevel',
-        'guilds',
-      ]));
+      ]), {
+        guilds: accountInfo.guilds && accountInfo.guilds.join(','),
+      });
 
       return models.Gw2ApiToken.update(row, {
         where: {

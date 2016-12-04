@@ -30,6 +30,7 @@ describe('user resource', () => {
           accountId: 'i-am-id',
           UserId: userRow.id,
           primary: true,
+          guilds: 'cool,guilds',
         };
 
         return models.Gw2ApiToken.create(token)
@@ -173,6 +174,7 @@ describe('user resource', () => {
             dailyAp: null,
             monthlyAp: null,
             wvwRank: null,
+            guilds: 'cool,guilds',
           });
 
           expect(data.characters).to.eql([{
