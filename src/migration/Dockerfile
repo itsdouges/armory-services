@@ -1,15 +1,13 @@
-FROM node:6.3.1
+FROM node:6.9.1
+MAINTAINER madou <laheen@gmail.com>
 
-WORKDIR /opt
-
-COPY package.json /opt/package.json
+COPY package.json package.json
 RUN npm install --silent
 
-COPY .sequelizerc /opt/.sequelizerc
-COPY /scripts /opt/scripts
-COPY /config /opt/config
+COPY .sequelizerc .sequelizerc
+COPY /scripts /scripts
+COPY /config /config
 
 ENTRYPOINT npm run db:migrate
 
-MAINTAINER madou <laheen@gmail.com>
-LABEL Description="Database migrations for gw2armory"
+LABEL Description="Db migrations for gw2armory"

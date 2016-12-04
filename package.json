@@ -8,7 +8,8 @@
     "dev": "ENV=DEV ./scripts/go.sh serve",
     "deploy": "node ./scripts/deploy",
     "copy-common": "./scripts/go.sh copy",
-    "clean-docker": "./scripts/go.sh clean"
+    "clean-docker": "./scripts/go.sh clean",
+    "db:migrate": "./scripts/go.sh migrate"
   },
   "repository": {
     "type": "git",
