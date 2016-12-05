@@ -22,4 +22,4 @@ script:
 deploy:
   skip_cleanup: true
   provider: script
-  script: bash scripts/deploy/deploy.sh
+  script: npm run db:migrate && bash scripts/deploy/deploy.sh
