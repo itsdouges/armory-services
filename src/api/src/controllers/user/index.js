@@ -115,7 +115,7 @@ function userControllerFactory (models, createValidator, gw2Api) {
       .then((data) => {
         const characterController = new CharacterController(models, gw2Api);
 
-        const primaryToken = _.find(data.gw2_api_tokens, ({ primary }) => primary).dataValues;
+        const primaryToken = _.find(data.gw2_api_tokens, ({ primary }) => primary);
 
         return characterController
           .list({ alias: data.alias, email, ignorePrivacy })
@@ -124,7 +124,7 @@ function userControllerFactory (models, createValidator, gw2Api) {
             alias: data.alias,
             createdAt: data.createdAt,
             characters,
-          }, _.pick(primaryToken, [
+          }, _.pick(_.get(primaryToken, 'dataValues'), [
             'alias',
             'created',
             'world',

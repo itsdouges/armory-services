@@ -140,13 +140,13 @@ describe('user resource', () => {
   });
 
   describe('read', () => {
-    it('should return user data', () => {
-      const user = {
-        email: 'cool@email.com',
-        password: 'password',
-        alias: 'madou',
-      };
+    const user = {
+      email: 'cool@email.com',
+      password: 'password',
+      alias: 'madou',
+    };
 
+    it('should return user data', () => {
       sinon.stub(mocks, 'validate').returns(Promise.resolve());
 
       return systemUnderTest
@@ -157,6 +157,14 @@ describe('user resource', () => {
           expect(data.passwordHash).to.exist;
           expect(data.alias).to.equal(user.alias);
         });
+    });
+
+    it('should not explode if user doesnt have a primary token', () => {
+      sinon.stub(mocks, 'validate').returns(Promise.resolve());
+
+      return systemUnderTest
+        .create(user)
+        .then(() => systemUnderTest.readPublic(user.alias));
     });
 
     it('should return public user data', () => {
