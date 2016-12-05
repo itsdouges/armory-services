@@ -15,4 +15,4 @@ EXPOSE 8081
 
 ENTRYPOINT npm start
 
-LABEL Description="Fetch micro-service for api.gw2armory.com"
+LABEL Description="Fetch service for gw2armory"

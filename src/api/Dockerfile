@@ -1,4 +1,5 @@
 FROM node:6.9.1
+MAINTAINER madou <laheen@gmail.com>
 
 COPY package.json package.json
 RUN npm install --silent
@@ -11,5 +12,4 @@ RUN npm test
 
 ENTRYPOINT npm start
 
-MAINTAINER madou <laheen@gmail.com>
-LABEL Description="Api server for api.gw2armory.com"
+LABEL Description="Api server for gw2armory"
