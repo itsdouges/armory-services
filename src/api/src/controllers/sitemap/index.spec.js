@@ -84,10 +84,19 @@ describe('sitemap', () => {
     <loc>http://gw2-local.com/login</loc>
   </url>
   <url>
-    <loc>http://gw2-local.com/stats</loc>
+    <loc>http://gw2-local.com/statistics</loc>
+  </url>
+  <url>
+    <loc>http://gw2-local.com/embeds</loc>
   </url>
   <url>
     <loc>http://gw2-local.com/madou</loc>
+  </url>
+  <url>
+    <loc>http://gw2-local.com/madou/characters</loc>
+  </url>
+  <url>
+    <loc>http://gw2-local.com/madou/matches</loc>
   </url>
   <url>
     <loc>http://gw2-local.com/g/cool guild</loc>
@@ -95,6 +104,7 @@ describe('sitemap', () => {
   <url>
     <loc>http://gw2-local.com/madou/c/madoubie</loc>
   </url>
+
 </urlset>`);
       });
   });

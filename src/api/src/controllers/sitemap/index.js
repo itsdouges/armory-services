@@ -9,16 +9,19 @@ const publicRoutes = [
   '',
   'join',
   'login',
-  'stats',
+  'statistics',
+  'embeds',
 ];
 
-const buildSitemap = (users, guilds, characters) =>
+const buildSitemap = (...items) =>
 `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${publicRoutes.map(buildUrlTemplate).join('\n')}
-${users.join('\n')}
-${guilds.join('\n')}
-${characters.join('\n')}
+${items.reduce((str, item) => {
+  // eslint-disable-next-line no-param-reassign
+  str += `${item.join('\n')}\n`;
+  return str;
+}, '')}
 </urlset>`;
 
 module.exports = function sitemapControllerFactory (models) {
@@ -37,24 +40,17 @@ module.exports = function sitemapControllerFactory (models) {
     ]);
   }
 
-  function parseUserToXml (user) {
-    return (buildUrlTemplate(user.alias));
-  }
-
-  function parseGuildToXml (guild) {
-    return (buildUrlTemplate(`g/${guild.name}`));
-  }
-
-  function parseCharacterToXml (character) {
-    return (buildUrlTemplate(`${character.Gw2ApiToken.User.alias}/c/${character.name}`));
-  }
-
   function generate () {
     return getAllResources()
       .then(([users, guilds, characters]) => buildSitemap(
-        users.map(parseUserToXml),
-        guilds.map(parseGuildToXml),
-        characters.map(parseCharacterToXml))
+        users.map((user) => buildUrlTemplate(user.alias)),
+        users.map((user) => buildUrlTemplate(`${user.alias}/characters`)),
+        users.map((user) => buildUrlTemplate(`${user.alias}/matches`)),
+        guilds.map((guild) => buildUrlTemplate(`g/${guild.name}`)),
+        characters.map(
+          (character) =>
+            buildUrlTemplate(`${character.Gw2ApiToken.User.alias}/c/${character.name}`))
+        )
       );
   }
 
