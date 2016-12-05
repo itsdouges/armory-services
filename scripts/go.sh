@@ -161,7 +161,7 @@ task_run() {
       # docker run -p 80:80 --link gw2armory-db:db agrmory/server
       run_daemon_container $1 "-p 80:80 --link gw2armory-db:db --link gw2armory-fetch:fetch";;
     migration)
-      run_container $1;;
+      run_container $1 "--link gw2armory-db:db";;
     acceptance)
       run_container $1;;
     fetch)

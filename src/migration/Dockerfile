@@ -8,6 +8,6 @@ COPY .sequelizerc .sequelizerc
 COPY /scripts /scripts
 COPY /config /config
 
-ENTRYPOINT npm run db:migrate
+ENTRYPOINT npm start
 
 LABEL Description="Db migrations for gw2armory"
