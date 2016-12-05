@@ -2,6 +2,7 @@ const password = require('password-hash-and-salt');
 const moment = require('moment');
 const _ = require('lodash');
 
+const guildService = require('../../services/guild');
 const emailClient = require('../../lib/email');
 const CharacterController = require('../character');
 const getUserIdByEmail = require('../../lib/get-user-info').getUserIdByEmail;
@@ -135,7 +136,21 @@ function userControllerFactory (models, createValidator, gw2Api) {
             'monthlyAp',
             'wvwRank',
             'guilds',
-          ])));
+          ])))
+          .then((user) => {
+            if (user.guilds) {
+              const promises = user.guilds.split(',').map((id) => {
+                return guildService.read(models, { id });
+              });
+
+              return Promise.all(promises)
+                .then((guilds) => {
+                  return Object.assign({}, user, { guilds });
+                });
+            }
+
+            return user;
+          });
       });
   }
 

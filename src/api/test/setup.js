@@ -78,3 +78,5 @@ global.seedData = function (seedDb, options) {
   })
   .then(() => models);
 };
+
+global.setupTestDb = seedData;

@@ -6,6 +6,7 @@ describe('user resource', () => {
   let models;
   let mockValidator;
   let mocks;
+  let readGuild;
 
   const stubConfig = {
     PASSWORD_RESET_TIME_LIMIT: 5,
@@ -74,11 +75,16 @@ describe('user resource', () => {
   }
 
   function createUserResource (config = stubConfig) {
+    readGuild = sinon.stub().returns(Promise.resolve());
+
     const userResourceFactory = proxyquire('./index', {
       '../../lib/email': {
         send: mocks.sendEmail,
       },
       '../../../config': config,
+      '../../services/guild': {
+        read: readGuild,
+      },
     });
 
     return userResourceFactory(models, mockValidator);
@@ -168,6 +174,12 @@ describe('user resource', () => {
     });
 
     it('should return public user data', () => {
+      const cool = { guild: 'guild' };
+      const guilds = { axsd: 'sdsd' };
+
+      readGuild.withArgs(models, { id: 'cool' }).returns(Promise.resolve(cool));
+      readGuild.withArgs(models, { id: 'guilds' }).returns(Promise.resolve(guilds));
+
       return initialiseUserData()
         .then(() => systemUnderTest.readPublic('madou'))
         .then((data) => {
@@ -182,8 +194,9 @@ describe('user resource', () => {
             dailyAp: null,
             monthlyAp: null,
             wvwRank: null,
-            guilds: 'cool,guilds',
           });
+
+          expect(data.guilds).to.eql([cool, guilds]);
 
           expect(data.characters).to.eql([{
             accountName: 'coolaccount.1234',
