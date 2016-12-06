@@ -2,6 +2,7 @@ const password = require('password-hash-and-salt');
 const moment = require('moment');
 const _ = require('lodash');
 
+const guildService = require('../../services/guild');
 const emailClient = require('../../lib/email');
 const CharacterController = require('../character');
 const getUserIdByEmail = require('../../lib/get-user-info').getUserIdByEmail;
@@ -115,7 +116,7 @@ function userControllerFactory (models, createValidator, gw2Api) {
       .then((data) => {
         const characterController = new CharacterController(models, gw2Api);
 
-        const primaryToken = _.find(data.gw2_api_tokens, ({ primary }) => primary).dataValues;
+        const primaryToken = _.find(data.gw2_api_tokens, ({ primary }) => primary);
 
         return characterController
           .list({ alias: data.alias, email, ignorePrivacy })
@@ -124,7 +125,7 @@ function userControllerFactory (models, createValidator, gw2Api) {
             alias: data.alias,
             createdAt: data.createdAt,
             characters,
-          }, _.pick(primaryToken, [
+          }, _.pick(_.get(primaryToken, 'dataValues'), [
             'alias',
             'created',
             'world',
@@ -134,7 +135,23 @@ function userControllerFactory (models, createValidator, gw2Api) {
             'dailyAp',
             'monthlyAp',
             'wvwRank',
-          ])));
+            'guilds',
+          ])))
+          .then((user) => {
+            if (user.guilds) {
+              const promises = user.guilds.split(',').map((id) => {
+                return guildService.read(models, { id });
+              });
+
+              return Promise.all(promises)
+                .then((guilds) => {
+                  const cleanGuilds = guilds.filter((guild) => !!guild);
+                  return Object.assign({}, user, { guilds: cleanGuilds });
+                });
+            }
+
+            return Object.assign({}, user, { guilds: [] });
+          });
       });
   }
 

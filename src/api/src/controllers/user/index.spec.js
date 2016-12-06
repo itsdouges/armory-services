@@ -6,6 +6,7 @@ describe('user resource', () => {
   let models;
   let mockValidator;
   let mocks;
+  let readGuild;
 
   const stubConfig = {
     PASSWORD_RESET_TIME_LIMIT: 5,
@@ -30,6 +31,7 @@ describe('user resource', () => {
           accountId: 'i-am-id',
           UserId: userRow.id,
           primary: true,
+          guilds: 'cool,guilds',
         };
 
         return models.Gw2ApiToken.create(token)
@@ -73,11 +75,16 @@ describe('user resource', () => {
   }
 
   function createUserResource (config = stubConfig) {
+    readGuild = sinon.stub().returns(Promise.resolve());
+
     const userResourceFactory = proxyquire('./index', {
       '../../lib/email': {
         send: mocks.sendEmail,
       },
       '../../../config': config,
+      '../../services/guild': {
+        read: readGuild,
+      },
     });
 
     return userResourceFactory(models, mockValidator);
@@ -139,13 +146,13 @@ describe('user resource', () => {
   });
 
   describe('read', () => {
-    it('should return user data', () => {
-      const user = {
-        email: 'cool@email.com',
-        password: 'password',
-        alias: 'madou',
-      };
+    const user = {
+      email: 'cool@email.com',
+      password: 'password',
+      alias: 'madou',
+    };
 
+    it('should return user data', () => {
       sinon.stub(mocks, 'validate').returns(Promise.resolve());
 
       return systemUnderTest
@@ -158,7 +165,20 @@ describe('user resource', () => {
         });
     });
 
-    it('should return public user data', () => {
+    it('should not explode if user doesnt have a primary token', () => {
+      sinon.stub(mocks, 'validate').returns(Promise.resolve());
+
+      return systemUnderTest
+        .create(user)
+        .then(() => systemUnderTest.readPublic(user.alias));
+    });
+
+    it('should return public user data and ignore nulls', () => {
+      const cool = { guild: 'guild' };
+
+      readGuild.withArgs(models, { id: 'cool' }).returns(Promise.resolve(cool));
+      readGuild.withArgs(models, { id: 'guilds' }).returns(Promise.resolve(null));
+
       return initialiseUserData()
         .then(() => systemUnderTest.readPublic('madou'))
         .then((data) => {
@@ -174,6 +194,8 @@ describe('user resource', () => {
             monthlyAp: null,
             wvwRank: null,
           });
+
+          expect(data.guilds).to.eql([cool]);
 
           expect(data.characters).to.eql([{
             accountName: 'coolaccount.1234',

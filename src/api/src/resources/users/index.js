@@ -26,8 +26,8 @@ function UserResource (server, controller) {
       .then((data) => {
         res.send(200, data);
         return next();
-      }, () => {
-        // todo: error handling
+      }, (err) => {
+        console.error(err);
         res.send(404);
         return next();
       });

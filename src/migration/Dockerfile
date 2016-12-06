@@ -4,12 +4,10 @@ MAINTAINER madou <laheen@gmail.com>
 COPY package.json package.json
 RUN npm install --silent
 
+COPY .sequelizerc .sequelizerc
+COPY /scripts /scripts
 COPY /config /config
-COPY /test /test
-COPY /src /src
-
-RUN npm test
 
 ENTRYPOINT npm start
 
-LABEL Description="Api server for gw2armory"
+LABEL Description="Db migrations for gw2armory"

@@ -46,6 +46,14 @@ It copies `db models` and `env_config.js` to `src/fetch` and `src/api` folders.
 npm run copy-common
 ```
 
+### Database migrations
+
+Ensure any database migration is backwards compatible with a previous version of the api. This will keep deployments simple and clean.
+
+```
+ENV={ENV} npm run db:migrate
+```
+
 ## Pull Requests
 
 Like to contribute? Look at the [issues](https://github.com/madou/armory-back/issues) tab or contact me on [reddit](https://www.reddit.com/r/gw2armory) or [twitter](https://twitter.com/itsmadou) to find something you'd like to work on, then make a pull request against the `master` branch.

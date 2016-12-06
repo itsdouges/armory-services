@@ -34,6 +34,10 @@ module.exports = function (sequelize, DataTypes) {
       defaultValue: false,
       field: 'primary',
     },
+    guilds: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     // ----------- NEW FIELDS -----------
     created: {
       type: DataTypes.STRING,

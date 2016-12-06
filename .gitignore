@@ -6,8 +6,6 @@ npm-debug.log
 Dockerrun.aws.json
 *.zip
 .cmds
-src/api/config
-src/api/src/models
-src/fetch/config
-src/fetch/src/models
+src/**/config
+src/**/src/models
 .env

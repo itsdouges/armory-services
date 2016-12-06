@@ -101,6 +101,18 @@
           "containerPort": 80
         }
       ]
-    }
+    },
+    {
+      "name": "migration",
+      "image": "madou/gw2armory-migration",
+      "essential": false,
+      "memory": 50,
+      "environment": [
+        {
+          "name": "ENV",
+          "value": "{{ ENV }}"
+        }
+      ]
+    },
   ]
 }

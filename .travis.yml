@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "6.3.1"
+  - "6.9.1"
 branches:
   only:
   - master
@@ -17,8 +17,10 @@ script:
   - bash scripts/go.sh copy &&
     bash scripts/go.sh build fetch &&
     bash scripts/go.sh build server &&
+    bash scripts/go.sh build migration &&
     bash scripts/go.sh push fetch &&
-    bash scripts/go.sh push server
+    bash scripts/go.sh push server &&
+    bash scripts/go.sh push migration
 deploy:
   skip_cleanup: true
   provider: script

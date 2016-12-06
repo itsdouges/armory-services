@@ -1,0 +1,17 @@
+{
+  "name": "armory-migration",
+  "version": "1.0.0",
+  "description": "Db migration for gw2armory",
+  "author": "madou",
+  "scripts": {
+    "start": "sequelize db:migrate"
+  },
+  "dependencies": {
+    "lodash": "^4.16.4",
+    "lodash.assign": "^4.2.0",
+    "mysql": "^2.8.0",
+    "sequelize": "^3.6.0",
+    "sequelize-cli": "^2.4.0",
+    "yargs": "^3.29.0"
+  }
+}

@@ -160,6 +160,8 @@ task_run() {
     server)
       # docker run -p 80:80 --link gw2armory-db:db agrmory/server
       run_daemon_container $1 "-p 80:80 --link gw2armory-db:db --link gw2armory-fetch:fetch";;
+    migration)
+      run_container $1 "--link gw2armory-db:db";;
     acceptance)
       run_container $1;;
     fetch)
@@ -189,26 +191,15 @@ task_build() {
       build_container $1 "./src/api/";;
     fetch)
       build_container $1 "./src/fetch/";;
+    migration)
+      build_container $1 "./src/migration/";;
     *)
-      log "Supported build: {acceptance|server|db|data|fetch}";;
+      log "Supported build: {acceptance|server|db|data|fetch|migration}";;
   esac
 }
 
 task_remove() {
-  case "$1" in
-    acceptance)
-      remove_container $1;;
-    db)
-      remove_container $1;;
-    data)
-      remove_container $1;;
-    server)
-      remove_container $1;;
-    fetch)
-      remove_container $1;;
-    *)
-      log "Supported removes: {acceptance|server|db|data|fetch}";;
-  esac
+  remove_container $1
 }
 
 task_untagged() {
@@ -229,22 +220,25 @@ task_clean() {
 }
 
 task_exited() {
-  log "Cleaning up exited containers.."
+  log "Cleaning up exited containers..."
   docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs docker rm
 }
 
 task_copy_config() {
-  log "Copying config to gw2-fetch and server.."
+  log "Copying config..."
 
   rm -r src/fetch/config/
   cp -r src/common/config/ src/fetch/config/
 
   rm -r src/api/config/
   cp -r src/common/config/ src/api/config/
+
+  rm -r src/migration/config/
+  cp -r src/common/config/ src/migration/config/
 }
 
 task_copy_db_models() {
-  log "Copying db-models to gw2-fetch and server.."
+  log "Copying db-models..."
 
   rm -r src/fetch/src/models/
   cp -r src/common/models/ src/fetch/src/models/
@@ -289,6 +283,10 @@ case "$1" in
   copy)
     task_copy_config
     task_copy_db_models;;
+  migrate)
+    remove_container migration
+    task_build migration
+    task_run migration;;
   *)
     log "Available tasks: {acceptance|copy|fetch|run|serve|remove|push|clean|create|build|servedev}"
     exit 1;;
