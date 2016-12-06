@@ -1,10 +1,14 @@
 const proxyquire = require('proxyquire');
 
 const account = sinon.stub();
+const fetch = sinon.stub().returns(Promise.reject());
 
 const fetchAccount = proxyquire('./account', {
   '../lib/gw2': {
     account,
+  },
+  '../services/guilds': {
+    fetch,
   },
 });
 
@@ -28,6 +32,7 @@ describe('account fetcher', () => {
       guilds: ['cool', 'guild'],
     };
 
+    fetch.withArgs(models, accountInfo.guilds).returns(Promise.resolve());
     account.withArgs(token).returns(Promise.resolve(accountInfo));
 
     return fetchAccount(models, token)

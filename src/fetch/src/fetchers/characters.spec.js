@@ -1,9 +1,8 @@
 const proxyquire = require('proxyquire');
 
-const createFetchCharacters = ({ characters, guild }) => proxyquire('./characters', {
+const createFetchCharacters = ({ characters }) => proxyquire('./characters', {
   '../lib/gw2': {
     characters,
-    guild,
   },
 });
 
@@ -19,12 +18,6 @@ describe('characters fetcher', () => {
     created: 20,
     age: 20,
     deaths: 2,
-  };
-
-  const guild = {
-    guild_id: '1234-1234-1234-1234',
-    guild_name: 'name',
-    tag: 'tag',
   };
 
   let models;
@@ -53,38 +46,6 @@ describe('characters fetcher', () => {
         chars.forEach((char) => {
           expect(char.Gw2ApiTokenToken).to.equal(token);
           expect(char.dataValues).to.include(character);
-        });
-      });
-  });
-
-  it('should add guild if character is in one, only once', () => {
-    const characterWithGuild = Object.assign({}, character, { guild: guild.guild_id });
-
-    const charactersStub = sinon.stub().withArgs(token).returns(
-      Promise.resolve([characterWithGuild, characterWithGuild, characterWithGuild])
-    );
-
-    const guildStub = sinon.stub().withArgs(guild.guild_id).returns(Promise.resolve(guild));
-
-    const fetchCharacters = createFetchCharacters({
-      characters: charactersStub,
-      guild: guildStub,
-    });
-
-    return fetchCharacters(models, token)
-      .then(() => fetchCharacters(models, token))
-      .then(() => models.Gw2Guild.findAll())
-      .then((guilds) => {
-        expect(guilds.length).to.equal(1);
-
-        const [gld] = guilds;
-
-        expect(guildStub).to.have.been.calledOnce;
-
-        expect(gld).to.include({
-          id: guild.guild_id,
-          name: guild.guild_name,
-          tag: guild.tag,
         });
       });
   });

@@ -145,11 +145,12 @@ function userControllerFactory (models, createValidator, gw2Api) {
 
               return Promise.all(promises)
                 .then((guilds) => {
-                  return Object.assign({}, user, { guilds });
+                  const cleanGuilds = guilds.filter((guild) => !!guild);
+                  return Object.assign({}, user, { guilds: cleanGuilds });
                 });
             }
 
-            return user;
+            return Object.assign({}, user, { guilds: [] });
           });
       });
   }

@@ -1,5 +1,4 @@
 const q = require('q');
-const unique = require('lodash/uniq');
 
 const gw2Fetch = require('../lib/gw2');
 
@@ -16,31 +15,6 @@ module.exports = function fetchUserCharacterData (models, token) {
         },
       })
       .then(() => {
-        const guildIds = characters
-          .map((character) => character.guild)
-          .filter((guildId) => !!guildId);
-
-        const createGuildPromises = unique(guildIds)
-          .reduce((promises, guildId) => {
-            const promise = models.Gw2Guild.findOne({
-              where: {
-                id: guildId,
-              },
-            })
-            .then((guild) => !guild && gw2Fetch.guild(guildId))
-            .then((guild) => {
-              return guild && models.Gw2Guild.create({
-                id: guild.guild_id,
-                name: guild.guild_name,
-                tag: guild.tag,
-              });
-            });
-
-            promises.push(promise);
-
-            return promises;
-          }, []);
-
         const upsertCharactersPromises = characters.reduce((promises, char) => {
           const findAndInsertOrUpdate = models.Gw2Character
             .findOne({ where: { name: char.name, Gw2ApiTokenToken: token } })
@@ -66,7 +40,7 @@ module.exports = function fetchUserCharacterData (models, token) {
           return promises;
         }, []);
 
-        return q.allSettled([...createGuildPromises, ...upsertCharactersPromises])
+        return q.allSettled([...upsertCharactersPromises])
           .then((results) => {
             const errors = results.filter((result) => result.state === 'rejected');
             if (errors.length) {
