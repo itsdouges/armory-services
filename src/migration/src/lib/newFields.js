@@ -1,7 +1,8 @@
 const _ = require('lodash');
 
 function columnExists (attributes, columnName) {
-  return Object.prototype.hasOwnProperty.call(attributes, columnName);
+  // eslint-disable-next-line no-prototype-builtins
+  return attributes.hasOwnProperty(columnName);
 }
 
 module.exports = (fields, tableName) => ({
@@ -9,8 +10,11 @@ module.exports = (fields, tableName) => ({
     return queryInterface
       .describeTable(tableName)
       .then((attributes) => {
-        if (columnExists(attributes, 'created')) {
-          return Promise.resolve();
+        // eslint-disable-next-line no-restricted-syntax
+        for (const columnName in attributes) {
+          if (columnExists(attributes, columnName)) {
+            return Promise.resolve();
+          }
         }
 
         return _.reduce(fields(Sequelize), (promise, options, name) => {
