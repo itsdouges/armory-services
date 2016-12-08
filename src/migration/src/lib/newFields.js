@@ -10,9 +10,10 @@ module.exports = (fields, tableName) => ({
     return queryInterface
       .describeTable(tableName)
       .then((attributes) => {
+        const newFields = fields(Sequelize);
         let bailOut = false;
 
-        Object.keys(attributes).forEach((columnName) => {
+        Object.keys(newFields).forEach((columnName) => {
           if (columnExists(attributes, columnName)) {
             bailOut = true;
             console.log(`=== Column ${columnName} already exists ===`);
@@ -24,7 +25,7 @@ module.exports = (fields, tableName) => ({
           return Promise.resolve();
         }
 
-        return _.reduce(fields(Sequelize), (promise, options, name) => {
+        return _.reduce(newFields, (promise, options, name) => {
           promise.then(() => queryInterface.addColumn(
             tableName,
             name,
