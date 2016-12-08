@@ -99,6 +99,9 @@ describe('sitemap', () => {
     <loc>http://gw2-local.com/madou/matches</loc>
   </url>
   <url>
+    <loc>http://gw2-local.com/madou/guilds</loc>
+  </url>
+  <url>
     <loc>http://gw2-local.com/g/cool guild</loc>
   </url>
   <url>

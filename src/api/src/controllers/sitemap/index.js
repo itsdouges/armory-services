@@ -24,6 +24,8 @@ ${items.reduce((str, item) => {
 }, '')}
 </urlset>`;
 
+const userRoutes = ['', '/characters', '/matches', '/guilds'];
+
 module.exports = function sitemapControllerFactory (models) {
   function getAllResources () {
     return Promise.all([
@@ -43,9 +45,9 @@ module.exports = function sitemapControllerFactory (models) {
   function generate () {
     return getAllResources()
       .then(([users, guilds, characters]) => buildSitemap(
-        users.map((user) => buildUrlTemplate(user.alias)),
-        users.map((user) => buildUrlTemplate(`${user.alias}/characters`)),
-        users.map((user) => buildUrlTemplate(`${user.alias}/matches`)),
+        ...userRoutes.map(
+          (route) => users.map((user) => buildUrlTemplate(`${user.alias}${route}`))
+        ),
         guilds.map((guild) => buildUrlTemplate(`g/${guild.name}`)),
         characters.map(
           (character) =>
