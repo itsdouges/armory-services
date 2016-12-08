@@ -34,6 +34,7 @@ describe('guild controller', () => {
             permissions: 'cool,permissions',
             world: 1234,
             UserId: user.id,
+            guilds: 'im-guild',
           });
       })
       .then((token) => {
@@ -88,8 +89,8 @@ describe('guild controller', () => {
       });
   }
 
-  it('should return guild and all associated characters', (done) => {
-    setupTestData()
+  it('should return guild and all associated characters', () => {
+    return setupTestData()
       .then(() => {
         return sut.read('name');
       })
@@ -98,6 +99,10 @@ describe('guild controller', () => {
           name: 'name',
           id: 'im-guild',
           tag: 'tag',
+          users: [{
+            accountName: 'cool.4321',
+            name: 'huedwell',
+          }],
           characters: [{
             accountName: 'cool.4321',
             world: 'world',
@@ -119,8 +124,6 @@ describe('guild controller', () => {
             userAlias: 'huedwell',
           }],
         });
-
-        done();
       });
   });
 

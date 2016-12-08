@@ -22,7 +22,7 @@ function guildControllerFactory (models) {
       };
     })
     .then((guild) => {
-      return models.Gw2Character.findAll({
+      const characters = models.Gw2Character.findAll({
         where: {
           guild: guild.id,
         },
@@ -32,20 +32,38 @@ function guildControllerFactory (models) {
             model: models.User,
           }],
         }],
-      })
-      .then((characters) => {
-        return Object.assign({}, guild, {
-          characters: characters.map((c) => ({
-            world: 'world',
-            name: c.name,
-            gender: c.gender,
-            profession: c.profession,
-            level: c.level,
-            race: c.race,
-            userAlias: c.Gw2ApiToken.User.alias,
-            accountName: c.Gw2ApiToken.accountName,
-          })),
-        });
+      });
+
+      const tokens = models.Gw2ApiToken.findAll({
+        where: {
+          guilds: {
+            $like: `%${guild.id}%`,
+          },
+        },
+        include: [{
+          model: models.User,
+        }],
+      });
+
+      return Promise.all([guild, characters, tokens]);
+    })
+    .then(([guild, characters, tokens]) => {
+      return Object.assign({}, guild, {
+        characters: characters.map((c) => ({
+          world: 'world',
+          name: c.name,
+          gender: c.gender,
+          profession: c.profession,
+          level: c.level,
+          race: c.race,
+          userAlias: c.Gw2ApiToken.User.alias,
+          accountName: c.Gw2ApiToken.accountName,
+        })),
+      }, {
+        users: tokens.map((token) => ({
+          name: token.User.alias,
+          accountName: token.accountName,
+        })),
       });
     });
   }
