@@ -5,6 +5,13 @@ module.exports = {
     port: '80',
   },
 
+  db: {
+    database: 'armory',
+    username: 'admin',
+    password: 'password',
+    dialect: 'mysql',
+  },
+
   gw2: {
     endpoint: 'https://api.guildwars2.com/',
   },
@@ -36,6 +43,11 @@ module.exports = {
 
   fetch: {
     concurrentCalls: 20,
+    port: '8081',
+    interval: 480 * 60000, // [min] * 60000
+    retries: 5,
+    verbose: true,
+    host: process.env.FETCH_PORT_8081_TCP_ADDR,
   },
 
   cache: {

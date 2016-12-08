@@ -1,4 +1,4 @@
-const newFields = require('./newFields');
+const newFields = require('../lib/newFields');
 
 const fields = (Sequelize = {}) => ({
   created: {

@@ -5,8 +5,7 @@ COPY package.json package.json
 RUN npm install --silent
 
 COPY .sequelizerc .sequelizerc
-COPY /scripts /scripts
-COPY /config /config
+COPY /src /src
 
 ENTRYPOINT npm start
 
