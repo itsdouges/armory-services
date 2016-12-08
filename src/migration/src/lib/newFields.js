@@ -10,11 +10,18 @@ module.exports = (fields, tableName) => ({
     return queryInterface
       .describeTable(tableName)
       .then((attributes) => {
-        // eslint-disable-next-line no-restricted-syntax
-        for (const columnName in attributes) {
+        let bailOut = false;
+
+        Object.keys(attributes).forEach((columnName) => {
           if (columnExists(attributes, columnName)) {
-            return Promise.resolve();
+            bailOut = true;
+            console.log(`=== Column ${columnName} already exists ===`);
           }
+        });
+
+        if (bailOut) {
+          console.log('=== Aborting migration ===');
+          return Promise.resolve();
         }
 
         return _.reduce(fields(Sequelize), (promise, options, name) => {
