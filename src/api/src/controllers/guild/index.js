@@ -19,6 +19,7 @@ function guildControllerFactory (models) {
         name: guild.name,
         id: guild.id,
         tag: guild.tag,
+        claimed: !!guild.apiToken,
       };
     })
     .then((guild) => {

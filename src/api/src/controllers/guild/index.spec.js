@@ -85,6 +85,7 @@ describe('guild controller', () => {
             id: 'im-another-guild',
             tag: 'tagg',
             name: 'namee',
+            apiToken: '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15',
           });
       });
   }
@@ -99,6 +100,7 @@ describe('guild controller', () => {
           name: 'name',
           id: 'im-guild',
           tag: 'tag',
+          claimed: false,
           users: [{
             accountName: 'cool.4321',
             name: 'huedwell',
@@ -131,5 +133,11 @@ describe('guild controller', () => {
     return setupTestData()
       .then(() => sut.random(2))
       .then((guild) => expect(guild.length).to.equal(2));
+  });
+
+  it('should set claimed flag to true if api token is set', () => {
+    return setupTestData()
+      .then(() => sut.read('namee'))
+      .then((guild) => expect(guild.claimed).to.equal(true));
   });
 });
