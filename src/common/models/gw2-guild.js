@@ -27,5 +27,23 @@ module.exports = function (sequelize, DataTypes) {
         key: 'token',
       },
     },
+    favor: {
+      type: DataTypes.INTEGER,
+    },
+    resonance: {
+      type: DataTypes.INTEGER,
+    },
+    aetherium: {
+      type: DataTypes.INTEGER,
+    },
+    influence: {
+      type: DataTypes.INTEGER,
+    },
+    level: {
+      type: DataTypes.INTEGER,
+    },
+    motd: {
+      type: DataTypes.STRING,
+    },
   });
 };

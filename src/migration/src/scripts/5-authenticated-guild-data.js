@@ -10,6 +10,24 @@ const fields = (Sequelize = {}) => ({
       key: 'token',
     },
   },
+  favor: {
+    type: Sequelize.INTEGER,
+  },
+  resonance: {
+    type: Sequelize.INTEGER,
+  },
+  aetherium: {
+    type: Sequelize.INTEGER,
+  },
+  influence: {
+    type: Sequelize.INTEGER,
+  },
+  level: {
+    type: Sequelize.INTEGER,
+  },
+  motd: {
+    type: Sequelize.STRING,
+  },
 });
 
 module.exports = newFields(fields, 'Gw2Guilds');
