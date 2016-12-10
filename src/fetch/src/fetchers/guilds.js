@@ -4,10 +4,9 @@ const _ = require('lodash');
 module.exports = (models, { token, permissions }) => {
   if (_.includes(permissions, 'guilds')) {
     return gw2.account(token)
-      .then(({ guild_leader } = {}) => {
-        // eslint-disable-next-line camelcase
-        if (guild_leader) {
-          const promises = guild_leader.map((id) => {
+      .then(({ guildLeader } = {}) => {
+        if (guildLeader) {
+          const promises = guildLeader.map((id) => {
             return models.Gw2Guild.update({
               apiToken: token,
             }, {

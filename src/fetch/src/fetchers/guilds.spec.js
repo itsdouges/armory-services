@@ -14,7 +14,7 @@ describe('guild fetcher', () => {
   const token = { token: '1234-12341234-1234', permissions: 'guilds,account' };
 
   const accountInfoData = {
-    guild_leader: [
+    guildLeader: [
       '1234',
     ],
   };
@@ -24,7 +24,7 @@ describe('guild fetcher', () => {
   const findGuild = () => {
     return models.Gw2Guild.findOne({
       where: {
-        id: accountInfoData.guild_leader[0],
+        id: accountInfoData.guildLeader[0],
       },
     });
   };
@@ -33,7 +33,7 @@ describe('guild fetcher', () => {
     return setupDb({ seedDb: true, token: token.token })
       .then((mdls) => {
         models = mdls;
-        return models.Gw2Guild.create(testData.guild(accountInfoData.guild_leader[0]));
+        return models.Gw2Guild.create(testData.guild(accountInfoData.guildLeader[0]));
       });
   });
 
