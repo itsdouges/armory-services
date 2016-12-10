@@ -3,15 +3,25 @@ const testData = require('../../test/testData');
 
 const sandbox = sinon.sandbox.create();
 const account = sandbox.stub();
+const guildAuthenticated = sandbox.stub();
 
 const fetcher = proxyquire('./guilds', {
   '../lib/gw2': {
     account,
+    guildAuthenticated,
   },
 });
 
 describe('guild fetcher', () => {
   const token = { token: '1234-12341234-1234', permissions: 'guilds,account' };
+  const authGuildData = {
+    level: 69,
+    motd: 'Cool message',
+    influence: 23,
+    aetherium: 233,
+    resonance: 44,
+    favor: 11,
+  };
 
   const accountInfoData = {
     guildLeader: [
@@ -40,6 +50,8 @@ describe('guild fetcher', () => {
   context('when token has permissions and is guild leader', () => {
     before(() => {
       account.withArgs(token.token).returns(Promise.resolve(accountInfoData));
+      guildAuthenticated.withArgs(token.token, accountInfoData.guildLeader[0])
+        .returns(Promise.resolve(authGuildData));
 
       return fetcher(models, token);
     });
@@ -51,6 +63,11 @@ describe('guild fetcher', () => {
     it('should associate guilds that token is a leader of', () => {
       return findGuild()
         .then((guild) => expect(guild.apiToken).to.equal(token.token));
+    });
+
+    it.only('should add authenticated data into guild using token', () => {
+      return findGuild()
+        .then((guild) => expect(guild).to.include(authGuildData));
     });
 
     it('should not remove guild if token is removed', () => {

@@ -39,7 +39,7 @@ function guildLogs (token, id) {
 }
 
 function guildAuthenticated (token, id) {
-  return axios.get(`${config.gw2.endpoint}v2/guild/${id}/logs`, {
+  return axios.get(`${config.gw2.endpoint}v2/guild/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

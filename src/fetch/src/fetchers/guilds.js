@@ -6,14 +6,17 @@ module.exports = (models, { token, permissions }) => {
     return gw2.account(token)
       .then(({ guildLeader } = {}) => {
         if (guildLeader) {
-          const promises = guildLeader.map((id) => {
-            return models.Gw2Guild.update({
-              apiToken: token,
-            }, {
-              where: {
-                id,
-              },
-            });
+          const promises = guildLeader.map((guildId) => {
+            return gw2.guildAuthenticated(token, guildId)
+              .then((data) => {
+                return models.Gw2Guild.update(Object.assign({}, {
+                  apiToken: token,
+                }, data), {
+                  where: {
+                    id: guildId,
+                  },
+                });
+              });
           });
 
           return Promise.all(promises);
