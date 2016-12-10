@@ -1,7 +1,10 @@
 const memoize = require('memoizee');
-const config = require('../../../config');
 const _ = require('lodash');
+
+const config = require('../../../config');
 const limit = require('../../lib/math').limit;
+const { isAccessAllowed } = require('../../services/guild');
+const { findByAccountName, isUserInGuild } = require('../../services/user');
 
 function guildControllerFactory (models) {
   function read (name) {
@@ -91,9 +94,31 @@ function guildControllerFactory (models) {
       });
   }
 
+  function canAccess (type, user) {
+    return Promise.all([
+      isAccessAllowed(models, 'logs'),
+      isUserInGuild(models, user),
+    ])
+    .then(([publicAccessAllowed, userIsInGuild]) => {
+      return userIsInGuild || publicAccessAllowed ?
+        Promise.resolve() :
+        Promise.reject('Access not allowed');
+    });
+  }
+
+  function logs (name, { requestingUser }) {
+    return canAccess('logs', requestingUser);
+  }
+
+  function members (name, { requestingUser }) {
+    return canAccess('members', requestingUser);
+  }
+
   return {
     read,
     random,
+    logs,
+    members,
   };
 }
 

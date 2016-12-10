@@ -19,4 +19,8 @@ function read (models, { id }) {
 
 module.exports = {
   read,
+
+  isAccessAllowed () {
+    return Promise.resolve(false);
+  },
 };
