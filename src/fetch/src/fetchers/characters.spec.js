@@ -36,7 +36,7 @@ describe('characters fetcher', () => {
       characters: charactersStub,
     });
 
-    return fetchCharacters(models, token)
+    return fetchCharacters(models, { token })
       .then(() => {
         return models.Gw2Character.findAll({});
       })
@@ -64,10 +64,10 @@ describe('characters fetcher', () => {
       characters: charactersStub,
     });
 
-    return fetchCharacters(models, token)
+    return fetchCharacters(models, { token })
       .then(() => models.Gw2Character.findOne({ where: { name: otherCharacter.name } }))
       .then(({ dataValues: { id } }) => {
-        return fetchCharacters(models, token)
+        return fetchCharacters(models, { token })
           .then(() => {
             return models.Gw2Character.findOne({ where: { name: character.name } });
           })

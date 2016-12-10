@@ -35,7 +35,7 @@ describe('account fetcher', () => {
     fetch.withArgs(models, accountInfo.guilds).returns(Promise.resolve());
     account.withArgs(token).returns(Promise.resolve(accountInfo));
 
-    return fetchAccount(models, token)
+    return fetchAccount(models, { token })
       .then(() => models.Gw2ApiToken.findOne({
         where: {
           token,

@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/madou/armory-back#readme",
   "devDependencies": {
+    "babel-eslint": "^7.1.1",
     "beanstalkify": "0.0.9",
     "easy-zip": "0.0.4",
     "eslint": "^3.4.0",

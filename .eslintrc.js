@@ -1,7 +1,7 @@
 module.exports = {
   extends: [
     'airbnb-base',
-    'plugin:flowtype/recommended',
+    // 'plugin:flowtype/recommended',
   ],
   parserOptions: {
     ecmaFeatures: {
@@ -30,5 +30,8 @@ module.exports = {
     proxyquire: true,
     seedData: true,
     testDb: true,
+    before: true,
+    after: true,
+    setupDb: true,
   },
 };
