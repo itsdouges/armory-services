@@ -24,7 +24,12 @@
   },
   "homepage": "https://github.com/madou/armory-back#readme",
   "devDependencies": {
+    "babel-cli": "^6.18.0",
     "babel-eslint": "^7.1.1",
+    "babel-plugin-syntax-flow": "^6.18.0",
+    "babel-plugin-transform-flow-strip-types": "^6.18.0",
+    "babel-preset-es2017": "^6.16.0",
+    "babel-register": "^6.18.0",
     "beanstalkify": "0.0.9",
     "easy-zip": "0.0.4",
     "eslint": "^3.4.0",

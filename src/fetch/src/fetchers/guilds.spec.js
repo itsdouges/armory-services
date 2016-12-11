@@ -65,7 +65,7 @@ describe('guild fetcher', () => {
         .then((guild) => expect(guild.apiToken).to.equal(token.token));
     });
 
-    it.only('should add authenticated data into guild using token', () => {
+    it('should add authenticated data into guild using token', () => {
       return findGuild()
         .then((guild) => expect(guild).to.include(authGuildData));
     });

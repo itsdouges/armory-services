@@ -1,143 +1,124 @@
-const controller = require('./index');
-const Models = require('../../models');
+import proxyquire from 'proxyquire';
+import _ from 'lodash';
+
+import * as testData from '../../../test/testData';
+
+const config = {
+  cache: {
+    findAllCharacters: 12,
+  },
+};
+
+const readGuild = sinon.stub();
+const listGuilds = sinon.stub();
+const listCharacters = sinon.stub();
+const listUsers = sinon.stub();
+const canAccess = sinon.stub();
+
+const { default: controller } = proxyquire('./index', {
+  '../../../config': config,
+  '../../services/guild': {
+    read: readGuild,
+    list: listGuilds,
+  },
+  '../../services/character': {
+    list: listCharacters,
+  },
+  '../../services/user': {
+    list: listUsers,
+  },
+  './access': canAccess,
+});
 
 describe('guild controller', () => {
-  let sut;
-  let models;
+  const models = { stub: 'models' };
 
-  beforeEach((done) => {
-    models = new Models(testDb());
-    models.sequelize.sync({
-      force: true,
-    }).then(() => {
-      done();
-    });
+  let sut;
+
+  const guildData = testData.guild();
+
+  const guilds = [
+    testData.guild(),
+    testData.guild(),
+    testData.guild(),
+    testData.guild(),
+  ];
+
+  const characters = [
+    testData.character(),
+    testData.character(),
+  ];
+  const users = [
+    testData.user(),
+    testData.user(),
+  ];
+
+  before(() => {
+    readGuild
+      .withArgs(models, { name: 'name' })
+      .returns(Promise.resolve(guildData));
+
+    listCharacters
+      .withArgs(models, { guild: guildData.id })
+      .returns(Promise.resolve(characters));
+
+    listUsers
+      .withArgs(models, { guild: guildData.id })
+      .returns(Promise.resolve(users));
+
+    listGuilds
+      .withArgs(models)
+      .returns(Promise.resolve(guilds));
 
     sut = controller(models);
   });
 
-  function setupTestData () {
-    return models
-      .User
-      .create({
-        email: 'cool@email.com',
-        passwordHash: 'realhashseriously',
-        alias: 'huedwell',
-      })
-      .then((user) => {
-        return models
-          .Gw2ApiToken
-          .create({
-            token: '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15',
-            accountName: 'cool.4321',
-            accountId: 'haha_id',
-            permissions: 'cool,permissions',
-            world: 1234,
-            UserId: user.id,
-            guilds: 'im-guild',
-          });
-      })
-      .then((token) => {
-        return models
-          .Gw2Character
-          .create({
-            name: 'character',
-            race: 'race',
-            gender: 'gender',
-            profession: 'profession',
-            level: 69,
-            created: '01/01/90',
-            age: 20,
-            deaths: 2,
-            guild: 'im-guild',
-            Gw2ApiTokenToken: token.token,
-          })
-          .then(() => {
-            return models
-              .Gw2Character
-              .create({
-                name: 'character!',
-                race: 'race',
-                gender: 'gender',
-                profession: 'profession',
-                level: 69,
-                created: '01/01/90',
-                age: 20,
-                deaths: 2,
-                guild: 'im-guild',
-                Gw2ApiTokenToken: token.token,
-              });
-          });
-      })
-      .then(() => {
-        return models
-          .Gw2Guild
-          .create({
-            id: 'im-guild',
-            tag: 'tag',
-            name: 'name',
-          });
-      })
-      .then(() => {
-        return models
-          .Gw2Guild
-          .create({
-            id: 'im-another-guild',
-            tag: 'tagg',
-            name: 'namee',
-            apiToken: '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15',
-          });
-      });
-  }
+  describe('reading guild', () => {
+    context('when user does not have access', () => {
+      it('should output subset of data', () => {
+        const requestingUser = 'blastrn';
 
-  it('should return guild and all associated characters', () => {
-    return setupTestData()
-      .then(() => {
-        return sut.read('name');
-      })
-      .then((guild) => {
-        expect(guild).to.eql({
-          name: 'name',
-          id: 'im-guild',
-          tag: 'tag',
-          claimed: false,
-          users: [{
-            accountName: 'cool.4321',
-            name: 'huedwell',
-          }],
-          characters: [{
-            accountName: 'cool.4321',
-            world: 'world',
-            name: 'character',
-            gender: 'gender',
-            profession: 'profession',
-            level: 69,
-            race: 'race',
-            userAlias: 'huedwell',
-          },
-          {
-            accountName: 'cool.4321',
-            world: 'world',
-            name: 'character!',
-            gender: 'gender',
-            profession: 'profession',
-            level: 69,
-            race: 'race',
-            userAlias: 'huedwell',
-          }],
-        });
+        canAccess
+          .withArgs(models, 'read', requestingUser)
+          .returns(Promise.resolve(false));
+
+        return sut.read('name', { requestingUser })
+          .then((guild) => {
+            expect(guild).to.eql({
+              ..._.pick(guildData, [
+                'name',
+                'id',
+                'tag',
+              ]),
+              characters,
+              users,
+            });
+          });
       });
+    });
+
+    context('when user does have access', () => {
+      it('should output all data', () => {
+        const requestingUser = 'madou';
+
+        canAccess
+          .withArgs(models, 'read', requestingUser)
+          .returns(Promise.resolve(true));
+
+        return sut.read('name', { requestingUser })
+          .then((guild) => {
+            expect(guild).to.eql({
+              ...guildData,
+              characters,
+              users,
+            });
+          });
+      });
+    });
   });
 
   it('should select random guild', () => {
-    return setupTestData()
-      .then(() => sut.random(2))
+    return sut.random(2)
       .then((guild) => expect(guild.length).to.equal(2));
-  });
-
-  it('should set claimed flag to true if api token is set', () => {
-    return setupTestData()
-      .then(() => sut.read('namee'))
-      .then((guild) => expect(guild.claimed).to.equal(true));
   });
 });

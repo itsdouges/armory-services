@@ -1,8 +1,10 @@
 module.exports = {
   extends: [
     'airbnb-base',
-    // 'plugin:flowtype/recommended',
+    'plugin:flowtype/recommended',
   ],
+  parser: 'babel-eslint',
+  plugins: ['flowtype'],
   parserOptions: {
     ecmaFeatures: {
       generators: true,
@@ -33,5 +35,6 @@ module.exports = {
     before: true,
     after: true,
     setupDb: true,
+    setupTestDb: true,
   },
 };

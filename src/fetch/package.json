@@ -5,10 +5,10 @@
   "author": "madou",
   "scripts": {
     "start": "node ./src/run",
-    "test": "mocha \"src/**/*.spec.js\" && npm run test:int",
-    "test:int": "mocha \"src/**/*.int.js\"",
-    "tdd": "mocha \"src/**/*.spec.js\" --watch",
-    "tdd:int": "npm run test:int -- --watch"
+    "test": "mocha \"src/**/*.spec.js\" --compilers js:babel-register && npm run test:int",
+    "test:int": "mocha \"src/**/*.int.js\" --compilers js:babel-register",
+    "tdd": "mocha \"src/**/*.spec.js\" --watch --compilers js:babel-register",
+    "tdd:int": "npm run test:int -- --watch --compilers js:babel-register"
   },
   "dependencies": {
     "axios": "^0.5.4",
