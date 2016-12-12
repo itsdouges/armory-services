@@ -1,14 +1,11 @@
 import { isAccessAllowed } from '../../services/guild';
 import { isUserInGuild } from '../../services/user';
 
-export default function canAccess (models, type, user) {
-  return Promise.all([
+export default async function canAccess (models, { name, type, user }) {
+  const [publicAccessAllowed, userIsInGuild] = await Promise.all([
     isAccessAllowed(models, type),
-    isUserInGuild(models, user),
-  ])
-  .then(([publicAccessAllowed, userIsInGuild]) => {
-    return userIsInGuild || publicAccessAllowed ?
-      Promise.resolve() :
-      Promise.reject('Access not allowed');
-  });
+    isUserInGuild(models, user, name),
+  ]);
+
+  return !!(userIsInGuild || publicAccessAllowed);
 }

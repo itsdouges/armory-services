@@ -27,7 +27,7 @@ const { default: controller } = proxyquire('./index', {
   '../../services/user': {
     list: listUsers,
   },
-  './access': canAccess,
+  './access': { default: canAccess },
 });
 
 describe('guild controller', () => {
@@ -76,13 +76,13 @@ describe('guild controller', () => {
   describe('reading guild', () => {
     context('when user does not have access', () => {
       it('should output subset of data', () => {
-        const requestingUser = 'blastrn';
+        const email = 'email@email.com';
 
         canAccess
-          .withArgs(models, 'read', requestingUser)
+          .withArgs(models, { type: 'read', email, name: guildData.name })
           .returns(Promise.resolve(false));
 
-        return sut.read('name', { requestingUser })
+        return sut.read(guildData.name, { email })
           .then((guild) => {
             expect(guild).to.eql({
               ..._.pick(guildData, [
@@ -98,21 +98,20 @@ describe('guild controller', () => {
     });
 
     context('when user does have access', () => {
-      it('should output all data', () => {
-        const requestingUser = 'madou';
+      it('should output all data', async () => {
+        const email = 'cool@kkkemail.com';
 
         canAccess
-          .withArgs(models, 'read', requestingUser)
+          .withArgs(models, sinon.match({ type: 'read', email, name: guildData.name }))
           .returns(Promise.resolve(true));
 
-        return sut.read('name', { requestingUser })
-          .then((guild) => {
-            expect(guild).to.eql({
-              ...guildData,
-              characters,
-              users,
-            });
-          });
+        const guild = await sut.read(guildData.name, { email });
+
+        expect(guild).to.eql({
+          ...guildData,
+          characters,
+          users,
+        });
       });
     });
   });

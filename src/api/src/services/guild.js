@@ -1,6 +1,6 @@
-const _ = require('lodash');
+import _ from 'lodash';
 
-function read (models, { id, name }) {
+export function read (models, { id, name }) {
   return models.Gw2Guild.findOne({
     where: id ? { id } : { name },
   })
@@ -23,14 +23,10 @@ function read (models, { id, name }) {
   });
 }
 
-function list (models) {
+export function list (models) {
   return models.Gw2Guild.findAll();
 }
 
-module.exports = {
-  read,
-  list,
-  isAccessAllowed () {
-    return Promise.resolve(false);
-  },
-};
+export function isAccessAllowed () {
+  return Promise.resolve(false);
+}

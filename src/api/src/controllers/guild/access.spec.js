@@ -33,8 +33,10 @@ describe('guild user authorization', () => {
 
       before(() => isUserInGuild.withArgs(models, user).returns(Promise.resolve(false)));
 
-      it('should not allow access', () => {
-        return canAccess(models, type, user).should.be.rejectedWith('Access not allowed');
+      it('should not allow access', async () => {
+        const allowed = await canAccess(models, type, user);
+
+        expect(allowed).to.be.false;
       });
     });
   });

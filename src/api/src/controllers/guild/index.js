@@ -10,35 +10,31 @@ import {
 
 import { list as listCharacters } from '../../services/character';
 import { list as listUsers } from '../../services/user';
+import access from './access';
 
 export default function guildControllerFactory (models) {
-  const checkAccess = require('./access').bind(null, models);
+  const checkAccess = (type, name, email) => access(models, { type, name, email });
 
-  function read (name, { requestingUser } = {}) {
-    return checkAccess('read', requestingUser)
-      .then((canAccess) => {
-        return readGuild(models, { name })
-          .then((guild) => {
-            return Promise.all([
-              guild,
-              listCharacters(models, { guild: guild.id }),
-              listUsers(models, { guild: guild.id }),
-            ]);
-          })
-          .then(([guild, characters, users]) => {
-            const parsedGuild = canAccess ? guild : _.pick(guild, [
-              'name',
-              'id',
-              'tag',
-            ]);
+  async function read (name, { email } = {}) {
+    const guild = await readGuild(models, { name });
 
-            return {
-              ...parsedGuild,
-              characters,
-              users,
-            };
-          });
-      });
+    const [canAccess, characters, users] = await Promise.all([
+      checkAccess('read', name, email),
+      listCharacters(models, { guild: guild.id }),
+      listUsers(models, { guild: guild.id }),
+    ]);
+
+    const parsedGuild = canAccess ? guild : _.pick(guild, [
+      'name',
+      'id',
+      'tag',
+    ]);
+
+    return {
+      ...parsedGuild,
+      characters,
+      users,
+    };
   }
 
   const findAllGuilds = memoize(

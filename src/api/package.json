@@ -4,7 +4,9 @@
   "description": "Api server for api.gw2armory.com",
   "author": "madou",
   "scripts": {
-    "start": "node ./src/run",
+    "start": "node ./dist",
+    "build": "babel src --out-dir dist --ignore spec.js,int.js",
+    "dev": "ENV=DEV babel-node ./src -s",
     "test": "mocha \"src/**/*.spec.js\" && npm run test:int",
     "test:int": "mocha \"src/**/*.int.js\"",
     "tdd": "mocha \"src/**/*.spec.js\" --watch",
@@ -32,6 +34,7 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
+    "babel-cli": "^6.18.0",
     "babel-plugin-syntax-flow": "^6.18.0",
     "babel-plugin-transform-flow-strip-types": "^6.18.0",
     "babel-plugin-transform-object-rest-spread": "^6.20.2",

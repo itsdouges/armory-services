@@ -1,5 +1,18 @@
-export function list (models, { guild }) {
-  return models.Gw2ApiToken.findAll({
+// @flow
+
+import { read as readGuild } from './guild';
+
+type ListOptions = {
+  guild: string,
+};
+
+type User = {
+  name: string,
+  accountName: string,
+};
+
+export async function list (models: any, { guild }: ListOptions): Promise<Array<User>> {
+  const tokens = await models.Gw2ApiToken.findAll({
     where: {
       guilds: {
         $like: `%${guild}%`,
@@ -8,20 +21,25 @@ export function list (models, { guild }) {
     include: [{
       model: models.User,
     }],
-  })
-  .then((tokens) => {
-    return tokens.map((token) => ({
-      name: token.User.alias,
-      accountName: token.accountName,
-    }));
   });
+
+  return tokens.map((token) => ({
+    name: token.User.alias,
+    accountName: token.accountName,
+  }));
 }
 
-export function isUserInGuild (models, email, guildId) {
-  return models.Gw2ApiToken.findAll({
+export async function isUserInGuild (
+  models: any,
+  email: string,
+  guildName: string,
+): Promise<boolean> {
+  const { id } = await readGuild(models, { name: guildName });
+
+  const token = await models.Gw2ApiToken.findAll({
     where: {
       guilds: {
-        $like: `%${guildId}%`,
+        $like: `%${id}%`,
       },
     },
     include: [{
@@ -30,6 +48,7 @@ export function isUserInGuild (models, email, guildId) {
         email,
       },
     }],
-  })
-  .then((found) => !!found.length);
+  });
+
+  return !!token.length;
 }
