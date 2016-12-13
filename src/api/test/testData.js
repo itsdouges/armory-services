@@ -28,6 +28,7 @@ interface Guild {
   influence: number,
   level: number,
   motd: string,
+  claimed: boolean,
   apiToken?: ?string,
 }
 
@@ -68,6 +69,7 @@ const defaultGuild: Guild = {
   influence: 555,
   level: 60,
   motd: 'Cool message of the day',
+  claimed: false,
 };
 
 export const guild = (gld: ?Guild): Guild => ({

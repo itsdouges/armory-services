@@ -13,7 +13,7 @@ import { list as listUsers } from '../../services/user';
 import access from './access';
 
 export default function guildControllerFactory (models) {
-  const checkAccess = (type, name, email) => access(models, { type, name, email });
+  const checkAccess = (type, guildName, email) => access(models, { type, guildName, email });
 
   async function read (name, { email } = {}) {
     const guild = await readGuild(models, { name });
@@ -28,6 +28,7 @@ export default function guildControllerFactory (models) {
       'name',
       'id',
       'tag',
+      'claimed',
     ]);
 
     return {

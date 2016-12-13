@@ -89,6 +89,7 @@ describe('guild controller', () => {
                 'name',
                 'id',
                 'tag',
+                'claimed',
               ]),
               characters,
               users,
@@ -102,7 +103,7 @@ describe('guild controller', () => {
         const email = 'cool@kkkemail.com';
 
         canAccess
-          .withArgs(models, sinon.match({ type: 'read', email, name: guildData.name }))
+          .withArgs(models, sinon.match({ type: 'read', email, guildName: guildData.name }))
           .returns(Promise.resolve(true));
 
         const guild = await sut.read(guildData.name, { email });
