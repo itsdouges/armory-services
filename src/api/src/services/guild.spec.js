@@ -1,23 +1,24 @@
-const service = require('./guild');
+import * as testData from 'test/testData';
+import { read } from './guild';
 
 describe('guilds service', () => {
   let models;
 
-  const guild = {
-    id: '1234-1234-1234',
-    tag: 'TAG',
-    name: 'CoolGuild',
-  };
+  const guild = testData.guild();
 
-  beforeEach(() => {
-    return global.setupTestDb().then((mdls) => (models = mdls));
+  beforeEach(async () => {
+    await global.setupTestDb().then((mdls) => (models = mdls));
   });
 
   context('reading', () => {
-    it('should read a guild', () => {
-      return models.Gw2Guild.create(guild)
-        .then(() => service.read(models, { id: guild.id }))
-        .then((g) => expect(g).to.include(guild));
+    it('should read a guild', async () => {
+      await models.Gw2Guild.create(guild);
+
+      const actual = await read(models, { id: guild.id });
+
+      const { apiToken, ...expected } = guild;
+
+      expect(actual).to.include(expected);
     });
   });
 });

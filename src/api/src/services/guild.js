@@ -9,7 +9,7 @@ export function read (models, { id, name }) {
       return undefined;
     }
 
-    return _.pick(guild, [
+    const data = _.pick(guild, [
       'id',
       'tag',
       'name',
@@ -20,6 +20,11 @@ export function read (models, { id, name }) {
       'resonance',
       'favor',
     ]);
+
+    return {
+      ...data,
+      claimed: !!guild.apiToken,
+    };
   });
 }
 

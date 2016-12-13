@@ -1,4 +1,8 @@
+import path from 'path';
+import { addPath } from 'app-module-path';
 import 'babel-polyfill';
+
+addPath(path.join(__dirname, '..', '/'));
 
 const Sequelize = require('sequelize');
 const Models = require('../src/models');
