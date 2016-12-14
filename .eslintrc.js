@@ -1,10 +1,15 @@
 module.exports = {
-  extends: ['airbnb-base'],
+  extends: [
+    'airbnb-base',
+    'plugin:flowtype/recommended',
+  ],
+  parser: 'babel-eslint',
+  plugins: ['flowtype'],
   parserOptions: {
     ecmaFeatures: {
       generators: true,
-      experimentalObjectRestSpread: true
-    }
+      experimentalObjectRestSpread: true,
+    },
   },
   rules: {
     'space-before-function-paren': [2, 'always'],
@@ -14,7 +19,10 @@ module.exports = {
     'import/no-unresolved': 0,
     'import/no-extraneous-dependencies': 0,
     'arrow-body-style': 0,
-    'no-unused-expressions': 0
+    'no-unused-expressions': 0,
+    'no-unused-vars': ['error', {
+      varsIgnorePattern: '(.*\.\.\.)',
+    }],
   },
   globals: {
     describe: true,
@@ -26,6 +34,10 @@ module.exports = {
     sinon: true,
     proxyquire: true,
     seedData: true,
-    testDb: true
-  }
+    testDb: true,
+    before: true,
+    after: true,
+    setupDb: true,
+    setupTestDb: true,
+  },
 };

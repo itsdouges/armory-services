@@ -7,13 +7,15 @@
     "start": "./scripts/go.sh serve",
     "dev": "ENV=DEV ./scripts/go.sh serve",
     "deploy": "node ./scripts/deploy",
+    "flow": "flow",
+    "flowtypes": "flow-typed install --overwrite",
     "copy-common": "./scripts/go.sh copy",
     "clean-docker": "./scripts/go.sh clean",
     "db:migrate": "./scripts/go.sh migrate"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/madou/armory-back.com.git"
+    "url": "git+https://github.com/madou/armory-back.git"
   },
   "author": "madou",
   "license": "ISC",
@@ -22,12 +24,21 @@
   },
   "homepage": "https://github.com/madou/armory-back#readme",
   "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-eslint": "^7.1.1",
+    "babel-plugin-syntax-flow": "^6.18.0",
+    "babel-plugin-transform-flow-strip-types": "^6.18.0",
+    "babel-preset-es2017": "^6.16.0",
+    "babel-register": "^6.18.0",
     "beanstalkify": "0.0.9",
     "easy-zip": "0.0.4",
     "eslint": "^3.4.0",
     "eslint-config-airbnb": "^10.0.1",
+    "eslint-plugin-flowtype": "^2.29.1",
     "eslint-plugin-import": "^1.14.0",
     "eslint-plugin-jsx-a11y": "^2.2.0",
+    "flow-bin": "^0.36.0",
+    "flow-typed": "^2.0.0",
     "hash-files": "^1.0.0",
     "mustache": "^2.2.0"
   }

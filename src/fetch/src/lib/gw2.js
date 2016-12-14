@@ -3,7 +3,7 @@ const axios = require('axios');
 const retryFactory = require('./retry');
 const _ = require('lodash');
 
-const retry = retryFactory({ retryPredicate: (e) => (e.status >= 500) });
+const withRetry = retryFactory({ retryPredicate: (e) => (e.status >= 500) });
 
 // TODO: use lib/gw2 from api.......!
 
@@ -29,6 +29,33 @@ function account (token) {
   .then(({ data }) => normaliseObject(data));
 }
 
+function guildLogs (token, id) {
+  return axios.get(`${config.gw2.endpoint}v2/guild/${id}/logs`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  .then(({ data }) => data);
+}
+
+function guildAuthenticated (token, id) {
+  return axios.get(`${config.gw2.endpoint}v2/guild/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  .then(({ data }) => data);
+}
+
+function guildMembers (token, id) {
+  return axios.get(`${config.gw2.endpoint}v2/guild/${id}/members`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  .then(({ data }) => data);
+}
+
 function characters (token) {
   return axios.get(`${config.gw2.endpoint}v2/characters?page=0&page_size=200`, {
     headers: {
@@ -39,7 +66,10 @@ function characters (token) {
 }
 
 module.exports = {
-  guild: retry(guild),
-  characters: retry(characters),
-  account: retry(account),
+  guild: withRetry(guild),
+  characters: withRetry(characters),
+  account: withRetry(account),
+  guildAuthenticated: withRetry(guildAuthenticated),
+  guildLogs,
+  guildMembers,
 };

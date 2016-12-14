@@ -2,7 +2,7 @@ const _ = require('lodash');
 const gw2 = require('../lib/gw2');
 const guildsService = require('../services/guilds');
 
-module.exports = function fetch (models, token) {
+module.exports = function fetch (models, { token }) {
   return gw2
     .account(token)
     .then((accountInfo) => {

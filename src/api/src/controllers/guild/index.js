@@ -1,79 +1,51 @@
-const memoize = require('memoizee');
-const config = require('../../../config');
-const _ = require('lodash');
-const limit = require('../../lib/math').limit;
+import memoize from 'memoizee';
+import _ from 'lodash';
 
-function guildControllerFactory (models) {
-  function read (name) {
-    return models.Gw2Guild.findOne({
-      where: {
-        name,
-      },
-    })
-    .then((guild) => {
-      if (!guild) {
-        return undefined;
-      }
+import config from '../../../config';
+import { limit } from '../../lib/math';
+import {
+  read as readGuild,
+  list as listGuilds,
+} from '../../services/guild';
 
-      return {
-        name: guild.name,
-        id: guild.id,
-        tag: guild.tag,
-      };
-    })
-    .then((guild) => {
-      const characters = models.Gw2Character.findAll({
-        where: {
-          guild: guild.id,
-        },
-        include: [{
-          model: models.Gw2ApiToken,
-          include: [{
-            model: models.User,
-          }],
-        }],
-      });
+import { list as listCharacters } from '../../services/character';
+import { list as listUsers } from '../../services/user';
+import access from './access';
 
-      const tokens = models.Gw2ApiToken.findAll({
-        where: {
-          guilds: {
-            $like: `%${guild.id}%`,
-          },
-        },
-        include: [{
-          model: models.User,
-        }],
-      });
+export default function guildControllerFactory (models) {
+  const checkAccess = (type, guildName, email) => access(models, { type, guildName, email });
 
-      return Promise.all([guild, characters, tokens]);
-    })
-    .then(([guild, characters, tokens]) => {
-      return Object.assign({}, guild, {
-        characters: characters.map((c) => ({
-          world: 'world',
-          name: c.name,
-          gender: c.gender,
-          profession: c.profession,
-          level: c.level,
-          race: c.race,
-          userAlias: c.Gw2ApiToken.User.alias,
-          accountName: c.Gw2ApiToken.accountName,
-        })),
-      }, {
-        users: tokens.map((token) => ({
-          name: token.User.alias,
-          accountName: token.accountName,
-        })),
-      });
-    });
+  async function read (name, { email } = {}) {
+    const guild = await readGuild(models, { name });
+
+    const [canAccess, characters, users] = await Promise.all([
+      checkAccess('read', name, email),
+      listCharacters(models, { guild: guild.id }),
+      listUsers(models, { guild: guild.id }),
+    ]);
+
+    const parsedGuild = canAccess ? guild : _.pick(guild, [
+      'name',
+      'id',
+      'tag',
+      'claimed',
+    ]);
+
+    return {
+      ...parsedGuild,
+      characters,
+      users,
+    };
   }
 
-  const findAllGuilds = memoize(() => console.log('\n=== Reading guilds ===\n') ||
-  models.Gw2Guild.findAll(), {
-    maxAge: config.cache.findAllCharacters,
-    promise: true,
-    preFetch: true,
-  });
+  const findAllGuilds = memoize(
+    () => console.log('\n=== Reading guilds ===\n') ||
+    listGuilds(models), {
+      maxAge: config.cache.findAllCharacters,
+      promise: true,
+      preFetch: true,
+    }
+  );
 
   function random (n = 1) {
     return findAllGuilds()
@@ -95,5 +67,3 @@ function guildControllerFactory (models) {
     random,
   };
 }
-
-module.exports = guildControllerFactory;

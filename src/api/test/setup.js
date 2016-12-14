@@ -1,13 +1,25 @@
+import path from 'path';
+import { addPath } from 'app-module-path';
+import 'babel-polyfill';
+
+addPath(path.join(__dirname, '..', '/'));
+
 const Sequelize = require('sequelize');
 const Models = require('../src/models');
 
 global.chai = require('chai');
+
+global.chai.should();
+
 global.sinon = require('sinon');
 global.expect = require('chai').expect;
 global.AssertionError = require('chai').AssertionError;
 
 const sinonChai = require('sinon-chai');
 
+const chaiAsPromised = require('chai-as-promised');
+
+global.chai.use(chaiAsPromised);
 global.chai.use(sinonChai);
 
 global.testDb = function () {

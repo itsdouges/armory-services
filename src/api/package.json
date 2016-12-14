@@ -4,7 +4,9 @@
   "description": "Api server for api.gw2armory.com",
   "author": "madou",
   "scripts": {
-    "start": "node ./src/run",
+    "start": "node ./dist",
+    "build": "babel src --out-dir dist --ignore spec.js,int.js",
+    "dev": "ENV=DEV babel-node ./src -s",
     "test": "mocha \"src/**/*.spec.js\" && npm run test:int",
     "test:int": "mocha \"src/**/*.int.js\"",
     "tdd": "mocha \"src/**/*.spec.js\" --watch",
@@ -13,6 +15,7 @@
   "dependencies": {
     "aws-sdk": "^2.5.3",
     "axios": "^0.5.4",
+    "babel-polyfill": "^6.20.0",
     "fs": "0.0.2",
     "gotta-validate": "^0.2.x",
     "lodash": "^4.16.4",
@@ -31,7 +34,15 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
+    "app-module-path": "^2.1.0",
+    "babel-cli": "^6.18.0",
+    "babel-plugin-syntax-flow": "^6.18.0",
+    "babel-plugin-transform-flow-strip-types": "^6.18.0",
+    "babel-plugin-transform-object-rest-spread": "^6.20.2",
+    "babel-preset-latest": "^6.16.0",
+    "babel-register": "^6.18.0",
     "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
     "mocha": "^3.1.1",
     "nodemon": "^1.4.1",
     "proxyquire": "^1.7.10",

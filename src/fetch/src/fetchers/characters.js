@@ -2,7 +2,7 @@ const q = require('q');
 
 const gw2Fetch = require('../lib/gw2');
 
-module.exports = function fetchUserCharacterData (models, token) {
+module.exports = function fetchUserCharacterData (models, { token }) {
   return gw2Fetch
     .characters(token)
     .then((characters) => {

@@ -9,3 +9,4 @@ Dockerrun.aws.json
 src/**/config
 src/**/src/models
 .env
+dist/

@@ -1,11 +1,11 @@
-const controllerFactory = require('../../controllers/guild');
+import controllerFactory from '../../controllers/guild';
 
 function guildsResource (server, models) {
   const controller = controllerFactory(models);
 
-  server.get('guilds/:name', (req, res, next) => {
+  server.get('guilds/:name', async (req, res, next) => {
     controller
-      .read(req.params.name)
+      .read(req.params.name, { email: req.username })
       .then((guild) => {
         if (guild) {
           res.send(200, guild);

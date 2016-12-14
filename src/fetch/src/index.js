@@ -15,6 +15,7 @@ const { batchFetch, fetch } = fetchFactory(models, [
   // TODO: Dynamic import of fetchers, maybe?
   require('./fetchers/characters'),
   require('./fetchers/account'),
+  require('./fetchers/guilds'),
 ]);
 
 const server = restify.createServer({
