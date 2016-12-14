@@ -1,3 +1,5 @@
+import tokenControllerFactory from './controllers/gw2-token';
+
 const restify = require('restify');
 const axios = require('axios');
 const restifyOAuth2 = require('restify-oauth2');
@@ -11,7 +13,6 @@ const sitemapControllerFactory = require('./controllers/sitemap');
 const statisticsControllerFactory = require('./controllers/statistics');
 
 const CheckController = require('./controllers/check');
-const Gw2TokenController = require('./controllers/gw2-token');
 const PvpController = require('./controllers/pvp');
 
 function serverFactory (models, config) {
@@ -51,8 +52,8 @@ function serverFactory (models, config) {
     });
 
   const characters = characterControllerFactory(models, gw2Api);
+  const gw2Tokens = tokenControllerFactory(models, GottaValidate, gw2Api);
 
-  const gw2Tokens = new Gw2TokenController(models, GottaValidate, gw2Api);
   const checks = new CheckController(GottaValidate);
   const pvp = new PvpController(models, gw2Api);
 
@@ -64,7 +65,7 @@ function serverFactory (models, config) {
   restify.CORS.ALLOW_HEADERS.push('authorization');
   restify.CORS.ALLOW_HEADERS.push('Access-Control-Allow-Origin');
 
-  // eslint-disable-next-line
+  // eslint-disable-next-line new-cap
   server.use(restify.CORS({
     origins: config.allowed_cors,
   }));

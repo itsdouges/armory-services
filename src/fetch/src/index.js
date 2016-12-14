@@ -32,7 +32,7 @@ server.get('/', (req, res, next) => {
 server.post('/fetch', (req, res, next) => {
   console.log(`\n=== Single fetch triggered for ${req.params.token} ===\n`);
 
-  fetch(req.params.token)
+  fetch({ token: req.params.token, permissions: req.params.permissions })
     .then(() => {
       res.send(200);
       return next();

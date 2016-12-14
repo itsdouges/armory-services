@@ -1,182 +1,148 @@
-'use strict';
+import axios from 'axios';
+import config from '../../../config';
 
-var q = require('q');
-var axios = require('axios');
-var config = require('../../../config');
+export default function tokenFactory (models, createValidator, gw2Api) {
+  createValidator.addResource({
+    name: 'gw2-token',
+    mode: 'add',
+    rules: {
+      token: ['valid-gw2-token', 'no-white-space'],
+    },
+  });
 
-function Gw2TokenController (models, Validator, gw2Api) {
-    var that = this;
+  const validator = createValidator({
+    resource: 'gw2-token',
+    mode: 'add',
+  });
 
-    Validator.addResource({
-        name: 'gw2-token',
-        mode: 'add',
-        rules: {
-            token: ['valid-gw2-token', 'no-white-space']
-        }
+  async function getUserId (email) {
+    const user = await models.User.findOne({
+      where: {
+        email,
+      },
     });
 
-    function getUserId (email) {
-        return models.User.findOne({
-            where: {
-                email: email
-            }
-        })
-        .then(function (user) {
-            return user.id;
-        });
-    }
+    return user.id;
+  }
 
-    Gw2TokenController.prototype.doesUserHaveTokens = function (userId) {
-        return models
-            .Gw2ApiToken
-            .findAll({
-                include: [{
-                    model: models.User,
-                    where: {
-                        id: userId,
-                    }
-                }]
-            })
-      .then(function (data) {
-        return !!data.length;
+  async function doesUserHaveTokens (userId) {
+    const tokens = await models
+      .Gw2ApiToken
+      .findAll({
+        include: [{
+          model: models.User,
+          where: {
+            id: userId,
+          },
+        }],
       });
+
+    return !!tokens.length;
+  }
+
+  async function selectPrimary (email, token) {
+    const id = await getUserId(email);
+
+    return await models.Gw2ApiToken.update({
+      primary: true,
+    }, {
+      where: {
+        UserId: id,
+        token,
+      },
+    });
+  }
+
+  async function addTokenToUser (id, gw2Token) {
+    const tokenInfo = await gw2Api.readTokenInfoWithAccount(gw2Token);
+    const hasTokens = await doesUserHaveTokens(id);
+
+    const wrappedToken = {
+      token: gw2Token,
+      UserId: id,
+      permissions: tokenInfo.info.join(','),
+      world: tokenInfo.world,
+      accountId: tokenInfo.accountId,
+      accountName: tokenInfo.accountName,
+      primary: !hasTokens,
     };
 
-    Gw2TokenController.prototype.selectPrimary = function (email, token) {
-        return getUserId(email)
-            .then(function (id) {
-                return models.Gw2ApiToken.update({
-                    primary: false,
-                }, {
-                    where: {
-                        UserId: id,
-                    },
-                })
-                .then(function () {
-                    return models.Gw2ApiToken.update({
-                        primary: true,
-                    }, {
-                        where: {
-                            UserId: id,
-                            token: token
-                        },
-                    });
-                });
-            });
+    return await models.Gw2ApiToken.create(wrappedToken);
+  }
+
+  async function add (email, token) {
+    await validator.validate({ token });
+
+    const user = await models.User.findOne({
+      where: {
+        email,
+      },
+    });
+
+    const createdToken = await addTokenToUser(user.id, token);
+
+    const url = `http://${config.fetch.host}:${config.fetch.port}/fetch`;
+    console.log(`Posting to ${url}`);
+    axios.post(url, {
+      token: createdToken.token,
+      permissions: createdToken.permissions,
+    });
+
+    return {
+      token: createdToken.token,
+      accountName: createdToken.accountName,
+      permissions: createdToken.permissions,
+      world: createdToken.world,
+      primary: createdToken.primary,
     };
+  }
 
-    Gw2TokenController.prototype.add = function (email, token) {
-        function addTokenToUser (id, gw2Token) {
-            return gw2Api
-                .readTokenInfoWithAccount(gw2Token)
-                .then(function (tokenInfo) {
-                    var wrappedToken = {
-                        token: gw2Token,
-                        UserId: id,
-                        permissions: tokenInfo.info.join(','),
-                        world: tokenInfo.world,
-                        accountId: tokenInfo.accountId,
-                        accountName: tokenInfo.accountName
-                    };
+  async function list (email) {
+    const tokens = await models
+      .Gw2ApiToken
+      .findAll({
+        include: [{
+          model: models.User,
+          where: {
+            email,
+          },
+        }],
+      });
 
-          return that.doesUserHaveTokens(id)
-            .then(function (hasTokens) {
-                  wrappedToken.primary = !hasTokens;
+    return tokens.map((token) => {
+      return {
+        token: token.token,
+        accountName: token.accountName,
+        permissions: token.permissions,
+        world: token.world,
+        primary: token.primary,
+      };
+    });
+  }
 
-                  return models
-                    .Gw2ApiToken
-                    .create(wrappedToken);
-            });
-                });
-        }
+  async function remove (email, token) {
+    const user = await models
+      .User
+      .findOne({
+        where: {
+          email,
+        },
+      });
 
-        var validator = Validator({
-            resource: 'gw2-token',
-            mode: 'add'
-        });
+    await models.Gw2ApiToken
+      .destroy({
+        where: {
+          UserId: user.id,
+          token,
+        },
+      });
+  }
 
-        return validator
-            .validate({
-                token: token
-            })
-            .then(function () {
-                return models.User.findOne({
-                    where: {
-                        email: email
-                    }
-                });
-            })
-            .then(function (user) {
-                    return user.id;
-            })
-            .then(function (id) {
-                return addTokenToUser(id, token);
-            })
-            .then(function (createdToken) {
-                console.log('Posting to: ' + config.fetch.host + ':' + config.fetch.port + '/fetch');
-
-                axios.post('http://' + config.fetch.host + ':' + config.fetch.port + '/fetch', {
-                    token: token
-                });
-
-                return createdToken;
-            })
-            .then(function (createdToken) {
-                return {
-                    token: createdToken.token,
-                    accountName: createdToken.accountName,
-                    permissions: createdToken.permissions,
-                    world: createdToken.world,
-                    primary: createdToken.primary,
-                };
-            });
-    };
-
-    Gw2TokenController.prototype.list = function (email) {
-        return models
-            .Gw2ApiToken
-            .findAll({
-                include: [{
-                    model: models.User,
-                    where: {
-                        email: email
-                    }
-                }]
-            })
-            .then(function (tokens) {
-                return tokens.map(function (token) {
-                    return {
-                        token: token.token,
-                        accountName: token.accountName,
-                        permissions: token.permissions,
-                        world: token.world,
-                        primary: token.primary,
-                    };
-                });
-            });
-    };
-
-    Gw2TokenController.prototype.remove = function (email, token) {
-        return models
-            .User
-            .findOne({
-                where: {
-                    email: email
-                }
-            })
-            .then(function (user) {
-                return user.id;
-            })
-            .then(function (id) {
-                return models.Gw2ApiToken
-                    .destroy({
-                        where: {
-                            UserId: id,
-                            token: token
-                        }
-                    });
-            });
-    };
+  return {
+    list,
+    remove,
+    selectPrimary,
+    add,
+    doesUserHaveTokens,
+  };
 }
-
-module.exports = Gw2TokenController;

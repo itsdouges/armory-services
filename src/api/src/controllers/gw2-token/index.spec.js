@@ -1,13 +1,13 @@
-const proxyquire = require('proxyquire');
-const Models = require('../../models');
+import proxyquire from 'proxyquire';
+import Models from '../../models';
 
 describe('gw2 token controller', () => {
-  let systemUnderTest;
-  let mockValidator;
-  let mockGw2Api;
+  let controller;
   let models;
-
-  let mocks;
+  let httpPost;
+  let readTokenInfoWithAccount;
+  let validate;
+  let createValidator;
 
   const mockConfig = {
     fetch: {
@@ -16,44 +16,28 @@ describe('gw2 token controller', () => {
     },
   };
 
-  let mockAxios;
-
-  beforeEach((done) => {
+  beforeEach(async () => {
     models = new Models(testDb());
-    models.sequelize.sync({
+    await models.sequelize.sync({
       force: true,
-    }).then(() => {
-      done();
     });
 
-    mockGw2Api = {
-      readTokenInfoWithAccount () {},
-    };
+    httpPost = sinon.stub();
+    readTokenInfoWithAccount = sinon.stub();
+    validate = sinon.stub();
+    createValidator = () => ({ validate });
+    createValidator.addResource = sinon.spy();
 
-    mocks = {
-      validate () {},
-    };
-
-    mockValidator = function () {
-      return {
-        validate: mocks.validate,
-      };
-    };
-
-    mockAxios = {
-      post () {},
-    };
-
-    mockValidator.addResource = function () {};
-
-    sinon.stub(mockValidator, 'addResource').returns(mockValidator);
-
-    const Controller = proxyquire('./', {
-      axios: mockAxios,
+    const { default: controllerFactory } = proxyquire('./', {
+      axios: {
+        post: httpPost,
+      },
       '../../../config': mockConfig,
     });
 
-    systemUnderTest = new Controller(models, mockValidator, mockGw2Api);
+    controller = controllerFactory(models, createValidator, {
+      readTokenInfoWithAccount,
+    });
   });
 
   const seedDb = function (email, addTokens = true) {
@@ -98,35 +82,30 @@ describe('gw2 token controller', () => {
   };
 
   describe('list', () => {
-    it('should list tokens in db', (done) => {
-      seedDb('email@email.com')
-        .then(() => {
-          systemUnderTest
-            .list('email@email.com')
-            .then((tokens) => {
-              expect(2).to.equal(tokens.length);
+    it('should list tokens in db', async () => {
+      await seedDb('email@email.com');
 
-              const [token1, token2] = tokens;
+      const tokens = await controller.list('email@email.com');
 
-              expect('cool_token').to.equal(token1.token);
-              expect('madou.0').to.equal(token1.accountName);
-              expect(1234).to.equal(token1.world);
-              expect(false).to.equal(token1.primary);
+      expect(2).to.equal(tokens.length);
 
-              expect('another_token').to.equal(token2.token);
-              expect('madou.1').to.equal(token2.accountName);
-              expect(4321).to.equal(token2.world);
-              expect(false).to.equal(token2.primary);
+      const [token1, token2] = tokens;
 
-              done();
-            });
-        });
+      expect('cool_token').to.equal(token1.token);
+      expect('madou.0').to.equal(token1.accountName);
+      expect(1234).to.equal(token1.world);
+      expect(false).to.equal(token1.primary);
+
+      expect('another_token').to.equal(token2.token);
+      expect('madou.1').to.equal(token2.accountName);
+      expect(4321).to.equal(token2.world);
+      expect(false).to.equal(token2.primary);
     });
   });
 
   describe('adding', () => {
     it('should add users resource in update-gw2-token mode to validator', () => {
-      expect(mockValidator.addResource).to.have.been.calledWith({
+      expect(createValidator.addResource).to.have.been.calledWith({
         name: 'gw2-token',
         mode: 'add',
         rules: {
@@ -135,174 +114,140 @@ describe('gw2 token controller', () => {
       });
     });
 
-    it('should reject promise if validation fails', (done) => {
-      sinon.stub(mocks, 'validate').returns(Promise.reject('failed'));
+    it('should reject promise if validation fails', async () => {
+      validate.returns(Promise.reject('failed'));
 
-      systemUnderTest
-        .add('1234', 'token')
-        .then(null, (e) => {
-          expect(mocks.validate).to.have.been.calledWith({
-            token: 'token',
-          });
-
-          expect(e).to.equal('failed');
-
-          done();
+      try {
+        await controller.add('1234', 'token');
+      } catch (e) {
+        expect(e).to.equal('failed');
+        expect(validate).to.have.been.calledWith({
+          token: 'token',
         });
+      }
     });
 
-    it('should return true if user has tokens', (done) => {
-      seedDb('email@email.com')
-        .then((id) => {
-          return systemUnderTest.doesUserHaveTokens(id);
-        })
-        .then((result) => {
-          expect(result).to.equal(true);
-          done();
-        });
+    it('should return true if user has tokens', async () => {
+      const id = await seedDb('email@email.com');
+      const result = await controller.doesUserHaveTokens(id);
+
+      expect(result).to.equal(true);
     });
 
-    it('should return false if user has no tokens', (done) => {
-      seedDb('email@stuff.com', false)
-        .then((id) => {
-          return systemUnderTest.doesUserHaveTokens(id);
-        })
-        .then((result) => {
-          expect(result).to.equal(false);
-          done();
-        });
+    it('should return false if user has no tokens', async () => {
+      const id = await seedDb('email@stuff.com', false);
+
+      const result = await controller.doesUserHaveTokens(id);
+
+      expect(result).to.equal(false);
     });
 
-    it('should add token to db as not primary', (done) => {
-      sinon.stub(mocks, 'validate').returns(Promise.resolve());
-      sinon.stub(mockGw2Api, 'readTokenInfoWithAccount').returns(Promise.resolve({
+    it('should add token to db as not primary', async () => {
+      validate.returns(Promise.resolve());
+
+      readTokenInfoWithAccount.returns(Promise.resolve({
         accountName: 'nameee',
         accountId: 'eeee',
         world: 1122,
         info: ['cool', 'yeah!'],
       }));
 
-      sinon.stub(mockAxios, 'post').returns(Promise.resolve());
+      httpPost.returns(Promise.resolve());
 
-      seedDb('cool@email.com')
-        .then(() => {
-          systemUnderTest
-            .add('cool@email.com', 'token')
-            .then((result) => {
-              expect(result.primary).to.equal(false);
-              done();
-            });
-        });
+      await seedDb('cool@email.com');
+
+      const result = await controller.add('cool@email.com', 'token');
+
+      expect(result.primary).to.equal(false);
     });
 
-    it('should add token to db as primary if first token', (done) => {
-      sinon.stub(mocks, 'validate').returns(Promise.resolve());
-      sinon.stub(mockGw2Api, 'readTokenInfoWithAccount').returns(Promise.resolve({
+    it('should add token to db as primary if first token', async () => {
+      validate.returns(Promise.resolve());
+
+      readTokenInfoWithAccount.returns(Promise.resolve({
         accountName: 'nameee',
         accountId: 'eeee',
         world: 1122,
         info: ['cool', 'yeah!'],
       }));
-      sinon.stub(mockAxios, 'post').returns(Promise.resolve());
 
-      models
-        .User
-        .create({
-          email: 'cool@email.com',
-          passwordHash: 'lolz',
-          alias: 'swagn',
-        })
-        .then(() => {
-          systemUnderTest
-            .add('cool@email.com', 'token')
-            .then((result) => {
-              expect(result.token).to.equal('token');
-              expect(result.primary).to.equal(true);
-              expect(result.permissions).to.equal('cool,yeah!');
-              expect(result.accountName).to.equal('nameee');
 
-              expect(mockAxios.post).to.have.been.calledWith('http://host:port/fetch', {
-                token: 'token',
-              });
+      await models.User.create({
+        email: 'cool@email.com',
+        passwordHash: 'lolz',
+        alias: 'swagn',
+      });
 
-              done();
-            });
-        });
+      const result = await controller.add('cool@email.com', 'token');
+
+      expect(result).to.eql({
+        token: 'token',
+        primary: true,
+        permissions: 'cool,yeah!',
+        accountName: 'nameee',
+        world: 1122,
+      });
+
+      expect(httpPost).to.have.been.calledWith('http://host:port/fetch', {
+        token: 'token',
+        permissions: 'cool,yeah!',
+      });
     });
   });
 
   describe('primary', () => {
-    it('should set all tokens primary to false except for target', (done) => {
-      seedDb('email@email.com')
-        .then(() => {
-          return systemUnderTest.selectPrimary('email@email.com', 'another_token');
-        })
-        .then((data) => {
-          expect(data).to.eql([1]);
-        })
-        .then(() => {
-          return models
-            .Gw2ApiToken
-            .findAll();
-        })
-        .then((data) => {
-          data.forEach((token) => {
-            if (token.token === 'another_token') {
-              expect(token.primary).to.equal(true);
-            } else {
-              expect(token.primary).to.equal(false);
-            }
-          });
+    it('should set all tokens primary to false except for target', async () => {
+      await seedDb('email@email.com');
 
-          done();
-        });
+      const data = await controller.selectPrimary('email@email.com', 'another_token');
+
+      expect(data).to.eql([1]);
+
+      const tokens = await models.Gw2ApiToken.findAll();
+
+      tokens.forEach((token) => {
+        if (token.token === 'another_token') {
+          expect(token.primary).to.equal(true);
+        } else {
+          expect(token.primary).to.equal(false);
+        }
+      });
     });
   });
 
   describe('removing', () => {
-    // todo: omg this is so dirty clean it up later.. lol
-    it('should remove token from db', (done) => {
-      sinon.stub(mocks, 'validate').returns(Promise.resolve());
-      sinon.stub(mockGw2Api, 'readTokenInfoWithAccount').returns(Promise.resolve({
+    it('should remove token from db', async () => {
+      validate.returns(Promise.resolve());
+      readTokenInfoWithAccount.returns(Promise.resolve({
         accountName: 'nameee',
         accountId: 'eeee',
         world: 1122,
         info: ['cool', 'yeah!'],
       }));
-      sinon.stub(mockAxios, 'post').returns(Promise.resolve());
 
-      models
-        .User
-        .create({
-          email: 'cool@email.com',
-          passwordHash: 'lolz',
-          alias: 'swagn',
-        })
-        .then(() => {
-          systemUnderTest
-            .add('cool@email.com', 'token')
-            .then((result) => {
-              expect(result.token).to.equal('token');
-              expect(result.accountName).to.equal('nameee');
+      httpPost.returns(Promise.resolve());
 
-              systemUnderTest
-                .remove('cool@email.com', 'token')
-                .then((rez) => {
-                  expect(rez).to.equal(1);
+      await models.User.create({
+        email: 'cool@email.com',
+        passwordHash: 'lolz',
+        alias: 'swagn',
+      });
 
-                  models
-                      .Gw2ApiToken
-                      .findOne({
-                        where: {
-                          token: 'token',
-                        },
-                      }).then((res) => {
-                        expect(res).to.equal(null);
-                        done();
-                      });
-                });
-            });
-        });
+
+      const result = await controller.add('cool@email.com', 'token');
+
+      expect(result.token).to.equal('token');
+      expect(result.accountName).to.equal('nameee');
+
+      await controller.remove('cool@email.com', 'token');
+
+      const tokens = await models.Gw2ApiToken.findOne({
+        where: {
+          token: 'token',
+        },
+      });
+
+      expect(tokens).to.equal(null);
     });
   });
 });
