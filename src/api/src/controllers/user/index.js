@@ -4,12 +4,14 @@ const _ = require('lodash');
 
 const guildService = require('../../services/guild');
 const emailClient = require('../../lib/email');
-const CharacterController = require('../character');
+const characterControllerFactory = require('../character');
 const getUserIdByEmail = require('../../lib/get-user-info').getUserIdByEmail;
 const config = require('../../../config');
 const parseAccountName = require('../../lib/user').parseAccountName;
 
 function userControllerFactory (models, createValidator, gw2Api) {
+  const characterController = characterControllerFactory(models, gw2Api);
+
   createValidator.addResource({
     name: 'users',
     mode: 'create',
@@ -87,8 +89,6 @@ function userControllerFactory (models, createValidator, gw2Api) {
       .findOne({ where: { email } })
       .then((data) => data.dataValues)
       .then((data) => {
-        const characterController = new CharacterController(models, gw2Api);
-
         return characterController
           .list({ email })
           .then((characters) => Object.assign({}, data, {
@@ -97,62 +97,61 @@ function userControllerFactory (models, createValidator, gw2Api) {
       });
   }
 
-  function readPublic (alias, { email, ignorePrivacy } = {}) {
-    return models
-      .User
-      .findOne({
-        where: { alias },
-        include: [{
-          all: true,
-        }],
-      })
-      .then((result) => {
-        if (!result) {
-          return Promise.reject('No user was found.');
-        }
+  async function readPublic (alias, { email, ignorePrivacy } = {}) {
+    const dbUser = await models.User.findOne({
+      where: { alias },
+      include: [{
+        all: true,
+      }],
+    });
 
-        return result.dataValues;
-      })
-      .then((data) => {
-        const characterController = new CharacterController(models, gw2Api);
+    if (!dbUser) {
+      return Promise.reject('No user was found.');
+    }
 
-        const primaryToken = _.find(data.gw2_api_tokens, ({ primary }) => primary);
+    const data = dbUser.dataValues;
+    const primaryToken = _.find(data.gw2_api_tokens, ({ primary }) => primary);
 
-        return characterController
-          .list({ alias: data.alias, email, ignorePrivacy })
-          .then((characters) => Object.assign({
-            accountName: parseAccountName(data),
-            alias: data.alias,
-            createdAt: data.createdAt,
-            characters,
-          }, _.pick(_.get(primaryToken, 'dataValues'), [
-            'alias',
-            'created',
-            'world',
-            'access',
-            'commander',
-            'fractalLevel',
-            'dailyAp',
-            'monthlyAp',
-            'wvwRank',
-            'guilds',
-          ])))
-          .then((user) => {
-            if (user.guilds) {
-              const promises = user.guilds.split(',').map((id) => {
-                return guildService.read(models, { id });
-              });
+    const characters = await characterController.list({ alias: data.alias, email, ignorePrivacy });
 
-              return Promise.all(promises)
-                .then((guilds) => {
-                  const cleanGuilds = guilds.filter((guild) => !!guild);
-                  return Object.assign({}, user, { guilds: cleanGuilds });
-                });
-            }
+    const user = {
+      accountName: parseAccountName(data),
+      alias: data.alias,
+      createdAt: data.createdAt,
+      characters,
+      ..._.pick(_.get(primaryToken, 'dataValues'), [
+        'alias',
+        'created',
+        'world',
+        'access',
+        'commander',
+        'fractalLevel',
+        'dailyAp',
+        'monthlyAp',
+        'wvwRank',
+        'guilds',
+      ]),
+    };
 
-            return Object.assign({}, user, { guilds: [] });
-          });
+    let guilds = [];
+
+    if (user.guilds) {
+      const promises = user.guilds.split(',').map((id) => {
+        return guildService.read(models, { id });
       });
+
+      guilds = await Promise.all(promises);
+      guilds = guilds.filter((guild) => !!guild).map((guild) => _.pick(guild, [
+        'id',
+        'tag',
+        'name',
+      ]));
+    }
+
+    return {
+      ...user,
+      guilds,
+    };
   }
 
   function changePassword (id, newPassword) {

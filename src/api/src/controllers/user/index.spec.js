@@ -174,7 +174,12 @@ describe('user resource', () => {
     });
 
     it('should return public user data and ignore nulls', () => {
-      const cool = { guild: 'guild' };
+      const cool = {
+        id: 'cool',
+        tag: 'yeah',
+        name: 'pretty nice',
+        misc: 'ignore this',
+      };
 
       readGuild.withArgs(models, { id: 'cool' }).returns(Promise.resolve(cool));
       readGuild.withArgs(models, { id: 'guilds' }).returns(Promise.resolve(null));
@@ -195,7 +200,9 @@ describe('user resource', () => {
             wvwRank: null,
           });
 
-          expect(data.guilds).to.eql([cool]);
+          const { misc, ...expectedGuild } = cool;
+
+          expect(data.guilds).to.eql([expectedGuild]);
 
           expect(data.characters).to.eql([{
             accountName: 'coolaccount.1234',
