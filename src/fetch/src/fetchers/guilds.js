@@ -1,30 +1,25 @@
 const gw2 = require('../lib/gw2');
 const _ = require('lodash');
 
-module.exports = (models, { token, permissions }) => {
-  if (_.includes(permissions, 'guilds')) {
-    return gw2.account(token)
-      .then(({ guildLeader } = {}) => {
-        if (guildLeader) {
-          const promises = guildLeader.map((guildId) => {
-            return gw2.guildAuthenticated(token, guildId)
-              .then((data) => {
-                return models.Gw2Guild.update(Object.assign({}, {
-                  apiToken: token,
-                }, data), {
-                  where: {
-                    id: guildId,
-                  },
-                });
-              });
-          });
-
-          return Promise.all(promises);
-        }
-
-        return undefined;
-      });
+export default async function guildsFetcher (models, { token, permissions }) {
+  if (!_.includes(permissions, 'guilds')) {
+    return;
   }
 
-  return Promise.resolve();
-};
+  const { guildLeader } = await gw2.account(token);
+  if (!guildLeader) {
+    return;
+  }
+
+  const promises = guildLeader.map(async (guildId) => {
+    const data = await gw2.guildAuthenticated(token, guildId);
+
+    await models.Gw2Guild.upsert({
+      ...data,
+      apiToken: token,
+      id: guildId,
+    });
+  });
+
+  await Promise.all(promises);
+}

@@ -43,7 +43,15 @@ export default function tokenFactory (models, createValidator, gw2Api) {
   async function selectPrimary (email, token) {
     const id = await getUserId(email);
 
-    return await models.Gw2ApiToken.update({
+    await models.Gw2ApiToken.update({
+      primary: false,
+    }, {
+      where: {
+        UserId: id,
+      },
+    });
+
+    await models.Gw2ApiToken.update({
       primary: true,
     }, {
       where: {

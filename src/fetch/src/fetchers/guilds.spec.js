@@ -5,7 +5,7 @@ const sandbox = sinon.sandbox.create();
 const account = sandbox.stub();
 const guildAuthenticated = sandbox.stub();
 
-const fetcher = proxyquire('./guilds', {
+const { default: fetcher } = proxyquire('./guilds', {
   '../lib/gw2': {
     account,
     guildAuthenticated,
@@ -16,6 +16,8 @@ describe('guild fetcher', () => {
   const token = { token: '1234-12341234-1234', permissions: 'guilds,account' };
   const authGuildData = {
     level: 69,
+    name: 'yesss',
+    tag: 'tag',
     motd: 'Cool message',
     influence: 23,
     aetherium: 233,
@@ -39,21 +41,19 @@ describe('guild fetcher', () => {
     });
   };
 
-  before(() => {
-    return setupDb({ seedDb: true, token: token.token })
-      .then((mdls) => {
-        models = mdls;
-        return models.Gw2Guild.create(testData.guild(accountInfoData.guildLeader[0]));
-      });
+  before(async () => {
+    models = await setupDb({ seedDb: true, token: token.token });
+    await models.Gw2Guild.create(testData.guild());
   });
 
   context('when token has permissions and is guild leader', () => {
-    before(() => {
+    before(async () => {
       account.withArgs(token.token).returns(Promise.resolve(accountInfoData));
+
       guildAuthenticated.withArgs(token.token, accountInfoData.guildLeader[0])
         .returns(Promise.resolve(authGuildData));
 
-      return fetcher(models, token);
+      await fetcher(models, token);
     });
 
     it('should check if token is a guild leader', () => {

@@ -1,3 +1,5 @@
+import 'babel-polyfill';
+
 const Sequelize = require('sequelize');
 const restify = require('restify');
 
@@ -13,9 +15,9 @@ const models = new Models(db);
 
 const { batchFetch, fetch } = fetchFactory(models, [
   // TODO: Dynamic import of fetchers, maybe?
+  require('./fetchers/guilds').default,
   require('./fetchers/characters'),
   require('./fetchers/account'),
-  require('./fetchers/guilds'),
 ]);
 
 const server = restify.createServer({

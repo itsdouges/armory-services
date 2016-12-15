@@ -1,7 +1,9 @@
 import proxyquire from 'proxyquire';
+
+import * as testData from 'test/testData';
 import Models from '../../models';
 
-describe('gw2 token controller', () => {
+describe.only('gw2 token controller', () => {
   let controller;
   let models;
   let httpPost;
@@ -40,45 +42,25 @@ describe('gw2 token controller', () => {
     });
   });
 
-  const seedDb = function (email, addTokens = true) {
-    return models
-      .User
-      .create({
-        email,
-        passwordHash: 'lolz',
-        alias: 'swagn',
-      })
-      .then((user) => {
-        if (!addTokens) {
-          return user.id;
-        }
+  const seedDb = async function (email, addTokens = true) {
+    const user = await models.User.create(testData.user({ email }));
 
-        return models
-          .Gw2ApiToken
-          .create({
-            token: 'cool_token',
-            accountName: 'madou.0',
-            permissions: 'he,he',
-            accountId: '12341234',
-            world: 1234,
-            UserId: user.id,
-          })
-          .then(() => {
-            return models
-              .Gw2ApiToken
-              .create({
-                token: 'another_token',
-                accountName: 'madou.1',
-                permissions: 'he,he',
-                accountId: '4321431',
-                world: 4321,
-                UserId: user.id,
-              });
-          })
-          .then(() => {
-            return user.id;
-          });
-      });
+    if (addTokens) {
+      await models.Gw2ApiToken.create(testData.apiToken({
+        id: user.id,
+        token: 'cool_token',
+        primary: true,
+      }));
+
+      await models.Gw2ApiToken.create(testData.apiToken({
+        id: user.id,
+        token: 'another_token',
+        accountName: 'asdasd',
+        accountId: 'azcxxc',
+      }));
+    }
+
+    return user.id;
   };
 
   describe('list', () => {
@@ -92,13 +74,13 @@ describe('gw2 token controller', () => {
       const [token1, token2] = tokens;
 
       expect('cool_token').to.equal(token1.token);
-      expect('madou.0').to.equal(token1.accountName);
+      expect('cool.4321').to.equal(token1.accountName);
       expect(1234).to.equal(token1.world);
-      expect(false).to.equal(token1.primary);
+      expect(true).to.equal(token1.primary);
 
       expect('another_token').to.equal(token2.token);
-      expect('madou.1').to.equal(token2.accountName);
-      expect(4321).to.equal(token2.world);
+      expect('asdasd').to.equal(token2.accountName);
+      expect(1234).to.equal(token2.world);
       expect(false).to.equal(token2.primary);
     });
   });
@@ -195,23 +177,20 @@ describe('gw2 token controller', () => {
     });
   });
 
-  describe('primary', () => {
+  describe('select primary', () => {
     it('should set all tokens primary to false except for target', async () => {
       await seedDb('email@email.com');
 
       const data = await controller.selectPrimary('email@email.com', 'another_token');
 
-      expect(data).to.eql([1]);
-
       const tokens = await models.Gw2ApiToken.findAll();
+      const primaryToken = tokens.filter(({ token }) => token === 'another_token')[0];
 
-      tokens.forEach((token) => {
-        if (token.token === 'another_token') {
-          expect(token.primary).to.equal(true);
-        } else {
-          expect(token.primary).to.equal(false);
-        }
-      });
+      const otherTokens = tokens.filter(({ token }) => token !== 'another_token');
+
+      expect(primaryToken.primary).to.equal(true);
+
+      otherTokens.forEach((token) => expect(token.primary).to.equal(false));
     });
   });
 
