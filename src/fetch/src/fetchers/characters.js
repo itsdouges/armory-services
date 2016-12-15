@@ -40,20 +40,7 @@ module.exports = function fetchUserCharacterData (models, { token }) {
           return promises;
         }, []);
 
-        return q.allSettled([...upsertCharactersPromises])
-          .then((results) => {
-            const errors = results.filter((result) => result.state === 'rejected');
-            if (errors.length) {
-              throw errors;
-            }
-          });
+        return q.allSettled([...upsertCharactersPromises]);
       });
-    })
-    .catch((response) => {
-      // eslint-disable-next-line
-      console.error(`\n=== Error fetching characters with ${token} @ ${new Date().toGMTString()} === \n`);
-      console.error(response);
-
-      return q.reject(response);
     });
 };

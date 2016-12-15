@@ -184,6 +184,7 @@ readModuleFile('./Dockerrun.aws.json.mustache', (err, template) => {
     SES_ACCESS_KEY_ID: process.env.SES_ACCESS_KEY_ID,
     SES_SECRET_ACCESS_KEY: process.env.SES_SECRET_ACCESS_KEY,
     DATADOG_TAGS: environmentName,
+    GITTER_API_KEY: process.env.GITTER_API_KEY,
   };
 
   const output = mustache.render(template, data);

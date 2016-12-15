@@ -6,18 +6,19 @@ module.exports = function fetch (models, { token }) {
   return gw2
     .account(token)
     .then((accountInfo) => {
-      const row = Object.assign({}, _.pick(accountInfo, [
-        'world',
-        'created',
-        'access',
-        'commander',
-        'wvwRank',
-        'monthlyAp',
-        'dailyAp',
-        'fractalLevel',
-      ]), {
+      const row = {
+        ..._.pick(accountInfo, [
+          'world',
+          'created',
+          'access',
+          'commander',
+          'wvwRank',
+          'monthlyAp',
+          'dailyAp',
+          'fractalLevel',
+        ]),
         guilds: accountInfo.guilds && accountInfo.guilds.join(','),
-      });
+      };
 
       return Promise.all([
         guildsService.fetch(models, accountInfo.guilds),

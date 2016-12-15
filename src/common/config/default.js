@@ -27,6 +27,10 @@ module.exports = {
     'http://localhost:3000',
   ],
 
+  gitter: {
+    apiKey: process.env.GITTER_API_KEY,
+  },
+
   email: {
     noreply: 'noreply@gw2armory.com',
     smtp: {

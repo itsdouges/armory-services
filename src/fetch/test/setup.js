@@ -1,3 +1,5 @@
+import 'babel-polyfill';
+
 const Sequelize = require('sequelize');
 const Models = require('../src/models');
 
