@@ -43,7 +43,8 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER,
     },
     motd: {
-      type: DataTypes.STRING,
+      /* eslint new-cap:0 */
+      type: DataTypes.STRING(1000),
     },
   });
 };

@@ -6,16 +6,17 @@ import config from '../config';
 
 const gitter = new Gitter(config.gitter.apiKey);
 
-async function sendToGitter (message) {
+async function sendToGitter (roomName, message) {
   try {
-    const room = await gitter.rooms.join('gw2armory/fetch');
+    const room = await gitter.rooms.join(`gw2armory/${roomName}`);
     room.send(message);
   } catch (e) {
-    console.log('Couln\'t connect to gitter, check the api key.');
+    console.log('Couln\'t connect to gitter, check the api key. Falling back to console log.');
+    console.log(message);
   }
 }
 
-const br = '---------------------------------------------------';
+const hr = '---------------------------------------------------';
 
 async function logAndReturnResults (results, startTime) {
   const endTime = new Date();
@@ -25,25 +26,25 @@ async function logAndReturnResults (results, startTime) {
   const errors = flattenedResults.filter(({ state }) => state === 'rejected');
   const successes = flattenedResults.filter(({ state }) => state === 'fulfilled');
 
-  sendToGitter(`
+  sendToGitter('fetch', `
 \`\`\`
-${br}
+${hr}
 FINISHED @ ${new Date().toString()}
-${br}
+${hr}
 
-${br}
+${hr}
 LOGGED ERRORS
-${br}
+${hr}
 ${errors.map((error) => JSON.stringify(error.value)).join('\n')}
-${br}
+${hr}
 
-${br}
+${hr}
 FETCH SUMMARY
-${br}
+${hr}
 ${errors.length} errors
 ${successes.length} success
 Duration: ${(endTime - startTime) / 1000}s
-${br}
+${hr}
 \`\`\`
   `);
 
@@ -64,6 +65,12 @@ function fetchFactory (models, fetchers) {
 
   async function batchFetch () {
     const startTime = new Date();
+
+    sendToGitter('fetch', `
+${hr}
+  Starting fetch @ ${startTime.toString()}!
+${hr}
+`);
 
     const tokens = await fetchTokens(models);
     const results = await allSettled(tokens.map(throat(config.fetch.concurrentCalls, fetch)));
