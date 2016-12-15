@@ -7,8 +7,12 @@ import config from '../config';
 const gitter = new Gitter(config.gitter.apiKey);
 
 async function sendToGitter (message) {
-  const room = await gitter.rooms.join('gw2armory/fetch');
-  room.send(message);
+  try {
+    const room = await gitter.rooms.join('gw2armory/fetch');
+    room.send(message);
+  } catch (e) {
+    console.log('Couln\'t connect to gitter, check the api key.');
+  }
 }
 
 const br = '---------------------------------------------------';
