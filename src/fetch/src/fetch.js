@@ -68,7 +68,7 @@ function fetchFactory (models, fetchers) {
 
     sendToGitter('fetch', `
 ${hr}
-  Starting fetch @ ${startTime.toString()}!
+STARTING @ ${startTime.toString()}!
 ${hr}
 `);
 
