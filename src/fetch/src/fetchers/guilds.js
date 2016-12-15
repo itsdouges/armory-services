@@ -1,5 +1,5 @@
-const gw2 = require('../lib/gw2');
-const _ = require('lodash');
+import _ from 'lodash';
+import gw2 from '../lib/gw2';
 
 export default async function guildsFetcher (models, { token, permissions }) {
   if (!_.includes(permissions, 'guilds')) {
