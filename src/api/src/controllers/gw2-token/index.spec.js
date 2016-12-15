@@ -3,7 +3,7 @@ import proxyquire from 'proxyquire';
 import * as testData from 'test/testData';
 import Models from '../../models';
 
-describe.only('gw2 token controller', () => {
+describe('gw2 token controller', () => {
   let controller;
   let models;
   let httpPost;
