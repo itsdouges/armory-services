@@ -6,38 +6,62 @@ import config from '../config';
 
 const gitter = new Gitter(config.gitter.apiKey);
 
+function humanifyError (error) {
+  return error.status
+    ? (`
+[${error.status} ${error.statusText}] - ${error.data.text}
+[${error.config.method}] ${error.config.url}
+${error.config.headers.Authorization}
+`)
+    : JSON.stingify(error);
+}
+
 async function sendToGitter (roomName, message) {
   try {
     const room = await gitter.rooms.join(`gw2armory/${roomName}`);
-    room.send(message);
+    room.send(`\`\`\`${message}\`\`\``);
   } catch (e) {
-    console.log('Couln\'t connect to gitter, check the api key. Falling back to console log.');
+    console.log('Couldn\'t connect to gitter, check the api key. Falling back to console log.');
     console.log(message);
   }
 }
 
+const log = async (message) => await sendToGitter('fetch', message);
+
 const hr = '---------------------------------------------------';
 
-async function logAndReturnResults (results, startTime) {
-  const endTime = new Date();
-
+function parseResults (results) {
   const flattenedResults = results.reduce((acc, result) => acc.concat(result.value), []);
-
   const errors = flattenedResults.filter(({ state }) => state === 'rejected');
   const successes = flattenedResults.filter(({ state }) => state === 'fulfilled');
 
-  sendToGitter('fetch', `
-\`\`\`
+  return {
+    errors,
+    successes,
+  };
+}
+
+async function logResults (startTime, { errors = [], successes = [] }) {
+  const endTime = new Date();
+
+  await log(`
 ${hr}
 FINISHED @ ${new Date().toString()}
 ${hr}
+  `);
 
+  await log(`
 ${hr}
 LOGGED ERRORS
-${hr}
-${errors.map((error) => JSON.stringify(error.value)).join('\n')}
-${hr}
+${hr}`);
 
+  if (errors.length) {
+    await Promise.all(errors.map((error) => log(humanifyError(error.value))));
+  } else {
+    await log('No errors!');
+  }
+
+  await log(`
 ${hr}
 FETCH SUMMARY
 ${hr}
@@ -45,13 +69,7 @@ ${errors.length} errors
 ${successes.length} success
 Duration: ${(endTime - startTime) / 1000}s
 ${hr}
-\`\`\`
   `);
-
-  return {
-    errors,
-    successes,
-  };
 }
 
 function fetchFactory (models, fetchers) {
@@ -66,7 +84,7 @@ function fetchFactory (models, fetchers) {
   async function batchFetch () {
     const startTime = new Date();
 
-    sendToGitter('fetch', `
+    log(`
 ${hr}
 STARTING @ ${startTime.toString()}!
 ${hr}
@@ -75,7 +93,11 @@ ${hr}
     const tokens = await fetchTokens(models);
     const results = await allSettled(tokens.map(throat(config.fetch.concurrentCalls, fetch)));
 
-    return await logAndReturnResults(results, startTime);
+    const parsedResults = parseResults(results);
+
+    logResults(startTime, parsedResults);
+
+    return parsedResults;
   }
 
   return {

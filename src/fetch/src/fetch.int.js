@@ -1,7 +1,18 @@
 const proxyquire = require('proxyquire');
 
+const config = {
+  gitter: {
+    apiKey: '1234',
+  },
+
+  fetch: {
+    concurrentCalls: 10,
+  },
+};
+
 const createFetchFactory = (fetchTokens) => proxyquire('./fetch', {
   './lib/tokens': fetchTokens,
+  '../config': config,
 });
 const characterFetcher = require('./fetchers/characters');
 const accountFetcher = require('./fetchers/account');
@@ -37,16 +48,18 @@ describe('fetch integration', () => {
     return initiateFetch();
   });
 
-  it('should not explode if fetching with some bad and some good tokens', function () {
-    this.timeout(40000);
+  it('should not explode if fetching with some bad and some good tokens', async function () {
+    this.timeout(50000);
 
-    return initiateFetch([
+    await initiateFetch([
       'dont-exist-lol',
       token,
-    ])
-    .then(() => models.Gw2Character.findAll())
-    .then((characters) => expect(characters.length).to.be.above(5))
-    .then(() => models.Gw2Guild.findAll())
-    .then((guilds) => expect(guilds.length).to.be.at.least(1));
+    ]);
+
+    const characters = await models.Gw2Character.findAll();
+    expect(characters.length).to.be.above(5);
+
+    const guilds = await models.Gw2Guild.findAll();
+    expect(guilds.length).to.be.at.least(1);
   });
 });
