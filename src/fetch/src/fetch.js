@@ -2,18 +2,20 @@
 
 import Gitter from 'node-gitter';
 import throat from 'throat';
+import _ from 'lodash';
+
 import { allSettled } from './lib/promise';
 import fetchTokens from './lib/tokens';
 import config from '../config';
 
 const gitter = new Gitter(config.gitter.apiKey);
 
-function humanifyError (error): string {
+function humanifyError (error = {}): string {
   return error.status
     ? (`
-[${error.status} ${error.statusText}] - ${error.data.text}
-[${error.config.method}] ${error.config.url}
-${error.config.headers.Authorization}
+[${error.status} ${error.statusText}] - ${_.get(error, 'data.text')}
+[${_.get(error, 'config.method')}] ${_.get(error, 'config.url')}
+${_.get(error, 'config.headers.Authorization')}
 `)
     : JSON.stringify(error);
 }
