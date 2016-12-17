@@ -27,6 +27,7 @@ async function sendToGitter (roomName: string, message: string) {
   } catch (e) {
     console.log('Couldn\'t connect to gitter, check the api key. Falling back to console log.');
     console.log(message);
+    console.log(JSON.stringify(e));
   }
 }
 
