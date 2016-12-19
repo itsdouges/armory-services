@@ -11,13 +11,18 @@ import config from '../config';
 const gitter = new Gitter(config.gitter.apiKey);
 
 function humanifyError (error = {}): string {
-  return error.status
-    ? (`
+  try {
+    return error.status
+      ? (`
 [${error.status} ${error.statusText}] - ${_.get(error, 'data.text')}
 [${_.get(error, 'config.method')}] ${_.get(error, 'config.url')}
 ${_.get(error, 'config.headers.Authorization')}
 `)
     : JSON.stringify(error);
+  } catch (e) {
+    console.log(JSON.stringify(e));
+    return 'Something bad happened';
+  }
 }
 
 async function sendToGitter (roomName: string, message: string) {
