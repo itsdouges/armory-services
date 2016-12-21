@@ -6,7 +6,10 @@ import { limit } from '../../lib/math';
 import {
   read as readGuild,
   list as listGuilds,
+  readPrivate as readGuildPrivate,
 } from '../../services/guild';
+
+import { readGuildLogs } from '../../lib/gw2';
 
 import { list as listCharacters } from '../../services/character';
 import { list as listUsers } from '../../services/user';
@@ -62,8 +65,23 @@ export default function guildControllerFactory (models) {
       });
   }
 
+  async function logs (name, { email } = {}) {
+    const canAccess = await checkAccess('read', name, email);
+    if (!canAccess) {
+      return [];
+    }
+
+    const guild = await readGuildPrivate(models, { name });
+    if (!guild.apiToken) {
+      return [];
+    }
+
+    return await readGuildLogs(guild.apiToken, guild.id);
+  }
+
   return {
     read,
     random,
+    logs,
   };
 }

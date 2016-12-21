@@ -1,37 +1,39 @@
 import _ from 'lodash';
 
-export function read (models, { id, name }) {
-  return models.Gw2Guild.findOne({
+export async function readPrivate (models, { id, name }) {
+  return await models.Gw2Guild.findOne({
     where: id ? { id } : { name },
-  })
-  .then((guild) => {
-    if (!guild) {
-      return undefined;
-    }
-
-    const data = _.pick(guild, [
-      'id',
-      'tag',
-      'name',
-      'motd',
-      'level',
-      'influence',
-      'aetherium',
-      'resonance',
-      'favor',
-    ]);
-
-    return {
-      ...data,
-      claimed: !!guild.apiToken,
-    };
   });
 }
 
-export function list (models) {
-  return models.Gw2Guild.findAll();
+export async function read (models, { id, name }) {
+  const guild = await readPrivate(models, { id, name });
+  if (!guild) {
+    return undefined;
+  }
+
+  const data = _.pick(guild, [
+    'id',
+    'tag',
+    'name',
+    'motd',
+    'level',
+    'influence',
+    'aetherium',
+    'resonance',
+    'favor',
+  ]);
+
+  return {
+    ...data,
+    claimed: !!guild.apiToken,
+  };
 }
 
-export function isAccessAllowed () {
-  return Promise.resolve(false);
+export async function list (models) {
+  return await models.Gw2Guild.findAll();
+}
+
+export async function isAccessAllowed () {
+  return await Promise.resolve(false);
 }

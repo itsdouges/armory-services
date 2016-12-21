@@ -10,9 +10,9 @@ function normaliseObject (data) {
   }, {});
 }
 
-function addExtra (endpoint, extra) {
-  if (extra) {
-    return `${endpoint}/${extra}`;
+function addExtra (endpoint, id) {
+  if (id) {
+    return endpoint.replace('{id}', id);
   }
 
   return endpoint;
@@ -33,16 +33,17 @@ const simpleCalls = _.reduce({
       });
     },
   },
+  readGuildLogs: { resource: 'guild/{id}/log' },
   readPvpStandings: { resource: 'pvp/standings' },
   readPvpStats: { resource: 'pvp/stats' },
   readAccount: { resource: 'account', normalise: true },
   readTokenInfo: { resource: 'tokeninfo' },
   readCharacters: { resource: 'characters' },
-  readCharacter: { resource: 'characters' },
+  readCharacter: { resource: 'characters/{id}' },
   readAchievements: { resource: 'account/achievements' },
 }, (obj, { resource, onResult, normalise }, key) => {
   // eslint-disable-next-line
-  obj[key] = (token, extra = '') => axios.get(addExtra(`${config.gw2.endpoint}v2/${resource}`, extra), {
+  obj[key] = (token, id = '') => axios.get(addExtra(`${config.gw2.endpoint}v2/${resource}`, id), {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -78,4 +79,7 @@ function readTokenInfoWithAccount (token) {
     }));
 }
 
-module.exports = Object.assign({}, simpleCalls, { readTokenInfoWithAccount });
+module.exports = {
+  ...simpleCalls,
+  readTokenInfoWithAccount,
+};
