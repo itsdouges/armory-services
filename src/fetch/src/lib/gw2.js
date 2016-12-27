@@ -15,12 +15,12 @@ function normaliseObject (data) {
   }, {});
 }
 
-function guild (id) {
+export function guild (id) {
   return axios.get(`${config.gw2.endpoint}v1/guild_details.json?guild_id=${id}`)
     .then(({ data }) => data);
 }
 
-function account (token) {
+export function account (token) {
   return axios.get(`${config.gw2.endpoint}v2/account`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -29,7 +29,7 @@ function account (token) {
   .then(({ data }) => normaliseObject(data));
 }
 
-function guildLogs (token, id) {
+export function guildLogs (token, id) {
   return axios.get(`${config.gw2.endpoint}v2/guild/${id}/logs`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -38,7 +38,7 @@ function guildLogs (token, id) {
   .then(({ data }) => data);
 }
 
-function guildAuthenticated (token, id) {
+export function guildAuthenticated (token, id) {
   return axios.get(`${config.gw2.endpoint}v2/guild/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -47,7 +47,7 @@ function guildAuthenticated (token, id) {
   .then(({ data }) => data);
 }
 
-function guildMembers (token, id) {
+export function guildMembers (token, id) {
   return axios.get(`${config.gw2.endpoint}v2/guild/${id}/members`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -56,7 +56,7 @@ function guildMembers (token, id) {
   .then(({ data }) => data);
 }
 
-function characters (token) {
+export function characters (token) {
   return axios.get(`${config.gw2.endpoint}v2/characters?page=0&page_size=200`, {
     headers: {
       Authorization: `Bearer ${token}`,

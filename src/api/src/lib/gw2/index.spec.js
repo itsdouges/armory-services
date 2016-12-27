@@ -21,10 +21,10 @@ describe('gw2 api', () => {
 
   beforeEach(() => axiosGet.reset());
 
-  const stubAxiosGet = (resource, data, extra = '') => {
+  const stubAxiosGet = (resource, data, id = '') => {
     let endpoint = `${config.gw2.endpoint}v2/${resource}`;
-    if (extra) {
-      endpoint += `/${extra}`;
+    if (id) {
+      endpoint = endpoint.replace('{id}', id);
     }
 
     axiosGet
@@ -66,6 +66,7 @@ describe('gw2 api', () => {
       'readPvpGames',
       'readPvpStandings',
       'readPvpStats',
+      'readGuildLogs',
       'readTokenInfo',
       'readTokenInfoWithAccount',
     ]);
@@ -78,7 +79,8 @@ describe('gw2 api', () => {
       readAccount: { resource: 'account', normalise: true },
       readTokenInfo: { resource: 'tokeninfo' },
       readCharacters: { resource: 'characters' },
-      readCharacter: { resource: 'characters', extra: 'Blastrn' },
+      readCharacter: { resource: 'characters/{id}', extra: 'Blastrn' },
+      readGuildLogs: { resource: 'guild/{id}/log', extra: '1234-1234' },
       readAchievements: { resource: 'account/achievements' },
     }, ({ resource, extra, normalise }, funcName) => {
       it(`should call ${funcName} and resolve data`, () => {
