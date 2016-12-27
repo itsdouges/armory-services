@@ -66,7 +66,7 @@ export default function guildControllerFactory (models) {
   }
 
   async function logs (name, { email } = {}) {
-    const canAccess = await checkAccess('read', name, email);
+    const canAccess = await checkAccess('logs', name, email);
     if (!canAccess) {
       return [];
     }

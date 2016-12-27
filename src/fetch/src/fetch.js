@@ -77,7 +77,7 @@ FETCH SUMMARY
 ${hr}
 ${errors.length} errors
 ${successes.length} success
-Duration: ${(endTime - startTime) / 1000}s
+Duration: ${(endTime - startTime) / 1000 / 60}mins
 ${hr}
   `);
 }
