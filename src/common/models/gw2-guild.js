@@ -43,7 +43,7 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER,
     },
     motd: {
-      /* eslint new-cap:0 */
+      // eslint-disable-next-line new-cap
       type: DataTypes.STRING(1000),
     },
   });
