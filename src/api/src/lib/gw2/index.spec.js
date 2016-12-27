@@ -67,6 +67,12 @@ describe('gw2 api', () => {
       'readPvpStandings',
       'readPvpStats',
       'readGuildLogs',
+      'readGuildMembers',
+      'readGuildRanks',
+      'readGuildStash',
+      'readGuildTreasury',
+      'readGuildTeams',
+      'readGuildUpgrades',
       'readTokenInfo',
       'readTokenInfoWithAccount',
     ]);
@@ -81,6 +87,12 @@ describe('gw2 api', () => {
       readCharacters: { resource: 'characters' },
       readCharacter: { resource: 'characters/{id}', extra: 'Blastrn' },
       readGuildLogs: { resource: 'guild/{id}/log', extra: '1234-1234' },
+      readGuildRanks: { resource: 'guild/{id}/ranks', extra: '1234-1234' },
+      readGuildMembers: { resource: 'guild/{id}/members', extra: '1234-1234' },
+      readGuildStash: { resource: 'guild/{id}/stash', extra: '1234-1234' },
+      readGuildTreasury: { resource: 'guild/{id}/treasury', extra: '1234-1234' },
+      readGuildTeams: { resource: 'guild/{id}/teams', extra: '1234-1234' },
+      readGuildUpgrades: { resource: 'guild/{id}/upgrades', extra: '1234-1234' },
       readAchievements: { resource: 'account/achievements' },
     }, ({ resource, extra, normalise }, funcName) => {
       it(`should call ${funcName} and resolve data`, () => {

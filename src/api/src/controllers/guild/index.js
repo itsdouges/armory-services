@@ -9,11 +9,29 @@ import {
   readPrivate as readGuildPrivate,
 } from '../../services/guild';
 
-import { readGuildLogs } from '../../lib/gw2';
+import {
+  readGuildLogs,
+  readGuildMembers,
+  readGuildRanks,
+  readGuildStash,
+  readGuildTreasury,
+  readGuildTeams,
+  readGuildUpgrades,
+} from '../../lib/gw2';
 
 import { list as listCharacters } from '../../services/character';
 import { list as listUsers } from '../../services/user';
 import access from './access';
+
+const guildMethodMap = {
+  logs: readGuildLogs,
+  members: readGuildMembers,
+  ranks: readGuildRanks,
+  stash: readGuildStash,
+  treasury: readGuildTreasury,
+  teams: readGuildTeams,
+  upgrades: readGuildUpgrades,
+};
 
 export default function guildControllerFactory (models) {
   const checkAccess = (type, guildName, email) => access(models, { type, guildName, email });
@@ -65,23 +83,37 @@ export default function guildControllerFactory (models) {
       });
   }
 
-  async function logs (name, { email } = {}) {
-    const canAccess = await checkAccess('logs', name, email);
+  async function readGuildWithAccess (name, accessType, { email } = {}) {
+    const canAccess = await checkAccess(accessType, name, email);
     if (!canAccess) {
-      return [];
+      return undefined;
     }
 
     const guild = await readGuildPrivate(models, { name });
     if (!guild.apiToken) {
-      return [];
+      return undefined;
     }
 
-    return await readGuildLogs(guild.apiToken, guild.id);
+    return guild;
   }
+
+  const guildMethods = _.reduce(guildMethodMap, (obj, func, methodName) => {
+    // eslint-disable-next-line no-param-reassign
+    obj[methodName] = async (name, { email } = {}) => {
+      const guild = await readGuildWithAccess(name, methodName, { email });
+      if (!guild) {
+        return [];
+      }
+
+      return await func(guild.apiToken, guild.id);
+    };
+
+    return obj;
+  }, {});
 
   return {
     read,
     random,
-    logs,
+    ...guildMethods,
   };
 }
