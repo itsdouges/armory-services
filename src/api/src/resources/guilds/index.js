@@ -1,48 +1,34 @@
+import _ from 'lodash';
 import controllerFactory from '../../controllers/guild';
 
 function guildsResource (server, models) {
   const controller = controllerFactory(models);
 
-  server.get('guilds/:name', async (req, res, next) => {
-    try {
-      const guild = await controller.read(req.params.name, { email: req.username });
+  const routeMap = {
+    'guilds/:name': controller.read,
+    'guilds/:name/logs': controller.logs,
+    'guilds/:name/members': controller.members,
+    'guilds/:name/ranks': controller.ranks,
+    'guilds/:name/stash': controller.stash,
+    'guilds/:name/treasury': controller.treasury,
+    'guilds/:name/teams': controller.teams,
+    'guilds/:name/upgrades': controller.upgrades,
+  };
 
-      guild
-        ? res.send(200, guild)
-        : res.send(404);
-    } catch (e) {
-      res.send(500, e);
-    }
+  _.forEach(routeMap, (func, routeName) => {
+    server.get(routeName, async (req, res, next) => {
+      try {
+        const data = await func(req.params.name, { email: req.username });
 
-    return next();
-  });
+        data
+          ? res.send(200, data)
+          : res.send(404);
+      } catch (e) {
+        res.send(500, e);
+      }
 
-  server.get('guilds/:name/logs', async (req, res, next) => {
-    try {
-      const logs = await controller.logs(req.params.name, { email: req.username });
-
-      logs
-        ? res.send(200, logs)
-        : res.send(404);
-    } catch (e) {
-      res.send(500, e);
-    }
-
-    return next();
-  });
-
-  server.get('guilds/:name/members', async (req, res, next) => {
-    try {
-      const members = await controller.members(req.params.name, { email: req.username });
-
-      members
-        ? res.send(200, members)
-        : res.send(404);
-    } catch (e) {
-      res.send(500, e);
-    }
-
-    return next();
+      return next();
+    });
   });
 
   server.get('random/guilds/:n', async (req, res, next) => {
