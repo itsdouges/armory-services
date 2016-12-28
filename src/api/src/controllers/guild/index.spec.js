@@ -15,7 +15,14 @@ const listGuilds = sinon.stub();
 const listCharacters = sinon.stub();
 const listUsers = sinon.stub();
 const canAccess = sinon.stub();
+
 const readGuildLogs = sinon.stub();
+const readGuildMembers = sinon.stub();
+const readGuildRanks = sinon.stub();
+const readGuildStash = sinon.stub();
+const readGuildTreasury = sinon.stub();
+const readGuildTeams = sinon.stub();
+const readGuildUpgrades = sinon.stub();
 
 const { default: controller } = proxyquire('./index', {
   '../../../config': config,
@@ -33,6 +40,12 @@ const { default: controller } = proxyquire('./index', {
   './access': { default: canAccess },
   '../../lib/gw2': {
     readGuildLogs,
+    readGuildMembers,
+    readGuildRanks,
+    readGuildStash,
+    readGuildTreasury,
+    readGuildTeams,
+    readGuildUpgrades,
   },
 });
 
@@ -128,56 +141,66 @@ describe('guild controller', () => {
       .then((guild) => expect(guild.length).to.equal(2));
   });
 
-  describe('logs', () => {
-    const email = 'email@gmail.com';
+  _.forEach({
+    logs: readGuildLogs,
+    members: readGuildMembers,
+    ranks: readGuildRanks,
+    stash: readGuildStash,
+    treasury: readGuildTreasury,
+    teams: readGuildTeams,
+    upgrades: readGuildUpgrades,
+  }, (apiFunc, key) => {
+    describe(key, () => {
+      const email = 'email@gmail.com';
+      const data = ['cool', 'logs'];
 
-    context('when user has access', () => {
-      context('and a access token', () => {
-        it('should return logs', async () => {
-          const logs = ['cool', 'logs'];
-          const name = 'guild-name';
-          const guild = { name, id: 'hahaha', apiToken: '1234-1234' };
-          readGuildPrivate.withArgs(models, { name }).returns(guild);
-          readGuildLogs.withArgs(guild.apiToken, guild.id).returns(Promise.resolve(logs));
+      context('when user has access', () => {
+        context('and a access token', () => {
+          it(`should return ${key}`, async () => {
+            const name = 'guild-name';
+            const guild = { name, id: 'hahaha', apiToken: '1234-1234' };
+            readGuildPrivate.withArgs(models, { name }).returns(guild);
+            apiFunc.withArgs(guild.apiToken, guild.id).returns(Promise.resolve(data));
 
-          canAccess
-            .withArgs(models, { type: 'logs', guildName: name, email })
-            .returns(Promise.resolve(true));
+            canAccess
+              .withArgs(models, { type: key, guildName: name, email })
+              .returns(Promise.resolve(true));
 
-          const actual = await sut.logs(name, { email });
+            const actual = await sut[key](name, { email });
 
-          expect(actual).to.equal(logs);
+            expect(actual).to.equal(data);
+          });
+        });
+
+        context('and no access token', () => {
+          it('should return empty array', async () => {
+            const name = 'guild-name-1';
+            const guild = {};
+            readGuildPrivate.withArgs(models, { name }).returns(guild);
+
+            canAccess
+              .withArgs(models, { type: key, guildName: name, email })
+              .returns(Promise.resolve(true));
+
+            const actual = await sut[key](name, { email });
+
+            expect(actual).to.eql([]);
+          });
         });
       });
 
-      context('and no access token', () => {
+      context('when user does not have access', () => {
         it('should return empty array', async () => {
-          const name = 'guild-name-1';
-          const guild = {};
-          readGuildPrivate.withArgs(models, { name }).returns(guild);
+          const name = 'guild-name-2';
 
           canAccess
-            .withArgs(models, { type: 'logs', guildName: name, email })
-            .returns(Promise.resolve(true));
+            .withArgs(models, { type: key, guildName: name, email })
+            .returns(Promise.resolve(false));
 
-          const actual = await sut.logs(name, { email });
+          const actual = await sut[key](name, { email });
 
           expect(actual).to.eql([]);
         });
-      });
-    });
-
-    context('when user does not have access', () => {
-      it('should return empty array', async () => {
-        const name = 'guild-name-2';
-
-        canAccess
-          .withArgs(models, { type: 'logs', guildName: name, email })
-          .returns(Promise.resolve(false));
-
-        const actual = await sut.logs(name, { email });
-
-        expect(actual).to.eql([]);
       });
     });
   });
