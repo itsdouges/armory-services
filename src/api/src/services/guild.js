@@ -34,6 +34,10 @@ export async function list (models) {
   return await models.Gw2Guild.findAll();
 }
 
-export async function isAccessAllowed () {
+export async function isAccessAllowed (models, type) {
+  if (type === 'members') {
+    return await Promise.resolve(true);
+  }
+
   return await Promise.resolve(false);
 }

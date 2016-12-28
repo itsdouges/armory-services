@@ -19,22 +19,32 @@ describe('guild user authorization', () => {
 
   context('when guild is not public', () => {
     context('and user is in guild', () => {
-      const user = 'user';
+      const email = 'user';
+      const guildName = 'cool-guild-meng-ye';
 
-      before(() => isUserInGuild.withArgs(models, user).returns(Promise.resolve(true)));
+      beforeEach(() => isUserInGuild
+        .withArgs(models, email, guildName)
+        .returns(Promise.resolve(true))
+      );
 
-      it('should allow access', () => {
-        return canAccess(models, type, user);
+      it('should allow access', async () => {
+        const access = await canAccess(models, { type, email, guildName });
+
+        expect(access).to.be.true;
       });
     });
 
     context('and user is not in guild', () => {
-      const user = 'user1';
+      const email = 'user1';
+      const guildName = 'madouuu';
 
-      before(() => isUserInGuild.withArgs(models, user).returns(Promise.resolve(false)));
+      beforeEach(() => isUserInGuild
+        .withArgs(models, email, guildName)
+        .returns(Promise.resolve(false))
+      );
 
       it('should not allow access', async () => {
-        const allowed = await canAccess(models, type, user);
+        const allowed = await canAccess(models, { type, email, guildName });
 
         expect(allowed).to.be.false;
       });
@@ -42,12 +52,17 @@ describe('guild user authorization', () => {
   });
 
   context('when guild is public', () => {
-    it('should allow access', () => {
-      before(() => isAccessAllowed.withArgs(models, type).returns(Promise.resolve(true)));
+    const guildName = 'cool-guild-meng';
 
-      it('should allow access', () => {
-        return canAccess(models, type, 'random-user');
-      });
+    beforeEach(() => isAccessAllowed
+      .withArgs(models, type, guildName)
+      .returns(Promise.resolve(true))
+    );
+
+    it('should allow access', async () => {
+      const access = await canAccess(models, { type, email: 'random-user', guildName });
+
+      expect(access).to.be.true;
     });
   });
 });
