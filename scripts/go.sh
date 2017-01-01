@@ -27,20 +27,20 @@ task_serve() {
 
   log "Starting api containers.."
 
-  remove_container db
-  task_build db
-  task_run db
+  launch db
 
   log "Short pause to let db container finish starting up.."
   pause_for 10
 
-  remove_container fetch
-  task_build fetch
-  task_run fetch
+  launch fetch
+  launch server
+  launch migration
+}
 
-  remove_container server
-  task_build server
-  task_run server
+launch() {
+  remove_container $1
+  task_build $1
+  task_run $1
 }
 
 task_serve_dev() {
