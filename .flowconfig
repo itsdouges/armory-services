@@ -15,3 +15,12 @@ flow-typed/
 # Allow dynamic require statements
 module.ignore_non_literal_requires=true
 esproposal.decorators=ignore
+
+module.name_mapper='^api\/\(.*\)' -> '<PROJECT_ROOT>/src/api/\1'
+module.name_mapper='^db\/\(.*\)' -> '<PROJECT_ROOT>/src/db/\1'
+module.name_mapper='^fetch\/\(.*\)' -> '<PROJECT_ROOT>/src/fetch/\1'
+module.name_mapper='^lib\/\(.*\)' -> '<PROJECT_ROOT>/src/lib/\1'
+module.name_mapper='^migration\/\(.*\)' -> '<PROJECT_ROOT>/src/migration/\1'
+module.name_mapper='^config$' -> '<PROJECT_ROOT>/src/config'
+module.name_mapper='^base$' -> '<PROJECT_ROOT>/src/base'
+module.name_mapper='^flowTypes$' -> '<PROJECT_ROOT>/src/flowTypes'

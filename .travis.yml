@@ -1,27 +1,20 @@
 language: node_js
 node_js:
   - "6.9.1"
-branches:
-  only:
-  - master
+install:
+  - npm install yarn -g
+  - yarn
 sudo: required
 services:
   - docker
 cache:
   directories:
     - node_modules
-install:
-  - npm install --silent
 script:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - bash scripts/go.sh copy &&
-    bash scripts/go.sh build fetch &&
-    bash scripts/go.sh build server &&
-    bash scripts/go.sh build migration &&
-    bash scripts/go.sh push fetch &&
-    bash scripts/go.sh push server &&
-    bash scripts/go.sh push migration
+  - npm run test &&
+    bash ./go.sh build
 deploy:
   skip_cleanup: true
   provider: script
-  script: bash scripts/deploy/deploy.sh
+  script: bash ./go.sh push && bash scripts/deploy/deploy.sh
