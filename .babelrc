@@ -1,4 +1,8 @@
 {
- "presets": ["es2017"],
- "plugins": ["syntax-flow", "transform-flow-strip-types"]
+  "presets": ["latest"],
+  "plugins": [
+    "syntax-flow",
+    "transform-flow-strip-types",
+    "transform-object-rest-spread"
+  ]
 }

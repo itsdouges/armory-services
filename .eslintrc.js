@@ -3,14 +3,18 @@ module.exports = {
     'airbnb-base',
     'plugin:flowtype/recommended',
   ],
+
   parser: 'babel-eslint',
+
   plugins: ['flowtype'],
+
   parserOptions: {
     ecmaFeatures: {
       generators: true,
       experimentalObjectRestSpread: true,
     },
   },
+
   rules: {
     'space-before-function-paren': [2, 'always'],
     'comma-dangle': ['error', 'always-multiline'],
@@ -24,6 +28,7 @@ module.exports = {
       varsIgnorePattern: '(.*\.\.\.)',
     }],
   },
+
   globals: {
     describe: true,
     it: true,
@@ -33,11 +38,8 @@ module.exports = {
     expect: true,
     sinon: true,
     proxyquire: true,
-    seedData: true,
-    testDb: true,
     before: true,
     after: true,
-    setupDb: true,
     setupTestDb: true,
   },
 };
