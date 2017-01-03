@@ -58,7 +58,7 @@ function deployToEb (zipPath) {
     archiveFilePath: zipPath,
     environmentName,
     // eslint-disable-next-line
-    awsStackName: '64bit Amazon Linux 2016.03 v2.1.0 running Multi-container Docker 1.9.1 (Generic)',
+    awsStackName: '64bit Amazon Linux 2016.09 v2.3.0 running Multi-container Docker 1.11.2 (Generic)',
     // http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html
     beanstalkConfig: [{
       Namespace: 'aws:autoscaling:asg',
