@@ -1,7 +1,9 @@
-# docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+#!/bin/bash
 
 PROD_BRANCH=master
 TEST_BRANCH=feature/PvpSeasons
+
+docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 
 if [ "$TRAVIS_BRANCH" == $PROD_BRANCH ]; then
   echo "Deploying to $PROD_BRANCH"
