@@ -11,8 +11,8 @@ cache:
   directories:
     - node_modules
 script:
-  # - npm run test &&
-  - bash ./go.sh build
+  - npm run test &&
+    bash ./go.sh build
 deploy:
   skip_cleanup: true
   provider: script
