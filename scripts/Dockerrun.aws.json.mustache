@@ -3,9 +3,10 @@
   "containerDefinitions": [
     {
       "name": "fetch",
-      "image": "madou/gw2armory-fetch",
+      "image": "madou/gw2armory-application:{{ VERSION }}",
       "essential": true,
-      "memory": 425,
+      "memoryReservation": 100,
+      "entryPoint": ["npm", "run", "fetch"],
       "environment": [
         {
           "name": "ENV",
@@ -18,10 +19,11 @@
       ]
     },
     {
-      "name": "server",
-      "image": "madou/gw2armory-server",
+      "name": "api",
+      "image": "madou/gw2armory-application:{{ VERSION }}",
       "essential": true,
-      "memory": 400,
+      "memoryReservation": 500,
+      "entryPoint": ["npm", "run", "api"],
       "links": [
         "fetch"
       ],
@@ -60,9 +62,10 @@
     },
     {
       "name": "migration",
-      "image": "madou/gw2armory-migration",
+      "image": "madou/gw2armory-application:{{ VERSION }}",
       "essential": false,
-      "memory": 150,
+      "memoryReservation": 100,
+      "entryPoint": ["npm", "run", "migration"],
       "environment": [
         {
           "name": "ENV",

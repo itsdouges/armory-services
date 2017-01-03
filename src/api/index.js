@@ -17,6 +17,6 @@ const server = createServer(models, config);
 console.log('\n=== Syncing sequelize models... ===\n');
 
 models.sequelize.sync().then(() => {
-  console.log(`\n=== Starting server on port ${config.server.port}... ===\n`);
-  server.listen(config.server.port);
+  console.log(`\n=== Starting server on port ${config.api.port}... ===\n`);
+  server.listen(config.api.port);
 });

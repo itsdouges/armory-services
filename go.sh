@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=$VERSION
+APP_VERSION="1.0.0"
 APP_NAME="application"
 MYSQL_PASS="password"
 MYSQL_USER="admin"
@@ -41,40 +41,30 @@ push() {
   docker push "$DOCKERHUB_PREFIX-$1"
 }
 
-runDaemon() {
+run() {
   log "Running daemon $1:$2.."
+
+  local TAG="$DOCKERHUB_PREFIX-$1:$APP_VERSION"
+  local NAME="$DOCKER_IMAGE_PREFIX-$2"
 
   docker run \
     -d \
     $3 \
-    --name "$DOCKER_IMAGE_PREFIX-$2" \
+    --name $NAME \
     -e "ENV" \
     -e "IMAGE_UPLOAD_ACCESS_KEY_ID" \
     -e "IMAGE_UPLOAD_SECRET_ACCESS_KEY" \
     -e "SES_ACCESS_KEY_ID" \
     -e "SES_SECRET_ACCESS_KEY" \
-    "$DOCKERHUB_PREFIX-$1:$VERSION" \
+    $TAG \
     $4
-}
-
-run() {
-  log "Running $1.."
-
-  docker run \
-    --name "$DOCKER_IMAGE_PREFIX-$2" \
-    -e "ENV" \
-    -e "IMAGE_UPLOAD_ACCESS_KEY_ID" \
-    -e "IMAGE_UPLOAD_SECRET_ACCESS_KEY" \
-    -e "SES_ACCESS_KEY_ID" \
-    -e "SES_SECRET_ACCESS_KEY" \
-    "$DOCKERHUB_PREFIX-$1:$VERSION"
 }
 
 build() {
   log "Building app image.."
 
   docker build \
-    -t "$DOCKERHUB_PREFIX-$1:$VERSION" \
+    -t "$DOCKERHUB_PREFIX-$1:$APP_VERSION" \
     -t "$DOCKERHUB_PREFIX-$1:latest" \
     $2
 }
@@ -84,17 +74,17 @@ dev() {
   remove fetch
   remove api
 
-  runDaemon db db "-e MYSQL_ROOT_PASSWORD=$MYSQL_PASS -e MYSQL_PASSWORD=$MYSQL_PASS -e MYSQL_USER=$MYSQL_USER -e MYSQL_DATABASE=$MYSQL_DB"
+  run db db "-e MYSQL_ROOT_PASSWORD=$MYSQL_PASS -e MYSQL_PASSWORD=$MYSQL_PASS -e MYSQL_USER=$MYSQL_USER -e MYSQL_DATABASE=$MYSQL_DB"
 
   pause 10
 
-  runDaemon $APP_NAME fetch "--link $DOCKER_IMAGE_PREFIX-db:db" "npm run fetch"
-  runDaemon $APP_NAME api "-p 80:80 --link $DOCKER_IMAGE_PREFIX-db:db --link $DOCKER_IMAGE_PREFIX-fetch:fetch" "npm run api"
+  run $APP_NAME fetch "--link $DOCKER_IMAGE_PREFIX-db:db" "npm run fetch"
+  run $APP_NAME api "-p 80:80 --link $DOCKER_IMAGE_PREFIX-db:db --link $DOCKER_IMAGE_PREFIX-fetch:fetch" "npm run api"
 }
 
 case "$1" in
   build)
-    build db .src/db
+    build db ./src/db
     build $APP_NAME .;;
   push)
     push $APP_NAME;;
