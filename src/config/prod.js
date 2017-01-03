@@ -1,5 +1,3 @@
-/* THIS IS COPIED FROM COMMON/ENV */
-
 module.exports = {
   db: {
     username: process.env.DB_USER || 'admin',

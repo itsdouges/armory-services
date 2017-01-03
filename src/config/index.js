@@ -1,5 +1,3 @@
-/* THIS IS COPIED FROM COMMON/ENV */
-
 const ENVIRONMENT = process.env.ENV || 'DEV';
 const { merge } = require('lodash');
 
