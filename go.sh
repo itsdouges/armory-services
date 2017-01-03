@@ -75,7 +75,7 @@ dev() {
   remove api
 
   build db ./src/db
-  build $APP_NAME .;;
+  build $APP_NAME .
 
   run db db "-e MYSQL_ROOT_PASSWORD=$MYSQL_PASS -e MYSQL_PASSWORD=$MYSQL_PASS -e MYSQL_USER=$MYSQL_USER -e MYSQL_DATABASE=$MYSQL_DB"
 
