@@ -1,5 +1,3 @@
-/* THIS IS COPIED FROM COMMON/ENV */
-
 module.exports = {
   api: {
     port: '80',
