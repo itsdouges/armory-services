@@ -1,10 +1,12 @@
 #!/bin/bash
 
+VERSION=$VERSION
 APP_NAME="application"
 MYSQL_PASS="password"
 MYSQL_USER="admin"
 MYSQL_DB="armory"
-VERSION=$VERSION
+DOCKER_IMAGE_PREFIX="gw2armory"
+DOCKERHUB_PREFIX="madou/$DOCKER_IMAGE_PREFIX"
 
 log() {
   printf "\n\n== $1 ==\n\n"
@@ -31,12 +33,12 @@ clean() {
 }
 
 remove() {
-  log "Removing container gw2armory-$1.."
-  docker rm -f "gw2armory-$1"
+  log "Removing container $DOCKER_IMAGE_PREFIX-$1.."
+  docker rm -f "$DOCKER_IMAGE_PREFIX-$1"
 }
 
 push() {
-  docker push "madou/gw2armory-$1"
+  docker push "$DOCKERHUB_PREFIX-$1"
 }
 
 runDaemon() {
@@ -45,13 +47,13 @@ runDaemon() {
   docker run \
     -d \
     $3 \
-    --name "gw2armory-$2" \
+    --name "$DOCKER_IMAGE_PREFIX-$2" \
     -e "ENV" \
     -e "IMAGE_UPLOAD_ACCESS_KEY_ID" \
     -e "IMAGE_UPLOAD_SECRET_ACCESS_KEY" \
     -e "SES_ACCESS_KEY_ID" \
     -e "SES_SECRET_ACCESS_KEY" \
-    "madou/gw2armory-$1:$VERSION" \
+    "$DOCKERHUB_PREFIX-$1:$VERSION" \
     $4
 }
 
@@ -59,21 +61,21 @@ run() {
   log "Running $1.."
 
   docker run \
-    --name "gw2armory-$2" \
+    --name "$DOCKER_IMAGE_PREFIX-$2" \
     -e "ENV" \
     -e "IMAGE_UPLOAD_ACCESS_KEY_ID" \
     -e "IMAGE_UPLOAD_SECRET_ACCESS_KEY" \
     -e "SES_ACCESS_KEY_ID" \
     -e "SES_SECRET_ACCESS_KEY" \
-    "madou/gw2armory-$1:$VERSION"
+    "$DOCKERHUB_PREFIX-$1:$VERSION"
 }
 
 build() {
   log "Building app image.."
 
   docker build \
-    -t "madou/gw2armory-$1:$VERSION" \
-    -t "madou/gw2armory-$1:latest" \
+    -t "$DOCKERHUB_PREFIX-$1:$VERSION" \
+    -t "$DOCKERHUB_PREFIX-$1:latest" \
     $2
 }
 
@@ -86,8 +88,8 @@ dev() {
 
   pause 10
 
-  runDaemon $APP_NAME fetch "--link gw2armory-db:db" "npm run fetch"
-  runDaemon $APP_NAME api "-p 80:80 --link gw2armory-db:db --link gw2armory-fetch:fetch" "npm run api"
+  runDaemon $APP_NAME fetch "--link $DOCKER_IMAGE_PREFIX-db:db" "npm run fetch"
+  runDaemon $APP_NAME api "-p 80:80 --link $DOCKER_IMAGE_PREFIX-db:db --link $DOCKER_IMAGE_PREFIX-fetch:fetch" "npm run api"
 }
 
 case "$1" in
