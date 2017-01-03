@@ -2,13 +2,9 @@
 
 ## Usage
 
-### Fire and forget
+### Quick start
 
-Starts up three docker containers, fetch, server, and db.
-
-```
-npm run dev
-```
+tl;dr -> develop with `npm run tdd` and `npm run tdd:int`, use `npm run dev` to run local environment.
 
 #### User image uploads
 
@@ -26,36 +22,16 @@ To have email notification working locally you'll need a valid aws key/secret pa
 SES_ACCESS_KEY_ID=ACCESSKEYHERE SES_SECRET_ACCESS_KEY=SECRETKEYHERE npm run dev
 ```
 
-### Deployment
-
-```
-ENV=ENVNAMEHERE ACCESS_KEY_ID=ACCESSKEYHERE SECRET_ACCESS_KEY=SECRETKEY IMAGE_UPLOAD_ACCESS_KEY_ID=ACCESSKEYHERE IMAGE_UPLOAD_SECRET_ACCESS_KEY=SECRETKEYHERE SES_ACCESS_KEY_ID=ACCESSKEYHERE SES_SECRET_ACCESS_KEY=SECRETKEYHERE npm run deploy
-```
-
-### Local development
-
-The developer experience is kind of shitty at the moment. You need to start the node servers manually in watch mode, as well as hook up a database. Currently there isn't an automated way to do this - so install `mysql 3.6`, using docker or directly on your host, and then modify the `./src/common/env/env_config.js` DEV object.
-
-### Copy common files
-
-As docker can't access files in a parent directory, and we need them for local develoment, this script is used.
-
-It copies `db models` and `env_config.js` to `src/fetch` and `src/api` folders.
-
-```
-npm run copy-common
-```
-
 ### Database migrations
 
 Ensure any database migration is backwards compatible with a previous version of the api. This will keep deployments simple and clean.
 
 ```
-ENV={ENV} npm run db:migrate
+ENV={ENV} npm run migrate
 ```
 
 ## Pull Requests
 
 Like to contribute? Look at the [issues](https://github.com/madou/armory-back/issues) tab or contact me on [reddit](https://www.reddit.com/r/gw2armory) or [twitter](https://twitter.com/itsmadou) to find something you'd like to work on, then make a pull request against the `master` branch.
 
-© 2016 ArenaNet, Michael Dougall, gw2armory.com
+© 2015-2017 gw2armory.com
