@@ -11,7 +11,7 @@
     "migration": "sequelize db:migrate",
     "deploy": "node ./scripts/deploy",
     "build": "babel src --out-dir dist --ignore spec.js,int.js",
-    "test": "mocha \"src/**/*.spec.js\" && npm run test:int",
+    "test": "npm run flow && mocha \"src/**/*.spec.js\" && npm run test:int",
     "test:int": "mocha \"src/**/*.int.js\"",
     "tdd": "mocha \"src/**/*.spec.js\" --watch",
     "tdd:int": "npm run test:int -- --watch",
