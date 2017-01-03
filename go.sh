@@ -74,6 +74,9 @@ dev() {
   remove fetch
   remove api
 
+  build db ./src/db
+  build $APP_NAME .;;
+
   run db db "-e MYSQL_ROOT_PASSWORD=$MYSQL_PASS -e MYSQL_PASSWORD=$MYSQL_PASS -e MYSQL_USER=$MYSQL_USER -e MYSQL_DATABASE=$MYSQL_DB"
 
   pause 10
@@ -84,7 +87,6 @@ dev() {
 
 case "$1" in
   build)
-    build db ./src/db
     build $APP_NAME .;;
   push)
     push $APP_NAME;;
