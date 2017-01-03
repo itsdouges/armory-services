@@ -9,6 +9,8 @@ const SECRET_ACCESS_KEY = process.env.SECRET_ACCESS_KEY;
 const IMAGE_UPLOAD_ACCESS_KEY_ID = process.env.IMAGE_UPLOAD_ACCESS_KEY_ID;
 const IMAGE_UPLOAD_SECRET_ACCESS_KEY = process.env.IMAGE_UPLOAD_SECRET_ACCESS_KEY;
 const DATADOG_KEY = process.env.DATADOG_KEY;
+const applicationName = 'gw2armory-api';
+const environmentName = `${applicationName}-${ENVIRONMENT.toLowerCase()}`;
 
 if (!ENVIRONMENT) {
   throw new Error('Environment variable "ENV" is not defined.');
@@ -29,9 +31,6 @@ if (!IMAGE_UPLOAD_ACCESS_KEY_ID) {
 if (!IMAGE_UPLOAD_SECRET_ACCESS_KEY) {
   throw new Error('Environment variable "IMAGE_UPLOAD_SECRET_ACCESS_KEY" is not defined.');
 }
-
-const applicationName = 'gw2armory-api';
-const environmentName = `${applicationName}-${ENVIRONMENT.toLowerCase()}`;
 
 console.log(`Deploying ${environmentName}...`);
 
