@@ -31,7 +31,7 @@ if (!IMAGE_UPLOAD_SECRET_ACCESS_KEY) {
 }
 
 const applicationName = 'gw2armory-api';
-const environmentName = `gw2armory-api-${ENVIRONMENT.toLowerCase()}`;
+const environmentName = `${applicationName}-${ENVIRONMENT.toLowerCase()}`;
 
 console.log(`Deploying ${environmentName}...`);
 
@@ -164,11 +164,11 @@ function deployToEb (zipPath) {
 
 
 function zipConfigs () {
-  const zipPath = `./scripts/deploy/${applicationName}-gw2armoryapi:${new Date().getTime()}.zip`;
+  const zipPath = `./scripts/${applicationName}-gw2armoryapi:${new Date().getTime()}.zip`;
 
   const zip = new EasyZip();
-  zip.addFile('Dockerrun.aws.json', './scripts/deploy/Dockerrun.aws.json', () => {
-    zip.zipFolder('./scripts/deploy/.ebextensions', () => {
+  zip.addFile('Dockerrun.aws.json', './scripts/Dockerrun.aws.json', () => {
+    zip.zipFolder('./scripts/.ebextensions', () => {
       zip.writeToFile(zipPath);
       deployToEb(zipPath);
     });
@@ -185,11 +185,12 @@ readModuleFile('./Dockerrun.aws.json.mustache', (err, template) => {
     SES_SECRET_ACCESS_KEY: process.env.SES_SECRET_ACCESS_KEY,
     DATADOG_TAGS: environmentName,
     GITTER_API_KEY: process.env.GITTER_API_KEY,
+    VERSION: process.env.VERSION || 'latest',
   };
 
   const output = mustache.render(template, data);
 
-  const ws = fs.createWriteStream('./scripts/deploy/Dockerrun.aws.json');
+  const ws = fs.createWriteStream('./scripts/Dockerrun.aws.json');
   ws.write(output);
 
   console.log('Done!');

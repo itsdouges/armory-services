@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./dist",
-    "dev": "ENV=DEV VERSION=local ./go.sh build && ./go.sh dev",
+    "dev": "./go.sh build && ./go.sh dev",
     "fetch": "node ./dist/fetch",
-    "api": "node ./dist/api -s",
+    "api": "node ./dist/api",
     "migration": "sequelize db:migrate",
     "deploy": "node ./scripts/deploy",
     "build": "babel src --out-dir dist --ignore spec.js,int.js",
