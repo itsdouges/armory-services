@@ -1,5 +1,3 @@
-/* THIS IS COPIED FROM COMMON/MODELS */
-
 module.exports = function (sequelize, DataTypes) {
   const Gw2Character = sequelize.define('Gw2Character', {
     id: {

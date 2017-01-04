@@ -2,6 +2,7 @@ import 'babel-polyfill';
 import path from 'path';
 import { addPath } from 'app-module-path';
 import Sequelize from 'sequelize';
+import proxyquire from 'proxyquire';
 
 addPath(path.join(__dirname, '..', ''));
 addPath(path.join(__dirname, '..', '/src'));
@@ -106,4 +107,14 @@ global.setupTestDb = async ({ seed: seedDb, ...options } = {}) => {
   }
 
   return models;
+};
+
+global.proxyquire = (...args) => {
+  const module = proxyquire(...args);
+
+  if (module.default) {
+    return module.default;
+  }
+
+  return module;
 };

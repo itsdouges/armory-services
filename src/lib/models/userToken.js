@@ -1,5 +1,3 @@
-/* THIS IS COPIED FROM COMMON/MODELS */
-
 module.exports = (sequelize, DataTypes) => {
   return sequelize.define('UserToken', {
     id: {

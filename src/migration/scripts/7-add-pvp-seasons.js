@@ -1,4 +1,4 @@
-const tableName = 'Gw2PvpStandings';
+const tableName = 'PvpStandings';
 
 module.exports = {
   up (queryInterface, Sequelize) {
@@ -32,6 +32,7 @@ module.exports = {
           divisionCurrent: Sequelize.INTEGER,
           pointsCurrent: Sequelize.INTEGER,
           repeatsCurrent: Sequelize.INTEGER,
+          ratingCurrent: Sequelize.INTEGER,
           totalPointsBest: Sequelize.INTEGER,
           divisionBest: Sequelize.INTEGER,
           pointsBest: Sequelize.INTEGER,

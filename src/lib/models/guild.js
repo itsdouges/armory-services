@@ -1,5 +1,3 @@
-/* THIS IS COPIED FROM COMMON/MODELS */
-
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define('Gw2Guild', {
     id: {

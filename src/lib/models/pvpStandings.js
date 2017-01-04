@@ -1,7 +1,5 @@
-/* THIS IS COPIED FROM COMMON/MODELS */
-
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define('Gw2PvpStandings', {
+  return sequelize.define('PvpStandings', {
     id: {
       field: 'id',
       type: DataTypes.INTEGER,
@@ -23,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     divisionCurrent: DataTypes.INTEGER,
     pointsCurrent: DataTypes.INTEGER,
     repeatsCurrent: DataTypes.INTEGER,
+    ratingCurrent: DataTypes.INTEGER,
     totalPointsBest: DataTypes.INTEGER,
     divisionBest: DataTypes.INTEGER,
     pointsBest: DataTypes.INTEGER,

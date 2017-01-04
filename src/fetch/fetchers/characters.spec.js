@@ -23,8 +23,7 @@ describe('characters fetcher', () => {
   let models;
 
   beforeEach(() => {
-    return global
-      .setupTestDb({ seed: true, token })
+    return setupTestDb({ seed: true, ApiToken: token })
       .then((mdls) => (models = mdls));
   });
 
