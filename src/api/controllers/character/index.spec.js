@@ -219,7 +219,7 @@ describe('character controller', () => {
       it('should return all characters by email', () => {
         return setupTestData()
           .then(() => {
-            controller.list({ email: 'cool@email' })
+            return controller.list({ email: 'cool@email' })
               .then((list) => {
                 expect(list.length).to.equal(2);
 
@@ -232,6 +232,7 @@ describe('character controller', () => {
                   gender: 'Female',
                   profession: 'hehe',
                   level: 123,
+                  userAlias: 'madou',
                   race: 'ay',
                 });
 
@@ -241,6 +242,7 @@ describe('character controller', () => {
                   name: 'ayyyyy',
                   gender: 'Female',
                   profession: 'heehe',
+                  userAlias: 'madou',
                   level: 1,
                   race: 'ayay',
                 });
@@ -251,7 +253,7 @@ describe('character controller', () => {
       it('should return all characters by alias', () => {
         return setupTestData()
           .then(() => {
-            controller.list({ alias: 'madou' })
+            return controller.list({ alias: 'madou' })
               .then((list) => {
                 expect(list.length).to.equal(2);
 
@@ -261,6 +263,7 @@ describe('character controller', () => {
                   accountName: 'nameyname',
                   world: 1111,
                   name: 'blastrn',
+                  userAlias: 'madou',
                   gender: 'Female',
                   profession: 'hehe',
                   level: 123,
@@ -270,6 +273,7 @@ describe('character controller', () => {
                 expect(charTwo).to.eql({
                   accountName: 'nameyname',
                   world: 1111,
+                  userAlias: 'madou',
                   name: 'ayyyyy',
                   gender: 'Female',
                   profession: 'heehe',

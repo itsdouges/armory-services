@@ -1,45 +1,89 @@
-import * as userHelper from 'lib/services/user';
+// @flow
 
-function handleBadToken (defaultValue, error) {
+import type { Models } from 'flowTypes';
+import memoize from 'memoizee';
+
+import * as userService from 'lib/services/user';
+import gw2, { readLatestPvpSeason } from 'lib/gw2';
+import config from 'config';
+
+const handleBadToken = (defaultValue, error) => {
   if (error === 'Token not found' || (error.data && error.data.text === 'requires scope pvp')) {
     return defaultValue;
   }
 
   throw error;
-}
+};
 
-function PvpController (models, gw2Api) {
-  PvpController.prototype.stats = function (alias) {
-    return userHelper.getUserPrimaryToken(models, alias)
+export default function pvpControllerFactory (models: Models) {
+  function stats (alias: string) {
+    return userService.getUserPrimaryToken(models, alias)
       .then((token) => {
-        return gw2Api.readPvpStats(token);
+        return gw2.readPvpStats(token);
       })
       .catch(handleBadToken.bind(null, {}));
-  };
+  }
 
-  PvpController.prototype.games = function (alias) {
-    return userHelper.getUserPrimaryToken(models, alias)
+  function games (alias: string) {
+    return userService.getUserPrimaryToken(models, alias)
       .then((token) => {
-        return gw2Api.readPvpGames(token);
+        return gw2.readPvpGames(token);
       })
       .catch(handleBadToken.bind(null, []));
-  };
+  }
 
-  PvpController.prototype.standings = function (alias) {
-    return userHelper.getUserPrimaryToken(models, alias)
+  function standings (alias: string) {
+    return userService.getUserPrimaryToken(models, alias)
       .then((token) => {
-        return gw2Api.readPvpStandings(token);
+        return gw2.readPvpStandings(token);
       })
       .catch(handleBadToken.bind(null, []));
-  };
+  }
 
-  PvpController.prototype.achievements = function (alias) {
-    return userHelper.getUserPrimaryToken(models, alias)
+  function achievements (alias: string) {
+    return userService.getUserPrimaryToken(models, alias)
       .then((token) => {
-        return gw2Api.readAchievements(token);
+        return gw2.readAchievements(token);
       })
       .catch(handleBadToken.bind(null, []));
+  }
+
+  const memoizedReadLatestPvpSeason = memoize(readLatestPvpSeason, {
+    maxAge: config.cache.readLatestPvpSeason,
+    promise: true,
+    preFetch: true,
+  });
+
+  async function leaderboard () {
+    const season = await memoizedReadLatestPvpSeason();
+
+    const pvpStandings = await userService.listUserStandings(models, season.id);
+
+    const users = await Promise.all(pvpStandings.map((standing) => {
+      return userService.read(models, { apiToken: standing.apiToken });
+    }));
+
+    const userMap = users.reduce((obj, { apiToken, ...user }) => {
+      // eslint-disable-next-line
+      obj[apiToken] = user;
+      return obj;
+    }, {});
+
+    const pvpStandingsWithUser = pvpStandings
+      .map(({ apiToken, ...standing }) => ({
+        ...standing,
+        ...userMap[apiToken],
+      }))
+      .sort((a, b) => (b.ratingCurrent - a.ratingCurrent));
+
+    return pvpStandingsWithUser;
+  }
+
+  return {
+    stats,
+    games,
+    standings,
+    achievements,
+    leaderboard,
   };
 }
-
-module.exports = PvpController;

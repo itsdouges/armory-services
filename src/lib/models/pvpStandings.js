@@ -1,23 +1,21 @@
 module.exports = (sequelize, DataTypes) => {
   return sequelize.define('PvpStandings', {
-    id: {
-      field: 'id',
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-    },
     apiToken: {
       type: DataTypes.STRING,
       allowNull: false,
       onDelete: 'CASCADE',
+      primaryKey: true,
       references: {
         model: 'Gw2ApiTokens',
         key: 'token',
       },
     },
 
-    seasonId: DataTypes.STRING,
+    seasonId: {
+      allowNull: false,
+      type: DataTypes.STRING,
+      primaryKey: true,
+    },
 
     totalPointsCurrent: DataTypes.INTEGER,
     divisionCurrent: DataTypes.INTEGER,

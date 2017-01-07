@@ -1,6 +1,8 @@
 const token = require('./index');
 const Models = require('lib/models');
 
+// TODO: Something in here is erroring out during tests.
+
 describe('gw2 token validator', () => {
   let mockAxios;
   let mockEnv;

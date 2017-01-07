@@ -10,8 +10,9 @@
 
 ## [2.0.0] - unreleased
 ### Added
-- PvpStandings table
+- PvpStandings table to db
 - Pvp standings data fetcher
+- Current pvp season leaderboard
 
 ## [1.0.0] - 2017/01/02
 ### Added

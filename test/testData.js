@@ -89,7 +89,31 @@ const fakeStanding = {
   points: 6,
   repeats: 0,
   rating: 1159,
+  decay: 123,
 };
+
+export const pvpSeason = (id: string = '1234-1234') => ({
+  season_id: id,
+});
+
+// $FlowFixMe
+export const dbStanding = (input) => ({
+  apiToken: apiToken().token,
+  seasonId: pvpSeason().season_id,
+  totalPointsCurrent: 1,
+  divisionCurrent: 2,
+  pointsCurrent: 3,
+  repeatsCurrent: 4,
+  ratingCurrent: 5,
+  decayCurrent: 6,
+  totalPointsBest: 7,
+  divisionBest: 8,
+  pointsBest: 9,
+  repeatsBest: 10,
+  ratingBest: 11,
+  decayBest: 12,
+  ...input,
+});
 
 export const standing = ({
   current = fakeStanding,

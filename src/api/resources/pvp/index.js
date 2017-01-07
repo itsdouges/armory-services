@@ -39,6 +39,19 @@ function PvpResource (server, controller) {
       });
   });
 
+  server.get('/leaderboards/pvp', (req, res, next) => {
+    controller
+      .leaderboard(req.params.alias)
+      .then((leaderboard) => {
+        res.send(200, leaderboard);
+        return next();
+      }, (error) => {
+        console.error(error);
+        res.send(500);
+        return next();
+      });
+  });
+
   server.get('/users/:alias/achievements', (req, res, next) => {
     controller
       .achievements(req.params.alias)

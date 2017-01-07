@@ -38,16 +38,21 @@ describe('pvp standings fetcher', () => {
 
       expect(row).to.include({
         seasonId: pvpStanding.season_id,
+        apiToken: token,
+
         totalPointsCurrent: pvpStanding.current.total_points,
         divisionCurrent: pvpStanding.current.division,
         pointsCurrent: pvpStanding.current.points,
         repeatsCurrent: pvpStanding.current.repeats,
         ratingCurrent: pvpStanding.current.rating,
+        decayCurrent: pvpStanding.current.decay,
+
         totalPointsBest: pvpStanding.best.total_points,
         divisionBest: pvpStanding.best.division,
         pointsBest: pvpStanding.best.points,
         repeatsBest: pvpStanding.best.repeats,
-        apiToken: token,
+        ratingBest: pvpStanding.best.rating,
+        decayBest: pvpStanding.best.decay,
       });
     });
   });

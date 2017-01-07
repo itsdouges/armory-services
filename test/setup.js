@@ -111,11 +111,6 @@ global.setupTestDb = async ({ seed: seedDb, ...options } = {}) => {
 const proxyquire = require('proxyquire').noCallThru();
 
 global.proxyquire = (modulePath, stubs, ...args) => {
-  if (!stubs.default) {
-    // eslint-disable-next-line
-    stubs.default = stubs;
-  }
-
   const module = proxyquire(modulePath, stubs, ...args);
 
   if (module.default) {

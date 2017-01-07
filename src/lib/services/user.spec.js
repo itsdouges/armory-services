@@ -100,4 +100,35 @@ describe('user service', () => {
       expect(e).to.equal('Token not found');
     }
   });
+
+  it('should read all user standings for a season', async () => {
+    const standingOne = testData.dbStanding({
+      apiToken: apiToken.token,
+    });
+
+    const standingTwo = testData.dbStanding({
+      apiToken: apiTokenForUserTwo.token,
+    });
+
+    await models.PvpStandings.create(standingOne);
+    await models.PvpStandings.create(standingTwo);
+    const standings = await service.listUserStandings(models, standingOne.seasonId);
+
+    expect(standings).to.eql([
+      standingOne,
+      standingTwo,
+    ]);
+  });
+
+  describe('reading', () => {
+    it('should read user by apiToken', async () => {
+      const usr = await service.read(models, { apiToken: apiToken.token });
+
+      expect(usr).to.eql({
+        accountName: apiToken.accountName,
+        alias: user.alias,
+        apiToken: apiToken.token,
+      });
+    });
+  });
 });

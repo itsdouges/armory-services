@@ -1,20 +1,18 @@
-import gw2Api from './';
+import gw2Api, * as gw2 from './';
 
-describe('gw2 api', () => {
+describe('gw2 api', function () {
+  this.timeout(40000);
+
   const testToken = '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15';
 
-  it('should return account data', function () {
-    this.timeout(40000);
-
+  it('should return account data', () => {
     return gw2Api.readAccount(testToken)
       .then((account) => {
         expect(account.name).to.equal('stress level zero.4907');
       });
   });
 
-  it('should return character data as expected', function () {
-    this.timeout(40000);
-
+  it('should return character data as expected', () => {
     return gw2Api.readCharacter(testToken, 'Blastrn')
     .then((character) => {
       expect(character.name).to.equal('Blastrn');
@@ -31,9 +29,7 @@ describe('gw2 api', () => {
     });
   });
 
-  it('should return pvp stats', function () {
-    this.timeout(40000);
-
+  it('should return pvp stats', () => {
     return gw2Api.readPvpStats(testToken)
       .then((pvp) => {
         expect(pvp.pvp_rank).to.exist;
@@ -45,21 +41,23 @@ describe('gw2 api', () => {
       });
   });
 
-  it('should return invalid token error', function (){
-    this.timeout(40000);
-
+  it('should return invalid token error', () => {
     return gw2Api.readCharacter('invalid', 'Blastrn')
     .then(null, (response) => {
       expect(response.status).to.equal(403);
     });
   });
 
-  it('should return characters data as expected', function () {
-    this.timeout(40000);
-
-    gw2Api.readCharacters(testToken)
+  it('should return characters data as expected', () => {
+    return gw2Api.readCharacters(testToken)
       .then((data) => {
         expect(Array.isArray(data)).to.equal(true);
       });
+  });
+
+  it('should read latest pvp season', async () => {
+    const season = await gw2.readLatestPvpSeason();
+
+    expect(season).to.exist;
   });
 });

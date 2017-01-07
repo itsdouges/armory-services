@@ -1,46 +1,117 @@
-const PvpController = require('./');
+import * as testData from 'test/testData';
+
+const readPvpStats = sinon.stub();
+const readPvpGames = sinon.stub();
+const readPvpStandings = sinon.stub();
+const readAchievements = sinon.stub();
+const listUserStandings = sinon.stub();
+const getUserPrimaryToken = sinon.stub();
+const readUser = sinon.stub();
+
+const season = testData.pvpSeason();
+const readLatestPvpSeason = () => Promise.resolve(season);
+
+const controllerFactory = proxyquire('api/controllers/pvp', {
+  'lib/gw2': {
+    readPvpStats,
+    readPvpGames,
+    readPvpStandings,
+    readAchievements,
+    readLatestPvpSeason,
+  },
+  'lib/services/user': {
+    getUserPrimaryToken,
+    listUserStandings,
+    read: readUser,
+  },
+  memoizee: (func) => func,
+});
 
 describe('pvp controller', () => {
+  const token = 'cool_token';
+  const alias = 'madou';
+  let controller;
   let models;
-  let systemUnderTest;
-  let mockGw2Api;
 
-  beforeEach(() => {
-    mockGw2Api = {};
-    mockGw2Api.readPvpStats = sinon.stub().returns({ pvp: 'stats' });
-    mockGw2Api.readPvpGames = sinon.stub().returns({ pvp: 'games' });
-
-    return setupTestDb({
+  beforeEach(async () => {
+    models = await setupTestDb({
       seed: true,
       email: 'email@email.com',
-      alias: 'cool-name',
+      alias,
       addTokens: true,
-    })
-    .then((dbModels) => {
-      models = dbModels;
-      systemUnderTest = new PvpController(models, mockGw2Api);
     });
+
+    getUserPrimaryToken.withArgs(models, alias).returns(Promise.resolve(token));
+
+    controller = controllerFactory(models);
   });
 
-  it('should return pvp data for primary token', () => {
-    return systemUnderTest.stats('cool-name')
-      .then((stats) => {
-        expect(stats).to.eql({
-          pvp: 'stats',
-        });
+  it('should return pvp data for primary token', async () => {
+    const data = { neat: 'data' };
+    readPvpStats.withArgs(token).returns(data);
 
-        expect(mockGw2Api.readPvpStats).to.have.been.calledWith('cool_token');
-      });
+    const stats = await controller.stats(alias);
+
+    expect(stats).to.equal(data);
   });
 
-  it('should return pvp games for primary token', () => {
-    return systemUnderTest.games('cool-name')
-      .then((games) => {
-        expect(games).to.eql({
-          pvp: 'games',
-        });
+  it('should return pvp games for primary token', async () => {
+    const data = { neat: 'data' };
+    readPvpGames.withArgs(token).returns(data);
 
-        expect(mockGw2Api.readPvpGames).to.have.been.calledWith('cool_token');
-      });
+    const games = await controller.games(alias);
+
+    expect(games).to.equal(data);
+  });
+
+  it('should return pvp standings for primary token', async () => {
+    const data = { neat: 'data' };
+    readPvpStandings.withArgs(token).returns(data);
+
+    const standings = await controller.standings(alias);
+
+    expect(standings).to.equal(data);
+  });
+
+  it('should return pvp achievements for primary token', async () => {
+    const data = { neat: 'data' };
+    readAchievements.withArgs(token).returns(data);
+
+    const achievements = await controller.achievements(alias);
+
+    expect(achievements).to.equal(data);
+  });
+
+  describe('leaderboard', () => {
+    it('should build leaderboard and sort by highest to lowest rating', async () => {
+      const apiToken = '1234-1234';
+      const user = {
+        accountName: 'madou.1234',
+        alias: 'madou',
+        apiToken,
+      };
+
+      const standings = [
+        { seasonId: season.season_id, apiToken, ratingCurrent: 2 },
+        { seasonId: season.season_id, apiToken, ratingCurrent: 1234 },
+      ];
+
+      readUser.withArgs(models, { apiToken }).returns(Promise.resolve(user));
+      listUserStandings.withArgs(models).returns(Promise.resolve(standings));
+
+      const leaderboard = await controller.leaderboard();
+
+      expect(leaderboard).to.eql([{
+        accountName: user.accountName,
+        alias: user.alias,
+        ratingCurrent: 1234,
+        seasonId: season.season_id,
+      }, {
+        accountName: user.accountName,
+        alias: user.alias,
+        ratingCurrent: 2,
+        seasonId: season.season_id,
+      }]);
+    });
   });
 });

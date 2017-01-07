@@ -11,24 +11,22 @@ module.exports = {
         }
 
         return queryInterface.createTable(tableName, {
-          id: {
-            field: 'id',
-            type: Sequelize.INTEGER,
-            allowNull: false,
-            autoIncrement: true,
-            primaryKey: true,
-          },
           apiToken: {
             type: Sequelize.STRING,
             allowNull: false,
             onDelete: 'CASCADE',
+            primaryKey: true,
             references: {
               model: 'Gw2ApiTokens',
               key: 'token',
             },
           },
 
-          seasonId: Sequelize.STRING,
+          seasonId: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            primaryKey: true,
+          },
 
           totalPointsCurrent: Sequelize.INTEGER,
           divisionCurrent: Sequelize.INTEGER,

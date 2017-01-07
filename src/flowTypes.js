@@ -36,6 +36,10 @@ export type PvpStanding = {
   season_id: string,
 };
 
+export type PvpSeason = {
+  id: string,
+};
+
 export type User = {
   id: string,
   email: string,
