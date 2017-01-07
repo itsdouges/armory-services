@@ -18,10 +18,10 @@ const db = new Sequelize(config.db.database, config.db.username, config.db.passw
 const models = new Models(db);
 
 const { batchFetch, fetch } = fetchFactory(models, [
-  // TODO: Dynamic import of fetchers, maybe?
   require('./fetchers/guilds').default,
-  require('./fetchers/characters'),
-  require('./fetchers/account'),
+  require('./fetchers/characters').default,
+  require('./fetchers/account').default,
+  require('./fetchers/pvpStandings').default,
 ]);
 
 const server = restify.createServer({

@@ -37,13 +37,13 @@ describe('pvp standings fetcher', () => {
       const pvpStanding = standings[index];
 
       expect(row).to.include({
-        seasonId: pvpStanding.seasonId,
-        totalPointsCurrent: pvpStanding.current.totalPoints,
+        seasonId: pvpStanding.season_id,
+        totalPointsCurrent: pvpStanding.current.total_points,
         divisionCurrent: pvpStanding.current.division,
         pointsCurrent: pvpStanding.current.points,
         repeatsCurrent: pvpStanding.current.repeats,
         ratingCurrent: pvpStanding.current.rating,
-        totalPointsBest: pvpStanding.best.totalPoints,
+        totalPointsBest: pvpStanding.best.total_points,
         divisionBest: pvpStanding.best.division,
         pointsBest: pvpStanding.best.points,
         repeatsBest: pvpStanding.best.repeats,

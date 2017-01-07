@@ -11,6 +11,7 @@ import type {
 const defaultUser: User = {
   id: '938C506D-F838-F447-8B43-4EBF34706E0445B2B503',
   email: 'cool@email.com',
+  password: 'cool-pass',
   passwordHash: 'realhashseriously',
   alias: 'huedwell',
 };
@@ -82,7 +83,7 @@ export const character = ({
 });
 
 const fakeStanding = {
-  totalPoints: 26,
+  total_points: 26,
   division: 0,
   tier: 1,
   points: 6,
@@ -93,10 +94,11 @@ const fakeStanding = {
 export const standing = ({
   current = fakeStanding,
   best = fakeStanding,
-  seasonId = 'A54849B7-7DBD-4958-91EF-72E18CD659BA',
+  // eslint-disable-next-line camelcase
+  season_id = 'A54849B7-7DBD-4958-91EF-72E18CD659BA',
 
 }: PvpStanding): PvpStanding => ({
   current,
   best,
-  seasonId,
+  season_id,
 });

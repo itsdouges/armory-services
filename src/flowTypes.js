@@ -2,10 +2,19 @@
 
 type Sequelize = {
   upsert: () => Promise<>,
+  update: () => Promise<>,
+  findOne: () => Promise<>,
+  findAll: () => Promise<>,
+  create: () => Promise<>,
 };
 
 export type Models = {
-  PvpStandings: Sequelize
+  PvpStandings: Sequelize,
+  Gw2ApiToken: Sequelize,
+  User: Sequelize,
+  Gw2Character: Sequelize,
+  Gw2Guild: Sequelize,
+  UserReset: Sequelize,
 };
 
 export type FetchOptions = {
@@ -13,7 +22,7 @@ export type FetchOptions = {
 };
 
 type Standing = {
-  totalPoints: number,
+  total_points: number,
   division: number,
   tier: number,
   points: number,
@@ -24,7 +33,7 @@ type Standing = {
 export type PvpStanding = {
   current: Standing,
   best: Standing,
-  seasonId: string,
+  season_id: string,
 };
 
 export type User = {

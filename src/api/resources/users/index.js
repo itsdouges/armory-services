@@ -1,13 +1,5 @@
-const RESOURCE = {
-  get: '/users/me',
-  put: '/users/me/password',
-  post: '/users',
-  forgotMyPassword: '/forgot-my-password',
-  publicGet: '/users/:alias',
-};
-
-function UserResource (server, controller) {
-  server.get(RESOURCE.get, (req, res, next) => {
+export default function UserResource (server, controller) {
+  server.get('/users/me', (req, res, next) => {
     if (!req.username) {
       return res.sendUnauthenticated();
     }
@@ -20,7 +12,7 @@ function UserResource (server, controller) {
       });
   });
 
-  server.get(RESOURCE.publicGet, (req, res, next) => {
+  server.get('/users/:alias', (req, res, next) => {
     controller
       .readPublic(req.params.alias, { email: req.username, ignorePrivacy: !!req.username })
       .then((data) => {
@@ -33,7 +25,7 @@ function UserResource (server, controller) {
       });
   });
 
-  server.put(RESOURCE.put, (req, res, next) => {
+  server.put('/users/me/password', (req, res, next) => {
     if (!req.username) {
       return res.sendUnauthenticated();
     }
@@ -53,7 +45,7 @@ function UserResource (server, controller) {
       });
   });
 
-  server.post(RESOURCE.post, (req, res, next) => {
+  server.post('/users', (req, res, next) => {
     controller
       .create({
         alias: req.params.alias,
@@ -69,7 +61,7 @@ function UserResource (server, controller) {
       });
   });
 
-  server.post(RESOURCE.forgotMyPassword, (req, res, next) => {
+  server.post('/forgot-my-password', (req, res, next) => {
     controller
       .forgotMyPasswordStart(req.params.email.toLowerCase())
       .then(() => {
@@ -82,7 +74,7 @@ function UserResource (server, controller) {
       });
   });
 
-  server.put(RESOURCE.forgotMyPassword, (req, res, next) => {
+  server.put('/forgot-my-password', (req, res, next) => {
     controller
       .forgotMyPasswordFinish(req.params.token, req.params.password)
       .then(() => {
@@ -95,5 +87,3 @@ function UserResource (server, controller) {
       });
   });
 }
-
-module.exports = UserResource;

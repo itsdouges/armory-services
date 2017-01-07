@@ -16,15 +16,21 @@ module.exports = (sequelize, DataTypes) => {
         key: 'token',
       },
     },
+
     seasonId: DataTypes.STRING,
+
     totalPointsCurrent: DataTypes.INTEGER,
     divisionCurrent: DataTypes.INTEGER,
     pointsCurrent: DataTypes.INTEGER,
     repeatsCurrent: DataTypes.INTEGER,
     ratingCurrent: DataTypes.INTEGER,
+    decayCurrent: DataTypes.INTEGER,
+
     totalPointsBest: DataTypes.INTEGER,
     divisionBest: DataTypes.INTEGER,
     pointsBest: DataTypes.INTEGER,
     repeatsBest: DataTypes.INTEGER,
+    ratingBest: DataTypes.INTEGER,
+    decayBest: DataTypes.INTEGER,
   });
 };

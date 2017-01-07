@@ -1,18 +1,21 @@
+// @flow
+
+import type { Models, User } from 'flowTypes';
+
+import password from 'password-hash-and-salt';
+import moment from 'moment';
+import _ from 'lodash';
+import createValidator from 'gotta-validate';
+
+import * as guildService from 'lib/services/guild';
+import emailClient from 'lib/email';
 import { getUserIdByEmail } from 'lib/services/user';
+import { parseAccountName } from 'lib/user';
+import config from 'config';
+import { list } from 'lib/services/character';
 
-const password = require('password-hash-and-salt');
-const moment = require('moment');
-const _ = require('lodash');
 
-const guildService = require('lib/services/guild');
-const emailClient = require('lib/email');
-const characterControllerFactory = require('../character');
-const config = require('config');
-const parseAccountName = require('lib/user').parseAccountName;
-
-function userControllerFactory (models, createValidator, gw2Api) {
-  const characterController = characterControllerFactory(models, gw2Api);
-
+export default function userControllerFactory (models: Models) {
   createValidator.addResource({
     name: 'users',
     mode: 'create',
@@ -39,7 +42,7 @@ function userControllerFactory (models, createValidator, gw2Api) {
     },
   });
 
-  function hashPassword (userPassword) {
+  async function hashPassword (userPassword) {
     return new Promise((resolve, reject) => {
       password(userPassword).hash((error, hash) => {
         if (error) {
@@ -51,7 +54,7 @@ function userControllerFactory (models, createValidator, gw2Api) {
     });
   }
 
-  function verifyHash (hash, userPassword) {
+  async function verifyHash (hash, userPassword) {
     return new Promise((resolve, reject) => {
       password(userPassword).verifyAgainst(hash, (error, verified) => {
         if (error) {
@@ -67,38 +70,41 @@ function userControllerFactory (models, createValidator, gw2Api) {
     });
   }
 
-  function create (user) {
+  type CreateUser = User & {
+    password: string,
+  };
+
+  async function create (user: CreateUser) {
     const validator = createValidator({
       resource: 'users',
       mode: 'create',
     });
 
-    return validator.validate(user)
-      .then(() => hashPassword(user.password))
-      .then((passwordHash) => {
-        const newUser = Object.assign({}, user, {
-          passwordHash,
-        });
+    await validator.validate(user);
+    const passwordHash = await hashPassword(user.password);
 
-        return models.User.create(newUser);
-      });
+    return await models.User.create({
+      ...user,
+      passwordHash,
+    });
   }
 
-  function read (email) {
-    return models
-      .User
-      .findOne({ where: { email } })
-      .then((data) => data.dataValues)
-      .then((data) => {
-        return characterController
-          .list({ email })
-          .then((characters) => Object.assign({}, data, {
-            characters,
-          }));
-      });
+  async function read (email: string) {
+    const data = await models.User.findOne({ where: { email } });
+    const characters = await list(models, { email });
+
+    return {
+      ...(data && data.dataValues),
+      characters,
+    };
   }
 
-  async function readPublic (alias, { email, ignorePrivacy } = {}) {
+  type ReadPublicOptions = {
+    email: string,
+    ignorePrivacy: boolean,
+  };
+
+  async function readPublic (alias: string, { email, ignorePrivacy }: ReadPublicOptions = {}) {
     const dbUser = await models.User.findOne({
       where: { alias },
       include: [{
@@ -113,7 +119,7 @@ function userControllerFactory (models, createValidator, gw2Api) {
     const data = dbUser.dataValues;
     const primaryToken = _.find(data.gw2_api_tokens, ({ primary }) => primary);
 
-    const characters = await characterController.list({ alias: data.alias, email, ignorePrivacy });
+    const characters = await list(models, { alias: data.alias, email, ignorePrivacy });
 
     const user = {
       accountName: parseAccountName(data),
@@ -155,52 +161,47 @@ function userControllerFactory (models, createValidator, gw2Api) {
     };
   }
 
-  function changePassword (id, newPassword) {
-    return hashPassword(newPassword)
-      .then((passwordHash) => {
-        return models.User.update({
-          passwordHash,
-        }, {
-          where: {
-            id,
-          },
-        });
-      });
+  async function changePassword (id, newPassword) {
+    const passwordHash = await hashPassword(newPassword);
+    await models.User.update({
+      passwordHash,
+    }, {
+      where: {
+        id,
+      },
+    });
   }
 
-  function updatePassword (user) {
+  type UpdateUser = {
+    email: string,
+    currentPassword: string,
+    password: string,
+  };
+
+  async function updatePassword (user: UpdateUser) {
     const validator = createValidator({
       resource: 'users',
       mode: 'update-password',
     });
 
-    return validator
-      .validate(user)
-      .then(() => read(user.email))
-      .then((userData) => {
-        /* eslint arrow-body-style:0 */
-        return verifyHash(userData.passwordHash, user.currentPassword)
-        .then(() => ({
-          password: user.password,
-          id: userData.id,
-        }));
-      })
-      .then((data) => changePassword(data.id, data.password));
+    await validator.validate(user);
+    const userData = await read(user.email);
+
+    await verifyHash(userData.passwordHash, user.currentPassword);
+    await changePassword(userData.id, user.password);
   }
 
-  function forgotMyPasswordStart (email) {
-    return getUserIdByEmail(models, email)
-      .then((userId) => {
-        return models.UserReset.create({
-          UserId: userId,
-          expires: moment().add(config.PASSWORD_RESET_TIME_LIMIT, 'minutes'),
-        });
-      })
-      .then(({ id }) => {
-        return emailClient.send({
-          subject: 'Forgot My Password',
-          to: email,
-          html: `
+  async function forgotMyPasswordStart (email: string) {
+    const userId = await getUserIdByEmail(models, email);
+    const { id } = await models.UserReset.create({
+      UserId: userId,
+      expires: moment().add(config.PASSWORD_RESET_TIME_LIMIT, 'minutes'),
+    });
+
+    await emailClient.send({
+      subject: 'Forgot My Password',
+      to: email,
+      html: `
 <h2>Forgot My Password</h2>
 
 Hi, you requested to reset your password.
@@ -216,41 +217,41 @@ Guild Wars 2 Armory
 <br /><br />
 <small>Please don't reply to this email, you won't get a response.</small>
 `,
-        });
-      });
+    });
   }
 
-  function forgotMyPasswordFinish (guid, newPassword) {
-    return models.UserReset.findOne({
+  async function forgotMyPasswordFinish (guid: string, newPassword: string) {
+    const row = await models.UserReset.findOne({
       where: {
         id: guid,
       },
-    })
-    .then((row) => {
-      if (!row) {
-        return Promise.reject('Reset doesn\'t exist.');
-      }
-
-      if (moment(row.expires).isBefore(moment()) || row.used) {
-        return Promise.reject('Reset has expired.');
-      }
-
-      return createValidator({
-        resource: 'users',
-        mode: 'forgot-my-password',
-      })
-      .validate({
-        password: newPassword,
-      })
-      .then(() => changePassword(row.UserId, newPassword))
-      .then(() => models.UserReset.update({
-        used: true,
-      }, {
-        where: {
-          id: row.id,
-        },
-      }));
     });
+
+    if (!row) {
+      return Promise.reject('Reset doesn\'t exist.');
+    }
+
+    if (moment(row.expires).isBefore(moment()) || row.used) {
+      return Promise.reject('Reset has expired.');
+    }
+
+    await createValidator({
+      resource: 'users',
+      mode: 'forgot-my-password',
+    })
+    .validate({
+      password: newPassword,
+    });
+
+    await changePassword(row.UserId, newPassword);
+
+    await models.UserReset.update({ used: true }, {
+      where: {
+        id: row.id,
+      },
+    });
+
+    return undefined;
   }
 
   return {
@@ -262,5 +263,3 @@ Guild Wars 2 Armory
     forgotMyPasswordFinish,
   };
 }
-
-module.exports = userControllerFactory;

@@ -3,7 +3,7 @@ const _ = require('lodash');
 const gw2 = require('lib/gw2');
 const guildsService = require('lib/services/guilds');
 
-module.exports = function fetch (models, { token }) {
+export default function fetch (models, { token }) {
   return gw2
     .readAccount(token)
     .then((accountInfo) => {
@@ -30,4 +30,4 @@ module.exports = function fetch (models, { token }) {
         }),
       ]);
     });
-};
+}

@@ -1,14 +1,16 @@
 // @flow
 
+import restify from 'restify';
+import axios from 'axios';
+import restifyOAuth2 from 'restify-oauth2';
+import createValidator from 'gotta-validate';
+
+import type { Models } from 'flowTypes';
+
 import tokenControllerFactory from './controllers/gw2-token';
+import usersControllerFactory from './controllers/user';
+import characterControllerFactory from './controllers/character';
 
-const restify = require('restify');
-const axios = require('axios');
-const restifyOAuth2 = require('restify-oauth2');
-const GottaValidate = require('gotta-validate');
-
-const usersControllerFactory = require('./controllers/user');
-const characterControllerFactory = require('./controllers/character');
 const authControllerFactory = require('./controllers/auth');
 const gw2Api = require('lib/gw2');
 const sitemapControllerFactory = require('./controllers/sitemap');
@@ -17,9 +19,9 @@ const statisticsControllerFactory = require('./controllers/statistics');
 const CheckController = require('./controllers/check');
 const PvpController = require('./controllers/pvp');
 
-function serverFactory (models: any, config: any) {
-  GottaValidate.addDefaultRules();
-  GottaValidate
+export default function createServer (models: Models, config: any) {
+  createValidator.addDefaultRules();
+  createValidator
     .addRule({
       name: 'valid-gw2-token',
       func: require('lib/rules/valid-gw2-token'),
@@ -53,10 +55,9 @@ function serverFactory (models: any, config: any) {
       func: require('lib/rules/password'),
     });
 
-  const characters = characterControllerFactory(models, gw2Api);
-  const gw2Tokens = tokenControllerFactory(models, GottaValidate, gw2Api);
+  const gw2Tokens = tokenControllerFactory(models, createValidator, gw2Api);
 
-  const checks = new CheckController(GottaValidate);
+  const checks = new CheckController(createValidator);
   const pvp = new PvpController(models, gw2Api);
 
   const server = restify.createServer({
@@ -85,18 +86,16 @@ function serverFactory (models: any, config: any) {
 
   require('./resources')(server);
   require('./resources/pvp')(server, pvp);
-  require('./resources/characters')(server, characters);
   require('./resources/guilds')(server, models);
   require('./resources/search')(server, models);
   require('./resources/users/check')(server, checks);
   require('./resources/users/gw2-token')(server, gw2Tokens);
   require('./resources/sign-upload')(server, models);
 
+  require('./resources/characters')(server, characterControllerFactory(models));
   require('./resources/statistics')(server, statisticsControllerFactory(models));
-  require('./resources/users')(server, usersControllerFactory(models, GottaValidate, gw2Api));
+  require('./resources/users').default(server, usersControllerFactory(models));
   require('./resources/sitemap')(server, sitemapControllerFactory(models));
 
   return server;
 }
-
-module.exports = serverFactory;

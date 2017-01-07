@@ -47,7 +47,7 @@ const simpleCalls = _.reduce({
   readGuildTreasury: { resource: 'guild/{id}/treasury' },
   readGuildTeams: { resource: 'guild/{id}/teams' },
   readGuildUpgrades: { resource: 'guild/{id}/upgrades' },
-  readPvpStandings: { resource: 'pvp/standings', normalise: true },
+  readPvpStandings: { resource: 'pvp/standings' },
   readPvpStats: { resource: 'pvp/stats' },
   readAccount: { resource: 'account', normalise: true },
   readTokenInfo: { resource: 'tokeninfo' },

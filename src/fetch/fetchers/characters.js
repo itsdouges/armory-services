@@ -2,7 +2,7 @@ const q = require('q');
 
 const gw2 = require('lib/gw2');
 
-module.exports = function fetchUserCharacterData (models, { token }) {
+export default function fetchUserCharacterData (models, { token }) {
   return gw2.readCharactersDeep(token)
     .then((characters) => {
       return models.Gw2Character.destroy({
@@ -42,4 +42,4 @@ module.exports = function fetchUserCharacterData (models, { token }) {
         return q.allSettled([...upsertCharactersPromises]);
       });
     });
-};
+}

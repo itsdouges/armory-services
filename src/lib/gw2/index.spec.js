@@ -83,7 +83,7 @@ describe('gw2 api', () => {
 
   describe('simple calls', () => {
     _.forEach({
-      readPvpStandings: { resource: 'pvp/standings', normalise: true },
+      readPvpStandings: { resource: 'pvp/standings' },
       readPvpStats: { resource: 'pvp/stats' },
       readAccount: { resource: 'account', normalise: true },
       readTokenInfo: { resource: 'tokeninfo' },

@@ -27,16 +27,22 @@ module.exports = {
               key: 'token',
             },
           },
+
           seasonId: Sequelize.STRING,
+
           totalPointsCurrent: Sequelize.INTEGER,
           divisionCurrent: Sequelize.INTEGER,
           pointsCurrent: Sequelize.INTEGER,
           repeatsCurrent: Sequelize.INTEGER,
           ratingCurrent: Sequelize.INTEGER,
+          decayCurrent: Sequelize.INTEGER,
+
           totalPointsBest: Sequelize.INTEGER,
           divisionBest: Sequelize.INTEGER,
           pointsBest: Sequelize.INTEGER,
           repeatsBest: Sequelize.INTEGER,
+          ratingBest: Sequelize.INTEGER,
+          decayBest: Sequelize.INTEGER,
         });
       });
   },
