@@ -1,9 +1,8 @@
-import proxyquire from 'proxyquire';
 import * as testData from 'test/testData';
 
 const readGuild = sinon.stub();
 
-const service = proxyquire('./user', {
+const service = proxyquire('lib/services/user', {
   './guild': {
     read: readGuild,
   },

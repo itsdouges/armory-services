@@ -1,4 +1,4 @@
-const gw2 = require('lib/gw2');
+import gw2 from 'lib/gw2';
 
 module.exports = {
   fetch (models, ids) {

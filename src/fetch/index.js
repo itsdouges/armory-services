@@ -3,14 +3,11 @@
 
 import '../base';
 import 'babel-polyfill';
-
-const Sequelize = require('sequelize');
-const restify = require('restify');
-
-const fetchFactory = require('./fetch');
-const Models = require('lib/models');
-
-const config = require('config');
+import Sequelize from 'sequelize';
+import restify from 'restify';
+import Models from 'lib/models';
+import config from 'config';
+import fetchFactory from './fetch';
 
 console.log(`\n=== Connecting to mysql host: ${config.db.host} ===\n`);
 

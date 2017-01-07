@@ -1,6 +1,5 @@
-const q = require('q');
-
-const gw2 = require('lib/gw2');
+import q from 'q';
+import gw2 from 'lib/gw2';
 
 export default function fetchUserCharacterData (models, { token }) {
   return gw2.readCharactersDeep(token)

@@ -7,12 +7,12 @@ import createValidator from 'gotta-validate';
 
 import type { Models } from 'flowTypes';
 
+import gw2Api from 'lib/gw2';
 import tokenControllerFactory from './controllers/gw2-token';
 import usersControllerFactory from './controllers/user';
 import characterControllerFactory from './controllers/character';
 
 const authControllerFactory = require('./controllers/auth');
-const gw2Api = require('lib/gw2');
 const sitemapControllerFactory = require('./controllers/sitemap');
 const statisticsControllerFactory = require('./controllers/statistics');
 

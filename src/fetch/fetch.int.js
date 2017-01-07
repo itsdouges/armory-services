@@ -1,4 +1,5 @@
-const proxyquire = require('proxyquire');
+import characterFetcher from './fetchers/characters';
+import accountFetcher from './fetchers/account';
 
 const config = {
   gitter: {
@@ -10,12 +11,10 @@ const config = {
   },
 };
 
-const createFetchFactory = (fetchTokens) => proxyquire('./fetch', {
+const createFetchFactory = (fetchTokens) => proxyquire('fetch/fetch', {
   'lib/services/tokens': fetchTokens,
   config,
 });
-const characterFetcher = require('./fetchers/characters');
-const accountFetcher = require('./fetchers/account');
 
 describe('fetch integration', () => {
   const token = {

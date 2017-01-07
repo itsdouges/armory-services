@@ -1,5 +1,3 @@
-import proxyquire from 'proxyquire';
-
 import * as testData from 'test/testData';
 import Models from 'lib/models';
 
@@ -27,7 +25,7 @@ describe('gw2 token controller', () => {
     createValidator = () => ({ validate });
     createValidator.addResource = sinon.spy();
 
-    const { default: controllerFactory } = proxyquire('./', {
+    const controllerFactory = proxyquire('api/controllers/gw2-token', {
       axios: {
         post: httpPost,
       },

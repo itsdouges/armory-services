@@ -1,9 +1,8 @@
-const proxyquire = require('proxyquire');
 const Models = require('lib/models');
 
 const publicUrl = 'http://gw2-local.com';
 
-const createSitemapController = proxyquire('./', {
+const createSitemapController = proxyquire('api/controllers/sitemap', {
   config: {
     web: {
       publicUrl,

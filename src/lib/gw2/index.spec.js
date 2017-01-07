@@ -1,4 +1,3 @@
-const proxyquire = require('proxyquire');
 const _ = require('lodash');
 
 const config = {
@@ -9,7 +8,7 @@ const config = {
 
 const axiosGet = sinon.stub();
 
-const gw2Api = proxyquire('./', {
+const gw2Api = proxyquire('lib/gw2', {
   axios: {
     get: axiosGet,
   },

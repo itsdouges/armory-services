@@ -1,14 +1,29 @@
 // @flow
 
-import Gitter from 'node-gitter';
+
 import throat from 'throat';
 import _ from 'lodash';
 
+import type { Models } from 'flowTypes';
+
+import config from 'config';
 import { allSettled } from 'lib/promise';
 import fetchTokens from 'lib/services/tokens';
-import config from 'config';
+import createLog from 'lib/gitter';
 
-const gitter = new Gitter(config.gitter.apiKey);
+const log = createLog('fetch');
+const hr = '---------------------------------------------------';
+
+function parseResults (results: []) {
+  const flattenedResults = results.reduce((acc, result) => acc.concat(result.value), []);
+  const errors = flattenedResults.filter(({ state }) => state === 'rejected');
+  const successes = flattenedResults.filter(({ state }) => state === 'fulfilled');
+
+  return {
+    errors,
+    successes,
+  };
+}
 
 function humanifyError (error = {}): string {
   try {
@@ -23,32 +38,6 @@ ${_.get(error, 'config.headers.Authorization')}
     console.log(JSON.stringify(e));
     return 'Something bad happened';
   }
-}
-
-async function sendToGitter (roomName: string, message: string) {
-  try {
-    const room = await gitter.rooms.join(`gw2armory/${roomName}`);
-    room.send(`\`\`\`${message}\`\`\``);
-  } catch (e) {
-    console.log('Couldn\'t connect to gitter, check the api key. Falling back to console log.');
-    console.log(message);
-    console.log(JSON.stringify(e));
-  }
-}
-
-const log = async (message) => await sendToGitter('fetch', message);
-
-const hr = '---------------------------------------------------';
-
-function parseResults (results: []) {
-  const flattenedResults = results.reduce((acc, result) => acc.concat(result.value), []);
-  const errors = flattenedResults.filter(({ state }) => state === 'rejected');
-  const successes = flattenedResults.filter(({ state }) => state === 'fulfilled');
-
-  return {
-    errors,
-    successes,
-  };
 }
 
 async function logResults (startTime: Date, { errors = [], successes = [] }) {
@@ -87,9 +76,9 @@ type Token = {
   permissions: Array<string>,
 };
 
-type Fetcher = (models: {}, token: Token) => void;
+type Fetcher = (models: Models, token: Token) => Promise<>;
 
-function fetchFactory (models: {}, fetchers: Array<Fetcher>) {
+export default function fetchFactory (models: Models, fetchers: Array<Fetcher>) {
   if (!fetchers || !fetchers.length) {
     throw new Error('\n=== No fetchers available! ===\n');
   }
@@ -108,7 +97,6 @@ ${hr}
 `);
 
     const tokens = await fetchTokens(models);
-    console.log(tokens);
     const results = await allSettled(tokens.map(throat(config.fetch.concurrentCalls, fetch)));
 
     const parsedResults = parseResults(results);
@@ -123,5 +111,3 @@ ${hr}
     fetch,
   };
 }
-
-module.exports = fetchFactory;

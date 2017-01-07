@@ -6,7 +6,7 @@ import _ from 'lodash';
 import memoize from 'memoizee';
 
 import config from 'config';
-import { readCharacter } from 'lib/gw2';
+import gw2 from 'lib/gw2';
 import { list as listCharacters, listPublic } from 'lib/services/character';
 import { limit } from 'lib/math';
 
@@ -48,7 +48,7 @@ export default function characterControllerFactory (models: Models) {
       return Promise.reject();
     }
 
-    const characterFromGw2Api = await readCharacter(character.Gw2ApiTokenToken, name);
+    const characterFromGw2Api = await gw2.readCharacter(character.Gw2ApiTokenToken, name);
     if (characterFromGw2Api === 1) {
       return undefined;
     }

@@ -1,5 +1,3 @@
-const proxyquire = require('proxyquire');
-
 const config = {
   fetch: {
     concurrentCalls: 1,
@@ -9,17 +7,12 @@ const config = {
   },
 };
 
-const send = sinon.spy();
-const nodeGitter = sinon.stub().returns({
-  rooms: {
-    join: sinon.stub().withArgs('gw2armory/fetch').returns(Promise.resolve({ send })),
-  },
-});
+const logSpy = sinon.spy();
 
-const createFetchFactory = (fetchTokenStub) => proxyquire('./fetch', {
+const createFetchFactory = (fetchTokenStub) => proxyquire('fetch/fetch', {
   config,
   'lib/services/tokens': fetchTokenStub,
-  'node-gitter': nodeGitter,
+  'lib/gitter': () => logSpy,
 });
 
 const fetchersShouldHaveBeenCalledWithModelsAndTokens = (fetcher, models, tokens) => {
@@ -67,12 +60,8 @@ describe('fetch', () => {
     result = await batchFetch();
   });
 
-  it('should init gitter', () => {
-    expect(nodeGitter).to.have.been.calledWith(config.gitter.apiKey);
-  });
-
   it('should message gitter results', () => {
-    expect(send).to.have.been.called;
+    expect(logSpy).to.have.been.called;
   });
 
   it('should call all fetchers with every token', async () => {

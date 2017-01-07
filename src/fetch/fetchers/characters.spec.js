@@ -1,6 +1,4 @@
-const proxyquire = require('proxyquire');
-
-const createFetchCharacters = ({ characters }) => proxyquire('./characters', {
+const createFetchCharacters = ({ characters }) => proxyquire('fetch/fetchers/characters', {
   'lib/gw2': {
     readCharactersDeep: characters,
   },

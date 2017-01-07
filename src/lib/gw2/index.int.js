@@ -1,4 +1,4 @@
-const gw2Api = require('./index');
+import gw2Api from './';
 
 describe('gw2 api', () => {
   const testToken = '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15';

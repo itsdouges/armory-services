@@ -101,7 +101,7 @@ function readGuildPublic (id) {
     .then(({ data }) => data);
 }
 
-module.exports = {
+export default {
   ...simpleCalls,
   readTokenInfoWithAccount,
   readGuildPublic,

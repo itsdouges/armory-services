@@ -9,28 +9,20 @@ import {
   readPrivate as readGuildPrivate,
 } from 'lib/services/guild';
 
-import {
-  readGuildLogs,
-  readGuildMembers,
-  readGuildRanks,
-  readGuildStash,
-  readGuildTreasury,
-  readGuildTeams,
-  readGuildUpgrades,
-} from 'lib/gw2';
+import gw2 from 'lib/gw2';
 
 import { list as listUsers } from 'lib/services/user';
 import { list as listCharacters } from 'lib/services/character';
 import access from './access';
 
 const guildMethodMap = {
-  logs: readGuildLogs,
-  members: readGuildMembers,
-  ranks: readGuildRanks,
-  stash: readGuildStash,
-  treasury: readGuildTreasury,
-  teams: readGuildTeams,
-  upgrades: readGuildUpgrades,
+  logs: gw2.readGuildLogs,
+  members: gw2.readGuildMembers,
+  ranks: gw2.readGuildRanks,
+  stash: gw2.readGuildStash,
+  treasury: gw2.readGuildTreasury,
+  teams: gw2.readGuildTeams,
+  upgrades: gw2.readGuildUpgrades,
 };
 
 export default function guildControllerFactory (models) {

@@ -1,10 +1,10 @@
 // @flow
 
 import type { Models, FetchOptions } from 'flowTypes';
-import { readPvpStandings } from 'lib/gw2';
+import gw2 from 'lib/gw2';
 
 export default async function fetchPvpStandings (models: Models, { token }: FetchOptions) {
-  const standings = await readPvpStandings(token);
+  const standings = await gw2.readPvpStandings(token);
 
   await Promise.all(standings.map((standing) => {
     const row = {

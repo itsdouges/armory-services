@@ -1,9 +1,7 @@
-const proxyquire = require('proxyquire');
-
 const sandbox = sinon.sandbox.create();
 const fetchGuild = sandbox.stub();
 
-const service = proxyquire('./guilds', {
+const service = proxyquire('lib/services/guilds', {
   'lib/gw2': {
     readGuildPublic: fetchGuild,
   },

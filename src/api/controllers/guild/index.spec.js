@@ -1,4 +1,3 @@
-import proxyquire from 'proxyquire';
 import _ from 'lodash';
 
 import * as testData from 'test/testData';
@@ -24,7 +23,7 @@ const readGuildTreasury = sinon.stub();
 const readGuildTeams = sinon.stub();
 const readGuildUpgrades = sinon.stub();
 
-const { default: controller } = proxyquire('./index', {
+const controller = proxyquire('api/controllers/guild', {
   config,
   'lib/services/guild': {
     read: readGuild,
@@ -37,7 +36,7 @@ const { default: controller } = proxyquire('./index', {
   'lib/services/user': {
     list: listUsers,
   },
-  './access': { default: canAccess },
+  './access': canAccess,
   'lib/gw2': {
     readGuildLogs,
     readGuildMembers,

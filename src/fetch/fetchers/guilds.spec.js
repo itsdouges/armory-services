@@ -1,12 +1,11 @@
 import _ from 'lodash';
-import proxyquire from 'proxyquire';
 import * as testData from 'test/testData';
 
 const sandbox = sinon.sandbox.create();
 const account = sandbox.stub();
 const readGuild = sandbox.stub();
 
-const { default: fetcher } = proxyquire('./guilds', {
+const fetcher = proxyquire('fetch/fetchers/guilds', {
   'lib/gw2': {
     readAccount: account,
     readGuild,
