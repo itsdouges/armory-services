@@ -8,6 +8,11 @@
 - Changes
 ```
 
+## [1.2.0] - 2017/01/07
+### Changed
+- Sitemap to have `priority` and `lastmod`
+- Sitemap to have guild tabs
+
 ## [1.1.0] - 2017/01/07
 ### Added
 - PvpStandings table to db
