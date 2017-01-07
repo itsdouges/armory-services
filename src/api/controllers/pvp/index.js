@@ -74,7 +74,7 @@ export default function pvpControllerFactory (models: Models) {
         ...standing,
         ...userMap[apiToken],
       }))
-      .sort((a, b) => (b.ratingCurrent - a.ratingCurrent));
+      .sort((a, b) => ((b.ratingCurrent - b.decayCurrent) - (a.ratingCurrent - a.decayCurrent)));
 
     return pvpStandingsWithUser;
   }

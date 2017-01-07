@@ -92,8 +92,8 @@ describe('pvp controller', () => {
       };
 
       const standings = [
-        { seasonId: season.season_id, apiToken, ratingCurrent: 2 },
-        { seasonId: season.season_id, apiToken, ratingCurrent: 1234 },
+        { seasonId: season.season_id, apiToken, ratingCurrent: 1234, decayCurrent: 700 },
+        { seasonId: season.season_id, apiToken, ratingCurrent: 1234, decayCurrent: 100 },
       ];
 
       readUser.withArgs(models, { apiToken }).returns(Promise.resolve(user));
@@ -105,11 +105,13 @@ describe('pvp controller', () => {
         accountName: user.accountName,
         alias: user.alias,
         ratingCurrent: 1234,
+        decayCurrent: 100,
         seasonId: season.season_id,
       }, {
         accountName: user.accountName,
         alias: user.alias,
-        ratingCurrent: 2,
+        ratingCurrent: 1234,
+        decayCurrent: 700,
         seasonId: season.season_id,
       }]);
     });
