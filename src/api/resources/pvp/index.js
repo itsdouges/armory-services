@@ -1,3 +1,6 @@
+import memoize from 'memoizee';
+import config from 'config';
+
 function PvpResource (server, controller) {
   server.get('/users/:alias/pvp/stats', (req, res, next) => {
     controller
@@ -39,9 +42,14 @@ function PvpResource (server, controller) {
       });
   });
 
+  const memoizedLeaderboard = memoize(controller.leaderboard, {
+    maxAge: config.cache.pvpLeaderboard,
+    promise: true,
+    preFetch: true,
+  });
+
   server.get('/leaderboards/pvp', (req, res, next) => {
-    controller
-      .leaderboard(req.params.alias)
+    memoizedLeaderboard()
       .then((leaderboard) => {
         res.send(200, leaderboard);
         return next();
