@@ -8,7 +8,7 @@
 - Changes
 ```
 
-## [2.0.0] - unreleased
+## [1.1.0] - 2017/01/07
 ### Added
 - PvpStandings table to db
 - Pvp standings data fetcher
