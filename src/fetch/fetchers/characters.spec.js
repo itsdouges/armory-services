@@ -1,6 +1,4 @@
-const proxyquire = require('proxyquire');
-
-const createFetchCharacters = ({ characters }) => proxyquire('./characters', {
+const createFetchCharacters = ({ characters }) => proxyquire('fetch/fetchers/characters', {
   'lib/gw2': {
     readCharactersDeep: characters,
   },
@@ -23,8 +21,7 @@ describe('characters fetcher', () => {
   let models;
 
   beforeEach(() => {
-    return global
-      .setupTestDb({ seed: true, token })
+    return setupTestDb({ seed: true, ApiToken: token })
       .then((mdls) => (models = mdls));
   });
 

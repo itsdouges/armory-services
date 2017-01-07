@@ -1,10 +1,8 @@
-import proxyquire from 'proxyquire';
-
 const sandbox = sinon.sandbox.create();
 const isAccessAllowed = sandbox.stub();
 const isUserInGuild = sandbox.stub();
 
-const { default: canAccess } = proxyquire('./access', {
+const canAccess = proxyquire('api/controllers/guild/access', {
   'lib/services/guild': {
     isAccessAllowed,
   },

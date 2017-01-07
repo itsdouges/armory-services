@@ -1,10 +1,7 @@
-const Models = require('lib/models');
-const proxyquire = require('proxyquire');
-
 describe('user resource', () => {
   let systemUnderTest;
   let models;
-  let mockValidator;
+  let validator;
   let mocks;
   let readGuild;
 
@@ -77,36 +74,35 @@ describe('user resource', () => {
   function createUserResource (config = stubConfig) {
     readGuild = sinon.stub().returns(Promise.resolve());
 
-    const userResourceFactory = proxyquire('./index', {
+    const controllerFactory = proxyquire('api/controllers/user', {
       'lib/email': {
         send: mocks.sendEmail,
       },
       config,
+      'gotta-validate': validator,
       'lib/services/guild': {
         read: readGuild,
       },
+
     });
 
-    return userResourceFactory(models, mockValidator);
+    return controllerFactory(models);
   }
 
   beforeEach(async () => {
     mocks = {
       validate () {},
       sendEmail () {},
-      gw2Api: {
-        readAccount () {},
-      },
     };
 
-    mockValidator = function () {
+    validator = function () {
       return {
         validate: mocks.validate,
       };
     };
 
-    mockValidator.addResource = sinon.stub().returns(mockValidator);
-    mockValidator.addRule = sinon.stub().returns(mockValidator);
+    validator.addResource = sinon.stub().returns(validator);
+    validator.addRule = sinon.stub().returns(validator);
 
     models = await setupTestDb();
 
@@ -117,7 +113,7 @@ describe('user resource', () => {
 
   describe('initialisation', () => {
     it('should add users resource in create mode to validator', () => {
-      expect(mockValidator.addResource).to.have.been.calledWith({
+      expect(validator.addResource).to.have.been.calledWith({
         name: 'users',
         mode: 'create',
         rules: {
@@ -129,7 +125,7 @@ describe('user resource', () => {
     });
 
     it('should add users resource in update mode to validator', () => {
-      expect(mockValidator.addResource).to.have.been.calledWith({
+      expect(validator.addResource).to.have.been.calledWith({
         name: 'users',
         mode: 'update-password',
         rules: {
@@ -202,6 +198,7 @@ describe('user resource', () => {
 
           expect(data.characters).to.eql([{
             accountName: 'coolaccount.1234',
+            userAlias: 'madou',
             world: 'aus',
             name: 'madoubie',
             gender: 'male',

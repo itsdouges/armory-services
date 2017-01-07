@@ -1,10 +1,11 @@
 // @flow
 
-const _ = require('lodash');
-const axios = require('axios');
+import type { PvpSeason } from 'flowTypes';
 
-const config = require('config');
-const retryFactory = require('lib/retry');
+import _ from 'lodash';
+import axios from 'axios';
+import config from 'config';
+import retryFactory from 'lib/retry';
 
 const withRetry = retryFactory({ retryPredicate: (e) => (e.status >= 500) });
 
@@ -101,7 +102,35 @@ function readGuildPublic (id) {
     .then(({ data }) => data);
 }
 
-module.exports = {
+export async function readPvpSeason (id: number) {
+  const response = await axios.get(`${config.gw2.endpoint}v2/pvp/seasons/${id}`);
+  return response.data;
+}
+
+export async function readLatestPvpSeason (): Promise<PvpSeason> {
+  const { data: seasons } = await axios
+    .get(`${config.gw2.endpoint}v2/pvp/seasons?page=0&page_size=200`);
+
+  const sortedSeasons = seasons.sort((a, b) => {
+    const aStart = new Date(a.start);
+    const bStart = new Date(b.start);
+
+    if (a < b) {
+      return -1;
+    }
+
+    if (a > b) {
+      return 1;
+    }
+
+    return 0;
+  });
+
+  const latestSeason = _.last(sortedSeasons);
+  return latestSeason;
+}
+
+export default {
   ...simpleCalls,
   readTokenInfoWithAccount,
   readGuildPublic,

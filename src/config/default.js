@@ -55,5 +55,7 @@ module.exports = {
   cache: {
     findAllCharacters: 1,
     statistics: 1,
+    readLatestPvpSeason: 60000 * 60 * 1, // 1 hour
+    pvpLeaderboard: 60000 * 60 * 1, // 1 hour
   },
 };

@@ -1,9 +1,7 @@
-const proxyquire = require('proxyquire');
-
 const readAccount = sinon.stub();
 const fetch = sinon.stub().returns(Promise.reject());
 
-const fetchAccount = proxyquire('./account', {
+const fetchAccount = proxyquire('fetch/fetchers/account', {
   'lib/gw2': {
     readAccount,
   },

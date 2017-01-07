@@ -1,5 +1,8 @@
 // @flow
 
+import type { Models } from 'flowTypes';
+import _ from 'lodash';
+
 import { read as readGuild } from './guild';
 
 type ListOptions = {
@@ -12,7 +15,7 @@ type User = {
   id: number,
 };
 
-export async function list (models: any, { guild }: ListOptions): Promise<Array<User>> {
+export async function list (models: Models, { guild }: ListOptions): Promise<Array<User>> {
   const tokens = await models.Gw2ApiToken.findAll({
     where: {
       guilds: {
@@ -31,7 +34,7 @@ export async function list (models: any, { guild }: ListOptions): Promise<Array<
 }
 
 export async function isUserInGuild (
-  models: any,
+  models: Models,
   email: string,
   guildName: string,
 ): Promise<boolean> {
@@ -62,7 +65,7 @@ export function parseUser (user: User) {
   return user.id;
 }
 
-export function getUserByEmail (models: any, email: string) {
+export function getUserByEmail (models: Models, email: string) {
   return models.User.findOne({
     where: {
       email,
@@ -70,11 +73,11 @@ export function getUserByEmail (models: any, email: string) {
   });
 }
 
-export function getUserIdByEmail (models: any, email: string) {
+export function getUserIdByEmail (models: Models, email: string) {
   return getUserByEmail(models, email).then(parseUser);
 }
 
-export function getUserIdByAlias (models: any, alias: string) {
+export function getUserIdByAlias (models: Models, alias: string) {
   return models.User.findOne({
     where: {
       alias,
@@ -83,7 +86,7 @@ export function getUserIdByAlias (models: any, alias: string) {
   .then(parseUser);
 }
 
-export async function getUserPrimaryToken (models: any, alias: string) {
+export async function getUserPrimaryToken (models: Models, alias: string) {
   const id = await getUserIdByAlias(models, alias);
   const token = await models
   .Gw2ApiToken
@@ -104,4 +107,47 @@ export async function getUserPrimaryToken (models: any, alias: string) {
   }
 
   return token.token;
+}
+
+type UserStandings = {
+  seasonId: string,
+  apiToken: string,
+};
+
+type ReadOptions = {
+  apiToken: string,
+};
+
+export async function read (models: Models, { apiToken }: ReadOptions) {
+  const token = await models.Gw2ApiToken.findOne({
+    where: {
+      token: apiToken,
+    },
+    include: [{
+      model: models.User,
+    }],
+  });
+
+  return token && {
+    alias: token.User.dataValues.alias,
+    accountName: token.accountName,
+    apiToken,
+  };
+}
+
+export async function listUserStandings (
+  models: Models,
+  seasonId: string
+): Promise<Array<UserStandings>> {
+  const standings = await models.PvpStandings.findAll({
+    where: {
+      seasonId,
+    },
+  });
+
+  return standings.map((standing) => _.omit(standing.dataValues, [
+    'updatedAt',
+    'createdAt',
+    'id',
+  ]));
 }

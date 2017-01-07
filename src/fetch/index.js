@@ -3,14 +3,11 @@
 
 import '../base';
 import 'babel-polyfill';
-
-const Sequelize = require('sequelize');
-const restify = require('restify');
-
-const fetchFactory = require('./fetch');
-const Models = require('lib/models');
-
-const config = require('config');
+import Sequelize from 'sequelize';
+import restify from 'restify';
+import Models from 'lib/models';
+import config from 'config';
+import fetchFactory from './fetch';
 
 console.log(`\n=== Connecting to mysql host: ${config.db.host} ===\n`);
 
@@ -18,10 +15,10 @@ const db = new Sequelize(config.db.database, config.db.username, config.db.passw
 const models = new Models(db);
 
 const { batchFetch, fetch } = fetchFactory(models, [
-  // TODO: Dynamic import of fetchers, maybe?
   require('./fetchers/guilds').default,
-  require('./fetchers/characters'),
-  require('./fetchers/account'),
+  require('./fetchers/characters').default,
+  require('./fetchers/account').default,
+  require('./fetchers/pvpStandings').default,
 ]);
 
 const server = restify.createServer({

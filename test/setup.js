@@ -107,3 +107,15 @@ global.setupTestDb = async ({ seed: seedDb, ...options } = {}) => {
 
   return models;
 };
+
+const proxyquire = require('proxyquire').noCallThru();
+
+global.proxyquire = (modulePath, stubs, ...args) => {
+  const module = proxyquire(modulePath, stubs, ...args);
+
+  if (module.default) {
+    return module.default;
+  }
+
+  return module;
+};

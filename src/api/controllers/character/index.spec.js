@@ -1,10 +1,19 @@
-const controllerFactory = require('./index');
-const Models = require('lib/models');
+const sandbox = sinon.sandbox.create();
+const readCharacter = sandbox.stub();
+
+const controllerFactory = proxyquire('api/controllers/character', {
+  'lib/gw2': {
+    readCharacter,
+  },
+});
 
 describe('character controller', () => {
-  let controller;
-  let mockGw2Api;
   let models;
+  let controller;
+
+  afterEach(() => {
+    sandbox.reset();
+  });
 
   const setupTestData = ({ email, characterName } = {}) => {
     return models
@@ -95,12 +104,7 @@ describe('character controller', () => {
 
   beforeEach(async () => {
     models = await setupTestDb();
-
-    mockGw2Api = {
-      readCharacter () {},
-    };
-
-    controller = controllerFactory(models, mockGw2Api);
+    controller = controllerFactory(models);
   });
 
   describe('reading character', () => {
@@ -117,7 +121,7 @@ describe('character controller', () => {
     });
 
     it('should call gw2api if it is in our db', () => {
-      sinon.stub(mockGw2Api, 'readCharacter').returns(Promise.resolve({}));
+      readCharacter.withArgs('swag', 'blastrn').returns(Promise.resolve({}));
 
       return setupTestData()
         .then(() => {
@@ -134,13 +138,11 @@ describe('character controller', () => {
             guild_name: 'Guild Name',
             alias: 'madou',
           });
-
-          expect(mockGw2Api.readCharacter).to.have.been.calledWith('swag', 'blastrn');
         });
     });
 
     it('should call api with show all', () => {
-      sinon.stub(mockGw2Api, 'readCharacter').returns(Promise.resolve({}));
+      readCharacter.withArgs('swag', 'blastrn').returns(Promise.resolve({}));
 
       return setupTestData()
         .then(() => {
@@ -157,13 +159,11 @@ describe('character controller', () => {
             accountName: 'nameyname',
             alias: 'madou',
           });
-
-          expect(mockGw2Api.readCharacter).to.have.been.calledWith('swag', 'blastrn');
         });
     });
 
     it('should hide character if showPublic is false', (done) => {
-      sinon.stub(mockGw2Api, 'readCharacter').returns(Promise.resolve({}));
+      readCharacter.returns(Promise.resolve({}));
 
       setupTestData()
         .then(() => {
@@ -173,7 +173,7 @@ describe('character controller', () => {
     });
 
     it('should show character is showPublic is false and ignorePrivacy is true', () => {
-      sinon.stub(mockGw2Api, 'readCharacter').returns(Promise.resolve({}));
+      readCharacter.returns(Promise.resolve({}));
 
       return setupTestData()
         .then(() => {
@@ -219,7 +219,7 @@ describe('character controller', () => {
       it('should return all characters by email', () => {
         return setupTestData()
           .then(() => {
-            controller.list({ email: 'cool@email' })
+            return controller.list({ email: 'cool@email' })
               .then((list) => {
                 expect(list.length).to.equal(2);
 
@@ -232,6 +232,7 @@ describe('character controller', () => {
                   gender: 'Female',
                   profession: 'hehe',
                   level: 123,
+                  userAlias: 'madou',
                   race: 'ay',
                 });
 
@@ -241,6 +242,7 @@ describe('character controller', () => {
                   name: 'ayyyyy',
                   gender: 'Female',
                   profession: 'heehe',
+                  userAlias: 'madou',
                   level: 1,
                   race: 'ayay',
                 });
@@ -251,7 +253,7 @@ describe('character controller', () => {
       it('should return all characters by alias', () => {
         return setupTestData()
           .then(() => {
-            controller.list({ alias: 'madou' })
+            return controller.list({ alias: 'madou' })
               .then((list) => {
                 expect(list.length).to.equal(2);
 
@@ -261,6 +263,7 @@ describe('character controller', () => {
                   accountName: 'nameyname',
                   world: 1111,
                   name: 'blastrn',
+                  userAlias: 'madou',
                   gender: 'Female',
                   profession: 'hehe',
                   level: 123,
@@ -270,6 +273,7 @@ describe('character controller', () => {
                 expect(charTwo).to.eql({
                   accountName: 'nameyname',
                   world: 1111,
+                  userAlias: 'madou',
                   name: 'ayyyyy',
                   gender: 'Female',
                   profession: 'heehe',

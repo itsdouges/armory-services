@@ -1,5 +1,3 @@
-/* THIS IS COPIED FROM COMMON/MODELS */
-
 module.exports = function (sequelize, DataTypes) {
   const UserReset = sequelize.define('UserReset', {
     id: {

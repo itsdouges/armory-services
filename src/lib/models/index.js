@@ -1,5 +1,3 @@
-/* THIS IS COPIED FROM COMMON/MODELS */
-
 const fs = require('fs');
 const path = require('path');
 

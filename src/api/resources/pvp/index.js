@@ -1,46 +1,61 @@
-var RESOURCES = Object.freeze({
-  stats: '/users/:alias/pvp/stats',
-  games: '/users/:alias/pvp/games',
-  standings: '/users/:alias/pvp/standings'
-});
+import memoize from 'memoizee';
+import config from 'config';
 
 function PvpResource (server, controller) {
-  server.get(RESOURCES.stats, function (req, res, next) {
+  server.get('/users/:alias/pvp/stats', (req, res, next) => {
     controller
       .stats(req.params.alias)
-      .then(function (stats) {
+      .then((stats) => {
         res.send(200, stats);
 
         return next();
-      }, function (error) {
+      }, (error) => {
         console.log(error);
         res.send(404);
         return next();
       });
   });
 
-  server.get(RESOURCES.games, function (req, res, next) {
+  server.get('/users/:alias/pvp/games', (req, res, next) => {
     controller
       .games(req.params.alias)
-      .then(function (games) {
+      .then((games) => {
         res.send(200, games);
         return next();
-      }, function (error) {
+      }, (error) => {
         console.error(error);
         res.send(404);
         return next();
       });
   });
 
-  server.get(RESOURCES.standings, function (req, res, next) {
+  server.get('/users/:alias/pvp/standings', (req, res, next) => {
     controller
       .standings(req.params.alias)
-      .then(function (standings) {
+      .then((standings) => {
         res.send(200, standings);
         return next();
-      }, function (error) {
+      }, (error) => {
         console.error(error);
         res.send(404);
+        return next();
+      });
+  });
+
+  const memoizedLeaderboard = memoize(controller.leaderboard, {
+    maxAge: config.cache.pvpLeaderboard,
+    promise: true,
+    preFetch: true,
+  });
+
+  server.get('/leaderboards/pvp', (req, res, next) => {
+    memoizedLeaderboard()
+      .then((leaderboard) => {
+        res.send(200, leaderboard);
+        return next();
+      }, (error) => {
+        console.error(error);
+        res.send(500);
         return next();
       });
   });

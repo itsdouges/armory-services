@@ -1,54 +1,17 @@
 // @flow
 
-interface User {
-  id: string,
-  email: string,
-  passwordHash: string,
-  alias: string,
-}
-
-interface ApiToken {
-  token: string,
-  accountName: string,
-  accountId: string,
-  permissions: string,
-  world: number,
-  guilds: string,
-  User: User,
-  UserId: string,
-}
-
-interface Guild {
-  id: string,
-  tag: string,
-  name: string,
-  favor: number,
-  resonance: number,
-  aetherium: number,
-  influence: number,
-  level: number,
-  motd: string,
-  claimed: boolean,
-  apiToken?: ?string,
-}
-
-interface Character {
-  name: string,
-  race: string,
-  gender: 'Female' | 'Male',
-  profession: string,
-  level: number,
-  created: string,
-  age: number,
-  deaths: number,
-  guild: string,
-  Gw2ApiTokenToken: string,
-  Gw2ApiToken: ApiToken,
-}
+import type {
+  PvpStanding,
+  User,
+  Guild,
+  ApiToken,
+  Character,
+} from 'flowTypes';
 
 const defaultUser: User = {
   id: '938C506D-F838-F447-8B43-4EBF34706E0445B2B503',
   email: 'cool@email.com',
+  password: 'cool-pass',
   passwordHash: 'realhashseriously',
   alias: 'huedwell',
 };
@@ -93,21 +56,73 @@ export const apiToken = (apiTkn: ?ApiToken): ApiToken => ({
   ...apiTkn,
 });
 
-const defaultCharacter: Character = {
-  name: 'character',
-  race: 'race',
-  gender: 'Male',
-  profession: 'Elementalist',
-  level: 20,
-  created: '01/02/1990',
-  age: 30,
-  deaths: 10,
-  guild: guild().name,
-  Gw2ApiTokenToken: apiToken().token,
-  Gw2ApiToken: apiToken(),
+export const character = ({
+  name = 'character',
+  race = 'race',
+  gender = 'Male',
+  profession = 'Elementalist',
+  level = 20,
+  created = '01/02/1990',
+  age = 30,
+  deaths = 10,
+  guild: gld = guild().name,
+  Gw2ApiTokenToken = apiToken().token,
+  Gw2ApiToken = apiToken(),
+}: Character = {}): Character => ({
+  name,
+  race,
+  gender,
+  profession,
+  level,
+  created,
+  age,
+  deaths,
+  guild: gld,
+  Gw2ApiTokenToken,
+  Gw2ApiToken,
+});
+
+const fakeStanding = {
+  total_points: 26,
+  division: 0,
+  tier: 1,
+  points: 6,
+  repeats: 0,
+  rating: 1159,
+  decay: 123,
 };
 
-export const character = (char: ?Character): Character => ({
-  ...defaultCharacter,
-  ...char,
+export const pvpSeason = (id: string = '1234-1234') => ({
+  season_id: id,
+});
+
+// $FlowFixMe
+export const dbStanding = (input) => ({
+  apiToken: apiToken().token,
+  seasonId: pvpSeason().season_id,
+  totalPointsCurrent: 1,
+  divisionCurrent: 2,
+  pointsCurrent: 3,
+  repeatsCurrent: 4,
+  ratingCurrent: 5,
+  decayCurrent: 6,
+  totalPointsBest: 7,
+  divisionBest: 8,
+  pointsBest: 9,
+  repeatsBest: 10,
+  ratingBest: 11,
+  decayBest: 12,
+  ...input,
+});
+
+export const standing = ({
+  current = fakeStanding,
+  best = fakeStanding,
+  // eslint-disable-next-line camelcase
+  season_id = 'A54849B7-7DBD-4958-91EF-72E18CD659BA',
+
+}: PvpStanding): PvpStanding => ({
+  current,
+  best,
+  season_id,
 });

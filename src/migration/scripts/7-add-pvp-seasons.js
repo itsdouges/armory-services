@@ -1,4 +1,4 @@
-const tableName = 'Gw2PvpStandings';
+const tableName = 'PvpStandings';
 
 module.exports = {
   up (queryInterface, Sequelize) {
@@ -11,31 +11,36 @@ module.exports = {
         }
 
         return queryInterface.createTable(tableName, {
-          id: {
-            field: 'id',
-            type: Sequelize.INTEGER,
-            allowNull: false,
-            autoIncrement: true,
-            primaryKey: true,
-          },
           apiToken: {
             type: Sequelize.STRING,
             allowNull: false,
             onDelete: 'CASCADE',
+            primaryKey: true,
             references: {
               model: 'Gw2ApiTokens',
               key: 'token',
             },
           },
-          seasonId: Sequelize.STRING,
+
+          seasonId: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            primaryKey: true,
+          },
+
           totalPointsCurrent: Sequelize.INTEGER,
           divisionCurrent: Sequelize.INTEGER,
           pointsCurrent: Sequelize.INTEGER,
           repeatsCurrent: Sequelize.INTEGER,
+          ratingCurrent: Sequelize.INTEGER,
+          decayCurrent: Sequelize.INTEGER,
+
           totalPointsBest: Sequelize.INTEGER,
           divisionBest: Sequelize.INTEGER,
           pointsBest: Sequelize.INTEGER,
           repeatsBest: Sequelize.INTEGER,
+          ratingBest: Sequelize.INTEGER,
+          decayBest: Sequelize.INTEGER,
         });
       });
   },
