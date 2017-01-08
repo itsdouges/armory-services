@@ -120,8 +120,7 @@ export const standing = ({
   best = fakeStanding,
   // eslint-disable-next-line camelcase
   season_id = 'A54849B7-7DBD-4958-91EF-72E18CD659BA',
-
-}: PvpStanding): PvpStanding => ({
+}: PvpStanding = {}): PvpStanding => ({
   current,
   best,
   season_id,

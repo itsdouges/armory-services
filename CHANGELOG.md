@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [1.2.2] - 2017/01/08
+### Fixed
+- Sitemap to not have empty `lastmod` fields
+
 ## [1.2.1] - 2017/01/08
 ### Changed
 - Pvp leaderboard to order with decay in consideration

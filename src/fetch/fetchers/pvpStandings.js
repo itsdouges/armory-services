@@ -26,10 +26,6 @@ export default async function fetchPvpStandings (models: Models, { token }: Fetc
       decayBest: standing.best.decay,
     };
 
-    return models.PvpStandings.upsert(row, {
-      where: {
-        token,
-      },
-    });
+    return models.PvpStandings.upsert(row);
   }));
 };

@@ -62,17 +62,26 @@ type BuildUrlTemplateOptions = {
   updatedAt?: Date,
 };
 
-const buildUrlTemplate = ({ loc, updatedAt, priority }: BuildUrlTemplateOptions) =>
-`  <url>
-    <loc>${config.web.publicUrl}/${loc}</loc>
-    <lastmod>${updatedAt ? updatedAt.toISOString() : ''}</lastmod>
-    <priority>${priority}</priority>
-  </url>`;
+const buildUrlTemplate = ({ loc, updatedAt, priority }: BuildUrlTemplateOptions) => {
+  const tags = [
+    `<loc>${config.web.publicUrl}/${loc}</loc>`,
+    updatedAt && `<lastmod>${updatedAt.toISOString()}</lastmod>`,
+    priority && `<priority>${priority}</priority>`,
+  ].filter((tag) => tag);
 
-const buildSitemap = (items) =>
+  return `  <url>
+    ${tags.join('\n    ')}
+  </url>`;
+};
+
+const buildSitemap = (publicUpdatedMap, items) =>
 `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${publicRoutes.map(buildUrlTemplate).join('\n')}
+${publicRoutes.map((route) => buildUrlTemplate({
+  ...route,
+  // $FlowFixMe
+  updatedAt: publicUpdatedMap[route.loc],
+})).join('\n')}
 ${items.reduce((str, item) => {
   // eslint-disable-next-line no-param-reassign
   str += `${item.join('\n')}\n`;
@@ -80,7 +89,7 @@ ${items.reduce((str, item) => {
 }, '')}
 </urlset>`;
 
-module.exports = function sitemapControllerFactory (models: Models) {
+export default function sitemapControllerFactory (models: Models) {
   function getAllResources () {
     return Promise.all([
       models.User.findAll(),
@@ -93,39 +102,45 @@ module.exports = function sitemapControllerFactory (models: Models) {
           }],
         }],
       }),
+      models.PvpStandings.findOne(),
     ]);
   }
 
-  function generate () {
-    return getAllResources()
-      .then(([users, guilds, characters]) => buildSitemap([
-        ...userRoutes.map(
-          (route) => users.map((user) => buildUrlTemplate({
-            loc: `${user.alias}${route.loc}`,
-            priority: route.priority,
-            updatedAt: user.updatedAt,
-          }))
-        ),
-        ...guildRoutes.map(
-          (route) => guilds.map((guild) => buildUrlTemplate({
-            loc: `g/${guild.name}${route.loc}`,
-            priority: route.priority,
-            updatedAt: guild.updatedAt,
-          }))
-        ),
-        ...characterRoutes.map(
-          (route) =>
-            characters.map((character) =>
-              buildUrlTemplate({
-                loc: `${character.Gw2ApiToken.User.alias}/c/${character.name}${route.loc}`,
-                priority: route.priority,
-                updatedAt: character.updatedAt,
-              }))
-        ),
-      ]));
+  async function generate () {
+    const [users, guilds, characters, standing] = await getAllResources();
+
+    const publicUpdatedMap = {
+      leaderboards: standing.updatedAt,
+    };
+
+    return buildSitemap(publicUpdatedMap, [
+      ...userRoutes.map(
+        (route) => users.map((user) => buildUrlTemplate({
+          loc: `${user.alias}${route.loc}`,
+          priority: route.priority,
+          updatedAt: user.updatedAt,
+        }))
+      ),
+      ...guildRoutes.map(
+        (route) => guilds.map((guild) => buildUrlTemplate({
+          loc: `g/${guild.name}${route.loc}`,
+          priority: route.priority,
+          updatedAt: guild.updatedAt,
+        }))
+      ),
+      ...characterRoutes.map(
+        (route) =>
+          characters.map((character) =>
+            buildUrlTemplate({
+              loc: `${character.Gw2ApiToken.User.alias}/c/${character.name}${route.loc}`,
+              priority: route.priority,
+              updatedAt: character.updatedAt,
+            }))
+      ),
+    ]);
   }
 
   return {
     generate,
   };
-};
+}

@@ -11,16 +11,17 @@ const pvpStandingsFetcher = proxyquire('fetch/fetchers/pvpStandings', {
 
 describe('pvp standings fetcher', () => {
   let models;
+
   const token = '1234-1234-1234';
   const standings = [
     standing({
-      seasonId: '1111',
+      season_id: '1111',
     }),
     standing({
-      seasonId: '2222',
+      season_id: '2222',
     }),
     standing({
-      seasonId: '3333',
+      season_id: '3333',
     }),
   ];
 
@@ -33,6 +34,7 @@ describe('pvp standings fetcher', () => {
   it('should insert all pvp data into db', async () => {
     const rows = await models.PvpStandings.findAll();
 
+    expect(rows.length).to.equal(standings.length);
     rows.map((row) => row.dataValues).forEach((row, index) => {
       const pvpStanding = standings[index];
 

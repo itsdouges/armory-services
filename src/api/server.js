@@ -12,9 +12,9 @@ import tokenControllerFactory from './controllers/gw2-token';
 import usersControllerFactory from './controllers/user';
 import characterControllerFactory from './controllers/character';
 import pvpControllerFactory from './controllers/pvp';
+import sitemapControllerFactory from './controllers/sitemap';
 
 const authControllerFactory = require('./controllers/auth');
-const sitemapControllerFactory = require('./controllers/sitemap');
 const statisticsControllerFactory = require('./controllers/statistics');
 const CheckController = require('./controllers/check');
 
