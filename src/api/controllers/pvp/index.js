@@ -50,7 +50,7 @@ export default function pvpControllerFactory (models: Models) {
   }
 
   const memoizedReadLatestPvpSeason = memoize(readLatestPvpSeason, {
-    maxAge: config.cache.readLatestPvpSeason,
+    maxAge: config.leaderboards.latestSeasonCacheTtl,
     promise: true,
     preFetch: true,
   });

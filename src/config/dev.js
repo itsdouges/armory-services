@@ -4,7 +4,8 @@ module.exports = {
   },
 
   leaderboards: {
-    pvp: 60000 * 1,
+    refreshInterval: 60000 * 1,
+    getCacheTtl: 1,
   },
 
   fetch: {

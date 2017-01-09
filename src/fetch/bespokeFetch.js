@@ -10,7 +10,7 @@ type BespokeFetcher = {
 
 export default function initialise (models: Models, fetchers: Array<BespokeFetcher>) {
   fetchers.forEach(({ fetcher, interval, callImmediately }) => {
-    setInterval(fetcher, interval);
+    setInterval(() => fetcher(models), interval);
 
     if (callImmediately) {
       fetcher(models);

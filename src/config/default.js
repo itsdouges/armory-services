@@ -54,12 +54,12 @@ module.exports = {
 
   leaderboards: {
     refreshInterval: 60000 * 60 * 24,
+    latestSeasonCacheTtl: 60000 * 60 * 1,
+    getCacheTtl: 60000 * 60 * 1,
   },
 
   cache: {
     findAllCharacters: 1,
     statistics: 1,
-    readLatestPvpSeason: 60000 * 60 * 1,
-    pvpLeaderboard: 60000 * 60 * 1,
   },
 };

@@ -49,6 +49,7 @@ server.post('/fetch', async (req, res, next) => {
 
     res.send(200);
   } catch (e) {
+    console.log(e);
     res.send(500, e);
   }
 
@@ -57,17 +58,20 @@ server.post('/fetch', async (req, res, next) => {
 
 models.sequelize.sync()
   .then(() => {
-    console.log(`\n=== Starting server on port ${config.fetch.port}.. ===\n`);
+    try {
+      console.log(`\n=== Starting server on port ${config.fetch.port}.. ===\n`);
 
-    server.listen(config.fetch.port);
+      batchFetch();
+      setInterval(batchFetch, config.fetch.interval);
 
-    batchFetch();
+      bespokeFetch(models, [{
+        fetcher: require('./fetchers/pvpLeaderboard').default,
+        interval: config.leaderboards.refreshInterval,
+        callImmediately: true,
+      }]);
 
-    setInterval(batchFetch, config.fetch.interval);
-
-    bespokeFetch(models, [{
-      fetcher: require('./fetchers/pvpLeaderboard').default,
-      interval: config.leaderboards.refreshInterval,
-      callImmediately: true,
-    }]);
+      server.listen(config.fetch.port);
+    } catch (e) {
+      console.log(e);
+    }
   });
