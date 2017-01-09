@@ -1,6 +1,6 @@
 // @flow
 
-import type { Models } from 'flowTypes';
+import type { Models, UserModel, PvpStandingModel } from 'flowTypes';
 import _ from 'lodash';
 
 import { read as readGuild } from './guild';
@@ -9,13 +9,7 @@ type ListOptions = {
   guild: string,
 };
 
-type User = {
-  name: string,
-  accountName: string,
-  id: number,
-};
-
-export async function list (models: Models, { guild }: ListOptions): Promise<Array<User>> {
+export async function list (models: Models, { guild }: ListOptions): Promise<Array<UserModel>> {
   const tokens = await models.Gw2ApiToken.findAll({
     where: {
       guilds: {
@@ -57,7 +51,7 @@ export async function isUserInGuild (
   return !!token.length;
 }
 
-export function parseUser (user: User) {
+export function parseUser (user: UserModel) {
   if (!user) {
     return Promise.reject('User not found');
   }
@@ -109,11 +103,6 @@ export async function getUserPrimaryToken (models: Models, alias: string) {
   return token.token;
 }
 
-type UserStandings = {
-  seasonId: string,
-  apiToken: string,
-};
-
 type ReadOptions = {
   apiToken: string,
 };
@@ -133,21 +122,4 @@ export async function read (models: Models, { apiToken }: ReadOptions) {
     accountName: token.accountName,
     apiToken,
   };
-}
-
-export async function listUserStandings (
-  models: Models,
-  seasonId: string
-): Promise<Array<UserStandings>> {
-  const standings = await models.PvpStandings.findAll({
-    where: {
-      seasonId,
-    },
-  });
-
-  return standings.map((standing) => _.omit(standing.dataValues, [
-    'updatedAt',
-    'createdAt',
-    'id',
-  ]));
 }

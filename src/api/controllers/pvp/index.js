@@ -4,6 +4,7 @@ import type { Models } from 'flowTypes';
 import memoize from 'memoizee';
 
 import * as userService from 'lib/services/user';
+import { list as listPvpStandings } from 'lib/services/pvpStandings';
 import gw2, { readLatestPvpSeason } from 'lib/gw2';
 import config from 'config';
 
@@ -57,7 +58,7 @@ export default function pvpControllerFactory (models: Models) {
   async function leaderboard () {
     const season = await memoizedReadLatestPvpSeason();
 
-    const pvpStandings = await userService.listUserStandings(models, season.id);
+    const pvpStandings = await listPvpStandings(models, season.id);
 
     const users = await Promise.all(pvpStandings.map((standing) => {
       return userService.read(models, { apiToken: standing.apiToken });
@@ -74,7 +75,7 @@ export default function pvpControllerFactory (models: Models) {
         ...standing,
         ...userMap[apiToken],
       }))
-      .sort((a, b) => ((b.ratingCurrent - b.decayCurrent) - (a.ratingCurrent - a.decayCurrent)));
+      .sort((a, b) => (a.gw2aRank - b.gw2aRank));
 
     return pvpStandingsWithUser;
   }

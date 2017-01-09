@@ -9,7 +9,7 @@ const config = {
 
 const logSpy = sinon.spy();
 
-const createFetchFactory = (fetchTokenStub) => proxyquire('fetch/fetch', {
+const createFetchFactory = (fetchTokenStub) => proxyquire('fetch/tokenFetch', {
   config,
   'lib/services/tokens': fetchTokenStub,
   'lib/gitter': () => logSpy,

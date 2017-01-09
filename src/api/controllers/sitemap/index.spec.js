@@ -59,7 +59,7 @@ async function init (models) {
   });
 }
 
-describe.only('sitemap', () => {
+describe('sitemap', () => {
   let sitemap;
   let models;
 

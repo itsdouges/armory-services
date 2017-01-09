@@ -1,7 +1,7 @@
 // @flow
 
 import type {
-  PvpStanding,
+  Gw2PvpStanding,
   User,
   Guild,
   ApiToken,
@@ -112,6 +112,8 @@ export const dbStanding = (input) => ({
   repeatsBest: 10,
   ratingBest: 11,
   decayBest: 12,
+  gw2aRank: 1,
+  naRank: 1,
   ...input,
 });
 
@@ -120,7 +122,7 @@ export const standing = ({
   best = fakeStanding,
   // eslint-disable-next-line camelcase
   season_id = 'A54849B7-7DBD-4958-91EF-72E18CD659BA',
-}: PvpStanding = {}): PvpStanding => ({
+}: Gw2PvpStanding = {}): Gw2PvpStanding => ({
   current,
   best,
   season_id,

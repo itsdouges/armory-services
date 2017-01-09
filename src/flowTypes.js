@@ -30,10 +30,17 @@ type Standing = {
   rating?: number,
 };
 
-export type PvpStanding = {
+export type Gw2PvpStanding = {
   current: Standing,
   best: Standing,
   season_id: string,
+};
+
+export type PvpStandingModel = {
+  seasonId: string,
+  apiToken: string,
+  ratingCurrent: number,
+  decayCurrent: number,
 };
 
 export type PvpSeason = {
@@ -45,6 +52,12 @@ export type User = {
   email: string,
   passwordHash: string,
   alias: string,
+};
+
+export type UserModel = {
+  name: string,
+  accountName: string,
+  id: number,
 };
 
 export type ApiToken = {

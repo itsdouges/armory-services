@@ -46,16 +46,20 @@ module.exports = {
   fetch: {
     concurrentCalls: 20,
     port: 8081,
-    interval: 480 * 60000, // [min] * 60000
+    interval: 60000 * 60 * 8,
     retries: 5,
     verbose: true,
     host: process.env.FETCH_PORT_8081_TCP_ADDR,
   },
 
+  leaderboards: {
+    refreshInterval: 60000 * 60 * 24,
+  },
+
   cache: {
     findAllCharacters: 1,
     statistics: 1,
-    readLatestPvpSeason: 60000 * 60 * 1, // 1 hour
-    pvpLeaderboard: 60000 * 60 * 1, // 1 hour
+    readLatestPvpSeason: 60000 * 60 * 1,
+    pvpLeaderboard: 60000 * 60 * 1,
   },
 };

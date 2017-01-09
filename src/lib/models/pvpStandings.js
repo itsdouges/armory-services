@@ -30,5 +30,9 @@ module.exports = (sequelize, DataTypes) => {
     repeatsBest: DataTypes.INTEGER,
     ratingBest: DataTypes.INTEGER,
     decayBest: DataTypes.INTEGER,
+
+    // leaderboard goodies (TODO: migration script)
+    naRank: DataTypes.INTEGER,
+    gw2aRank: DataTypes.INTEGER,
   });
 };

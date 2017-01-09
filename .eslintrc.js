@@ -6,7 +6,10 @@ module.exports = {
 
   parser: 'babel-eslint',
 
-  plugins: ['flowtype'],
+  plugins: [
+    'flowtype',
+    'mocha',
+  ],
 
   parserOptions: {
     ecmaFeatures: {
@@ -27,6 +30,8 @@ module.exports = {
     'no-unused-vars': ['error', {
       varsIgnorePattern: '(.*\.\.\.)',
     }],
+
+    'mocha/no-exclusive-tests': 'error',
   },
 
   globals: {
