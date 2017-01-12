@@ -1,8 +1,11 @@
 // @flow
 
-import type { Models, UserModel, PvpStandingModel } from 'flowTypes';
+import type { Models, User, UserModel, DbUser, PvpStandingModel } from 'flowTypes';
 import _ from 'lodash';
+import moment from 'moment';
 
+import config from 'config';
+import { list as listCharacters } from 'lib/services/character';
 import { read as readGuild } from './guild';
 
 type ListOptions = {
@@ -51,63 +54,33 @@ export async function isUserInGuild (
   return !!token.length;
 }
 
-export function parseUser (user: UserModel) {
-  if (!user) {
-    return Promise.reject('User not found');
+function cleanApiToken (apiToken) {
+  if (!apiToken) {
+    return undefined;
   }
 
-  return user.id;
+  return _.pick(_.get(apiToken, 'dataValues'), [
+    'accountName',
+    'world',
+    'access',
+    'commander',
+    'fractalLevel',
+    'dailyAp',
+    'monthlyAp',
+    'wvwRank',
+    'guilds',
+  ]);
 }
 
-export function getUserByEmail (models: Models, email: string) {
-  return models.User.findOne({
-    where: {
-      email,
-    },
-  });
-}
-
-export function getUserIdByEmail (models: Models, email: string) {
-  return getUserByEmail(models, email).then(parseUser);
-}
-
-export function getUserIdByAlias (models: Models, alias: string) {
-  return models.User.findOne({
-    where: {
-      alias,
-    },
-  })
-  .then(parseUser);
-}
-
-export async function getUserPrimaryToken (models: Models, alias: string) {
-  const id = await getUserIdByAlias(models, alias);
-  const token = await models
-  .Gw2ApiToken
-  .findOne({
-    where: {
-      primary: true,
-    },
-    include: [{
-      model: models.User,
-      where: {
-        id,
-      },
-    }],
-  });
-
-  if (!token) {
-    return Promise.reject('Token not found');
-  }
-
-  return token.token;
-}
-
-type ReadOptions = {
-  apiToken: string,
+type CreateUser = User & {
+  passwordHash: string,
 };
 
-export async function read (models: Models, { apiToken }: ReadOptions) {
+export async function create (models: Models, user: CreateUser): Promise<DbUser> {
+  return await models.User.create(user);
+}
+
+async function readByToken (models, apiToken): Promise<?UserModel> {
   const token = await models.Gw2ApiToken.findOne({
     where: {
       token: apiToken,
@@ -117,9 +90,88 @@ export async function read (models: Models, { apiToken }: ReadOptions) {
     }],
   });
 
-  return token && {
+  return token ? {
+    ...cleanApiToken(token),
+    id: token.User.dataValues.id,
     alias: token.User.dataValues.alias,
-    accountName: token.accountName,
-    apiToken,
+    passwordHash: token.User.dataValues.passwordHash,
+    email: token.User.dataValues.email,
+  } : null;
+}
+
+type ReadOptions = {
+  apiToken?: string,
+  alias?: string,
+  email?: string,
+};
+
+export async function read (models: Models, {
+  apiToken,
+  alias,
+  email,
+}: ReadOptions): Promise<?UserModel> {
+  if (apiToken) {
+    return await readByToken(models, apiToken);
+  }
+
+  const user = await models.User.findOne({
+    where: _.pickBy({ alias, email }),
+    include: {
+      all: true,
+    },
+  });
+
+  if (!user) {
+    return user;
+  }
+
+  const primaryToken = _.find(user.gw2_api_tokens, ({ primary }) => primary);
+
+  return {
+    ...cleanApiToken(primaryToken),
+    id: user.id,
+    alias: user.alias,
+    passwordHash: user.passwordHash,
+    email: user.email,
   };
+}
+
+type UpdateUser = {
+  id: string,
+  passwordHash: string,
+};
+
+export async function update (models: Models, user: UpdateUser): Promise<> {
+  await models.User.update({
+    passwordHash: user.passwordHash,
+  }, {
+    where: {
+      id: user.id,
+    },
+  });
+}
+
+export async function createPasswordReset (models: Models, userId: string): Promise<string> {
+  const { id } = await models.UserReset.create({
+    UserId: userId,
+    expires: moment().add(config.PASSWORD_RESET_TIME_LIMIT, 'minutes'),
+  });
+
+  return id;
+}
+
+export async function readPasswordReset (models: Models, resetId: string): Promise<> {
+  return await models.UserReset.findOne({
+    where: {
+      id: resetId,
+    },
+  });
+}
+
+export async function finishPasswordReset (models: Models, resetId: string): Promise<> {
+  return await models.UserReset.update({ used: true }, {
+    where: {
+      id: resetId,
+    },
+  });
 }

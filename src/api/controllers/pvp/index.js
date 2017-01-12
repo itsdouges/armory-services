@@ -17,35 +17,36 @@ const handleBadToken = (defaultValue, error) => {
 };
 
 export default function pvpControllerFactory (models: Models) {
-  function stats (alias: string) {
-    return userService.getUserPrimaryToken(models, alias)
-      .then((token) => {
-        return gw2.readPvpStats(token);
-      })
+  const readPrimaryToken = async (alias) => {
+    const user = await userService.read(models, { alias });
+    if (!user || !user.apiToken || !user.apiToken.token) {
+      throw new Error('Token not found');
+    }
+
+    return user.apiToken.token;
+  };
+
+  async function stats (alias: string) {
+    return readPrimaryToken(alias)
+      .then((token) => gw2.readPvpStats(token))
       .catch(handleBadToken.bind(null, {}));
   }
 
   function games (alias: string) {
-    return userService.getUserPrimaryToken(models, alias)
-      .then((token) => {
-        return gw2.readPvpGames(token);
-      })
+    return readPrimaryToken(alias)
+      .then((token) => gw2.readPvpGames(token))
       .catch(handleBadToken.bind(null, []));
   }
 
   function standings (alias: string) {
-    return userService.getUserPrimaryToken(models, alias)
-      .then((token) => {
-        return gw2.readPvpStandings(token);
-      })
+    return readPrimaryToken(alias)
+      .then((token) => gw2.readPvpStandings(token))
       .catch(handleBadToken.bind(null, []));
   }
 
   function achievements (alias: string) {
-    return userService.getUserPrimaryToken(models, alias)
-      .then((token) => {
-        return gw2.readAchievements(token);
-      })
+    return readPrimaryToken(alias)
+      .then((token) => gw2.readAchievements(token))
       .catch(handleBadToken.bind(null, []));
   }
 
@@ -64,7 +65,7 @@ export default function pvpControllerFactory (models: Models) {
       return userService.read(models, { apiToken: standing.apiToken });
     }));
 
-    const userMap = users.reduce((obj, { apiToken, ...user }) => {
+    const userMap = users.reduce((obj, { apiToken, ...user } = {}) => {
       // eslint-disable-next-line
       obj[apiToken] = user;
       return obj;

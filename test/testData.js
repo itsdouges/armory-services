@@ -1,11 +1,14 @@
 // @flow
 
+import moment from 'moment';
+
 import type {
   Gw2PvpStanding,
   User,
   Guild,
   ApiToken,
   Character,
+  PasswordReset,
 } from 'flowTypes';
 
 const defaultUser: User = {
@@ -25,7 +28,6 @@ const defaultGuild: Guild = {
   id: 'im-guild',
   tag: 'tag',
   name: 'name',
-  apiToken: undefined,
   favor: 123,
   resonance: 333,
   aetherium: 444,
@@ -49,6 +51,12 @@ const defaultApiToken = {
   guilds: guild().id,
   User: user(),
   UserId: user().id,
+  access: 'HOT',
+  commander: true,
+  fractalLevel: 123,
+  dailyAp: 123,
+  monthlyAp: 123,
+  wvwRank: 123,
 };
 
 export const apiToken = (apiTkn: ?ApiToken): ApiToken => ({
@@ -126,4 +134,14 @@ export const standing = ({
   current,
   best,
   season_id,
+});
+
+export const passwordReset = ({
+  expires = moment().add(1, 'days'),
+  used = false,
+  UserId = user().id,
+}: PasswordReset = {}) => ({
+  expires,
+  used,
+  UserId,
 });

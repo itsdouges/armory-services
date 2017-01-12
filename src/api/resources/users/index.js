@@ -4,8 +4,7 @@ export default function UserResource (server, controller) {
       return res.sendUnauthenticated();
     }
 
-    return controller
-      .read(req.username)
+    return controller.read({ email: req.username, excludeChildren: true })
       .then((data) => {
         res.send(200, data);
         return next();
@@ -13,16 +12,19 @@ export default function UserResource (server, controller) {
   });
 
   server.get('/users/:alias', (req, res, next) => {
-    controller
-      .readPublic(req.params.alias, { email: req.username, ignorePrivacy: !!req.username })
-      .then((data) => {
-        res.send(200, data);
-        return next();
-      }, (err) => {
-        console.error(err);
-        res.send(404);
-        return next();
-      });
+    return controller.read({
+      alias: req.params.alias,
+      email: req.username,
+      ignorePrivacy: !!req.username,
+    })
+    .then((data) => {
+      res.send(200, data);
+      return next();
+    }, (err) => {
+      console.error(err);
+      res.send(404);
+      return next();
+    });
   });
 
   server.put('/users/me/password', (req, res, next) => {
