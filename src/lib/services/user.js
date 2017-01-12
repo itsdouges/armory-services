@@ -60,6 +60,7 @@ function cleanApiToken (apiToken) {
   }
 
   return _.pick(_.get(apiToken, 'dataValues'), [
+    'token',
     'accountName',
     'world',
     'access',

@@ -146,7 +146,7 @@ describe('user controller', () => {
     context('when user does not have a primary api key', () => {
       const userNoGuilds = {
         ...user,
-        apiToken: null,
+        guilds: null,
       };
 
       beforeEach(() => {

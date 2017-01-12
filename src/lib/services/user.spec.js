@@ -79,6 +79,7 @@ describe('user service', () => {
         email: userTwo.email,
         passwordHash: userTwo.passwordHash,
         ..._.pick(apiTokenForUserTwo, [
+          'token',
           'accountName',
           'world',
           'access',

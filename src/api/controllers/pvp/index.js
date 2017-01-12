@@ -19,11 +19,11 @@ const handleBadToken = (defaultValue, error) => {
 export default function pvpControllerFactory (models: Models) {
   const readPrimaryToken = async (alias) => {
     const user = await userService.read(models, { alias });
-    if (!user || !user.apiToken || !user.apiToken.token) {
+    if (!user || !user.token) {
       throw new Error('Token not found');
     }
 
-    return user.apiToken.token;
+    return user.token;
   };
 
   async function stats (alias: string) {
@@ -65,9 +65,9 @@ export default function pvpControllerFactory (models: Models) {
       return userService.read(models, { apiToken: standing.apiToken });
     }));
 
-    const userMap = users.reduce((obj, { apiToken, ...user } = {}) => {
+    const userMap = users.reduce((obj, { token, ...user } = {}) => {
       // eslint-disable-next-line
-      obj[apiToken] = user;
+      obj[token] = user;
       return obj;
     }, {});
 

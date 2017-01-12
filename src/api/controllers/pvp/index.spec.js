@@ -43,7 +43,7 @@ describe('pvp controller', () => {
       addTokens: true,
     });
 
-    readUser.withArgs(models, { alias }).returns(Promise.resolve({ apiToken: { token } }));
+    readUser.withArgs(models, { alias }).returns(Promise.resolve({ token }));
 
     controller = controllerFactory(models);
   });
