@@ -90,7 +90,7 @@ describe('pvp controller', () => {
       const user = {
         accountName: 'madou.1234',
         alias: 'madou',
-        apiToken,
+        token: apiToken,
       };
 
       const standings = [
