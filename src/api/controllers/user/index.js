@@ -77,6 +77,7 @@ export default function userControllerFactory (models: Models) {
     'id',
     'passwordHash',
     'token',
+    'email',
   ]);
 
   async function read ({ email, alias, ignorePrivacy, excludeChildren }: ReadPublicOptions = {}) {
