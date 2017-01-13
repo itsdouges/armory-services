@@ -26,7 +26,6 @@ const controllerFactory = proxyquire('api/controllers/pvp', {
   'lib/services/pvpStandings': {
     list: listUserStandings,
   },
-  memoizee: (func) => func,
 });
 
 describe('pvp controller', () => {

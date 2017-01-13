@@ -1,7 +1,6 @@
 // @flow
 
 import type { Models } from 'flowTypes';
-import memoize from 'memoizee';
 
 import * as userService from 'lib/services/user';
 import { list as listPvpStandings } from 'lib/services/pvpStandings';
@@ -50,14 +49,8 @@ export default function pvpControllerFactory (models: Models) {
       .catch(handleBadToken.bind(null, []));
   }
 
-  const memoizedReadLatestPvpSeason = memoize(readLatestPvpSeason, {
-    maxAge: config.leaderboards.latestSeasonCacheTtl,
-    promise: true,
-    preFetch: true,
-  });
-
   async function leaderboard () {
-    const season = await memoizedReadLatestPvpSeason();
+    const season = await readLatestPvpSeason();
 
     const pvpStandings = await listPvpStandings(models, season.id);
 

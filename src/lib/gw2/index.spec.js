@@ -4,6 +4,9 @@ const config = {
   gw2: {
     endpoint: 'https://gw2apis.com/',
   },
+  leaderboards: {
+    latestSeasonCacheTtl: 123,
+  },
 };
 
 const axiosGet = sinon.stub();
@@ -13,6 +16,7 @@ const gw2Api = proxyquire('lib/gw2', {
     get: axiosGet,
   },
   config,
+  memoize: (func) => func,
 });
 
 describe('gw2 api', () => {

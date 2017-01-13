@@ -65,6 +65,7 @@ export type UserModel = {
   email: string,
 
   // ApiKey values
+  token?: string,
   accountName?: string,
   guilds?: string,
   dailyAp?: number,

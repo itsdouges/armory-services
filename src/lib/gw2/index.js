@@ -2,6 +2,7 @@
 
 import type { PvpSeason } from 'flowTypes';
 
+import memoize from 'memoizee';
 import _ from 'lodash';
 import axios from 'axios';
 import config from 'config';
@@ -107,7 +108,7 @@ export async function readPvpSeason (id: number) {
   return response.data;
 }
 
-export async function readLatestPvpSeason (): Promise<PvpSeason> {
+const getLatestPvpSeason = async (): Promise<PvpSeason> => {
   const { data: seasons } = await axios
     .get(`${config.gw2.endpoint}v2/pvp/seasons?page=0&page_size=200`);
 
@@ -128,7 +129,13 @@ export async function readLatestPvpSeason (): Promise<PvpSeason> {
 
   const latestSeason = _.last(sortedSeasons);
   return latestSeason;
-}
+};
+
+export const readLatestPvpSeason: () => Promise<PvpSeason> = memoize(getLatestPvpSeason, {
+  maxAge: config.leaderboards.latestSeasonCacheTtl,
+  promise: true,
+  preFetch: true,
+});
 
 export default {
   ...simpleCalls,

@@ -76,6 +76,7 @@ export default function userControllerFactory (models: Models) {
   const cleanUser = (user) => _.omit(user, [
     'id',
     'passwordHash',
+    'token',
   ]);
 
   async function read ({ email, alias, ignorePrivacy, excludeChildren }: ReadPublicOptions = {}) {

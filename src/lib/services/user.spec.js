@@ -2,10 +2,14 @@ import _ from 'lodash';
 import * as testData from 'test/testData';
 
 const readGuild = sinon.stub();
+const readLatestPvpSeason = sinon.stub();
 
 const service = proxyquire('lib/services/user', {
   './guild': {
     read: readGuild,
+  },
+  'lib/gw2': {
+    readLatestPvpSeason,
   },
 });
 
@@ -30,6 +34,10 @@ describe('user service', () => {
     primary: true,
   });
 
+  const standing = testData.dbStanding({
+    apiToken: apiTokenForUserTwo.token,
+  });
+
   before(async () => {
     models = await setupTestDb();
 
@@ -38,6 +46,7 @@ describe('user service', () => {
 
     await models.User.create(userTwo);
     await models.Gw2ApiToken.create(apiTokenForUserTwo);
+    await models.PvpStandings.create(standing);
 
     readGuild.withArgs(models, { name: guild.name }).returns(Promise.resolve(guild));
   });
@@ -72,12 +81,21 @@ describe('user service', () => {
   });
 
   describe('read', () => {
-    const assertUser = (usr) => {
+    const assertUser = (usr, nullStandings) => {
       expect(usr).to.eql({
         id: userTwo.id,
         alias: userTwo.alias,
         email: userTwo.email,
         passwordHash: userTwo.passwordHash,
+        ...nullStandings ? {
+          euRank: null,
+          naRank: null,
+          gw2aRank: null,
+        } : _.pick(standing, [
+          'euRank',
+          'naRank',
+          'gw2aRank',
+        ]),
         ..._.pick(apiTokenForUserTwo, [
           'token',
           'accountName',
@@ -92,6 +110,10 @@ describe('user service', () => {
         ]),
       });
     };
+
+    beforeEach(() => {
+      readLatestPvpSeason.returns(Promise.resolve({ id: standing.seasonId }));
+    });
 
     context('with api token', () => {
       it('should return data', async () => {
@@ -135,6 +157,15 @@ describe('user service', () => {
           const usr = await service.read(models, { email: 'asd' });
           expect(usr).to.be.null;
         });
+      });
+    });
+
+    context('with no standing info', () => {
+      it('should return data', async () => {
+        readLatestPvpSeason.returns(Promise.resolve({ id: '123-nah-lol' }));
+        const usr = await service.read(models, { email: userTwo.email });
+
+        assertUser(usr, true);
       });
     });
   });

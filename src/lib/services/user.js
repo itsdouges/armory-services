@@ -6,6 +6,7 @@ import moment from 'moment';
 
 import config from 'config';
 import { list as listCharacters } from 'lib/services/character';
+import { readLatestPvpSeason } from 'lib/gw2';
 import { read as readGuild } from './guild';
 
 type ListOptions = {
@@ -100,6 +101,23 @@ async function readByToken (models, apiToken): Promise<?UserModel> {
   } : null;
 }
 
+async function readByUser (models, { alias, email }) {
+  const user = await models.User.findOne({
+    where: _.pickBy({ alias, email }),
+    include: {
+      all: true,
+    },
+  });
+
+  return user ? {
+    ...cleanApiToken(_.find(user.gw2_api_tokens, ({ primary }) => primary)),
+    id: user.id,
+    alias: user.alias,
+    passwordHash: user.passwordHash,
+    email: user.email,
+  } : null;
+}
+
 type ReadOptions = {
   apiToken?: string,
   alias?: string,
@@ -111,29 +129,27 @@ export async function read (models: Models, {
   alias,
   email,
 }: ReadOptions): Promise<?UserModel> {
-  if (apiToken) {
-    return await readByToken(models, apiToken);
+  const data = apiToken
+    ? await readByToken(models, apiToken)
+    : await readByUser(models, { alias, email });
+
+  if (!data) {
+    return null;
   }
 
-  const user = await models.User.findOne({
-    where: _.pickBy({ alias, email }),
-    include: {
-      all: true,
+  const { id: seasonId } = await readLatestPvpSeason();
+  const standing = await models.PvpStandings.findOne({
+    where: {
+      seasonId,
+      apiToken: data.token,
     },
   });
 
-  if (!user) {
-    return user;
-  }
-
-  const primaryToken = _.find(user.gw2_api_tokens, ({ primary }) => primary);
-
   return {
-    ...cleanApiToken(primaryToken),
-    id: user.id,
-    alias: user.alias,
-    passwordHash: user.passwordHash,
-    email: user.email,
+    ...data,
+    euRank: standing && standing.euRank,
+    naRank: standing && standing.naRank,
+    gw2aRank: standing && standing.gw2aRank,
   };
 }
 

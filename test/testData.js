@@ -121,7 +121,8 @@ export const dbStanding = (input) => ({
   ratingBest: 11,
   decayBest: 12,
   gw2aRank: 1,
-  naRank: 1,
+  naRank: 5,
+  euRank: 99,
   ...input,
 });
 
