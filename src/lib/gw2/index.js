@@ -18,12 +18,14 @@ function normaliseObject (data) {
   }, {});
 }
 
-function replaceId (endpoint, id) {
-  if (id) {
-    return endpoint.replace('{id}', id);
-  }
+function replaceParams (endpoint, id, params) {
+  let url = endpoint.replace('{id}', id);
 
-  return endpoint;
+  _.forEach(params, (value, key) => {
+    url = url.replace(`{${key}}`, value);
+  });
+
+  return url;
 }
 
 const simpleCalls = _.reduce({
@@ -57,9 +59,13 @@ const simpleCalls = _.reduce({
   readCharacters: { resource: 'characters' },
   readCharactersDeep: { resource: 'characters?page=0&page_size=200' },
   readAchievements: { resource: 'account/achievements' },
-}, (obj, { resource, onResult, normalise }, key) => {
+  readPvpLadder: {
+    resource: 'pvp/seasons/{id}/leaderboards/ladder/{region}',
+    noAuth: true,
+  },
+}, (obj, { resource, onResult, normalise, noAuth }, key) => {
   // eslint-disable-next-line max-len
-  const func = (token, id = '') => axios.get(replaceId(`${config.gw2.endpoint}v2/${resource}`, id), {
+  const func = (token, id = '', params = {}) => axios.get(replaceParams(`${config.gw2.endpoint}v2/${resource}`, id, params), !noAuth && {
     headers: {
       Authorization: `Bearer ${token}`,
     },
