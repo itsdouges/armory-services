@@ -68,11 +68,9 @@ export default function pvpControllerFactory (models: Models) {
     const pvpStandingsWithUser = pvpStandings
       .map(({ apiToken, ...standing }) => ({
         ...standing,
-        ..._.omit(userMap[apiToken], [
-          'email',
-          'id',
-          'passwordHash',
-          'password',
+        ..._.pick(userMap[apiToken], [
+          'accountName',
+          'alias',
         ]),
       }))
       .sort((a, b) => (a.gw2aRank - b.gw2aRank));
