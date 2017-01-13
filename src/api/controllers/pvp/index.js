@@ -2,6 +2,7 @@
 
 import type { Models } from 'flowTypes';
 
+import _ from 'lodash';
 import * as userService from 'lib/services/user';
 import { list as listPvpStandings } from 'lib/services/pvpStandings';
 import gw2, { readLatestPvpSeason } from 'lib/gw2';
@@ -67,7 +68,12 @@ export default function pvpControllerFactory (models: Models) {
     const pvpStandingsWithUser = pvpStandings
       .map(({ apiToken, ...standing }) => ({
         ...standing,
-        ...userMap[apiToken],
+        ..._.omit(userMap[apiToken], [
+          'email',
+          'id',
+          'passwordHash',
+          'password',
+        ]),
       }))
       .sort((a, b) => (a.gw2aRank - b.gw2aRank));
 

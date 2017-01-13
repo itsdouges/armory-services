@@ -86,11 +86,10 @@ describe('pvp controller', () => {
   describe('leaderboard', () => {
     it('should build leaderboard and sort by highest to lowest rating', async () => {
       const apiToken = '1234-1234';
-      const user = {
-        accountName: 'madou.1234',
-        alias: 'madou',
+      const user = testData.user({
         token: apiToken,
-      };
+        accountName: 'yes',
+      });
 
       const standings = [
         { seasonId: season.season_id, apiToken, gw2aRank: 2, decayCurrent: 700 },

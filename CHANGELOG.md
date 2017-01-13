@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [1.3.1] - 2017/01/13
+### Fixed
+- Some data leaking out that shouldn't from pvp leaderboard
+
 ## [1.3.0] - 2017/01/13
 ### Added
 - `gw2aRank` and `naRank` to `PvpStandings` table
