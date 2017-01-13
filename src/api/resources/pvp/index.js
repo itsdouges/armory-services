@@ -43,7 +43,7 @@ function PvpResource (server, controller) {
   });
 
   const memoizedLeaderboard = memoize(controller.leaderboard, {
-    maxAge: config.cache.pvpLeaderboard,
+    maxAge: config.leaderboards.getCacheTtl,
     promise: true,
     preFetch: true,
   });

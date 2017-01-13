@@ -4,6 +4,6 @@ module.exports = {
   },
 
   fetch: {
-    interval: 1 * 60000, // [min] * 60000
+    interval: 60000 * 1,
   },
 };

@@ -21,7 +21,7 @@ export type FetchOptions = {
   token: string,
 };
 
-type Standing = {
+type Gw2Standing = {
   total_points: number,
   division: number,
   tier: number,
@@ -30,10 +30,17 @@ type Standing = {
   rating?: number,
 };
 
-export type PvpStanding = {
-  current: Standing,
-  best: Standing,
+export type Gw2PvpStanding = {
+  current: Gw2Standing,
+  best: Gw2Standing,
   season_id: string,
+};
+
+export type PvpStandingModel = {
+  seasonId: string,
+  apiToken: string,
+  ratingCurrent: number,
+  decayCurrent: number,
 };
 
 export type PvpSeason = {
@@ -45,6 +52,27 @@ export type User = {
   email: string,
   passwordHash: string,
   alias: string,
+};
+
+export type DbUser = {
+  id: number,
+};
+
+export type UserModel = {
+  id: string,
+  alias: string,
+  passwordHash: string,
+  email: string,
+
+  // ApiKey values
+  token?: string,
+  accountName?: string,
+  guilds?: string,
+  dailyAp?: number,
+  fractalLevel?: number,
+  monthlyAp?: number,
+  world?: number,
+  wvwRank?: number,
 };
 
 export type ApiToken = {
@@ -84,4 +112,10 @@ export type Character = {
   guild: string,
   Gw2ApiTokenToken: string,
   Gw2ApiToken: ApiToken,
+};
+
+export type PasswordReset = {
+  expires: Date,
+  used: boolean,
+  UserId: string,
 };

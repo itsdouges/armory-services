@@ -21,10 +21,11 @@ const controllerFactory = proxyquire('api/controllers/pvp', {
   },
   'lib/services/user': {
     getUserPrimaryToken,
-    listUserStandings,
     read: readUser,
   },
-  memoizee: (func) => func,
+  'lib/services/pvpStandings': {
+    list: listUserStandings,
+  },
 });
 
 describe('pvp controller', () => {
@@ -41,7 +42,7 @@ describe('pvp controller', () => {
       addTokens: true,
     });
 
-    getUserPrimaryToken.withArgs(models, alias).returns(Promise.resolve(token));
+    readUser.withArgs(models, { alias }).returns(Promise.resolve({ token }));
 
     controller = controllerFactory(models);
   });
@@ -88,12 +89,12 @@ describe('pvp controller', () => {
       const user = {
         accountName: 'madou.1234',
         alias: 'madou',
-        apiToken,
+        token: apiToken,
       };
 
       const standings = [
-        { seasonId: season.season_id, apiToken, ratingCurrent: 1234, decayCurrent: 700 },
-        { seasonId: season.season_id, apiToken, ratingCurrent: 1234, decayCurrent: 100 },
+        { seasonId: season.season_id, apiToken, gw2aRank: 2, decayCurrent: 700 },
+        { seasonId: season.season_id, apiToken, gw2aRank: 1, decayCurrent: 100 },
       ];
 
       readUser.withArgs(models, { apiToken }).returns(Promise.resolve(user));
@@ -104,13 +105,13 @@ describe('pvp controller', () => {
       expect(leaderboard).to.eql([{
         accountName: user.accountName,
         alias: user.alias,
-        ratingCurrent: 1234,
+        gw2aRank: 1,
         decayCurrent: 100,
         seasonId: season.season_id,
       }, {
         accountName: user.accountName,
         alias: user.alias,
-        ratingCurrent: 1234,
+        gw2aRank: 2,
         decayCurrent: 700,
         seasonId: season.season_id,
       }]);

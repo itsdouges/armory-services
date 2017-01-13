@@ -1,119 +1,71 @@
-describe('user resource', () => {
-  let systemUnderTest;
-  let models;
-  let validator;
-  let mocks;
-  let readGuild;
+import moment from 'moment';
+import _ from 'lodash';
 
-  const stubConfig = {
-    PASSWORD_RESET_TIME_LIMIT: 5,
-  };
+import * as testData from 'test/testData';
+import { stubValidator } from 'test/utils';
 
-  function initialiseUserData () {
-    sinon.stub(mocks, 'validate').returns(Promise.resolve());
+const sandbox = sinon.sandbox.create();
+const readGuild = sandbox.stub();
+const readUser = sandbox.stub();
+const createUser = sandbox.stub();
+const updateUser = sandbox.stub();
+const validate = sandbox.stub().returns(Promise.resolve());
+const addResource = sandbox.stub();
+const addRule = sandbox.stub();
+const sendEmail = sandbox.spy();
+const verifyHash = sandbox.stub();
+const hashPassword = sandbox.stub();
+const listCharacters = sandbox.stub();
+const forgotMyPasswordTemplate = sandbox.stub();
+const createPasswordReset = sandbox.stub();
+const readPasswordReset = sandbox.stub();
+const finishPasswordReset = sandbox.stub();
 
-    const user = {
-      email: 'cool@email.com',
-      password: 'password',
-      alias: 'madou',
-    };
-
-    return systemUnderTest.create(user)
-      .then((userRow) => {
-        const token = {
-          token: 'i-am-token',
-          accountName: 'coolaccount.1234',
-          permissions: 'abc,def',
-          world: 'aus',
-          accountId: 'i-am-id',
-          UserId: userRow.id,
-          primary: true,
-          guilds: 'cool,guilds',
-        };
-
-        return models.Gw2ApiToken.create(token)
-        .then((result) => {
-          const character = {
-            name: 'madoubie',
-            race: 'yolon',
-            gender: 'male',
-            profession: 'elementalist',
-            level: '69',
-            created: 'Sat Oct 24 2015 19:30:34',
-            age: 1234,
-            guild: 'a-guild',
-            deaths: 0,
-            Gw2ApiTokenToken: result.token,
-          };
-
-          return models.Gw2Character.create(character);
-        })
-        .then(() => userRow);
-      });
-  }
-
-  function init (instance = systemUnderTest) {
-    return initialiseUserData()
-      .then((user) => instance.forgotMyPasswordStart(user.email)
-        .then(() => models.UserReset.findAll({
-          where: {
-            UserId: user.id,
-          },
-        }))
-        .then(([reset]) => ({
-          email: user.email,
-          id: user.id,
-          passwordHash: user.passwordHash,
-          UserId: reset.UserId,
-          resetId: reset.id,
-          expires: reset.expires,
-        }))
-      );
-  }
-
-  function createUserResource (config = stubConfig) {
-    readGuild = sinon.stub().returns(Promise.resolve());
-
-    const controllerFactory = proxyquire('api/controllers/user', {
-      'lib/email': {
-        send: mocks.sendEmail,
-      },
-      config,
-      'gotta-validate': validator,
-      'lib/services/guild': {
-        read: readGuild,
-      },
-
-    });
-
-    return controllerFactory(models);
-  }
-
-  beforeEach(async () => {
-    mocks = {
-      validate () {},
-      sendEmail () {},
-    };
-
-    validator = function () {
-      return {
-        validate: mocks.validate,
-      };
-    };
-
-    validator.addResource = sinon.stub().returns(validator);
-    validator.addRule = sinon.stub().returns(validator);
-
-    models = await setupTestDb();
-
-    sinon.stub(mocks, 'sendEmail').returns(Promise.resolve('sent!'));
-
-    systemUnderTest = createUserResource();
+describe('user controller', () => {
+  const models = { neat: 'models' };
+  const email = 'email@email.com';
+  const fakeGuildId = 'fake-guild';
+  const guild = testData.guild();
+  const character = testData.character();
+  const apiToken = testData.apiToken({
+    primary: true,
+    guilds: [guild.id, fakeGuildId].join(','),
   });
+  const user = testData.user({ guilds: apiToken.guilds });
+
+  const controller = proxyquire('api/controllers/user', {
+    ...stubValidator({ addResource, addRule, validate }),
+    'lib/email': {
+      send: sendEmail,
+    },
+    'lib/services/guild': {
+      read: readGuild,
+    },
+    'lib/services/character': {
+      list: listCharacters,
+    },
+    'lib/services/user': {
+      create: createUser,
+      read: readUser,
+      update: updateUser,
+      createPasswordReset,
+      readPasswordReset,
+      finishPasswordReset,
+    },
+    'lib/password': {
+      hashPassword,
+      verifyHash,
+    },
+    'lib/email/templates': {
+      forgotMyPassword: forgotMyPasswordTemplate,
+    },
+  })(models);
+
+  afterEach(() => sandbox.reset());
 
   describe('initialisation', () => {
-    it('should add users resource in create mode to validator', () => {
-      expect(validator.addResource).to.have.been.calledWith({
+    it('should add init validator', () => {
+      expect(addResource).to.have.been.calledWith({
         name: 'users',
         mode: 'create',
         rules: {
@@ -122,10 +74,8 @@ describe('user resource', () => {
           password: ['required', 'ezpassword', 'no-white-space'],
         },
       });
-    });
 
-    it('should add users resource in update mode to validator', () => {
-      expect(validator.addResource).to.have.been.calledWith({
+      expect(addResource).to.have.been.calledWith({
         name: 'users',
         mode: 'update-password',
         rules: {
@@ -137,272 +87,212 @@ describe('user resource', () => {
     });
   });
 
+  describe('create', () => {
+    const passwordHash = '#$13123sdkjasd';
+    let createdUser;
+
+    beforeEach(async () => {
+      hashPassword.withArgs(user.password).returns(passwordHash);
+      createUser.withArgs(models, {
+        ...user,
+        passwordHash,
+      }).returns(user);
+      createdUser = await controller.create(user);
+    });
+
+    it('should validate user', () => {
+      expect(validate).to.have.been.calledWith(user);
+    });
+
+    it('should hash password and create user', () => {
+      expect(createdUser).to.equal(user);
+    });
+  });
+
   describe('read', () => {
-    const user = {
-      email: 'cool@email.com',
-      password: 'password',
-      alias: 'madou',
+    beforeEach(() => {
+      listCharacters
+        .withArgs(models, { alias: user.alias, email, ignorePrivacy: true })
+        .returns(Promise.resolve([character]));
+    });
+
+    const cleanUser = (usr) => _.omit(usr, [
+      'id',
+      'passwordHash',
+    ]);
+
+    context('when user has a primary api key', () => {
+      beforeEach(() => {
+        readUser.withArgs(models, { alias: user.alias, email }).returns(Promise.resolve(user));
+        readGuild.withArgs(models, { id: guild.id }).returns(Promise.resolve(guild));
+        readGuild.withArgs(models, { id: fakeGuildId }).returns(Promise.resolve(null));
+      });
+
+      it('should return user data', async () => {
+        const data = await controller.read({ alias: user.alias, email, ignorePrivacy: true });
+
+        expect(data).to.eql({
+          ...cleanUser(user),
+          characters: [character],
+          guilds: [_.pick(guild, [
+            'tag',
+            'name',
+            'id',
+          ])],
+        });
+      });
+    });
+
+    context('when user does not have a primary api key', () => {
+      const userNoGuilds = {
+        ...user,
+        guilds: null,
+      };
+
+      beforeEach(() => {
+        readUser
+          .withArgs(models, { alias: user.alias, email })
+          .returns(Promise.resolve(userNoGuilds));
+      });
+
+      it('should return user data', async () => {
+        const data = await controller.read({ alias: user.alias, email, ignorePrivacy: true });
+
+        expect(data).to.eql({
+          ...cleanUser(userNoGuilds),
+          characters: [character],
+          guilds: [],
+        });
+      });
+    });
+  });
+
+  describe('updating password', () => {
+    const hashedPassword = '123123DSADASD23123@#@#';
+    const options = {
+      email: user.email,
+      password: 'new-password-man',
+      currentPassword: 'old-password',
     };
 
-    it('should return user data', () => {
-      sinon.stub(mocks, 'validate').returns(Promise.resolve());
-
-      return systemUnderTest
-        .create(user)
-        .then((data) => {
-          expect(data.email).to.equal(user.email);
-          expect(data.id).to.exist;
-          expect(data.passwordHash).to.exist;
-          expect(data.alias).to.equal(user.alias);
-        });
+    beforeEach(async () => {
+      readUser.withArgs(models, { email: user.email }).returns(user);
+      hashPassword.withArgs(options.password).returns(hashedPassword);
+      await controller.updatePassword(options);
     });
 
-    it('should not explode if user doesnt have a primary token', () => {
-      sinon.stub(mocks, 'validate').returns(Promise.resolve());
-
-      return systemUnderTest
-        .create(user)
-        .then(() => systemUnderTest.readPublic(user.alias));
+    it('should validate', async () => {
+      expect(validate).to.have.been.calledWith(options);
     });
 
-    it('should return public user data and ignore nulls', () => {
-      const cool = {
-        id: 'cool',
-        tag: 'yeah',
-        name: 'pretty nice',
-        misc: 'ignore this',
-      };
-
-      readGuild.withArgs(models, { id: 'cool' }).returns(Promise.resolve(cool));
-      readGuild.withArgs(models, { id: 'guilds' }).returns(Promise.resolve(null));
-
-      return initialiseUserData()
-        .then(() => systemUnderTest.readPublic('madou'))
-        .then((data) => {
-          expect(data).to.include({
-            alias: 'madou',
-            accountName: 'coolaccount.1234',
-            world: 'aus',
-            created: null,
-            access: null,
-            commander: null,
-            fractalLevel: null,
-            dailyAp: null,
-            monthlyAp: null,
-            wvwRank: null,
-          });
-
-          const { misc, ...expectedGuild } = cool;
-
-          expect(data.guilds).to.eql([expectedGuild]);
-
-          expect(data.characters).to.eql([{
-            accountName: 'coolaccount.1234',
-            userAlias: 'madou',
-            world: 'aus',
-            name: 'madoubie',
-            gender: 'male',
-            profession: 'elementalist',
-            level: 69,
-            race: 'yolon',
-          }]);
-        });
-    });
-  });
-
-  describe('updating', () => {
-    it('should reject promise if passwords don\'t matach', () => {
-      const user = {
-        email: 'cool@email.com',
-        password: 'password',
-        alias: 'madou',
-      };
-
-      sinon.stub(mocks, 'validate').returns(Promise.resolve());
-
-      return systemUnderTest
-        .create(user)
-        .then(() => {
-          user.currentPassword = 'WRONGPASS';
-          return systemUnderTest.updatePassword(user);
-        })
-        .then(null, (e) => {
-          expect(e).to.equal('Bad password');
-        });
+    it('should verify hash against current password', () => {
+      expect(verifyHash).to.have.been.calledWith(user.passwordHash, options.currentPassword);
     });
 
-    it('should resolve promise if passwords matach and commit to db', () => {
-      const user = {
-        email: 'cool@email.com',
-        password: 'password',
-        alias: 'madou',
-      };
-
-      sinon.stub(mocks, 'validate').returns(Promise.resolve());
-
-      return systemUnderTest
-        .create(user)
-        .then(() => {
-          user.currentPassword = user.password;
-          user.password = 'NewPass123';
-          user.oldHash = user.passwordHash;
-
-          return systemUnderTest.updatePassword(user);
-        })
-        .then(() => systemUnderTest.read(user.email))
-        .then((e) => {
-          expect(e.passwordHash).not.to.equal(user.oldHash);
-          expect(e.passwordHash).to.exist;
-        });
-    });
-
-    it('should reject if validation fails', () => {
-      const error = 'errorrrr';
-      sinon.stub(mocks, 'validate').returns(Promise.reject(error));
-
-      return systemUnderTest
-        .updatePassword({})
-        .then(null, (e) => {
-          expect(e).to.equal(error);
-        });
-    });
-  });
-
-  describe('creation', () => {
-    it('should call validator and reject promise if validator returns errors', () => {
-      const user = {};
-      const errors = ['im a error'];
-
-      sinon.stub(mocks, 'validate').returns(Promise.reject(errors));
-
-      return systemUnderTest
-          .create(user)
-          .then(null, (e) => {
-            expect(e).to.equal(errors);
-          });
-    });
-
-    it('should add user to database with expected values', () => {
-      const user = {
-        email: 'cool@email.com',
-        password: 'password',
-        alias: 'madou',
-      };
-
-      sinon.stub(mocks, 'validate').returns(Promise.resolve());
-
-      return systemUnderTest
-        .create(user)
-        .then(() => {
-          models.User
-            .findOne({
-              where: {
-                email: user.email,
-              },
-              include: [{
-                all: true,
-              }],
-            })
-            .then((e) => {
-              expect(e.id).to.exist;
-              expect(e.email).to.equal(user.email);
-              expect(e.alias).to.equal(user.alias);
-              expect(e.passwordHash).to.exist;
-              expect(e.emailValidated).to.equal(false);
-            });
-        });
+    it('should hash and change password', () => {
+      expect(updateUser).to.have.been.calledWith(models, {
+        id: user.id,
+        passwordHash: hashedPassword,
+      });
     });
   });
 
   describe('forgot my password', () => {
-    describe('when initiating', () => {
-      it('should create a new record in the user resets table', () => {
-        return initialiseUserData()
-          .then((user) => systemUnderTest.forgotMyPasswordStart(user.email)
-            .then(() => models.UserReset.findAll({
-              where: {
-                UserId: user.id,
-              },
-            }))
-          )
-          .then((results) => {
-            expect(results.length).to.equal(1);
-            const row = results[0];
-            expect(row.expires).to.exist;
-            expect(row.UserId).to.exist;
-            expect(row.used).to.exist;
-            expect(row.id).to.exist;
-          });
+    context('starting', () => {
+      context('when user is not found', () => {
+        it('should throw error', async () => {
+          try {
+            await controller.forgotMyPasswordStart();
+          } catch (e) {
+            expect(e).to.eql(new Error('User not found'));
+          }
+        });
       });
 
-      it('should send an email', () => {
-        return initialiseUserData()
-          .then((user) => systemUnderTest.forgotMyPasswordStart(user.email)
-            .then(() => models.UserReset.findAll({
-              where: {
-                UserId: user.id,
-              },
-            }))
-            .then(() => expect(mocks.sendEmail).to.have.been.calledWith({
-              subject: 'Forgot My Password',
-              to: user.email,
-              html: sinon.match.string,
-            }))
-          );
+      context('when user is found', () => {
+        const resetId = '123123-123123';
+        const emailTemplate = '<email></email>';
+
+        beforeEach(async () => {
+          readUser.withArgs(models, { email }).returns(Promise.resolve(user));
+          createPasswordReset.withArgs(models, user.id).returns(Promise.resolve(resetId));
+          forgotMyPasswordTemplate.withArgs(resetId).returns(emailTemplate);
+          await controller.forgotMyPasswordStart(email);
+        });
+
+        it('should create reset record', () => {
+          expect(createPasswordReset).to.have.been.calledWith(models, user.id);
+        });
+
+        it('should send email with reset token', () => {
+          expect(sendEmail).to.have.been.calledWith({
+            subject: 'Forgot My Password',
+            html: emailTemplate,
+            to: email,
+          });
+        });
       });
     });
 
-    describe('when finishing', () => {
-      it('should reject if reset doesnt exist', () => {
-        return systemUnderTest.forgotMyPasswordFinish('dontexist', 'hahpassword')
-          .then(null, (err) => expect(err).to.eql('Reset doesn\'t exist.'));
+    context('finishing', () => {
+      context('when reset token doesnt exist', () => {
+        it('should throw error', async () => {
+          try {
+            await controller.forgotMyPasswordFinish();
+          } catch (e) {
+            expect(e).to.eql(new Error('Reset doesn\'t exist'));
+          }
+        });
       });
 
-      it('should validate password', () => {
-        const shittyPassword = 'bad';
+      context('when reset token exists', () => {
+        const resetToken = testData.passwordReset();
+        const newPassword = '123123123';
 
-        return init()
-          .then((data) => systemUnderTest.forgotMyPasswordFinish(data.resetId, shittyPassword))
-          .then(() => expect(mocks.validate).to.have.been.calledWith({ password: shittyPassword }));
-      });
-
-      it('should change password', () => {
-        const newPassword = 'bad';
-
-        return init()
-          .then((data) =>
-            systemUnderTest.forgotMyPasswordFinish(data.resetId, newPassword)
-              .then(() =>
-                models.User.findOne({
-                  where: {
-                    id: data.id,
-                  },
-                })
-              )
-              .then((user) =>
-                expect(user.passwordHash).to.exist ||
-                expect(user.passwordHash).not.to.eql(data.passwordHash)
-              )
-          );
-      });
-
-      it('should not be allowed to be used if expiry time has passed', () => {
-        const instance = createUserResource({
-          PASSWORD_RESET_TIME_LIMIT: -5,
+        beforeEach(async () => {
+          readPasswordReset.withArgs(models, resetToken.id).returns(resetToken);
+          hashPassword.withArgs(newPassword).returns(newPassword);
+          await controller.forgotMyPasswordFinish(resetToken.id, newPassword);
         });
 
-        return init(instance)
-          .then((data) => instance.forgotMyPasswordFinish(data.resetId, 'bad'))
-          .then(null, (e) => expect(e).to.equal('Reset has expired.'));
+        it('should validate', async () => {
+          expect(validate).to.have.been.calledWith({
+            password: newPassword,
+          });
+        });
+
+        it('should change password', () => {
+          expect(updateUser).to.have.been.calledWith(models, {
+            id: resetToken.UserId,
+            passwordHash: newPassword,
+          });
+        });
+
+        it('should finalise user reset token', () => {
+          expect(finishPasswordReset).to.have.been.calledWith(models, resetToken.id);
+        });
       });
 
-      it('should only allow reset to be used once', () => {
-        return init()
-          .then((data) =>
-            systemUnderTest.forgotMyPasswordFinish(data.resetId, 'bad')
-            .then(() => systemUnderTest.forgotMyPasswordFinish(data.resetId, 'bad'))
-            .then(null, (e) => expect(e).to.equal('Reset has expired.'))
-          );
+      it('should throw error when token used', () => {
+        const resetToken = testData.passwordReset({
+          id: '123-1234',
+          used: true,
+        });
+
+        return controller.forgotMyPasswordFinish(resetToken.id, '1234').catch((e) => {
+          expect(e).to.eql(new Error('Reset doesn\'t exist'));
+        });
+      });
+
+      it('should throw error when token expired', () => {
+        const resetToken = testData.passwordReset({
+          id: '123-1234',
+          expires: moment().add(-5, 'days'),
+        });
+
+        return controller.forgotMyPasswordFinish(resetToken.id, '1234').catch((e) => {
+          expect(e).to.eql(new Error('Reset doesn\'t exist'));
+        });
       });
     });
   });

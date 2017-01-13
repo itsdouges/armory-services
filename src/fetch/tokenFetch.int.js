@@ -11,7 +11,7 @@ const config = {
   },
 };
 
-const createFetchFactory = (fetchTokens) => proxyquire('fetch/fetch', {
+const createFetchFactory = (fetchTokens) => proxyquire('fetch/tokenFetch', {
   'lib/services/tokens': fetchTokens,
   config,
 });

@@ -4,6 +4,9 @@ const config = {
   gw2: {
     endpoint: 'https://gw2apis.com/',
   },
+  leaderboards: {
+    latestSeasonCacheTtl: 123,
+  },
 };
 
 const axiosGet = sinon.stub();
@@ -13,6 +16,7 @@ const gw2Api = proxyquire('lib/gw2', {
     get: axiosGet,
   },
   config,
+  memoize: (func) => func,
 });
 
 describe('gw2 api', () => {
@@ -77,6 +81,7 @@ describe('gw2 api', () => {
       'readGuildUpgrades',
       'readTokenInfo',
       'readTokenInfoWithAccount',
+      'readPvpLadder',
     ]);
   });
 
@@ -107,6 +112,23 @@ describe('gw2 api', () => {
 
         return gw2Api[funcName](token, id)
           .then((result) => expect(result).to.eql(normalise ? normalisedData : data));
+      });
+    });
+  });
+
+  describe('calls with params', () => {
+    describe('read pvp ladder', () => {
+      it('should get data', async () => {
+        const id = '1234-1234';
+        const region = 'na';
+        const resource = `${config.gw2.endpoint}v2/pvp/seasons/${id}/leaderboards/ladder/${region}`;
+        const data = { neat: 'data' };
+
+        axiosGet.withArgs(resource).returns(Promise.resolve({ data }));
+
+        const result = await gw2Api.readPvpLadder(null, id, { region });
+
+        expect(result).to.equal(data);
       });
     });
   });

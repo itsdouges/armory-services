@@ -7,7 +7,6 @@ module.exports = {
   },
 
   fetch: {
-    interval: 480 * 60000, // [min] * 60000
     verbose: false,
   },
 
@@ -16,7 +15,7 @@ module.exports = {
   },
 
   cache: {
-    findAllCharacters: 60000 * 60, // 60 minutes.
-    statistics: 60000 * 60, // 60 minutes.
+    findAllCharacters: 60000 * 60,
+    statistics: 60000 * 60,
   },
 };

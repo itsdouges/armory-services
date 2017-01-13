@@ -8,6 +8,15 @@
 - Changes
 ```
 
+## [1.3.0] - 2017/01/13
+### Added
+- `gw2aRank` and `naRank` to `PvpStandings` table
+- Pvp leaderboard fetcher to calculate gw2aRank and save it to the database
+- Read pvp ladder service
+
+### Changed
+- User service, controller major refactors
+
 ## [1.2.2] - 2017/01/08
 ### Fixed
 - Sitemap to not have empty `lastmod` fields

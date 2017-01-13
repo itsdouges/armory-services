@@ -1,9 +1,9 @@
 // @flow
 
 import type { Models } from 'flowTypes';
-import memoize from 'memoizee';
 
 import * as userService from 'lib/services/user';
+import { list as listPvpStandings } from 'lib/services/pvpStandings';
 import gw2, { readLatestPvpSeason } from 'lib/gw2';
 import config from 'config';
 
@@ -16,56 +16,51 @@ const handleBadToken = (defaultValue, error) => {
 };
 
 export default function pvpControllerFactory (models: Models) {
-  function stats (alias: string) {
-    return userService.getUserPrimaryToken(models, alias)
-      .then((token) => {
-        return gw2.readPvpStats(token);
-      })
+  const readPrimaryToken = async (alias) => {
+    const user = await userService.read(models, { alias });
+    if (!user || !user.token) {
+      throw new Error('Token not found');
+    }
+
+    return user.token;
+  };
+
+  async function stats (alias: string) {
+    return readPrimaryToken(alias)
+      .then((token) => gw2.readPvpStats(token))
       .catch(handleBadToken.bind(null, {}));
   }
 
   function games (alias: string) {
-    return userService.getUserPrimaryToken(models, alias)
-      .then((token) => {
-        return gw2.readPvpGames(token);
-      })
+    return readPrimaryToken(alias)
+      .then((token) => gw2.readPvpGames(token))
       .catch(handleBadToken.bind(null, []));
   }
 
   function standings (alias: string) {
-    return userService.getUserPrimaryToken(models, alias)
-      .then((token) => {
-        return gw2.readPvpStandings(token);
-      })
+    return readPrimaryToken(alias)
+      .then((token) => gw2.readPvpStandings(token))
       .catch(handleBadToken.bind(null, []));
   }
 
   function achievements (alias: string) {
-    return userService.getUserPrimaryToken(models, alias)
-      .then((token) => {
-        return gw2.readAchievements(token);
-      })
+    return readPrimaryToken(alias)
+      .then((token) => gw2.readAchievements(token))
       .catch(handleBadToken.bind(null, []));
   }
 
-  const memoizedReadLatestPvpSeason = memoize(readLatestPvpSeason, {
-    maxAge: config.cache.readLatestPvpSeason,
-    promise: true,
-    preFetch: true,
-  });
-
   async function leaderboard () {
-    const season = await memoizedReadLatestPvpSeason();
+    const season = await readLatestPvpSeason();
 
-    const pvpStandings = await userService.listUserStandings(models, season.id);
+    const pvpStandings = await listPvpStandings(models, season.id);
 
     const users = await Promise.all(pvpStandings.map((standing) => {
       return userService.read(models, { apiToken: standing.apiToken });
     }));
 
-    const userMap = users.reduce((obj, { apiToken, ...user }) => {
+    const userMap = users.reduce((obj, { token, ...user } = {}) => {
       // eslint-disable-next-line
-      obj[apiToken] = user;
+      obj[token] = user;
       return obj;
     }, {});
 
@@ -74,7 +69,7 @@ export default function pvpControllerFactory (models: Models) {
         ...standing,
         ...userMap[apiToken],
       }))
-      .sort((a, b) => ((b.ratingCurrent - b.decayCurrent) - (a.ratingCurrent - a.decayCurrent)));
+      .sort((a, b) => (a.gw2aRank - b.gw2aRank));
 
     return pvpStandingsWithUser;
   }

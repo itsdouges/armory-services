@@ -1,21 +1,19 @@
 // @flow
 
-import type { Models } from 'flowTypes';
+import type { Models, User, UserModel, DbUser, PvpStandingModel } from 'flowTypes';
 import _ from 'lodash';
+import moment from 'moment';
 
+import config from 'config';
+import { list as listCharacters } from 'lib/services/character';
+import { readLatestPvpSeason } from 'lib/gw2';
 import { read as readGuild } from './guild';
 
 type ListOptions = {
   guild: string,
 };
 
-type User = {
-  name: string,
-  accountName: string,
-  id: number,
-};
-
-export async function list (models: Models, { guild }: ListOptions): Promise<Array<User>> {
+export async function list (models: Models, { guild }: ListOptions): Promise<Array<UserModel>> {
   const tokens = await models.Gw2ApiToken.findAll({
     where: {
       guilds: {
@@ -57,68 +55,34 @@ export async function isUserInGuild (
   return !!token.length;
 }
 
-export function parseUser (user: User) {
-  if (!user) {
-    return Promise.reject('User not found');
+function cleanApiToken (apiToken) {
+  if (!apiToken) {
+    return undefined;
   }
 
-  return user.id;
+  return _.pick(_.get(apiToken, 'dataValues'), [
+    'token',
+    'accountName',
+    'world',
+    'access',
+    'commander',
+    'fractalLevel',
+    'dailyAp',
+    'monthlyAp',
+    'wvwRank',
+    'guilds',
+  ]);
 }
 
-export function getUserByEmail (models: Models, email: string) {
-  return models.User.findOne({
-    where: {
-      email,
-    },
-  });
-}
-
-export function getUserIdByEmail (models: Models, email: string) {
-  return getUserByEmail(models, email).then(parseUser);
-}
-
-export function getUserIdByAlias (models: Models, alias: string) {
-  return models.User.findOne({
-    where: {
-      alias,
-    },
-  })
-  .then(parseUser);
-}
-
-export async function getUserPrimaryToken (models: Models, alias: string) {
-  const id = await getUserIdByAlias(models, alias);
-  const token = await models
-  .Gw2ApiToken
-  .findOne({
-    where: {
-      primary: true,
-    },
-    include: [{
-      model: models.User,
-      where: {
-        id,
-      },
-    }],
-  });
-
-  if (!token) {
-    return Promise.reject('Token not found');
-  }
-
-  return token.token;
-}
-
-type UserStandings = {
-  seasonId: string,
-  apiToken: string,
+type CreateUser = User & {
+  passwordHash: string,
 };
 
-type ReadOptions = {
-  apiToken: string,
-};
+export async function create (models: Models, user: CreateUser): Promise<DbUser> {
+  return await models.User.create(user);
+}
 
-export async function read (models: Models, { apiToken }: ReadOptions) {
+async function readByToken (models, apiToken): Promise<?UserModel> {
   const token = await models.Gw2ApiToken.findOne({
     where: {
       token: apiToken,
@@ -128,26 +92,103 @@ export async function read (models: Models, { apiToken }: ReadOptions) {
     }],
   });
 
-  return token && {
+  return token ? {
+    ...cleanApiToken(token),
+    id: token.User.dataValues.id,
     alias: token.User.dataValues.alias,
-    accountName: token.accountName,
-    apiToken,
-  };
+    passwordHash: token.User.dataValues.passwordHash,
+    email: token.User.dataValues.email,
+  } : null;
 }
 
-export async function listUserStandings (
-  models: Models,
-  seasonId: string
-): Promise<Array<UserStandings>> {
-  const standings = await models.PvpStandings.findAll({
-    where: {
-      seasonId,
+async function readByUser (models, { alias, email }) {
+  const user = await models.User.findOne({
+    where: _.pickBy({ alias, email }),
+    include: {
+      all: true,
     },
   });
 
-  return standings.map((standing) => _.omit(standing.dataValues, [
-    'updatedAt',
-    'createdAt',
-    'id',
-  ]));
+  return user ? {
+    ...cleanApiToken(_.find(user.gw2_api_tokens, ({ primary }) => primary)),
+    id: user.id,
+    alias: user.alias,
+    passwordHash: user.passwordHash,
+    email: user.email,
+  } : null;
+}
+
+type ReadOptions = {
+  apiToken?: string,
+  alias?: string,
+  email?: string,
+};
+
+export async function read (models: Models, {
+  apiToken,
+  alias,
+  email,
+}: ReadOptions): Promise<?UserModel> {
+  const data = apiToken
+    ? await readByToken(models, apiToken)
+    : await readByUser(models, { alias, email });
+
+  if (!data) {
+    return null;
+  }
+
+  const { id: seasonId } = await readLatestPvpSeason();
+  const standing = await models.PvpStandings.findOne({
+    where: {
+      seasonId,
+      apiToken: data.token,
+    },
+  });
+
+  return {
+    ...data,
+    euRank: standing && standing.euRank,
+    naRank: standing && standing.naRank,
+    gw2aRank: standing && standing.gw2aRank,
+  };
+}
+
+type UpdateUser = {
+  id: string,
+  passwordHash: string,
+};
+
+export async function update (models: Models, user: UpdateUser): Promise<> {
+  await models.User.update({
+    passwordHash: user.passwordHash,
+  }, {
+    where: {
+      id: user.id,
+    },
+  });
+}
+
+export async function createPasswordReset (models: Models, userId: string): Promise<string> {
+  const { id } = await models.UserReset.create({
+    UserId: userId,
+    expires: moment().add(config.PASSWORD_RESET_TIME_LIMIT, 'minutes'),
+  });
+
+  return id;
+}
+
+export async function readPasswordReset (models: Models, resetId: string): Promise<> {
+  return await models.UserReset.findOne({
+    where: {
+      id: resetId,
+    },
+  });
+}
+
+export async function finishPasswordReset (models: Models, resetId: string): Promise<> {
+  return await models.UserReset.update({ used: true }, {
+    where: {
+      id: resetId,
+    },
+  });
 }

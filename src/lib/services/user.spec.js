@@ -1,10 +1,15 @@
+import _ from 'lodash';
 import * as testData from 'test/testData';
 
 const readGuild = sinon.stub();
+const readLatestPvpSeason = sinon.stub();
 
 const service = proxyquire('lib/services/user', {
   './guild': {
     read: readGuild,
+  },
+  'lib/gw2': {
+    readLatestPvpSeason,
   },
 });
 
@@ -29,6 +34,10 @@ describe('user service', () => {
     primary: true,
   });
 
+  const standing = testData.dbStanding({
+    apiToken: apiTokenForUserTwo.token,
+  });
+
   before(async () => {
     models = await setupTestDb();
 
@@ -37,6 +46,7 @@ describe('user service', () => {
 
     await models.User.create(userTwo);
     await models.Gw2ApiToken.create(apiTokenForUserTwo);
+    await models.PvpStandings.create(standing);
 
     readGuild.withArgs(models, { name: guild.name }).returns(Promise.resolve(guild));
   });
@@ -70,64 +80,92 @@ describe('user service', () => {
     });
   });
 
-  it('should get user id by email', async () => {
-    const id = await service.getUserIdByEmail(models, user.email);
-    expect(id).to.exist;
-  });
-
-  it('should reject if user doesnt exist by email', async () => {
-    try {
-      await service.getUserIdByEmail(models, 'dont_exist');
-    } catch (e) {
-      expect(e).to.equal('User not found');
-    }
-  });
-
-  it('should get user id by alias', async () => {
-    const id = await service.getUserIdByAlias(models, user.alias);
-    expect(id).to.exist;
-  });
-
-  it('should return user primary token', async () => {
-    const token = await service.getUserPrimaryToken(models, userTwo.alias);
-    expect(token).to.equal(apiTokenForUserTwo.token);
-  });
-
-  it('should return error if no primary token found', async () => {
-    try {
-      await service.getUserPrimaryToken(models, user.alias);
-    } catch (e) {
-      expect(e).to.equal('Token not found');
-    }
-  });
-
-  it('should read all user standings for a season', async () => {
-    const standingOne = testData.dbStanding({
-      apiToken: apiToken.token,
-    });
-
-    const standingTwo = testData.dbStanding({
-      apiToken: apiTokenForUserTwo.token,
-    });
-
-    await models.PvpStandings.create(standingOne);
-    await models.PvpStandings.create(standingTwo);
-    const standings = await service.listUserStandings(models, standingOne.seasonId);
-
-    expect(standings).to.eql([
-      standingOne,
-      standingTwo,
-    ]);
-  });
-
-  describe('reading', () => {
-    it('should read user by apiToken', async () => {
-      const usr = await service.read(models, { apiToken: apiToken.token });
-
+  describe('read', () => {
+    const assertUser = (usr, nullStandings) => {
       expect(usr).to.eql({
-        accountName: apiToken.accountName,
-        alias: user.alias,
-        apiToken: apiToken.token,
+        id: userTwo.id,
+        alias: userTwo.alias,
+        email: userTwo.email,
+        passwordHash: userTwo.passwordHash,
+        ...nullStandings ? {
+          euRank: null,
+          naRank: null,
+          gw2aRank: null,
+        } : _.pick(standing, [
+          'euRank',
+          'naRank',
+          'gw2aRank',
+        ]),
+        ..._.pick(apiTokenForUserTwo, [
+          'token',
+          'accountName',
+          'world',
+          'access',
+          'commander',
+          'fractalLevel',
+          'dailyAp',
+          'monthlyAp',
+          'wvwRank',
+          'guilds',
+        ]),
+      });
+    };
+
+    beforeEach(() => {
+      readLatestPvpSeason.returns(Promise.resolve({ id: standing.seasonId }));
+    });
+
+    context('with api token', () => {
+      it('should return data', async () => {
+        const usr = await service.read(models, { apiToken: apiTokenForUserTwo.token });
+
+        assertUser(usr);
+      });
+
+      context('when user doesnt exist', () => {
+        it('should return null', async () => {
+          const usr = await service.read(models, { apiToken: 'asd' });
+          expect(usr).to.be.null;
+        });
+      });
+    });
+
+    context('with alias', () => {
+      it('should return data', async () => {
+        const usr = await service.read(models, { alias: userTwo.alias });
+
+        assertUser(usr);
+      });
+
+      context('when user doesnt exist', () => {
+        it('should return null', async () => {
+          const usr = await service.read(models, { alias: 'asd' });
+          expect(usr).to.be.null;
+        });
+      });
+    });
+
+    context('with email', () => {
+      it('should return data', async () => {
+        const usr = await service.read(models, { email: userTwo.email });
+
+        assertUser(usr);
+      });
+
+      context('when user doesnt exist', () => {
+        it('should return null', async () => {
+          const usr = await service.read(models, { email: 'asd' });
+          expect(usr).to.be.null;
+        });
+      });
+    });
+
+    context('with no standing info', () => {
+      it('should return data', async () => {
+        readLatestPvpSeason.returns(Promise.resolve({ id: '123-nah-lol' }));
+        const usr = await service.read(models, { email: userTwo.email });
+
+        assertUser(usr, true);
       });
     });
   });
