@@ -53,11 +53,13 @@ export default function pvpControllerFactory (models: Models) {
   type LeaderboardType = 'gw2a' | 'na' | 'eu';
 
   async function leaderboard (type: LeaderboardType) {
+    const rankField = `${type}Rank`;
     const season = await readLatestPvpSeason();
 
     const pvpStandings = await listPvpStandings(models, season.id);
+    const filteredStandings = pvpStandings.filter((standing) => !!standing[rankField]);
 
-    const users = await Promise.all(pvpStandings.map((standing) => {
+    const users = await Promise.all(filteredStandings.map((standing) => {
       return userService.read(models, { apiToken: standing.apiToken });
     }));
 
@@ -67,7 +69,7 @@ export default function pvpControllerFactory (models: Models) {
       return obj;
     }, {});
 
-    const pvpStandingsWithUser = pvpStandings
+    const pvpStandingsWithUser = filteredStandings
       .map(({ apiToken, ...standing }) => ({
         ...standing,
         ..._.pick(userMap[apiToken], [
@@ -75,7 +77,7 @@ export default function pvpControllerFactory (models: Models) {
           'alias',
         ]),
       }))
-      .sort((a, b) => a[`${type}Rank`] - b[`${type}Rank`]);
+      .sort((a, b) => a[rankField] - b[rankField]);
 
     return pvpStandingsWithUser.slice(0, 250);
   }

@@ -107,9 +107,13 @@ describe('pvp controller', () => {
 
     const standings = [
       two,
+      createStanding(null),
       three,
+      createStanding(null),
       five,
+      createStanding(null),
       one,
+      createStanding(null),
       four,
     ];
 
@@ -132,35 +136,29 @@ describe('pvp controller', () => {
       listUserStandings.withArgs(models, season.id).returns(Promise.resolve(standings));
     });
 
-    it('should return maxium of 250', async () => {
-      const longStandings = Array(300).fill(one);
-      listUserStandings.withArgs(models, season.id).returns(Promise.resolve(longStandings));
-      const leaderboard = await controller.leaderboard('gw2a');
+    ['na', 'gw2a', 'eu'].forEach((region) => {
+      describe(region, () => {
+        it('should return maxium of 250', async () => {
+          const longStandings = Array(300).fill(one);
+          listUserStandings.withArgs(models, season.id).returns(Promise.resolve(longStandings));
+          const leaderboard = await controller.leaderboard(region);
 
-      expect(leaderboard.length).to.equal(250);
-    });
+          expect(leaderboard.length).to.equal(250);
+        });
 
-    describe('gw2a', () => {
-      it('should build leaderboard and sort by highest to lowest rating', async () => {
-        const leaderboard = await controller.leaderboard('gw2a');
+        it('should filter out null entries', async () => {
+          const leaderboard = await controller.leaderboard(region);
 
-        assertIsSorted(leaderboard, 'gw2aRank');
-      });
-    });
+          leaderboard.forEach((standing) => {
+            expect(standing[`${region}Rank`]).to.exist;
+          });
+        });
 
-    describe('na', () => {
-      it('should build leaderboard and sort by highest to lowest rating', async () => {
-        const leaderboard = await controller.leaderboard('na');
+        it('should build leaderboard and sort by highest to lowest rating', async () => {
+          const leaderboard = await controller.leaderboard(region);
 
-        assertIsSorted(leaderboard, 'naRank');
-      });
-    });
-
-    describe('eu', () => {
-      it('should build leaderboard and sort by highest to lowest rating', async () => {
-        const leaderboard = await controller.leaderboard('eu');
-
-        assertIsSorted(leaderboard, 'euRank');
+          assertIsSorted(leaderboard, `${region}Rank`);
+        });
       });
     });
   });

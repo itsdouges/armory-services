@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [1.4.1] - 2017/01/15
+### Fixed
+- Users appearing high in the ladder if their rank is `null`
+
 ## [1.4.0] - 2017/01/14
 ### Fixed
 - Some data leaking out that shouldn't from pvp leaderboard
