@@ -93,7 +93,7 @@ describe('pvp controller', () => {
 
     const createStanding = (rank) => testData.dbStanding({
       apiToken,
-      seasonId: season.seasonId,
+      seasonId: season.id,
       gw2aRank: rank,
       naRank: rank,
       euRank: rank,
@@ -119,13 +119,13 @@ describe('pvp controller', () => {
       alias: user.alias,
     });
 
-    const sorted = [
-      cleanStanding(one),
-      cleanStanding(two),
-      cleanStanding(three),
-      cleanStanding(four),
-      cleanStanding(five),
-    ];
+    const assertIsSorted = (arr, key) => {
+      const fromOneArr = arr.slice(1);
+      fromOneArr.forEach((item, index) => {
+        const prevItem = arr[index];
+        expect(item[key] >= prevItem[key]).to.be.true;
+      });
+    };
 
     beforeEach(() => {
       readUser.withArgs(models, { apiToken }).returns(Promise.resolve(user));
@@ -140,33 +140,27 @@ describe('pvp controller', () => {
       expect(leaderboard.length).to.equal(250);
     });
 
-    describe('pagination', () => {
-      it('should return 50 records', () => {
-        // TODO, later !
-      });
-    });
-
-    context('gw2a', () => {
+    describe('gw2a', () => {
       it('should build leaderboard and sort by highest to lowest rating', async () => {
         const leaderboard = await controller.leaderboard('gw2a');
 
-        expect(leaderboard).to.eql(sorted);
+        assertIsSorted(leaderboard, 'gw2aRank');
       });
     });
 
-    context('na', () => {
+    describe('na', () => {
       it('should build leaderboard and sort by highest to lowest rating', async () => {
         const leaderboard = await controller.leaderboard('na');
 
-        expect(leaderboard).to.eql(sorted);
+        assertIsSorted(leaderboard, 'naRank');
       });
     });
 
-    context('eu', () => {
+    describe('eu', () => {
       it('should build leaderboard and sort by highest to lowest rating', async () => {
         const leaderboard = await controller.leaderboard('eu');
 
-        expect(leaderboard).to.eql(sorted);
+        assertIsSorted(leaderboard, 'euRank');
       });
     });
   });

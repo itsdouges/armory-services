@@ -57,7 +57,7 @@ export default function pvpControllerFactory (models: Models) {
 
     const pvpStandings = await listPvpStandings(models, season.id);
 
-    const users = await Promise.all(pvpStandings.concat().map((standing) => {
+    const users = await Promise.all(pvpStandings.map((standing) => {
       return userService.read(models, { apiToken: standing.apiToken });
     }));
 
@@ -75,7 +75,7 @@ export default function pvpControllerFactory (models: Models) {
           'alias',
         ]),
       }))
-      .sort((a, b) => (a[`${type}Rank`] - b[`${type}Rank`]));
+      .sort((a, b) => a[`${type}Rank`] - b[`${type}Rank`]);
 
     return pvpStandingsWithUser.slice(0, 250);
   }

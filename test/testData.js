@@ -102,6 +102,7 @@ const fakeStanding = {
 
 export const pvpSeason = (id: string = '1234-1234') => ({
   season_id: id,
+  id,
 });
 
 // $FlowFixMe

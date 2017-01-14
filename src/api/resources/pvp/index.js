@@ -48,8 +48,8 @@ function PvpResource (server, controller) {
     preFetch: true,
   });
 
-  server.get('/leaderboards/pvp', (req, res, next) => {
-    memoizedLeaderboard()
+  server.get('/leaderboards/pvp/:region', (req, res, next) => {
+    memoizedLeaderboard(req.params.region)
       .then((leaderboard) => {
         res.send(200, leaderboard);
         return next();
