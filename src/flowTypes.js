@@ -119,3 +119,8 @@ export type PasswordReset = {
   used: boolean,
   UserId: string,
 };
+
+export type Pagination = {
+  take: number,
+  pick: number,
+};

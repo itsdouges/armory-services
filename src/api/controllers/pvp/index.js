@@ -50,12 +50,14 @@ export default function pvpControllerFactory (models: Models) {
       .catch(handleBadToken.bind(null, []));
   }
 
-  async function leaderboard () {
+  type LeaderboardType = 'gw2a' | 'na' | 'eu';
+
+  async function leaderboard (type: LeaderboardType) {
     const season = await readLatestPvpSeason();
 
     const pvpStandings = await listPvpStandings(models, season.id);
 
-    const users = await Promise.all(pvpStandings.map((standing) => {
+    const users = await Promise.all(pvpStandings.concat().map((standing) => {
       return userService.read(models, { apiToken: standing.apiToken });
     }));
 
@@ -73,9 +75,9 @@ export default function pvpControllerFactory (models: Models) {
           'alias',
         ]),
       }))
-      .sort((a, b) => (a.gw2aRank - b.gw2aRank));
+      .sort((a, b) => (a[`${type}Rank`] - b[`${type}Rank`]));
 
-    return pvpStandingsWithUser;
+    return pvpStandingsWithUser.slice(0, 250);
   }
 
   return {
