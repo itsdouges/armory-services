@@ -119,6 +119,7 @@ describe('user controller', () => {
     const cleanUser = (usr) => _.omit(usr, [
       'id',
       'passwordHash',
+      'email',
     ]);
 
     context('when user has a primary api key', () => {

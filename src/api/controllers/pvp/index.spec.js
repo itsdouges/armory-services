@@ -1,4 +1,5 @@
 import * as testData from 'test/testData';
+import _ from 'lodash';
 
 const readPvpStats = sinon.stub();
 const readPvpGames = sinon.stub();
@@ -84,37 +85,83 @@ describe('pvp controller', () => {
   });
 
   describe('leaderboard', () => {
-    it('should build leaderboard and sort by highest to lowest rating', async () => {
-      const apiToken = '1234-1234';
-      const user = {
-        accountName: 'madou.1234',
-        alias: 'madou',
-        token: apiToken,
-      };
+    const apiToken = '1234-1234';
+    const user = testData.user({
+      token: apiToken,
+      accountName: 'yes',
+    });
 
-      const standings = [
-        { seasonId: season.season_id, apiToken, gw2aRank: 2, decayCurrent: 700 },
-        { seasonId: season.season_id, apiToken, gw2aRank: 1, decayCurrent: 100 },
-      ];
+    const createStanding = (rank) => testData.dbStanding({
+      apiToken,
+      seasonId: season.id,
+      gw2aRank: rank,
+      naRank: rank,
+      euRank: rank,
+    });
 
+    const one = createStanding(1);
+    const two = createStanding(2);
+    const three = createStanding(3);
+    const four = createStanding(4);
+    const five = createStanding(5);
+
+    const standings = [
+      two,
+      three,
+      five,
+      one,
+      four,
+    ];
+
+    const cleanStanding = (standing) => ({
+      ..._.omit(standing, ['apiToken']),
+      accountName: user.accountName,
+      alias: user.alias,
+    });
+
+    const assertIsSorted = (arr, key) => {
+      const fromOneArr = arr.slice(1);
+      fromOneArr.forEach((item, index) => {
+        const prevItem = arr[index];
+        expect(item[key] >= prevItem[key]).to.be.true;
+      });
+    };
+
+    beforeEach(() => {
       readUser.withArgs(models, { apiToken }).returns(Promise.resolve(user));
-      listUserStandings.withArgs(models).returns(Promise.resolve(standings));
+      listUserStandings.withArgs(models, season.id).returns(Promise.resolve(standings));
+    });
 
-      const leaderboard = await controller.leaderboard();
+    it('should return maxium of 250', async () => {
+      const longStandings = Array(300).fill(one);
+      listUserStandings.withArgs(models, season.id).returns(Promise.resolve(longStandings));
+      const leaderboard = await controller.leaderboard('gw2a');
 
-      expect(leaderboard).to.eql([{
-        accountName: user.accountName,
-        alias: user.alias,
-        gw2aRank: 1,
-        decayCurrent: 100,
-        seasonId: season.season_id,
-      }, {
-        accountName: user.accountName,
-        alias: user.alias,
-        gw2aRank: 2,
-        decayCurrent: 700,
-        seasonId: season.season_id,
-      }]);
+      expect(leaderboard.length).to.equal(250);
+    });
+
+    describe('gw2a', () => {
+      it('should build leaderboard and sort by highest to lowest rating', async () => {
+        const leaderboard = await controller.leaderboard('gw2a');
+
+        assertIsSorted(leaderboard, 'gw2aRank');
+      });
+    });
+
+    describe('na', () => {
+      it('should build leaderboard and sort by highest to lowest rating', async () => {
+        const leaderboard = await controller.leaderboard('na');
+
+        assertIsSorted(leaderboard, 'naRank');
+      });
+    });
+
+    describe('eu', () => {
+      it('should build leaderboard and sort by highest to lowest rating', async () => {
+        const leaderboard = await controller.leaderboard('eu');
+
+        assertIsSorted(leaderboard, 'euRank');
+      });
     });
   });
 });

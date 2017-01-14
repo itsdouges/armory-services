@@ -2,6 +2,7 @@
 
 import type { Models } from 'flowTypes';
 
+import _ from 'lodash';
 import * as userService from 'lib/services/user';
 import { list as listPvpStandings } from 'lib/services/pvpStandings';
 import gw2, { readLatestPvpSeason } from 'lib/gw2';
@@ -49,7 +50,9 @@ export default function pvpControllerFactory (models: Models) {
       .catch(handleBadToken.bind(null, []));
   }
 
-  async function leaderboard () {
+  type LeaderboardType = 'gw2a' | 'na' | 'eu';
+
+  async function leaderboard (type: LeaderboardType) {
     const season = await readLatestPvpSeason();
 
     const pvpStandings = await listPvpStandings(models, season.id);
@@ -67,11 +70,14 @@ export default function pvpControllerFactory (models: Models) {
     const pvpStandingsWithUser = pvpStandings
       .map(({ apiToken, ...standing }) => ({
         ...standing,
-        ...userMap[apiToken],
+        ..._.pick(userMap[apiToken], [
+          'accountName',
+          'alias',
+        ]),
       }))
-      .sort((a, b) => (a.gw2aRank - b.gw2aRank));
+      .sort((a, b) => a[`${type}Rank`] - b[`${type}Rank`]);
 
-    return pvpStandingsWithUser;
+    return pvpStandingsWithUser.slice(0, 250);
   }
 
   return {

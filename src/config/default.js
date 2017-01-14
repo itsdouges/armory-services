@@ -55,7 +55,7 @@ module.exports = {
   leaderboards: {
     refreshInterval: 60000 * 60 * 24,
     latestSeasonCacheTtl: 60000 * 60 * 1,
-    getCacheTtl: 60000 * 60 * 1,
+    getCacheTtl: 60000 * 60 * 0.5,
   },
 
   cache: {
