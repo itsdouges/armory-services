@@ -8,9 +8,12 @@
 - Changes
 ```
 
-## [1.3.1] - 2017/01/13
+## [1.4.0] - 2017/01/14
 ### Fixed
 - Some data leaking out that shouldn't from pvp leaderboard
+
+### Added
+- Endpoints for `na`, `eu`, and `gw2a` pvp leaderboards. Still need to get the data though !
 
 ## [1.3.0] - 2017/01/13
 ### Added
