@@ -1,11 +1,11 @@
 // @flow
 
-import type { Models, User, UserModel, DbUser, PvpStandingModel } from 'flowTypes';
+import type { Models, User, UserModel, DbUser } from 'flowTypes';
 import _ from 'lodash';
 import moment from 'moment';
+import uuid from 'uuid/v4';
 
 import config from 'config';
-import { list as listCharacters } from 'lib/services/character';
 import { readLatestPvpSeason } from 'lib/gw2';
 import { read as readGuild } from './guild';
 
@@ -132,7 +132,7 @@ export async function read (models: Models, {
   email,
   accountName,
 }: ReadOptions): Promise<?UserModel> {
-  const data = apiToken
+  const data = (apiToken || accountName)
     ? await readByToken(models, { apiToken, accountName })
     : await readByUser(models, { alias, email });
 
@@ -196,7 +196,36 @@ export async function finishPasswordReset (models: Models, resetId: string): Pro
   });
 }
 
-// Creates a stub user, and stub api token record.
 export async function createStubUser (models: Models, accountName: string): Promise<> {
+  const [alias] = accountName.split('.');
+  const stubUserValue = 'stubuser';
 
+  const user = {
+    alias,
+    passwordHash: stubUserValue,
+    email: stubUserValue,
+  };
+
+  const { id } = await models.User.create(user);
+
+  await models.Gw2ApiToken.create({
+    permissions: '',
+    world: -1,
+    accountId: uuid(),
+    UserId: id,
+    accountName,
+    primary: true,
+    token: uuid(),
+    stub: true,
+  });
+
+  return id;
+}
+
+export async function claimStubUser (models: Models, user: CreateUser, apiToken: string) {
+  // Use cases
+  // (1) - new user
+  //   -> when creating new account, require user + api token that matches the stub user accountname
+  // (2) - existing user
+  //   -> when adding new token, automatically claim the row by updating it
 }

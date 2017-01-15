@@ -49,6 +49,7 @@ describe('user service', () => {
     await models.PvpStandings.create(standing);
 
     readGuild.withArgs(models, { name: guild.name }).returns(Promise.resolve(guild));
+    readLatestPvpSeason.returns(Promise.resolve({ id: standing.seasonId }));
   });
 
   describe('list', () => {
@@ -111,10 +112,6 @@ describe('user service', () => {
       });
     };
 
-    beforeEach(() => {
-      readLatestPvpSeason.returns(Promise.resolve({ id: standing.seasonId }));
-    });
-
     context('with api token', () => {
       it('should return data', async () => {
         const usr = await service.read(models, { apiToken: apiTokenForUserTwo.token });
@@ -160,6 +157,21 @@ describe('user service', () => {
       });
     });
 
+    context('with accountName', () => {
+      it('should return data', async () => {
+        const usr = await service.read(models, { accountName: apiTokenForUserTwo.accountName });
+
+        assertUser(usr);
+      });
+
+      context('when user doesnt exist', () => {
+        it('should return null', async () => {
+          const usr = await service.read(models, { accountName: apiTokenForUserTwo.accountName });
+          expect(usr).to.be.null;
+        });
+      });
+    });
+
     context('with no standing info', () => {
       it('should return data', async () => {
         readLatestPvpSeason.returns(Promise.resolve({ id: '123-nah-lol' }));
@@ -167,6 +179,39 @@ describe('user service', () => {
 
         assertUser(usr, true);
       });
+    });
+  });
+
+  describe('stub user', () => {
+    it('should create', async () => {
+      const accountName = 'doobie.1234';
+      const stubUserValue = 'stubuser';
+
+      const id = await service.createStubUser(models, accountName);
+
+      const stubUser = await service.read(models, { accountName });
+      expect(stubUser).to.include({
+        access: null,
+        accountName,
+        alias: 'doobie',
+        commander: null,
+        dailyAp: null,
+        email: stubUserValue,
+        euRank: null,
+        fractalLevel: null,
+        guilds: null,
+        gw2aRank: null,
+        id,
+        monthlyAp: null,
+        naRank: null,
+        passwordHash: stubUserValue,
+        world: -1,
+        wvwRank: null,
+      });
+    });
+
+    it('should allow user to claim stub user', () => {
+
     });
   });
 });

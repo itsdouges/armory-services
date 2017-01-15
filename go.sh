@@ -92,6 +92,8 @@ case "$1" in
     push $APP_NAME;;
   dev)
     dev;;
+  clean)
+    clean;;
   *)
     exit 1;;
 esac

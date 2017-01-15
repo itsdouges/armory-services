@@ -18,7 +18,8 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING,
       required: true,
       field: 'email',
-      unique: true,
+      // TODO: Remove constraint.
+      // unique: true,
       allowNull: false,
     },
     passwordHash: {
@@ -32,6 +33,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       field: 'email_validated',
       allowNull: false,
+      defaultValue: false,
+    },
+    stub: {
+      type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
   }, {
