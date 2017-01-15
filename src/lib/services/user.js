@@ -82,11 +82,12 @@ export async function create (models: Models, user: CreateUser): Promise<DbUser>
   return await models.User.create(user);
 }
 
-async function readByToken (models, apiToken): Promise<?UserModel> {
+async function readByToken (models, { accountName, apiToken }): Promise<?UserModel> {
   const token = await models.Gw2ApiToken.findOne({
-    where: {
+    where: _.pickBy({
       token: apiToken,
-    },
+      accountName,
+    }),
     include: [{
       model: models.User,
     }],
@@ -122,15 +123,17 @@ type ReadOptions = {
   apiToken?: string,
   alias?: string,
   email?: string,
+  accountName?: string,
 };
 
 export async function read (models: Models, {
   apiToken,
   alias,
   email,
+  accountName,
 }: ReadOptions): Promise<?UserModel> {
   const data = apiToken
-    ? await readByToken(models, apiToken)
+    ? await readByToken(models, { apiToken, accountName })
     : await readByUser(models, { alias, email });
 
   if (!data) {
@@ -191,4 +194,9 @@ export async function finishPasswordReset (models: Models, resetId: string): Pro
       id: resetId,
     },
   });
+}
+
+// Creates a stub user, and stub api token record.
+export async function createStubUser (models: Models, accountName: string): Promise<> {
+
 }

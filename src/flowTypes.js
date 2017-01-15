@@ -124,3 +124,15 @@ export type Pagination = {
   take: number,
   pick: number,
 };
+
+type Gw2StandingScore = {
+  id: string,
+  value: number,
+};
+
+export type Gw2LadderStanding = {
+  name: string,
+  rank: number,
+  date: string,
+  scores: Array<Gw2StandingScore>,
+};

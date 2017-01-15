@@ -60,7 +60,7 @@ const simpleCalls = _.reduce({
   readCharactersDeep: { resource: 'characters?page=0&page_size=200' },
   readAchievements: { resource: 'account/achievements' },
   readPvpLadder: {
-    resource: 'pvp/seasons/{id}/leaderboards/ladder/{region}',
+    resource: 'pvp/seasons/{id}/leaderboards/ladder/{region}?page_size=200',
     noAuth: true,
   },
 }, (obj, { resource, onResult, normalise, noAuth }, key) => {

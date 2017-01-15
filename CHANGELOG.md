@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [1.5.0] - unreleased
+### Added
+- Eu/na pvp leaderboard data fetch
+
 ## [1.4.1] - 2017/01/15
 ### Fixed
 - Users appearing high in the ladder if their rank is `null`

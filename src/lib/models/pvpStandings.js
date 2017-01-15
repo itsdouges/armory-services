@@ -1,5 +1,14 @@
 module.exports = (sequelize, DataTypes) => {
   return sequelize.define('PvpStandings', {
+    // TODO: NEW ID FIELD
+    // id: {
+    //   field: 'id',
+    //   type: DataTypes.INTEGER,
+    //   allowNull: false,
+    //   autoIncrement: true,
+    //   primaryKey: true,
+    // },
+
     apiToken: {
       type: DataTypes.STRING,
       allowNull: false,

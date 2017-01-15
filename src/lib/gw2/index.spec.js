@@ -121,7 +121,8 @@ describe('gw2 api', () => {
       it('should get data', async () => {
         const id = '1234-1234';
         const region = 'na';
-        const resource = `${config.gw2.endpoint}v2/pvp/seasons/${id}/leaderboards/ladder/${region}`;
+        // eslint-disable-next-line max-len
+        const resource = `${config.gw2.endpoint}v2/pvp/seasons/${id}/leaderboards/ladder/${region}?page_size=200`;
         const data = { neat: 'data' };
 
         axiosGet.withArgs(resource).returns(Promise.resolve({ data }));

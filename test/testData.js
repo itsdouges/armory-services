@@ -9,6 +9,7 @@ import type {
   ApiToken,
   Character,
   PasswordReset,
+  Gw2LadderStanding,
 } from 'flowTypes';
 
 const defaultUser: User = {
@@ -122,8 +123,8 @@ export const dbStanding = (input) => ({
   ratingBest: 11,
   decayBest: 12,
   gw2aRank: 1,
-  naRank: 5,
-  euRank: 99,
+  naRank: null,
+  euRank: null,
   ...input,
 });
 
@@ -146,4 +147,24 @@ export const passwordReset = ({
   expires,
   used,
   UserId,
+});
+
+export const gw2LadderStanding = ({
+  name = 'madou.1234',
+  rank = 201,
+  date = '2017-01-13T13:07:52Z',
+}: Gw2LadderStanding = {}) => ({
+  name,
+  rank,
+  date,
+  scores: [{
+    id: '0F86D504-63C2-4465-80AA-C278E1CB7800',
+    value: 1775,
+  }, {
+    id: '8A5F1199-CFD8-44CE-84C3-811C5EE8B16C',
+    value: 28,
+  }, {
+    id: 'FECEE3A5-B66C-44A3-B81E-65EA43829E1D',
+    value: 9,
+  }],
 });
