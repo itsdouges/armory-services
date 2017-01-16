@@ -6,7 +6,7 @@ import type { Models } from 'flowTypes';
 
 import config from 'config';
 import { allSettled } from 'lib/promise';
-import fetchTokens from 'lib/services/tokens';
+import { list as listTokens } from 'lib/services/tokens';
 import createLogger from 'lib/gitter';
 
 const logger = createLogger('Token_fetchers');
@@ -30,7 +30,7 @@ export default function fetchFactory (models: Models, fetchers: Array<Fetcher>) 
   async function batchFetch () {
     logger.start();
 
-    const tokens = await fetchTokens(models);
+    const tokens = await listTokens(models);
     const results = await allSettled(tokens.map(throat(config.fetch.concurrentCalls, fetch)));
     const flattenedResults = results.reduce((acc, result) => acc.concat(result.value), []);
 

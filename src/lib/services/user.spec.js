@@ -184,35 +184,63 @@ describe('user service', () => {
   });
 
   describe('stub user', () => {
-    it('should create', async () => {
-      const accountName = 'doobie.1234';
-      const stubUserValue = 'stubuser';
+    describe('adding', () => {
+      it('should add user to db', async () => {
+        const accountName = 'doobie.1234';
+        const stubUserValue = 'stubuser';
 
-      const id = await service.createStubUser(models, accountName);
+        const id = await service.createStubUser(models, accountName);
 
-      const stubUser = await service.read(models, { accountName });
-      expect(stubUser).to.include({
-        access: null,
-        accountName,
-        alias: accountName,
-        commander: null,
-        dailyAp: null,
-        email: stubUserValue,
-        euRank: null,
-        fractalLevel: null,
-        guilds: null,
-        gw2aRank: null,
-        id,
-        monthlyAp: null,
-        naRank: null,
-        passwordHash: stubUserValue,
-        world: -1,
-        wvwRank: null,
+        const stubUser = await service.read(models, { accountName });
+        expect(stubUser).to.include({
+          access: null,
+          accountName,
+          alias: accountName,
+          commander: null,
+          dailyAp: null,
+          email: stubUserValue,
+          euRank: null,
+          fractalLevel: null,
+          guilds: null,
+          gw2aRank: null,
+          id,
+          monthlyAp: null,
+          naRank: null,
+          passwordHash: stubUserValue,
+          world: -1,
+          wvwRank: null,
+        });
       });
     });
 
-    it('should allow user to claim stub user', () => {
+    describe('claiming stub user', () => {
+      context('when being claimed by a new user', () => {
+        it('should validate token', () => {
 
+        });
+
+        it('should update user', () => {
+
+        });
+
+        it('should update apiToken', () => {
+
+        });
+      });
+
+      context('when being claimed by an existing user', () => {
+        it('should validate token', () => {
+
+        });
+
+        it('should update token', () => {
+
+        });
+
+        it('should delete stub user', () => {
+
+        });
+      });
     });
   });
 });

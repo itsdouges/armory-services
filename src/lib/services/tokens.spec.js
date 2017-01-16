@@ -29,4 +29,30 @@ describe('fetch token service', () => {
         }]);
       });
   });
+
+  describe('validating', () => {
+    context('when token isnt valid', () => {
+      it('should error', () => {
+
+      });
+    });
+
+    context('when token already has been added', () => {
+      it('should error', () => {
+
+      });
+    });
+
+    context('when another token from the same account has already been added', () => {
+      it('should error', () => {
+
+      });
+    });
+
+    context('when token doesnt have mandatory permissions', () => {
+      it('should error', () => {
+
+      });
+    });
+  });
 });

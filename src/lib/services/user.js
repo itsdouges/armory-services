@@ -6,7 +6,9 @@ import moment from 'moment';
 import uuid from 'uuid/v4';
 
 import config from 'config';
-import { readLatestPvpSeason } from 'lib/gw2';
+import gw2, { readLatestPvpSeason } from 'lib/gw2';
+import fetchToken from 'fetch/fetchers/account';
+import { validate as validateApiToken } from 'lib/services/tokens';
 import { read as readGuild } from './guild';
 
 type ListOptions = {
@@ -221,10 +223,29 @@ export async function createStubUser (models: Models, accountName: string): Prom
   return id;
 }
 
+// NewUser only.
 export async function claimStubUser (models: Models, user: CreateUser, apiToken: string) {
-  // Use cases
-  // (1) - new user
-  //   -> when creating new account, require user + api token that matches the stub user accountname
-  // (2) - existing user
-  //   -> when adding new token, automatically claim the row by updating it
+  await validateApiToken(models, apiToken);
+
+  const { name } = await gw2.readAccount(apiToken);
+
+  await models.User.update({
+    ...user,
+    stub: false,
+  }, {
+    where: {
+      alias: name,
+    },
+  });
+
+  await models.Gw2ApiToken.update({
+    token: apiToken,
+    stub: false,
+  }, {
+    where: {
+      accountName: name,
+    },
+  });
+
+  await fetchToken(models, { token: apiToken });
 }

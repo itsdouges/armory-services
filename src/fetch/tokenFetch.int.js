@@ -13,7 +13,7 @@ const config = {
 };
 
 const createFetchFactory = (fetchTokens) => proxyquire('fetch/tokenFetch', {
-  'lib/services/tokens': fetchTokens,
+  'lib/services/tokens': { list: fetchTokens },
   config,
   ...stubLogger(),
 });
