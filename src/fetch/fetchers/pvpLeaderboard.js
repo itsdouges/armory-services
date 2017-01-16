@@ -25,12 +25,12 @@ const sortByRating = (a, b) => {
 
   // A hasn't joined the armory, B has
   if (!aJoined && bJoined) {
-    return -1;
+    return 1;
   }
 
   // B hasn't joined the armory, A has
   if (!bJoined && aJoined) {
-    return 1;
+    return -1;
   }
 
   // Both haven't joined the armory.

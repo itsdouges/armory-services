@@ -30,7 +30,7 @@ export default async function buildLadderByAccountName (
   );
 
   return users.filter((user) => !!user).map((user, index) => ({
-    apiToken: user.token,
+    apiToken: user && user.token ? user.token : '',
     [key]: ladder[index].rank,
     seasonId,
 

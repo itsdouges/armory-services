@@ -28,13 +28,21 @@ describe('leaderboard lib', () => {
   });
 
   it('should replace account name with api token', async () => {
-    const actual = await sut(models, input);
+    const key = 'naRank';
+    const seasonId = '1234-1234';
+
+    const actual = await sut(models, input, {
+      key,
+      seasonId,
+    });
 
     expect(actual).to.eql([{
       apiToken: user.token,
-      // TODO: This is bad. Dynamically figure out what the rank
-      // is based on leaderboard options.
-      rank: input[0].scores[0].value,
+      deaths: 9,
+      kills: 28,
+      ratingCurrent: 1775,
+      [key]: 201,
+      seasonId,
     }]);
   });
 });
