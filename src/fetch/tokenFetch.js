@@ -32,10 +32,11 @@ export default function fetchFactory (models: Models, fetchers: Array<Fetcher>) 
 
     const tokens = await fetchTokens(models);
     const results = await allSettled(tokens.map(throat(config.fetch.concurrentCalls, fetch)));
+    const flattenedResults = results.reduce((acc, result) => acc.concat(result.value), []);
 
-    logger.finish(results);
+    logger.finish(flattenedResults);
 
-    return results;
+    return flattenedResults;
   }
 
   return {

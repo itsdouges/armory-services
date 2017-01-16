@@ -15,9 +15,7 @@ import buildLadderByAccountName from '../lib/leaderboard';
 
 const logger = createLogger('Pvp_leaderboard');
 
-const hasJoined = (standing) => {
-  return standing.totalPointsBest;
-};
+const hasJoined = (standing) => !!standing.totalPointsBest;
 
 const sortByRating = (a, b) => {
   const aJoined = hasJoined(a);

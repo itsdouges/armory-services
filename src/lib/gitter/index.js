@@ -9,9 +9,8 @@ const gitter = new Gitter(config.gitter.apiKey);
 const hr = '---------------------------------------------------';
 
 export function parseResults (results: []) {
-  const flattenedResults = results.reduce((acc, result) => acc.concat(result.value), []);
-  const errors = flattenedResults.filter(({ state }) => state === 'rejected');
-  const successes = flattenedResults.filter(({ state }) => state === 'fulfilled');
+  const errors = results.filter(({ state }) => state === 'rejected');
+  const successes = results.filter(({ state }) => state === 'fulfilled');
 
   return {
     errors,
@@ -55,7 +54,7 @@ const createLog = (title: string, { roomName = 'fetch' }: LogOptions = {}) => ({
 
     await this.log(`
 ${hr}
-Started ${title.toUpperCase()} @ ${this.startTime.toString()}!
+${title.toUpperCase()} | Started @ ${this.startTime.toString()}!
 ${hr}
     `);
   },
@@ -71,7 +70,7 @@ ${hr}
 
     await this.log(`
 ${hr}
-Finished ${title.toUpperCase()} @ ${new Date().toString()}
+${title.toUpperCase()} | Finished @ ${endTime.toString()}
 ${hr}
   `);
 
@@ -88,7 +87,7 @@ ${hr}`);
 
     await this.log(`
 ${hr}
-${title.toUpperCase()} Summary
+${title.toUpperCase()} | Summary
 ${hr}
 ${errors.length} errors
 ${successes.length} success

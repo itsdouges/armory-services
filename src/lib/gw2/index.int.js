@@ -60,4 +60,12 @@ describe('gw2 api', function () {
 
     expect(season).to.exist;
   });
+
+  it('should read all 250 standings', async () => {
+    const standings = await gw2Api.readPvpLadder(null, 'A54849B7-7DBD-4958-91EF-72E18CD659BA', {
+      region: 'na',
+    });
+
+    expect(standings.length).to.equal(250);
+  });
 });

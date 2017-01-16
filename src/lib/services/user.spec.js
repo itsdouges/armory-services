@@ -194,7 +194,7 @@ describe('user service', () => {
       expect(stubUser).to.include({
         access: null,
         accountName,
-        alias: 'doobie',
+        alias: accountName,
         commander: null,
         dailyAp: null,
         email: stubUserValue,

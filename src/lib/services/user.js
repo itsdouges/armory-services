@@ -197,18 +197,16 @@ export async function finishPasswordReset (models: Models, resetId: string): Pro
 }
 
 export async function createStubUser (models: Models, accountName: string): Promise<> {
-  const [alias] = accountName.split('.');
   const stubUserValue = 'stubuser';
 
   const user = {
-    alias,
+    alias: accountName,
     passwordHash: stubUserValue,
     email: stubUserValue,
     stub: true,
   };
 
   const { id } = await models.User.create(user);
-
   await models.Gw2ApiToken.create({
     permissions: '',
     world: -1,
