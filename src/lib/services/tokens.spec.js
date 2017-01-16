@@ -1,4 +1,4 @@
-const fetchTokens = require('./tokens');
+import { list } from './tokens';
 
 describe('fetch token service', () => {
   let models;
@@ -9,7 +9,7 @@ describe('fetch token service', () => {
   });
 
   it('should fetch valid tokens from the db', () => {
-    return fetchTokens(models)
+    return list(models)
       .then((items) => {
         expect(items).to.eql([{
           token: '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15',
