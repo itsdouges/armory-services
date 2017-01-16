@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   return sequelize.define('PvpStandings', {
-    // TODO: NEW ID FIELD
+    // REQUIRES MIGRATION (new primary key)
     // id: {
     //   field: 'id',
     //   type: DataTypes.INTEGER,
@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       onDelete: 'CASCADE',
+      // REQUIRES MIGRATION (primaryKey: false)
       primaryKey: true,
       references: {
         model: 'Gw2ApiTokens',
@@ -20,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
 
+    // REQUIRES MIGRATION (primaryKey: false)
     seasonId: {
       allowNull: false,
       type: DataTypes.STRING,

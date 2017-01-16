@@ -1,3 +1,6 @@
+import { parseResults } from 'lib/gitter';
+import { stubLogger } from 'test/utils';
+
 const config = {
   fetch: {
     concurrentCalls: 1,
@@ -7,12 +10,10 @@ const config = {
   },
 };
 
-const logSpy = sinon.spy();
-
 const createFetchFactory = (fetchTokenStub) => proxyquire('fetch/tokenFetch', {
   config,
   'lib/services/tokens': fetchTokenStub,
-  'lib/gitter': () => logSpy,
+  ...stubLogger(),
 });
 
 const fetchersShouldHaveBeenCalledWithModelsAndTokens = (fetcher, models, tokens) => {
@@ -60,10 +61,6 @@ describe('fetch', () => {
     result = await batchFetch();
   });
 
-  it('should message gitter results', () => {
-    expect(logSpy).to.have.been.called;
-  });
-
   it('should call all fetchers with every token', async () => {
     fetchers.forEach(
       (fetcher) => fetchersShouldHaveBeenCalledWithModelsAndTokens(fetcher, models, tokens)
@@ -71,7 +68,9 @@ describe('fetch', () => {
   });
 
   it('should call each fetcher in succession', () => {
-    expect(result.errors.length).to.equal(1 * tokens.length);
-    expect(result.successes.length).to.equal(4 * tokens.length);
+    const { errors, successes } = parseResults(result);
+
+    expect(errors.length).to.equal(1 * tokens.length);
+    expect(successes.length).to.equal(4 * tokens.length);
   });
 });

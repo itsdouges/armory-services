@@ -3,13 +3,42 @@
 import type { Models } from 'flowTypes';
 
 import _ from 'lodash';
+import throat from 'throat';
 
+import config from 'config';
 import gw2, { readLatestPvpSeason } from 'lib/gw2';
 import { read as readUser, createStubUser } from 'lib/services/user';
 import { saveList as saveStandings, list as listStandings } from 'lib/services/pvpStandings';
+import { allSettled } from 'lib/promise';
+import createLogger from 'lib/gitter';
 import buildLadderByAccountName from '../lib/leaderboard';
 
+const logger = createLogger('Pvp_leaderboard');
+
+const hasJoined = (standing) => {
+  return standing.totalPointsBest;
+};
+
 const sortByRating = (a, b) => {
+  const aJoined = hasJoined(a);
+  const bJoined = hasJoined(b);
+
+  // A hasn't joined the armory, B has
+  if (!aJoined && bJoined) {
+    return -1;
+  }
+
+  // B hasn't joined the armory, A has
+  if (!bJoined && aJoined) {
+    return 1;
+  }
+
+  // Both haven't joined the armory.
+  if (!aJoined && !bJoined) {
+    return 0;
+  }
+
+  // Both have joined the armory.
   return (b.ratingCurrent - b.decayCurrent) - (a.ratingCurrent - a.decayCurrent);
 };
 
@@ -23,10 +52,14 @@ async function addMissingUsers (models, ladder) {
     .map(([, standing]) => standing.name);
 
   if (newUsers.length) {
-    await Promise.all(
-      newUsers.map((accountName) => createStubUser(models, accountName))
+    return await allSettled(
+      newUsers.map(
+        throat(config.fetch.concurrentCalls, (accountName) => createStubUser(models, accountName))
+      )
     );
   }
+
+  return [];
 }
 
 const mergeLadders = ({ standings, na, eu }) => {
@@ -49,13 +82,15 @@ async function saveLadder (models, { standings, na, eu }) {
     .sort(sortByRating)
     .map((standing, index) => ({
       ...standing,
-      gw2aRank: standing.ratingCurrent ? index + 1 : null,
+      gw2aRank: hasJoined(standing) ? index + 1 : null,
     }));
 
   await saveStandings(models, sortedStandings);
 }
 
 export default async function calculatePvpLeaderboards (models: Models) {
+  logger.start();
+
   const season = await readLatestPvpSeason();
 
   const [naLadder, euLadder, standings] = await Promise.all([
@@ -64,12 +99,14 @@ export default async function calculatePvpLeaderboards (models: Models) {
     listStandings(models, season.id),
   ]);
 
-  await addMissingUsers(models, naLadder.concat(euLadder));
+  const results = await addMissingUsers(models, naLadder.concat(euLadder));
 
   const [na, eu] = await Promise.all([
-    buildLadderByAccountName(models, naLadder),
-    buildLadderByAccountName(models, euLadder),
+    buildLadderByAccountName(models, naLadder, { key: 'naRank', seasonId: season.id }),
+    buildLadderByAccountName(models, euLadder, { key: 'euRank', seasonId: season.id }),
   ]);
 
   await saveLadder(models, { standings, na, eu });
+
+  logger.finish(results);
 }

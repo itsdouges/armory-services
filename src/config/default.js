@@ -8,6 +8,7 @@ module.exports = {
     username: 'admin',
     password: 'password',
     dialect: 'mysql',
+    logging: false,
   },
 
   gw2: {
@@ -37,7 +38,9 @@ module.exports = {
     },
   },
 
-  PASSWORD_RESET_TIME_LIMIT: 5,
+  forgotMyPassword: {
+    expiry: 5,
+  },
 
   web: {
     publicUrl: 'http://localhost:3000',
@@ -48,7 +51,6 @@ module.exports = {
     port: 8081,
     interval: 60000 * 60 * 8,
     retries: 5,
-    verbose: true,
     host: process.env.FETCH_PORT_8081_TCP_ADDR,
   },
 

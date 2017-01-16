@@ -1,4 +1,3 @@
-// eslint-disable-next-line
 export const stubValidator = ({ addResource, addRule, validate }) => {
   const module = () => ({ validate });
 
@@ -11,3 +10,11 @@ export const stubValidator = ({ addResource, addRule, validate }) => {
     'gotta-validate': module,
   };
 };
+
+export const stubLogger = () => ({
+  'lib/gitter': () => ({
+    finish () {},
+    start () {},
+    log () {},
+  }),
+});

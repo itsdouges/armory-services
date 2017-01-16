@@ -174,7 +174,7 @@ export async function update (models: Models, user: UpdateUser): Promise<> {
 export async function createPasswordReset (models: Models, userId: string): Promise<string> {
   const { id } = await models.UserReset.create({
     UserId: userId,
-    expires: moment().add(config.PASSWORD_RESET_TIME_LIMIT, 'minutes'),
+    expires: moment().add(config.forgotMyPassword.expiry, 'minutes'),
   });
 
   return id;
@@ -204,6 +204,7 @@ export async function createStubUser (models: Models, accountName: string): Prom
     alias,
     passwordHash: stubUserValue,
     email: stubUserValue,
+    stub: true,
   };
 
   const { id } = await models.User.create(user);

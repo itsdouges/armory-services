@@ -58,6 +58,13 @@ module.exports = function (sequelize, DataTypes) {
     wvwRank: {
       type: DataTypes.INTEGER,
     },
+
+    // REQUIRES MIGRATION
+    stub: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    },
   }, {
     classMethods: {
       associate (models) {

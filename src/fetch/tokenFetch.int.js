@@ -1,3 +1,4 @@
+import { stubLogger } from 'test/utils';
 import characterFetcher from './fetchers/characters';
 import accountFetcher from './fetchers/account';
 
@@ -14,6 +15,7 @@ const config = {
 const createFetchFactory = (fetchTokens) => proxyquire('fetch/tokenFetch', {
   'lib/services/tokens': fetchTokens,
   config,
+  ...stubLogger(),
 });
 
 describe('fetch integration', () => {

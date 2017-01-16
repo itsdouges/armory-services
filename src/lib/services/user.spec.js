@@ -32,6 +32,7 @@ describe('user service', () => {
     UserId: userTwo.id,
     accountId: '1234',
     primary: true,
+    accountName: 'hot4gw2.1234',
   });
 
   const standing = testData.dbStanding({
@@ -166,7 +167,7 @@ describe('user service', () => {
 
       context('when user doesnt exist', () => {
         it('should return null', async () => {
-          const usr = await service.read(models, { accountName: apiTokenForUserTwo.accountName });
+          const usr = await service.read(models, { accountName: 'lol-yeah' });
           expect(usr).to.be.null;
         });
       });

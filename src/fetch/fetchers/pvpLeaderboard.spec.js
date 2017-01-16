@@ -1,5 +1,6 @@
 // This is kind of terrible.
 
+import { stubLogger } from 'test/utils';
 import * as testData from 'test/testData';
 
 const sandbox = sinon.sandbox.create();
@@ -25,6 +26,7 @@ const fetcher = proxyquire('fetch/fetchers/pvpLeaderboard', {
     createStubUser,
   },
   '../lib/leaderboard': buildLadderByAccountName,
+  ...stubLogger(),
 });
 
 describe('pvp leaderboard fetcher', () => {

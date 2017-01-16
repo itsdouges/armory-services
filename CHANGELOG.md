@@ -12,6 +12,10 @@
 ### Added
 - Eu/na pvp leaderboard data fetch
 
+### Changed
+- Cleaned up config
+- Consolidated gitter logging to be used in other modules
+
 ## [1.4.1] - 2017/01/15
 ### Fixed
 - Users appearing high in the ladder if their rank is `null`
