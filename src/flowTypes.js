@@ -6,6 +6,7 @@ type Sequelize = {
   findOne: () => Promise<>,
   findAll: () => Promise<>,
   create: () => Promise<>,
+  destroy: () => Promise<>,
 };
 
 export type Models = {

@@ -1,8 +1,12 @@
 import _ from 'lodash';
 import * as testData from 'test/testData';
 
-const readGuild = sinon.stub();
-const readLatestPvpSeason = sinon.stub();
+const sandbox = sinon.sandbox.create();
+const readGuild = sandbox.stub();
+const readLatestPvpSeason = sandbox.stub();
+const validateApiToken = sandbox.stub();
+const readAccount = sandbox.stub();
+const fetchToken = sandbox.spy();
 
 const service = proxyquire('lib/services/user', {
   './guild': {
@@ -10,7 +14,12 @@ const service = proxyquire('lib/services/user', {
   },
   'lib/gw2': {
     readLatestPvpSeason,
+    readAccount,
   },
+  'lib/services/tokens': {
+    validate: validateApiToken,
+  },
+  'fetch/fetchers/account': fetchToken,
 });
 
 describe('user service', () => {
@@ -84,20 +93,26 @@ describe('user service', () => {
 
   describe('read', () => {
     const assertUser = (usr, nullStandings) => {
+      const { ratingCurrent, ...standingData } = nullStandings ? {
+        euRank: null,
+        naRank: null,
+        gw2aRank: null,
+        ratingCurrent: null,
+      } : _.pick(standing, [
+        'euRank',
+        'naRank',
+        'gw2aRank',
+        'ratingCurrent',
+      ]);
+
       expect(usr).to.eql({
         id: userTwo.id,
         alias: userTwo.alias,
         email: userTwo.email,
         passwordHash: userTwo.passwordHash,
-        ...nullStandings ? {
-          euRank: null,
-          naRank: null,
-          gw2aRank: null,
-        } : _.pick(standing, [
-          'euRank',
-          'naRank',
-          'gw2aRank',
-        ]),
+        stub: false,
+        rating: ratingCurrent,
+        ...standingData,
         ..._.pick(apiTokenForUserTwo, [
           'token',
           'accountName',
@@ -215,30 +230,83 @@ describe('user service', () => {
 
     describe('claiming stub user', () => {
       context('when being claimed by a new user', () => {
+        const accountName = 'sickUser.1234';
+        const apiTokenClaimer = '1234-1234-1234';
+        const newUser = {
+          email: 'email@email',
+          alias: 'Sick User',
+          passwordHash: 'ASDASD123122@#@#Q@#',
+        };
+
+        before(async () => {
+          await service.createStubUser(models, accountName);
+
+          readAccount.withArgs(apiTokenClaimer).returns({ name: accountName });
+          await service.claimStubUser(models, newUser, apiTokenClaimer);
+        });
+
         it('should validate token', () => {
-
+          expect(validateApiToken).to.have.been.calledWith(models, apiTokenClaimer);
         });
 
-        it('should update user', () => {
+        it('should update user', async () => {
+          const data = await service.read(models, { alias: newUser.alias });
 
+          expect(data).to.contain({
+            ...newUser,
+            stub: false,
+          });
         });
 
-        it('should update apiToken', () => {
+        it('should update apiToken', async () => {
+          const token = await models.Gw2ApiToken.findOne({
+            where: {
+              accountName,
+            },
+          });
 
+          expect(token).to.include({
+            stub: false,
+            token: apiTokenClaimer,
+          });
+
+          expect(fetchToken).to.have.been.calledWith(models, { token: apiTokenClaimer });
         });
       });
 
       context('when being claimed by an existing user', () => {
+        const accountName = 'anotherSickUser.1234';
+        const apiTokenClaimer = '4444-1111-4444';
+
+        before(async () => {
+          readAccount.withArgs(apiTokenClaimer).returns({ name: accountName });
+          await service.createStubUser(models, accountName);
+          await service.claimStubApiToken(models, user.email, apiTokenClaimer);
+        });
+
         it('should validate token', () => {
-
+          expect(validateApiToken).to.have.been.calledWith(models, apiTokenClaimer);
         });
 
-        it('should update token', () => {
+        it('should update token', async () => {
+          const token = await models.Gw2ApiToken.findOne({
+            where: {
+              accountName,
+            },
+          });
 
+          expect(token).to.include({
+            stub: false,
+            token: apiTokenClaimer,
+          });
+
+          expect(fetchToken).to.have.been.calledWith(models, { token: apiTokenClaimer });
         });
 
-        it('should delete stub user', () => {
+        it('should delete stub user', async () => {
+          const data = await service.read(models, { alias: accountName });
 
+          expect(data).to.not.exist;
         });
       });
     });

@@ -97,10 +97,11 @@ async function readByToken (models, { accountName, apiToken }): Promise<?UserMod
 
   return token ? {
     ...cleanApiToken(token),
-    id: token.User.dataValues.id,
-    alias: token.User.dataValues.alias,
-    passwordHash: token.User.dataValues.passwordHash,
-    email: token.User.dataValues.email,
+    id: token.User.id,
+    alias: token.User.alias,
+    passwordHash: token.User.passwordHash,
+    email: token.User.email,
+    stub: token.User.stub,
   } : null;
 }
 
@@ -118,6 +119,7 @@ async function readByUser (models, { alias, email }) {
     alias: user.alias,
     passwordHash: user.passwordHash,
     email: user.email,
+    stub: user.stub,
   } : null;
 }
 
@@ -155,6 +157,7 @@ export async function read (models: Models, {
     euRank: standing && standing.euRank,
     naRank: standing && standing.naRank,
     gw2aRank: standing && standing.gw2aRank,
+    rating: standing && standing.ratingCurrent,
   };
 }
 
@@ -223,7 +226,36 @@ export async function createStubUser (models: Models, accountName: string): Prom
   return id;
 }
 
-// NewUser only.
+export async function claimStubApiToken (models: Models, email: string, apiToken: string) {
+  await validateApiToken(models, apiToken);
+
+  const { name } = await gw2.readAccount(apiToken);
+
+  const user = await read(models, { email });
+  if (!user) {
+    throw new Error('User doesnt exist');
+  }
+
+  await models.Gw2ApiToken.update({
+    token: apiToken,
+    stub: false,
+    UserId: user.id,
+  }, {
+    where: {
+      accountName: name,
+    },
+  });
+
+  await models.User.destroy({
+    where: {
+      alias: name,
+      stub: true,
+    },
+  });
+
+  await fetchToken(models, { token: apiToken });
+}
+
 export async function claimStubUser (models: Models, user: CreateUser, apiToken: string) {
   await validateApiToken(models, apiToken);
 

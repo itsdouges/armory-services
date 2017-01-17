@@ -120,12 +120,6 @@ export default function userControllerFactory (models: Models) {
     });
   }
 
-  type UpdateUser = {
-    email: string,
-    currentPassword: string,
-    password: string,
-  };
-
   type UpdatePasswordOptions = {
     email: string,
     password: string,
