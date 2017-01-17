@@ -1,54 +1,56 @@
-var q = require('q');
+export default function CheckController (createValidator) {
+  createValidator.addResource({
+    name: 'check',
+    mode: 'gw2-token',
+    rules: {
+      token: ['valid-gw2-token', 'required', 'no-white-space'],
+    },
+  })
+  .addResource({
+    name: 'check',
+    mode: 'email',
+    rules: {
+      email: ['unique-email', 'required', 'no-white-space'],
+    },
+  })
+  .addResource({
+    name: 'check',
+    mode: 'alias',
+    rules: {
+      alias: ['unique-alias', 'required', 'no-white-space', 'min5'],
+    },
+  });
 
-var validGw2Token = require('lib/rules/valid-gw2-token');
+  function validateGw2Token (token) {
+    const validator = createValidator({
+      resource: 'check',
+      mode: 'gw2-token',
+    });
 
-function CheckController(Validator) {
-    Validator.addResource({
-            name: 'check',
-            mode: 'gw2-token',
-            rules: {
-                token: ['valid-gw2-token', 'required', 'no-white-space']
-            }
-        }).addResource({
-            name: 'check',
-            mode: 'email',
-            rules: {
-                email: ['unique-email', 'required', 'no-white-space']
-            }
-        }).addResource({
-            name: 'check',
-            mode: 'alias',
-            rules: {
-                alias: ['unique-alias', 'required', 'no-white-space', 'min5']
-            }
-        });
+    return validator.validate(token);
+  }
 
-    CheckController.prototype.gw2Token = function (token) {
-        var validator = Validator({
-            resource: 'check',
-            mode: 'gw2-token'
-        });
+  function valdiateEmail (email) {
+    const validator = createValidator({
+      resource: 'check',
+      mode: 'email',
+    });
 
-        return validator.validate(token);
-    };
+    return validator.validate(email);
+  }
 
-    CheckController.prototype.email = function (email) {
-        var validator = Validator({
-            resource: 'check',
-            mode: 'email'
-        });
+  function validateAlias (alias) {
+    const validator = createValidator({
+      resource: 'check',
+      mode: 'alias',
+    });
 
-        return validator.validate(email);
-    };
+    return validator.validate(alias);
+  }
 
-    CheckController.prototype.alias = function (alias) {
-        var validator = Validator({
-            resource: 'check',
-            mode: 'alias'
-        });
-
-        return validator.validate(alias);
-    };
+  return {
+    gw2Token: validateGw2Token,
+    email: valdiateEmail,
+    alias: validateAlias,
+  };
 }
-
-module.exports = CheckController;

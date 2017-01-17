@@ -1,5 +1,4 @@
 import * as testData from 'test/testData';
-import Models from 'lib/models';
 
 describe('gw2 token controller', () => {
   let controller;
