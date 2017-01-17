@@ -20,6 +20,8 @@ const forgotMyPasswordTemplate = sandbox.stub();
 const createPasswordReset = sandbox.stub();
 const readPasswordReset = sandbox.stub();
 const finishPasswordReset = sandbox.stub();
+const claimStubUser = sandbox.stub();
+const claimStubApiToken = sandbox.stub();
 
 describe('user controller', () => {
   const models = { neat: 'models' };
@@ -51,6 +53,8 @@ describe('user controller', () => {
       createPasswordReset,
       readPasswordReset,
       finishPasswordReset,
+      claimStubUser,
+      claimStubApiToken,
     },
     'lib/password': {
       hashPassword,
@@ -295,6 +299,36 @@ describe('user controller', () => {
           expect(e).to.eql(new Error('Reset doesn\'t exist'));
         });
       });
+    });
+  });
+
+  describe('claiming a user', () => {
+    const claimingUser = testData.user({
+      password: 'sick-password',
+    });
+
+    beforeEach(async () => {
+      hashPassword.withArgs(claimingUser.password).returns(claimingUser.password);
+      await controller.claim(claimingUser);
+    });
+
+    it('should validate', async () => {
+      expect(validate).to.have.been.calledWith(claimingUser);
+    });
+
+    it('should hash password and claim', () => {
+      expect(claimStubUser).to.have.been.calledWith(models, {
+        ...claimingUser,
+        passwordHash: claimingUser.password,
+      });
+    });
+  });
+
+  describe('claiming an api token', () => {
+    it('should claim api token', async () => {
+      await controller.claimApiToken(email, apiToken);
+
+      expect(claimStubApiToken).to.have.been.calledWith(models, email, apiToken);
     });
   });
 });

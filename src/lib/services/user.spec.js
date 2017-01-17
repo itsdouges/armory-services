@@ -231,29 +231,27 @@ describe('user service', () => {
     describe('claiming stub user', () => {
       context('when being claimed by a new user', () => {
         const accountName = 'sickUser.1234';
-        const apiTokenClaimer = '1234-1234-1234';
         const newUser = {
           email: 'email@email',
           alias: 'Sick User',
           passwordHash: 'ASDASD123122@#@#Q@#',
+          apiToken: '1234-1234-1234',
         };
 
         before(async () => {
           await service.createStubUser(models, accountName);
 
-          readAccount.withArgs(apiTokenClaimer).returns({ name: accountName });
-          await service.claimStubUser(models, newUser, apiTokenClaimer);
-        });
-
-        it('should validate token', () => {
-          expect(validateApiToken).to.have.been.calledWith(models, apiTokenClaimer);
+          readAccount.withArgs(newUser.apiToken).returns({ name: accountName });
+          await service.claimStubUser(models, newUser);
         });
 
         it('should update user', async () => {
           const data = await service.read(models, { alias: newUser.alias });
 
+          const { apiToken, ...userData } = newUser;
+
           expect(data).to.contain({
-            ...newUser,
+            ...userData,
             stub: false,
           });
         });
@@ -267,10 +265,10 @@ describe('user service', () => {
 
           expect(token).to.include({
             stub: false,
-            token: apiTokenClaimer,
+            token: newUser.apiToken,
           });
 
-          expect(fetchToken).to.have.been.calledWith(models, { token: apiTokenClaimer });
+          expect(fetchToken).to.have.been.calledWith(models, { token: newUser.apiToken });
         });
       });
 
@@ -282,10 +280,6 @@ describe('user service', () => {
           readAccount.withArgs(apiTokenClaimer).returns({ name: accountName });
           await service.createStubUser(models, accountName);
           await service.claimStubApiToken(models, user.email, apiTokenClaimer);
-        });
-
-        it('should validate token', () => {
-          expect(validateApiToken).to.have.been.calledWith(models, apiTokenClaimer);
         });
 
         it('should update token', async () => {

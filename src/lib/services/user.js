@@ -227,8 +227,6 @@ export async function createStubUser (models: Models, accountName: string): Prom
 }
 
 export async function claimStubApiToken (models: Models, email: string, apiToken: string) {
-  await validateApiToken(models, apiToken);
-
   const { name } = await gw2.readAccount(apiToken);
 
   const user = await read(models, { email });
@@ -256,10 +254,12 @@ export async function claimStubApiToken (models: Models, email: string, apiToken
   await fetchToken(models, { token: apiToken });
 }
 
-export async function claimStubUser (models: Models, user: CreateUser, apiToken: string) {
-  await validateApiToken(models, apiToken);
+type ClaimUser = CreateUser & {
+  apiToken: string,
+};
 
-  const { name } = await gw2.readAccount(apiToken);
+export async function claimStubUser (models: Models, user: ClaimUser) {
+  const { name } = await gw2.readAccount(user.apiToken);
 
   await models.User.update({
     ...user,
@@ -271,7 +271,7 @@ export async function claimStubUser (models: Models, user: CreateUser, apiToken:
   });
 
   await models.Gw2ApiToken.update({
-    token: apiToken,
+    token: user.apiToken,
     stub: false,
   }, {
     where: {
@@ -279,5 +279,5 @@ export async function claimStubUser (models: Models, user: CreateUser, apiToken:
     },
   });
 
-  await fetchToken(models, { token: apiToken });
+  await fetchToken(models, { token: user.apiToken });
 }

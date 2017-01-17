@@ -17,6 +17,8 @@ import {
   createPasswordReset,
   readPasswordReset,
   finishPasswordReset,
+  claimStubUser,
+  claimStubApiToken,
 } from 'lib/services/user';
 import { list as listCharacters } from 'lib/services/character';
 
@@ -28,6 +30,16 @@ export default function userControllerFactory (models: Models) {
       alias: ['required', 'unique-alias', 'no-white-space', 'min5'],
       email: ['required', 'unique-email', 'no-white-space'],
       password: ['required', 'ezpassword', 'no-white-space'],
+    },
+  })
+  .addResource({
+    name: 'users',
+    mode: 'claim',
+    rules: {
+      alias: ['required', 'unique-alias', 'no-white-space', 'min5'],
+      email: ['required', 'unique-email', 'no-white-space'],
+      password: ['required', 'ezpassword', 'no-white-space'],
+      apiToken: ['required', 'valid-gw2-token', 'no-white-space'],
     },
   })
   .addResource({
@@ -183,11 +195,37 @@ export default function userControllerFactory (models: Models) {
     return undefined;
   }
 
+  type ClaimUser = CreateUser & {
+    apiToken: string,
+  };
+
+  async function claim (user: ClaimUser) {
+    const validator = createValidator({
+      resource: 'users',
+      mode: 'claim',
+    });
+
+    await validator.validate(user);
+
+    const passwordHash = await hashPassword(user.password);
+
+    await claimStubUser(models, {
+      ...user,
+      passwordHash,
+    });
+  }
+
+  async function claimApiToken (email: string, apiToken: string) {
+    await claimStubApiToken(models, email, apiToken);
+  }
+
   return {
     create,
     read,
     updatePassword,
     forgotMyPasswordStart,
     forgotMyPasswordFinish,
+    claim,
+    claimApiToken,
   };
 }
