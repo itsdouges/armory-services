@@ -16,7 +16,8 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    apiToken: {
+    // REQUIRE MIGRATION (apiToken -> apiTokenId)
+    apiTokenId: {
       // REQUIRED MIGRATION (STRING -> INT
       type: DataTypes.INTEGER,
       allowNull: true,

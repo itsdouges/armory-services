@@ -61,7 +61,7 @@ async function addMissingUsers (models, ladder) {
 }
 
 const mergeLadders = ({ standings, na, eu }) => {
-  const key = 'apiToken';
+  const key = 'apiTokenId';
   const standingsMap = _.keyBy(standings, key);
   const naMap = _.keyBy(na, key);
   const euMap = _.keyBy(eu, key);
@@ -90,6 +90,9 @@ export default async function calculatePvpLeaderboards (models: Models) {
   logger.start();
 
   const season = await readLatestPvpSeason();
+  if (!season.active) {
+    return;
+  }
 
   const [naLadder, euLadder, standings] = await Promise.all([
     gw2.readPvpLadder(null, season.id, { region: 'na' }),

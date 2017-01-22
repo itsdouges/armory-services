@@ -44,6 +44,7 @@ server.post('/fetch', async (req, res, next) => {
   try {
     await fetch({
       token: req.params.token,
+      id: req.params.id,
       permissions: req.params.permissions,
     });
 

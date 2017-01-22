@@ -8,7 +8,8 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
     },
 
-    apiToken: {
+    // REQUIRE MIGRATION (apiToken -> apiTokenId
+    apiTokenId: {
       // REQUIRED MIGRATION (STRING -> INT)
       type: DataTypes.INTEGER,
       allowNull: false,

@@ -69,6 +69,7 @@ export const apiToken = ({
   monthlyAp = 123,
   wvwRank = 123,
   primary = false,
+  stub = false,
 }: ApiToken = {}): ApiToken => ({
   id,
   token,
@@ -86,6 +87,7 @@ export const apiToken = ({
   monthlyAp,
   wvwRank,
   primary,
+  stub,
 });
 
 export const character = ({
@@ -155,7 +157,7 @@ export const pvpSeason = (id: string = '1234-1234') => ({
 
 // $FlowFixMe
 export const dbStanding = ({
-  apiToken: apiTokenId = apiToken().id,
+  apiTokenId = apiToken().id,
   seasonId = pvpSeason().season_id,
   totalPointsCurrent = 1,
   divisionCurrent = 2,
@@ -173,7 +175,7 @@ export const dbStanding = ({
   naRank = null,
   euRank = null,
 } = {}) => ({
-  apiToken: apiTokenId,
+  apiTokenId,
   seasonId,
   totalPointsCurrent,
   divisionCurrent,

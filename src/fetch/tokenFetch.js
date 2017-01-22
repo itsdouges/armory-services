@@ -11,19 +11,20 @@ import createLogger from 'lib/gitter';
 
 const logger = createLogger('Token_fetchers');
 
-type Token = {
+export type Fetcher$Token = {
+  id: number,
   token: string,
-  permissions: Array<string>,
+  permissions: string,
 };
 
-type Fetcher = (models: Models, token: Token) => Promise<>;
+type Fetcher = (models: Models, token: Fetcher$Token) => Promise<>;
 
 export default function fetchFactory (models: Models, fetchers: Array<Fetcher>) {
   if (!fetchers || !fetchers.length) {
     throw new Error('\n=== No fetchers available! ===\n');
   }
 
-  async function fetch (token: Token) {
+  async function fetch (token: Fetcher$Token) {
     return await allSettled(fetchers.map((fetcher) => fetcher(models, token)));
   }
 

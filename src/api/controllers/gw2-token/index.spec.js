@@ -151,7 +151,6 @@ describe('gw2 token controller', () => {
         info: ['cool', 'yeah!'],
       }));
 
-
       await models.User.create({
         email: 'cool@email.com',
         passwordHash: 'lolz',
@@ -160,7 +159,7 @@ describe('gw2 token controller', () => {
 
       const result = await controller.add('cool@email.com', 'token');
 
-      expect(result).to.eql({
+      expect(result).to.include({
         token: 'token',
         primary: true,
         permissions: 'cool,yeah!',
@@ -169,8 +168,9 @@ describe('gw2 token controller', () => {
       });
 
       expect(httpPost).to.have.been.calledWith('http://host:port/fetch', {
-        token: 'token',
-        permissions: 'cool,yeah!',
+        token: result.token,
+        permissions: result.permissions,
+        id: result.id,
       });
     });
   });

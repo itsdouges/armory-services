@@ -18,10 +18,10 @@ describe('guild fetcher', () => {
   });
 
   const guilds = [
-    testData.guild({ id: '1', apiToken: token.id }),
-    testData.guild({ id: '2', apiToken: token.id }),
-    testData.guild({ id: '3', apiToken: token.id }),
-    testData.guild({ id: '4', apiToken: token.id }),
+    testData.guild({ id: '1', apiTokenId: token.id }),
+    testData.guild({ id: '2', apiTokenId: token.id }),
+    testData.guild({ id: '3', apiTokenId: token.id }),
+    testData.guild({ id: '4', apiTokenId: token.id }),
   ];
 
   const accountInfoData = {
@@ -35,7 +35,7 @@ describe('guild fetcher', () => {
   };
 
   before(async () => {
-    models = await setupTestDb({ seed: true, apiToken: token.id });
+    models = await setupTestDb({ seed: true });
 
     const promises = guilds.map((guild) => {
       return models.Gw2Guild.create(_.pick(guild, [
@@ -70,7 +70,7 @@ describe('guild fetcher', () => {
     it('should associate guilds that token is a leader of', async () => {
       const guildz = await findGuilds();
 
-      guildz.forEach((guild) => expect(guild.apiToken).to.equal(token.id));
+      guildz.forEach((guild) => expect(guild.apiTokenId).to.equal(token.id));
     });
 
     it('should add authenticated data into guild using token', async () => {

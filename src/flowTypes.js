@@ -18,10 +18,6 @@ export type Models = {
   UserReset: Sequelize,
 };
 
-export type FetchOptions = {
-  token: string,
-};
-
 type Gw2Standing = {
   total_points: number,
   division: number,
@@ -78,6 +74,7 @@ export type UserModel = {
 };
 
 export type ApiToken = {
+  id: number,
   token: string,
   accountName: string,
   accountId: string,

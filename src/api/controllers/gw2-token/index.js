@@ -65,7 +65,7 @@ export default function tokenFactory (models, createValidator, gw2Api) {
     const tokenInfo = await gw2Api.readTokenInfoWithAccount(gw2Token);
     const hasTokens = await doesUserHaveTokens(id);
 
-    const wrappedToken = {
+    return await models.Gw2ApiToken.create({
       token: gw2Token,
       UserId: id,
       permissions: tokenInfo.info.join(','),
@@ -73,9 +73,7 @@ export default function tokenFactory (models, createValidator, gw2Api) {
       accountId: tokenInfo.accountId,
       accountName: tokenInfo.accountName,
       primary: !hasTokens,
-    };
-
-    return await models.Gw2ApiToken.create(wrappedToken);
+    });
   }
 
   async function add (email, token) {
@@ -94,10 +92,12 @@ export default function tokenFactory (models, createValidator, gw2Api) {
     axios.post(url, {
       token: createdToken.token,
       permissions: createdToken.permissions,
+      id: createdToken.id,
     });
 
     return {
       token: createdToken.token,
+      id: createdToken.id,
       accountName: createdToken.accountName,
       permissions: createdToken.permissions,
       world: createdToken.world,

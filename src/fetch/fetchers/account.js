@@ -1,8 +1,13 @@
+// @flow
+
+import type { Models } from 'flowTypes';
+import type { Fetcher$Token } from 'fetch/tokenFetch';
+
 import _ from 'lodash';
 import gw2 from 'lib/gw2';
 import guildsService from 'lib/services/guilds';
 
-export default async function fetch (models, { token }) {
+export default async function fetch (models: Models, { token }: Fetcher$Token) {
   const accountInfo = await gw2.readAccount(token);
   const row = {
     ..._.pick(accountInfo, [

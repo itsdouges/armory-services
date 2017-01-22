@@ -10,8 +10,10 @@ module.exports = function (sequelize, DataTypes) {
 
     token: {
       type: DataTypes.STRING,
-      // REQUIRES MIGRATION (primaryKey: false)
+      // REQUIRES MIGRATION (primaryKey: false, allowNull false, unique true)
       // primaryKey: true,
+      allowNull: false,
+      unique: true,
     },
     accountName: {
       type: DataTypes.STRING,

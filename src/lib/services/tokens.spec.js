@@ -1,31 +1,31 @@
+import _ from 'lodash';
+import * as testData from 'test/testData';
+
 import { list } from './tokens';
 
-describe('fetch token service', () => {
+describe('token service', () => {
   let models;
 
+  const apiToken = testData.apiToken();
+
   beforeEach(async () => {
-    models = await setupTestDb({ seed: true });
+    models = await setupTestDb();
+
+    models.User.create(testData.user());
+    models.Gw2ApiToken.create(apiToken);
+    models.Gw2ApiToken.create(testData.apiToken({
+      stub: true,
+      token: '1234',
+      accountId: '4321',
+      id: 2,
+    }));
   });
 
   it('should fetch valid tokens from the db', async () => {
-    const items = await list(models);
+    const tokens = await list(models);
 
-    expect(items).to.eql([{
-      token: '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15',
-      permissions: 'cool,permissions',
-    },
-    {
-      token: '25E6FAC3-1912-7E47-9420-2965C5E4D63DEAA54B0F-092E-48A8-A2AE-9E197DF4BC8B',
-      permissions: 'cool,permissions',
-    },
-    {
-      token: 'cool_token',
-      permissions: 'he,he',
-    },
-    {
-      token: 'another_token',
-      permissions: 'he,he',
-    }]);
+    expect(tokens.length).to.equal(1);
+    expect(tokens[0]).to.include(_.omit(apiToken, ['User']));
   });
 
   describe('validating', () => {

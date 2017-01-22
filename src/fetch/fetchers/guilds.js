@@ -1,7 +1,15 @@
+// @flow
+
+import type { Models } from 'flowTypes';
+import type { Fetcher$Token } from 'fetch/tokenFetch';
+
 import _ from 'lodash';
 import gw2 from 'lib/gw2';
 
-export default async function guildsFetcher (models, { token, id, permissions }) {
+export default async function guildsFetcher (
+  models: Models,
+  { token, id, permissions }: Fetcher$Token
+) {
   if (!_.includes(permissions, 'guilds')) {
     return;
   }
@@ -16,8 +24,8 @@ export default async function guildsFetcher (models, { token, id, permissions })
 
     await models.Gw2Guild.upsert({
       ...data,
-      apiToken: id,
       id: guildId,
+      apiTokenId: id,
     });
   });
 

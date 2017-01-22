@@ -1,5 +1,3 @@
-// This is kind of terrible.
-
 import { stubLogger } from 'test/utils';
 import * as testData from 'test/testData';
 
@@ -32,30 +30,32 @@ const fetcher = proxyquire('fetch/fetchers/pvpLeaderboard', {
 describe('pvp leaderboard fetcher', () => {
   const seasonId = '1234-1234-1234';
   const models = { i: 'exit' };
+  const apiTokenId = 5;
+  const apiTokenId2 = 9;
 
   const standings = [{
     ratingCurrent: 100,
     decayCurrent: 100,
-    apiToken: '1234-1111',
+    apiTokenId: 1,
   }, {
     ratingCurrent: 1500,
     decayCurrent: 500,
-    apiToken: '1234-4321',
+    apiTokenId: 2,
   }, {
     ratingCurrent: 2000,
     decayCurrent: 1500,
-    apiToken: '1121-2221',
+    apiTokenId: 3,
   }, {
     ratingCurrent: 1100,
     decayCurrent: 0,
-    apiToken: '3333-4444',
+    apiTokenId: 4,
   }].map((standing) => (testData.dbStanding(standing)));
 
   const toLadder = (names) =>
     names.map((name, index) => testData.gw2LadderStanding({ name, rank: index }));
 
-  const standingg = (apiToken, rank, key) => ({
-    apiToken,
+  const standingg = (apiTokenId, rank, key) => ({
+    apiTokenId,
     seasonId,
     [key]: rank,
   });
@@ -73,7 +73,7 @@ describe('pvp leaderboard fetcher', () => {
   ]);
 
   before(() => {
-    readLatestPvpSeason.returns({ id: seasonId });
+    readLatestPvpSeason.returns({ id: seasonId, active: true });
     listStandings.withArgs(models, seasonId).returns(standings);
 
     readPvpLadder.withArgs(null, seasonId, { region: 'na' }).returns(naLadder);
@@ -90,13 +90,13 @@ describe('pvp leaderboard fetcher', () => {
     });
 
     buildLadderByAccountName.withArgs(models, naLadder).returns([
-      standingg('111-222-333', 2, 'naRank'),
-      standingg(standings[1].apiToken, 1, 'naRank'),
+      standingg(apiTokenId, 2, 'naRank'),
+      standingg(standings[1].apiTokenId, 1, 'naRank'),
     ]);
 
     buildLadderByAccountName.withArgs(models, euLadder).returns([
-      standingg(standings[2].apiToken, 5, 'euRank'),
-      standingg('222-333-444', 2, 'euRank'),
+      standingg(standings[2].apiTokenId, 5, 'euRank'),
+      standingg(apiTokenId2, 2, 'euRank'),
     ]);
   });
 
@@ -129,12 +129,12 @@ describe('pvp leaderboard fetcher', () => {
       addRanking(standingTwo, 2, 1, null),
       addRanking(standingThree, 3, null, 5),
       addRanking(standingOne, 4, null, null), {
-        apiToken: '111-222-333',
+        apiTokenId,
         gw2aRank: null,
         naRank: 2,
         seasonId: '1234-1234-1234',
       }, {
-        apiToken: '222-333-444',
+        apiTokenId: apiTokenId2,
         euRank: 2,
         gw2aRank: null,
         seasonId: '1234-1234-1234',

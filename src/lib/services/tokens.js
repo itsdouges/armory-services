@@ -10,10 +10,7 @@ export async function list (models: Models) {
     },
   });
 
-  return tokens.map((item) => ({
-    token: item.dataValues.token,
-    permissions: item.dataValues.permissions,
-  }));
+  return tokens.map((item) => item.dataValues);
 }
 
 export async function validate (models: Models, apiToken: string) {

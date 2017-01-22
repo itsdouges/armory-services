@@ -1,7 +1,15 @@
+// @flow
+
+import type { Models } from 'flowTypes';
+import type { Fetcher$Token } from 'fetch/tokenFetch';
+
 import { allSettled } from 'lib/promise';
 import gw2 from 'lib/gw2';
 
-export default async function fetchUserCharacterData (models, { token, id }) {
+export default async function fetchUserCharacterData (
+  models: Models,
+  { token, id }: Fetcher$Token
+) {
   const characters = await gw2.readCharactersDeep(token);
 
   await models.Gw2Character.destroy({

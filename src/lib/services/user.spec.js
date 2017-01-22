@@ -46,16 +46,15 @@ describe('user service', () => {
   });
 
   const standing = testData.dbStanding({
-    apiToken: apiTokenForUserTwo.id,
+    apiTokenId: apiTokenForUserTwo.id,
   });
 
   before(async () => {
     models = await setupTestDb();
 
     await models.User.create(user);
-    await models.Gw2ApiToken.create(apiToken);
-
     await models.User.create(userTwo);
+    await models.Gw2ApiToken.create(apiToken);
     await models.Gw2ApiToken.create(apiTokenForUserTwo);
     await models.PvpStandings.create(standing);
 
@@ -243,7 +242,7 @@ describe('user service', () => {
         before(async () => {
           const { apiTokenId } = await service.createStubUser(models, accountName);
           await models.PvpStandings.create({
-            apiToken: apiTokenId,
+            apiTokenId,
             seasonId: 'a',
           });
           readAccount.withArgs(newUser.apiToken).returns({ name: accountName });
@@ -271,7 +270,11 @@ describe('user service', () => {
             token: newUser.apiToken,
           });
 
-          expect(fetchToken).to.have.been.calledWith(models, { token: newUser.apiToken });
+          expect(fetchToken).to.have.been.calledWith(models, {
+            token: newUser.apiToken,
+            permissions: 'guilds',
+            id: token.id,
+          });
         });
       });
 
@@ -297,7 +300,11 @@ describe('user service', () => {
             token: apiTokenClaimer,
           });
 
-          expect(fetchToken).to.have.been.calledWith(models, { token: apiTokenClaimer });
+          expect(fetchToken).to.have.been.calledWith(models, {
+            token: apiTokenClaimer,
+            permissions: 'guilds',
+            id: token.id,
+          });
         });
 
         it('should delete stub user', async () => {

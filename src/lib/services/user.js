@@ -148,7 +148,7 @@ export async function read (models: Models, {
   const standing = await models.PvpStandings.findOne({
     where: {
       seasonId,
-      apiToken: data.tokenId,
+      apiTokenId: data.tokenId,
     },
   });
 
@@ -254,7 +254,13 @@ export async function claimStubApiToken (models: Models, email: string, apiToken
     },
   });
 
-  await fetchToken(models, { token: apiToken });
+  const { id } = await models.Gw2ApiToken.findOne({
+    where: {
+      token: apiToken,
+    },
+  });
+
+  await fetchToken(models, { token: apiToken, permissions: 'guilds', id });
 }
 
 type ClaimUser = CreateUser & {
@@ -282,5 +288,11 @@ export async function claimStubUser (models: Models, user: ClaimUser) {
     },
   });
 
-  await fetchToken(models, { token: user.apiToken });
+  const { id } = await models.Gw2ApiToken.findOne({
+    where: {
+      token: user.apiToken,
+    },
+  });
+
+  await fetchToken(models, { token: user.apiToken, permissions: 'guilds', id });
 }
