@@ -12,7 +12,7 @@ const pvpStandingsFetcher = proxyquire('fetch/fetchers/pvpStandings', {
 describe('pvp standings fetcher', () => {
   let models;
 
-  const token = '1234-1234-1234';
+  const token = 1;
   const standings = [
     standing({
       season_id: '1111',

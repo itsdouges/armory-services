@@ -82,7 +82,8 @@ export default function createServer (models: Models, config: any) {
   require('./resources/search')(server, models);
   require('./resources/sign-upload')(server, models);
   require('./resources/users/check')(server, checkControllerFactory(createValidator));
-  require('./resources/users/gw2-token')(server, tokenControllerFactory(models, createValidator));
+  require('./resources/users/gw2-token')
+    .default(server, tokenControllerFactory(models, createValidator));
   require('./resources/pvp')(server, pvpControllerFactory(models));
   require('./resources/characters')(server, characterControllerFactory(models));
   require('./resources/statistics')(server, statisticsControllerFactory(models));

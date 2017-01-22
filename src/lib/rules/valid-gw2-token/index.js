@@ -38,6 +38,7 @@ function validGw2Token (name, val, dependencies) {
           .findOne({
             where: {
               accountName,
+              stub: false,
             },
           })
           .then((item) => {

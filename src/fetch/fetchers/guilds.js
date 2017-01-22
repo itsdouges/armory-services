@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import gw2 from 'lib/gw2';
 
-export default async function guildsFetcher (models, { token, permissions }) {
+export default async function guildsFetcher (models, { token, id, permissions }) {
   if (!_.includes(permissions, 'guilds')) {
     return;
   }
@@ -16,7 +16,7 @@ export default async function guildsFetcher (models, { token, permissions }) {
 
     await models.Gw2Guild.upsert({
       ...data,
-      apiToken: token,
+      apiToken: id,
       id: guildId,
     });
   });

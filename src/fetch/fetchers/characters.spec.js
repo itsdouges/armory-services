@@ -1,3 +1,7 @@
+import _ from 'lodash';
+
+import * as testData from 'test/testData';
+
 const createFetchCharacters = ({ characters }) => proxyquire('fetch/fetchers/characters', {
   'lib/gw2': {
     readCharactersDeep: characters,
@@ -5,79 +9,70 @@ const createFetchCharacters = ({ characters }) => proxyquire('fetch/fetchers/cha
 });
 
 describe('characters fetcher', () => {
-  const token = '938C506D-F838-F447-8B43-4EBF34706E0445B2B503-977D-452F-A97B-A65BB32D6F15';
-
-  const character = {
-    name: 'character1',
-    race: 'race',
-    gender: 'gender',
-    profession: 'profession',
-    level: 69,
-    created: 20,
-    age: 20,
-    deaths: 2,
-  };
+  const token = testData.apiToken();
+  const character = testData.characterModel();
+  const characterTwo = testData.characterModel({
+    name: 'maddddou',
+  });
 
   let models;
 
-  beforeEach(() => {
-    return setupTestDb({ seed: true, ApiToken: token })
-      .then((mdls) => (models = mdls));
+  beforeEach(async () => {
+    models = await setupTestDb({ seed: true, apiToken: token.token });
   });
 
-  it('should replace all characters with response from gw2 api characters', () => {
-    const charactersStub = sinon.stub().withArgs(token)
-      .returns(Promise.resolve([character, character]));
+  const assertCharacter = (actual, expected) => {
+    expect(actual.Gw2ApiTokenId).to.equal(token.id);
+    expect(actual.dataValues).to.include(_.omit(expected, ['created']));
+  };
+
+  it('should replace all characters with response from gw2 api characters', async () => {
+    const charactersStub = sinon.stub()
+      .withArgs(token.token)
+      .returns(Promise.resolve([character, characterTwo]));
 
     const fetchCharacters = createFetchCharacters({
       characters: charactersStub,
     });
 
-    return fetchCharacters(models, { token })
-      .then(() => {
-        return models.Gw2Character.findAll({});
-      })
-      .then((chars) => {
-        expect(chars.length).to.equal(2);
+    await fetchCharacters(models, token);
 
-        chars.forEach((char) => {
-          expect(char.Gw2ApiTokenToken).to.equal(token);
-          expect(char.dataValues).to.include(character);
-        });
-      });
+    const [first, second] = await models.Gw2Character.findAll();
+
+    assertCharacter(first, character);
+    assertCharacter(second, characterTwo);
   });
 
-  it('should remove characters not brought back and not duplicate chars', () => {
-    const otherCharacter = Object.assign({}, character, { name: 'anotherName' });
-
+  it('should remove characters not brought back and not duplicate chars', async () => {
     const charactersStub = sinon.stub();
 
-    charactersStub.onFirstCall()
-      .returns(Promise.resolve([character, otherCharacter]))
+    charactersStub
+      .onFirstCall()
+      .returns(Promise.resolve([character, characterTwo]))
       .onSecondCall()
-      .returns(Promise.resolve([otherCharacter]));
+      .returns(Promise.resolve([characterTwo]));
 
     const fetchCharacters = createFetchCharacters({
       characters: charactersStub,
     });
 
-    return fetchCharacters(models, { token })
-      .then(() => models.Gw2Character.findOne({ where: { name: otherCharacter.name } }))
-      .then(({ dataValues: { id } }) => {
-        return fetchCharacters(models, { token })
-          .then(() => {
-            return models.Gw2Character.findOne({ where: { name: character.name } });
-          })
-          .then((char) => {
-            expect(char).to.not.exist;
-          })
-          .then(() => {
-            return models.Gw2Character.findAll({ where: { name: otherCharacter.name } });
-          })
-          .then((char) => {
-            expect(char.length).to.equal(1);
-            expect(char[0].dataValues.id).to.equal(id);
-          });
-      });
+    await fetchCharacters(models, token);
+
+    const { dataValues: { id } } = await models.Gw2Character.findOne({
+      where: { name: characterTwo.name },
+    });
+
+    await fetchCharacters(models, token);
+    const firstCharacter = await models.Gw2Character.findOne({
+      where: { name: character.name },
+    });
+
+    expect(firstCharacter).to.not.exist;
+
+    const secondCharacter = await models.Gw2Character.findAll({
+      where: { name: characterTwo.name },
+    });
+    expect(secondCharacter.length).to.equal(1);
+    expect(secondCharacter[0].dataValues.id).to.equal(id);
   });
 });

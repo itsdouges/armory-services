@@ -69,11 +69,12 @@ export default function UserResource (server, controller) {
         alias: req.params.alias,
         email: req.params.email.toLowerCase(),
         password: req.params.password,
+        apiToken: req.params.apiToken,
       });
 
       res.send(200);
     } catch (e) {
-      res.send(500);
+      res.send(400, e);
       console.error(e);
     }
 
@@ -89,7 +90,7 @@ export default function UserResource (server, controller) {
       await controller.claimApiToken(req.username, req.params.apiToken);
       res.send(200);
     } catch (e) {
-      res.send(500);
+      res.send(400, e);
       console.error(e);
     }
 

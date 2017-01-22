@@ -36,16 +36,17 @@ describe('user service', () => {
   });
 
   const apiTokenForUserTwo = testData.apiToken({
-    guilds: null,
+    id: 2,
     token: '123',
     UserId: userTwo.id,
+    guilds: null,
     accountId: '1234',
     primary: true,
     accountName: 'hot4gw2.1234',
   });
 
   const standing = testData.dbStanding({
-    apiToken: apiTokenForUserTwo.token,
+    apiToken: apiTokenForUserTwo.id,
   });
 
   before(async () => {
@@ -106,6 +107,7 @@ describe('user service', () => {
       ]);
 
       expect(usr).to.eql({
+        tokenId: apiTokenForUserTwo.id,
         id: userTwo.id,
         alias: userTwo.alias,
         email: userTwo.email,
@@ -204,7 +206,7 @@ describe('user service', () => {
         const accountName = 'doobie.1234';
         const stubUserValue = 'stubuser';
 
-        const id = await service.createStubUser(models, accountName);
+        const { id } = await service.createStubUser(models, accountName);
 
         const stubUser = await service.read(models, { accountName });
         expect(stubUser).to.include({
@@ -239,8 +241,11 @@ describe('user service', () => {
         };
 
         before(async () => {
-          await service.createStubUser(models, accountName);
-
+          const { apiTokenId } = await service.createStubUser(models, accountName);
+          await models.PvpStandings.create({
+            apiToken: apiTokenId,
+            seasonId: 'a',
+          });
           readAccount.withArgs(newUser.apiToken).returns({ name: accountName });
           await service.claimStubUser(models, newUser);
         });
@@ -248,10 +253,8 @@ describe('user service', () => {
         it('should update user', async () => {
           const data = await service.read(models, { alias: newUser.alias });
 
-          const { apiToken, ...userData } = newUser;
-
           expect(data).to.contain({
-            ...userData,
+            ..._.omit(newUser, ['apiToken']),
             stub: false,
           });
         });

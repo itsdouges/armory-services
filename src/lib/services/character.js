@@ -61,3 +61,45 @@ export async function listPublic (models: Models) {
     },
   });
 }
+
+export async function read (models: Models, name: string, email: string) {
+  const query = {
+    include: [{
+      model: models.Gw2ApiToken,
+      include: [{
+        model: models.User,
+      }],
+    }],
+    where: {
+      name,
+    },
+  };
+
+  if (email) {
+    query.include[0].include = [{
+      model: models.User,
+      where: {
+        email,
+      },
+    }];
+  }
+
+  return await models.Gw2Character.findOne(query);
+}
+
+export type UpdateFields = {
+  name: string,
+  showPublic: boolean,
+  showBuilds: boolean,
+  showPvp: boolean,
+  showBags: boolean,
+  showGuild: boolean,
+};
+
+export async function update (models: Models, id: number, fields: UpdateFields) {
+  return await models.Gw2Character.update(fields, {
+    where: {
+      id,
+    },
+  });
+}

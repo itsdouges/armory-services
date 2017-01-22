@@ -45,7 +45,7 @@ describe('pvp standings service', () => {
 
   it('should read all user standings for a season', async () => {
     const standingOne = testData.dbStanding({
-      apiToken: apiToken.token,
+      apiToken: apiToken.id,
     });
 
     await models.PvpStandings.create(standingOne);

@@ -8,7 +8,6 @@ import uuid from 'uuid/v4';
 import config from 'config';
 import gw2, { readLatestPvpSeason } from 'lib/gw2';
 import fetchToken from 'fetch/fetchers/account';
-import { validate as validateApiToken } from 'lib/services/tokens';
 import { read as readGuild } from './guild';
 
 type ListOptions = {
@@ -62,18 +61,19 @@ function cleanApiToken (apiToken) {
     return undefined;
   }
 
-  return _.pick(_.get(apiToken, 'dataValues'), [
-    'token',
-    'accountName',
-    'world',
-    'access',
-    'commander',
-    'fractalLevel',
-    'dailyAp',
-    'monthlyAp',
-    'wvwRank',
-    'guilds',
-  ]);
+  return {
+    tokenId: apiToken.id,
+    token: apiToken.token,
+    accountName: apiToken.accountName,
+    world: apiToken.world,
+    access: apiToken.access,
+    commander: apiToken.commander,
+    fractalLevel: apiToken.fractalLevel,
+    dailyAp: apiToken.dailyAp,
+    monthlyAp: apiToken.monthlyAp,
+    wvwRank: apiToken.wvwRank,
+    guilds: apiToken.guilds,
+  };
 }
 
 type CreateUser = User & {
@@ -148,7 +148,7 @@ export async function read (models: Models, {
   const standing = await models.PvpStandings.findOne({
     where: {
       seasonId,
-      apiToken: data.token,
+      apiToken: data.tokenId,
     },
   });
 
@@ -212,7 +212,7 @@ export async function createStubUser (models: Models, accountName: string): Prom
   };
 
   const { id } = await models.User.create(user);
-  await models.Gw2ApiToken.create({
+  const { id: tokenId } = await models.Gw2ApiToken.create({
     permissions: '',
     world: -1,
     accountId: uuid(),
@@ -223,7 +223,10 @@ export async function createStubUser (models: Models, accountName: string): Prom
     stub: true,
   });
 
-  return id;
+  return {
+    id,
+    apiTokenId: tokenId,
+  };
 }
 
 export async function claimStubApiToken (models: Models, email: string, apiToken: string) {

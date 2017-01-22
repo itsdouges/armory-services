@@ -124,6 +124,7 @@ describe('user controller', () => {
       'id',
       'passwordHash',
       'email',
+      'token',
     ]);
 
     context('when user has a primary api key', () => {
@@ -162,7 +163,6 @@ describe('user controller', () => {
 
       it('should return user data', async () => {
         const data = await controller.read({ alias: user.alias, email, ignorePrivacy: true });
-
         expect(data).to.eql({
           ...cleanUser(userNoGuilds),
           characters: [character],
