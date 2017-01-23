@@ -6,7 +6,6 @@ import _ from 'lodash';
 import * as userService from 'lib/services/user';
 import { list as listPvpStandings } from 'lib/services/pvpStandings';
 import gw2, { readLatestPvpSeason } from 'lib/gw2';
-import config from 'config';
 
 const handleBadToken = (defaultValue, error) => {
   if (error === 'Token not found' || (error.data && error.data.text === 'requires scope pvp')) {
@@ -50,29 +49,28 @@ export default function pvpControllerFactory (models: Models) {
       .catch(handleBadToken.bind(null, []));
   }
 
-  type LeaderboardType = 'gw2a' | 'na' | 'eu';
+  type LeaderboardRegion = 'gw2a' | 'na' | 'eu';
 
-  async function leaderboard (type: LeaderboardType) {
-    const rankField = `${type}Rank`;
+  async function leaderboard (region: LeaderboardRegion) {
+    const rankField = `${region}Rank`;
     const season = await readLatestPvpSeason();
 
-    const pvpStandings = await listPvpStandings(models, season.id);
-    const filteredStandings = pvpStandings.filter((standing) => !!standing[rankField]);
+    const pvpStandings = await listPvpStandings(models, season.id, region);
 
-    const users = await Promise.all(filteredStandings.map((standing) => {
-      return userService.read(models, { apiToken: standing.apiToken });
+    const users = await Promise.all(pvpStandings.map((standing) => {
+      return userService.read(models, { apiTokenId: standing.apiTokenId });
     }));
 
-    const userMap = users.reduce((obj, { token, ...user } = {}) => {
+    const userMap = users.reduce((obj, { tokenId, ...user } = {}) => {
       // eslint-disable-next-line
-      obj[token] = user;
+      obj[tokenId] = user;
       return obj;
     }, {});
 
-    const pvpStandingsWithUser = filteredStandings
-      .map(({ apiToken, ...standing }) => ({
+    const pvpStandingsWithUser = pvpStandings
+      .map(({ apiTokenId, ...standing }) => ({
         ...standing,
-        ..._.pick(userMap[apiToken], [
+        ..._.pick(userMap[apiTokenId], [
           'accountName',
           'alias',
         ]),

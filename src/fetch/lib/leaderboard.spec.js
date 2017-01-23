@@ -14,7 +14,7 @@ describe('leaderboard lib', () => {
   const accountName = 'madou.1234';
   const user = testData.user({
     accountName,
-    token: '1234-1234',
+    tokenId: 1,
   });
 
   const input = [
@@ -37,7 +37,7 @@ describe('leaderboard lib', () => {
     });
 
     expect(actual).to.eql([{
-      apiToken: user.token,
+      apiTokenId: user.tokenId,
       deaths: 9,
       kills: 28,
       ratingCurrent: 1775,

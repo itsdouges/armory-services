@@ -16,6 +16,8 @@ export type Models = {
   Gw2Character: Sequelize,
   Gw2Guild: Sequelize,
   UserReset: Sequelize,
+  PvpStandingsHistory: Sequelize,
+  sequelize: any,
 };
 
 type Gw2Standing = {
@@ -35,7 +37,7 @@ export type Gw2PvpStanding = {
 
 export type PvpStandingModel = {
   seasonId: string,
-  apiToken: string,
+  apiTokenId: number,
   ratingCurrent: number,
   decayCurrent: number,
 };

@@ -43,11 +43,12 @@ describe('gw2 token controller', () => {
         post: httpPost,
       },
       config: mockConfig,
+      'lib/gw2': {
+        readTokenInfoWithAccount,
+      },
     });
 
-    controller = controllerFactory(models, createValidator, {
-      readTokenInfoWithAccount,
-    });
+    controller = controllerFactory(models, createValidator);
   });
 
   const seedDb = async function (email, addTokens = true) {

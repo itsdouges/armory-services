@@ -1,3 +1,7 @@
+// @flow
+
+import type { Models } from 'flowTypes';
+
 import memoize from 'memoizee';
 import _ from 'lodash';
 
@@ -13,6 +17,7 @@ import gw2 from 'lib/gw2';
 
 import { list as listUsers } from 'lib/services/user';
 import { list as listCharacters } from 'lib/services/character';
+import { read as readToken } from 'lib/services/tokens';
 import access from './access';
 
 const guildMethodMap = {
@@ -25,7 +30,7 @@ const guildMethodMap = {
   upgrades: gw2.readGuildUpgrades,
 };
 
-export default function guildControllerFactory (models) {
+export default function guildControllerFactory (models: Models) {
   const checkAccess = (type, guildName, email) => access(models, { type, guildName, email });
 
   async function read (name, { email } = {}) {
@@ -33,8 +38,8 @@ export default function guildControllerFactory (models) {
 
     const [canAccess, characters, users] = await Promise.all([
       checkAccess('read', name, email),
-      listCharacters(models, { guild: guild.id }),
-      listUsers(models, { guild: guild.id }),
+      listCharacters(models, { guild: guild && guild.id }),
+      listUsers(models, { guild: guild && guild.id }),
     ]);
 
     const parsedGuild = canAccess ? guild : _.pick(guild, [
@@ -82,7 +87,7 @@ export default function guildControllerFactory (models) {
     }
 
     const guild = await readGuildPrivate(models, { name });
-    if (!guild.apiToken) {
+    if (!guild.apiTokenId) {
       return undefined;
     }
 
@@ -97,7 +102,9 @@ export default function guildControllerFactory (models) {
         return [];
       }
 
-      return await func(guild.apiToken, guild.id);
+      const token = await readToken(models, { id: guild.apiTokenId });
+
+      return await func(token.token, guild.id);
     };
 
     return obj;

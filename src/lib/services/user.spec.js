@@ -56,7 +56,10 @@ describe('user service', () => {
     await models.User.create(userTwo);
     await models.Gw2ApiToken.create(apiToken);
     await models.Gw2ApiToken.create(apiTokenForUserTwo);
-    await models.PvpStandings.create(standing);
+    await models.PvpStandings.create({
+      ...standing,
+      gw2aRank: 1,
+    });
 
     readGuild.withArgs(models, { name: guild.name }).returns(Promise.resolve(guild));
     readLatestPvpSeason.returns(Promise.resolve({ id: standing.seasonId }));
@@ -132,7 +135,6 @@ describe('user service', () => {
     context('with api token', () => {
       it('should return data', async () => {
         const usr = await service.read(models, { apiToken: apiTokenForUserTwo.token });
-
         assertUser(usr);
       });
 
@@ -144,10 +146,23 @@ describe('user service', () => {
       });
     });
 
+    context('with api token id', () => {
+      it('should return data', async () => {
+        const usr = await service.read(models, { apiTokenId: apiTokenForUserTwo.id });
+        assertUser(usr);
+      });
+
+      context('when user doesnt exist', () => {
+        it('should return null', async () => {
+          const usr = await service.read(models, { apiTokenId: 1111 });
+          expect(usr).to.be.null;
+        });
+      });
+    });
+
     context('with alias', () => {
       it('should return data', async () => {
         const usr = await service.read(models, { alias: userTwo.alias });
-
         assertUser(usr);
       });
 
@@ -162,7 +177,6 @@ describe('user service', () => {
     context('with email', () => {
       it('should return data', async () => {
         const usr = await service.read(models, { email: userTwo.email });
-
         assertUser(usr);
       });
 
@@ -177,7 +191,6 @@ describe('user service', () => {
     context('with accountName', () => {
       it('should return data', async () => {
         const usr = await service.read(models, { accountName: apiTokenForUserTwo.accountName });
-
         assertUser(usr);
       });
 
@@ -192,8 +205,8 @@ describe('user service', () => {
     context('with no standing info', () => {
       it('should return data', async () => {
         readLatestPvpSeason.returns(Promise.resolve({ id: '123-nah-lol' }));
-        const usr = await service.read(models, { email: userTwo.email });
 
+        const usr = await service.read(models, { email: userTwo.email });
         assertUser(usr, true);
       });
     });

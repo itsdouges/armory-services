@@ -17,7 +17,9 @@ export const user = ({
   passwordHash = 'realhashseriously',
   alias = 'huedwell',
   token = '12222-2222',
+  tokenId = 1,
   guilds,
+  accountName,
 }: User = {}): User => ({
   id,
   email,
@@ -26,6 +28,8 @@ export const user = ({
   alias,
   token,
   guilds,
+  tokenId,
+  accountName,
 });
 
 export const guild = ({

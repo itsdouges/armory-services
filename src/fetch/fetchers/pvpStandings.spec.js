@@ -29,10 +29,13 @@ describe('pvp standings fetcher', () => {
     models = await setupTestDb({ seed: true });
     readPvpStandings.withArgs(token.token).returns(Promise.resolve(standings));
     await pvpStandingsFetcher(models, token);
+    await pvpStandingsFetcher(models, token);
   });
 
   it('should insert all pvp data into db', async () => {
-    const rows = await models.PvpStandings.findAll();
+    const rows = await models.PvpStandings.findAll({
+      order: ['createdAt'],
+    });
 
     expect(rows.length).to.equal(standings.length);
     rows.map((row) => row.dataValues).forEach((row, index) => {

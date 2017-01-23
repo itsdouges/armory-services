@@ -11,14 +11,14 @@ import fetchToken from 'fetch/fetchers/account';
 import { read as readGuild } from './guild';
 
 type ListOptions = {
-  guild: string,
+  guild?: string,
 };
 
 export async function list (models: Models, { guild }: ListOptions): Promise<Array<UserModel>> {
   const tokens = await models.Gw2ApiToken.findAll({
     where: {
       guilds: {
-        $like: `%${guild}%`,
+        $like: `%${guild || ''}%`,
       },
     },
     include: [{
@@ -37,12 +37,12 @@ export async function isUserInGuild (
   email: string,
   guildName: string,
 ): Promise<boolean> {
-  const { id } = await readGuild(models, { name: guildName });
+  const guild = await readGuild(models, { name: guildName });
 
   const token = await models.Gw2ApiToken.findAll({
     where: {
       guilds: {
-        $like: `%${id}%`,
+        $like: `%${guild ? guild.id : ''}%`,
       },
     },
     include: [{
@@ -84,9 +84,10 @@ export async function create (models: Models, user: CreateUser): Promise<DbUser>
   return await models.User.create(user);
 }
 
-async function readByToken (models, { accountName, apiToken }): Promise<?UserModel> {
+async function readByToken (models, { accountName, apiToken, apiTokenId }): Promise<?UserModel> {
   const token = await models.Gw2ApiToken.findOne({
     where: _.pickBy({
+      id: apiTokenId,
       token: apiToken,
       accountName,
     }),
@@ -125,19 +126,21 @@ async function readByUser (models, { alias, email }) {
 
 type ReadOptions = {
   apiToken?: string,
+  apiTokenId?: number,
   alias?: string,
   email?: string,
   accountName?: string,
 };
 
 export async function read (models: Models, {
+  apiTokenId,
   apiToken,
   alias,
   email,
   accountName,
 }: ReadOptions): Promise<?UserModel> {
-  const data = (apiToken || accountName)
-    ? await readByToken(models, { apiToken, accountName })
+  const data = (apiTokenId || accountName || apiToken)
+    ? await readByToken(models, { apiTokenId, apiToken, accountName })
     : await readByUser(models, { alias, email });
 
   if (!data) {
@@ -150,6 +153,7 @@ export async function read (models: Models, {
       seasonId,
       apiTokenId: data.tokenId,
     },
+    order: [['createdAt', 'DESC']],
   });
 
   return {

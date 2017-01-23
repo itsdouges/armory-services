@@ -105,7 +105,6 @@ export default function userControllerFactory (models: Models) {
     const characters = await listCharacters(models, { alias: user.alias, email, ignorePrivacy });
 
     let guilds = [];
-    console.log(user.guilds)
     if (user.guilds) {
       const promises = user.guilds.split(',').map((id) => readGuild(models, { id }));
 

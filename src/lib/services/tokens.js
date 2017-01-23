@@ -1,6 +1,8 @@
 // @flow
 
 import type { Models } from 'flowTypes';
+import _ from 'lodash';
+
 import gw2 from 'lib/gw2';
 
 export async function list (models: Models) {
@@ -11,6 +13,18 @@ export async function list (models: Models) {
   });
 
   return tokens.map((item) => item.dataValues);
+}
+
+type Tokens$Read = {
+  id: number,
+};
+
+export async function read (models: Models, { id }: Tokens$Read) {
+  return await models.Gw2ApiToken.findOne({
+    where: _.pickBy({
+      id,
+    }),
+  });
 }
 
 export async function validate (models: Models, apiToken: string) {

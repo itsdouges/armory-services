@@ -48,12 +48,18 @@ describe('pvp standings service', () => {
       apiToken: apiToken.id,
     });
 
-    await models.PvpStandings.create(standingOne);
+    const latestStanding = {
+      ...standingOne,
+      ratingCurrent: 2222,
+      gw2aRank: 3,
+      naRank: 4,
+      euRank: 55,
+    };
 
-    const actual = await service.list(models, standingOne.seasonId);
+    await models.PvpStandings.create(latestStanding);
 
-    expect(actual).to.eql([
-      standingOne,
-    ]);
+    const actual = await service.list(models, standingOne.seasonId, 'gw2a');
+
+    expect(actual[0]).to.include(latestStanding);
   });
 });

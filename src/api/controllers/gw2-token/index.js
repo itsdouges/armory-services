@@ -1,7 +1,8 @@
 import axios from 'axios';
 import config from 'config';
+import gw2Api from 'lib/gw2';
 
-export default function tokenFactory (models, createValidator, gw2Api) {
+export default function tokenFactory (models, createValidator) {
   createValidator.addResource({
     name: 'gw2-token',
     mode: 'add',

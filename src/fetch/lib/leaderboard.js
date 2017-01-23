@@ -5,7 +5,7 @@ import type { Models, Gw2LadderStanding } from 'flowTypes';
 import { read as readUser } from 'lib/services/user';
 
 type Standing = {
-  apiToken: string,
+  apiTokenId: number,
   seasonId: string,
   ['naRank' | 'euRank']: number,
   ratingCurrent: number,
@@ -30,7 +30,7 @@ export default async function buildLadderByAccountName (
   );
 
   return users.filter((user) => !!user).map((user, index) => ({
-    apiToken: user && user.token ? user.token : '',
+    apiTokenId: user && user.tokenId ? user.tokenId : -1,
     [key]: ladder[index].rank,
     seasonId,
 
