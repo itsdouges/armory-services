@@ -233,8 +233,20 @@ export async function createStubUser (models: Models, accountName: string): Prom
   };
 }
 
+async function readToken (apiToken) {
+  const [account, info] = await Promise.all([
+    gw2.readAccount(apiToken),
+    gw2.readTokenInfo(apiToken),
+  ]);
+
+  return {
+    name: account.name,
+    permissions: info.permissions.join(','),
+  };
+}
+
 export async function claimStubApiToken (models: Models, email: string, apiToken: string) {
-  const { name } = await gw2.readAccount(apiToken);
+  const { name, permissions } = await readToken(apiToken);
 
   const user = await read(models, { email });
   if (!user) {
@@ -243,6 +255,7 @@ export async function claimStubApiToken (models: Models, email: string, apiToken
 
   await models.Gw2ApiToken.update({
     token: apiToken,
+    permissions,
     stub: false,
     UserId: user.id,
   }, {
@@ -264,7 +277,7 @@ export async function claimStubApiToken (models: Models, email: string, apiToken
     },
   });
 
-  await fetchToken(models, { token: apiToken, permissions: 'guilds', id });
+  await fetchToken(models, { token: apiToken, permissions, id });
 }
 
 type ClaimUser = CreateUser & {
@@ -272,7 +285,7 @@ type ClaimUser = CreateUser & {
 };
 
 export async function claimStubUser (models: Models, user: ClaimUser) {
-  const { name } = await gw2.readAccount(user.apiToken);
+  const { name, permissions } = await readToken(user.apiToken);
 
   await models.User.update({
     ...user,
@@ -286,6 +299,7 @@ export async function claimStubUser (models: Models, user: ClaimUser) {
   await models.Gw2ApiToken.update({
     token: user.apiToken,
     stub: false,
+    permissions,
   }, {
     where: {
       accountName: name,
@@ -298,5 +312,5 @@ export async function claimStubUser (models: Models, user: ClaimUser) {
     },
   });
 
-  await fetchToken(models, { token: user.apiToken, permissions: 'guilds', id });
+  await fetchToken(models, { token: user.apiToken, permissions, id });
 }

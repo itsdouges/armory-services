@@ -7,6 +7,7 @@ const readLatestPvpSeason = sandbox.stub();
 const validateApiToken = sandbox.stub();
 const readAccount = sandbox.stub();
 const fetchToken = sandbox.spy();
+const readTokenInfo = sandbox.stub();
 
 const service = proxyquire('lib/services/user', {
   './guild': {
@@ -15,6 +16,7 @@ const service = proxyquire('lib/services/user', {
   'lib/gw2': {
     readLatestPvpSeason,
     readAccount,
+    readTokenInfo,
   },
   'lib/services/tokens': {
     validate: validateApiToken,
@@ -25,6 +27,7 @@ const service = proxyquire('lib/services/user', {
 describe('user service', () => {
   let models;
 
+  const permissions = ['guilds', 'account'];
   const guild = testData.guild();
   const user = testData.user();
   const apiToken = testData.apiToken();
@@ -258,6 +261,7 @@ describe('user service', () => {
             apiTokenId,
             seasonId: 'a',
           });
+          readTokenInfo.withArgs(newUser.apiToken).returns(Promise.resolve({ permissions }));
           readAccount.withArgs(newUser.apiToken).returns({ name: accountName });
           await service.claimStubUser(models, newUser);
         });
@@ -281,11 +285,12 @@ describe('user service', () => {
           expect(token).to.include({
             stub: false,
             token: newUser.apiToken,
+            permissions: permissions.join(','),
           });
 
           expect(fetchToken).to.have.been.calledWith(models, {
             token: newUser.apiToken,
-            permissions: 'guilds',
+            permissions: permissions.join(','),
             id: token.id,
           });
         });
@@ -297,6 +302,7 @@ describe('user service', () => {
 
         before(async () => {
           readAccount.withArgs(apiTokenClaimer).returns({ name: accountName });
+          readTokenInfo.withArgs(apiTokenClaimer).returns(Promise.resolve({ permissions }));
           await service.createStubUser(models, accountName);
           await service.claimStubApiToken(models, user.email, apiTokenClaimer);
         });
@@ -311,11 +317,12 @@ describe('user service', () => {
           expect(token).to.include({
             stub: false,
             token: apiTokenClaimer,
+            permissions: permissions.join(','),
           });
 
           expect(fetchToken).to.have.been.calledWith(models, {
             token: apiTokenClaimer,
-            permissions: 'guilds',
+            permissions: permissions.join(','),
             id: token.id,
           });
         });
