@@ -323,12 +323,4 @@ describe('user controller', () => {
       });
     });
   });
-
-  describe('claiming an api token', () => {
-    it('should claim api token', async () => {
-      await controller.claimApiToken(email, apiToken);
-
-      expect(claimStubApiToken).to.have.been.calledWith(models, email, apiToken);
-    });
-  });
 });

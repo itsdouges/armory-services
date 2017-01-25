@@ -18,7 +18,6 @@ import {
   readPasswordReset,
   finishPasswordReset,
   claimStubUser,
-  claimStubApiToken,
 } from 'lib/services/user';
 import { list as listCharacters } from 'lib/services/character';
 
@@ -214,10 +213,6 @@ export default function userControllerFactory (models: Models) {
     });
   }
 
-  async function claimApiToken (email: string, apiToken: string) {
-    await claimStubApiToken(models, email, apiToken);
-  }
-
   return {
     create,
     read,
@@ -225,6 +220,5 @@ export default function userControllerFactory (models: Models) {
     forgotMyPasswordStart,
     forgotMyPasswordFinish,
     claim,
-    claimApiToken,
   };
 }

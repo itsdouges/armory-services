@@ -4,6 +4,8 @@ import type { Models, User, UserModel, DbUser } from 'flowTypes';
 import _ from 'lodash';
 import moment from 'moment';
 import uuid from 'uuid/v4';
+import { allSettled } from 'lib/promise';
+import throat from 'throat';
 
 import config from 'config';
 import gw2, { readLatestPvpSeason } from 'lib/gw2';
@@ -130,6 +132,7 @@ type ReadOptions = {
   alias?: string,
   email?: string,
   accountName?: string,
+  mode?: 'lean' | 'full',
 };
 
 export async function read (models: Models, {
@@ -138,6 +141,7 @@ export async function read (models: Models, {
   alias,
   email,
   accountName,
+  mode,
 }: ReadOptions): Promise<?UserModel> {
   const data = (apiTokenId || accountName || apiToken)
     ? await readByToken(models, { apiTokenId, apiToken, accountName })
@@ -145,6 +149,10 @@ export async function read (models: Models, {
 
   if (!data) {
     return null;
+  }
+
+  if (mode === 'lean') {
+    return data;
   }
 
   const { id: seasonId } = await readLatestPvpSeason();
@@ -205,17 +213,58 @@ export async function finishPasswordReset (models: Models, resetId: string): Pro
   });
 }
 
-export async function createStubUser (models: Models, accountName: string): Promise<> {
+type StubUser = {
+  id?: number,
+  accountName: string,
+  guilds?: Array<string>,
+};
+
+type StubUserUpdate = {
+  id: number,
+  accountName: string,
+  guilds: Array<string>,
+};
+
+async function updateStubUser (models: Models, { guilds, id: userId }: StubUserUpdate) {
+  const apiToken = await models.Gw2ApiToken.findOne({
+    include: [{
+      model: models.User,
+      where: {
+        id: userId,
+      },
+    }],
+  });
+
+  const mappedGuilds = guilds.concat(apiToken.guilds.split(','));
+
+  await apiToken.update({
+    guilds: _.uniq(mappedGuilds).join(','),
+  });
+
+  return {
+    id: userId,
+    apiTokenId: apiToken.id,
+  };
+}
+
+export async function createStubUser (
+  models: Models,
+  { accountName, guilds, id: userId }: StubUser
+): Promise<> {
   const stubUserValue = 'stubuser';
 
-  const user = {
+  const data = {
     alias: accountName,
     passwordHash: stubUserValue,
     email: stubUserValue,
     stub: true,
   };
 
-  const { id } = await models.User.create(user);
+  if (userId && guilds) {
+    return updateStubUser(models, { accountName, guilds, id: userId });
+  }
+
+  const { id } = await models.User.create(data);
   const { id: tokenId } = await models.Gw2ApiToken.create({
     permissions: '',
     world: -1,
@@ -225,12 +274,33 @@ export async function createStubUser (models: Models, accountName: string): Prom
     primary: true,
     token: uuid(),
     stub: true,
+    guilds: guilds && guilds.join(','),
   });
 
   return {
     id,
     apiTokenId: tokenId,
   };
+}
+
+export async function bulkCreateStubUser (models: Models, users: Array<StubUser>) {
+  const foundUsers = await Promise.all(
+    users.map(({ accountName }) => read(models, { accountName, mode: 'lean' }))
+  );
+
+  const newUsers = _.zip(foundUsers, users)
+    .filter(([user]) => (!user || user.stub))
+    .map(([, user]) => user);
+
+  if (newUsers.length) {
+    return await allSettled(
+      newUsers.map(
+        throat(config.fetch.concurrentCalls, (user) => createStubUser(models, user))
+      )
+    );
+  }
+
+  return [];
 }
 
 async function readToken (apiToken) {
@@ -242,6 +312,7 @@ async function readToken (apiToken) {
   return {
     name: account.name,
     permissions: info.permissions.join(','),
+    accountId: info.id,
   };
 }
 
@@ -251,7 +322,7 @@ export async function claimStubApiToken (
   apiToken: string,
   primary: boolean = false
 ) {
-  const { name, permissions } = await readToken(apiToken);
+  const { name, permissions, accountId } = await readToken(apiToken);
 
   const user = await read(models, { email });
   if (!user) {
@@ -261,6 +332,7 @@ export async function claimStubApiToken (
   await models.Gw2ApiToken.update({
     token: apiToken,
     permissions,
+    accountId,
     stub: false,
     UserId: user.id,
     primary,
@@ -297,7 +369,7 @@ type ClaimUser = CreateUser & {
 };
 
 export async function claimStubUser (models: Models, user: ClaimUser) {
-  const { name, permissions } = await readToken(user.apiToken);
+  const { name, permissions, accountId } = await readToken(user.apiToken);
 
   await models.User.update({
     ...user,
@@ -312,6 +384,7 @@ export async function claimStubUser (models: Models, user: ClaimUser) {
     token: user.apiToken,
     stub: false,
     permissions,
+    accountId,
   }, {
     where: {
       accountName: name,

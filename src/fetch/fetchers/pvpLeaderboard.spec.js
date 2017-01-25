@@ -5,9 +5,8 @@ const sandbox = sinon.sandbox.create();
 const readLatestPvpSeason = sandbox.stub();
 const listStandings = sandbox.stub();
 const saveStandings = sandbox.stub();
-const readUser = sandbox.stub();
 const readPvpLadder = sandbox.stub();
-const createStubUser = sandbox.stub();
+const bulkCreateStubUser = sandbox.stub();
 const buildLadderByAccountName = sandbox.stub();
 
 const fetcher = proxyquire('fetch/fetchers/pvpLeaderboard', {
@@ -20,8 +19,7 @@ const fetcher = proxyquire('fetch/fetchers/pvpLeaderboard', {
     saveList: saveStandings,
   },
   'lib/services/user': {
-    read: readUser,
-    createStubUser,
+    bulkCreateStubUser,
   },
   '../lib/leaderboard': buildLadderByAccountName,
   ...stubLogger(),
@@ -54,8 +52,8 @@ describe('pvp leaderboard fetcher', () => {
   const toLadder = (names) =>
     names.map((name, index) => testData.gw2LadderStanding({ name, rank: index }));
 
-  const standingg = (apiTokenId, rank, key) => ({
-    apiTokenId,
+  const standingg = (apiTokenIdd, rank, key) => ({
+    apiTokenId: apiTokenIdd,
     seasonId,
     [key]: rank,
   });
@@ -78,16 +76,6 @@ describe('pvp leaderboard fetcher', () => {
 
     readPvpLadder.withArgs(null, seasonId, { region: 'na' }).returns(naLadder);
     readPvpLadder.withArgs(null, seasonId, { region: 'eu' }).returns(euLadder);
-
-    readUser.withArgs(models, { accountName: naLadder[1].name }).returns({
-      token: '1234',
-      accountName: naLadder[1].name,
-    });
-
-    readUser.withArgs(models, { accountName: euLadder[1].name }).returns({
-      token: '4321',
-      accountName: euLadder[1].name,
-    });
 
     buildLadderByAccountName.withArgs(models, naLadder).returns([
       standingg(apiTokenId, 2, 'naRank'),
@@ -116,11 +104,11 @@ describe('pvp leaderboard fetcher', () => {
 
   before(async () => await fetcher(models));
 
-  it('should add any users who arent in the db', () => {
-    expect(createStubUser).to.have.been.calledWith(models, euLadder[0].name);
-    expect(createStubUser).to.have.been.calledWith(models, euLadder[2].name);
-    expect(createStubUser).to.have.been.calledWith(models, naLadder[0].name);
-    expect(createStubUser).to.have.been.calledWith(models, naLadder[2].name);
+  it('should add users from na and eu ladder', () => {
+    expect(bulkCreateStubUser).to.have.been.calledWith(models, [
+      ...naLadder.map(({ name }) => ({ accountName: name })),
+      ...euLadder.map(({ name }) => ({ accountName: name })),
+    ]);
   });
 
   it('should save standings', async () => {

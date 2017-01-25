@@ -52,7 +52,7 @@ describe('user service', () => {
     apiTokenId: apiTokenForUserTwo.id,
   });
 
-  before(async () => {
+  beforeEach(async () => {
     models = await setupTestDb();
 
     await models.User.create(user);
@@ -67,6 +67,8 @@ describe('user service', () => {
     readGuild.withArgs(models, { name: guild.name }).returns(Promise.resolve(guild));
     readLatestPvpSeason.returns(Promise.resolve({ id: standing.seasonId }));
   });
+
+  afterEach(() => sandbox.reset());
 
   describe('list', () => {
     it('should return all users in guild', async () => {
@@ -217,13 +219,22 @@ describe('user service', () => {
 
   describe('stub user', () => {
     describe('adding', () => {
+      const accountName = 'doobie.1234';
+      const guilds = ['1234-1234', '4444-4444'];
+
+      let stubUser;
+      let stubUserId;
+
+      beforeEach(async () => {
+        const { id } = await service.createStubUser(models, { accountName, guilds });
+
+        stubUserId = id;
+        stubUser = await service.read(models, { accountName });
+      });
+
       it('should add user to db', async () => {
-        const accountName = 'doobie.1234';
         const stubUserValue = 'stubuser';
 
-        const { id } = await service.createStubUser(models, accountName);
-
-        const stubUser = await service.read(models, { accountName });
         expect(stubUser).to.include({
           access: null,
           accountName,
@@ -233,9 +244,9 @@ describe('user service', () => {
           email: stubUserValue,
           euRank: null,
           fractalLevel: null,
-          guilds: null,
+          guilds: guilds.join(','),
           gw2aRank: null,
-          id,
+          id: stubUserId,
           monthlyAp: null,
           naRank: null,
           passwordHash: stubUserValue,
@@ -243,9 +254,56 @@ describe('user service', () => {
           wvwRank: null,
         });
       });
+
+      it('should merge guilds if user already a stub user', async () => {
+        const moreGuilds = [guilds[0], '12344444-4444'];
+
+        await service.bulkCreateStubUser(models, [{
+          accountName,
+          guilds: moreGuilds,
+          id: stubUserId,
+        }]);
+
+        const updatedStubUser = await service.read(models, { accountName });
+
+        expect(updatedStubUser.guilds).to.eql([
+          ...moreGuilds,
+          guilds[1],
+        ].join(','));
+      });
+
+      describe('bulk', () => {
+        const userr = (name) => ({
+          accountName: name,
+          guilds: ['1234-4321'],
+        });
+
+        it('should add all users', async () => {
+          const users = [userr('madou.13234'), userr('blastrn.4321')];
+
+          await service.bulkCreateStubUser(models, users);
+
+          const madou = await models.User.findOne({
+            where: {
+              alias: users[0].accountName,
+            },
+          });
+
+          const blastrn = await models.User.findOne({
+            where: {
+              alias: users[1].accountName,
+            },
+          });
+
+          expect(madou).to.exist;
+          expect(blastrn).to.exist;
+        });
+      });
     });
 
     describe('claiming stub user', () => {
+      const accountId = '4444-333-1111';
+
       context('when being claimed by a new user', () => {
         const accountName = 'sickUser.1234';
         const newUser = {
@@ -255,13 +313,16 @@ describe('user service', () => {
           apiToken: '1234-1234-1234',
         };
 
-        before(async () => {
-          const { apiTokenId } = await service.createStubUser(models, accountName);
+        beforeEach(async () => {
+          const { apiTokenId } = await service.createStubUser(models, { accountName });
           await models.PvpStandings.create({
             apiTokenId,
             seasonId: 'a',
           });
-          readTokenInfo.withArgs(newUser.apiToken).returns(Promise.resolve({ permissions }));
+          readTokenInfo.withArgs(newUser.apiToken).returns(Promise.resolve({
+            permissions,
+            id: accountId,
+          }));
           readAccount.withArgs(newUser.apiToken).returns({ name: accountName });
           await service.claimStubUser(models, newUser);
         });
@@ -301,10 +362,13 @@ describe('user service', () => {
         const apiTokenClaimer = '4444-1111-4444';
         let response;
 
-        before(async () => {
+        beforeEach(async () => {
           readAccount.withArgs(apiTokenClaimer).returns({ name: accountName });
-          readTokenInfo.withArgs(apiTokenClaimer).returns(Promise.resolve({ permissions }));
-          await service.createStubUser(models, accountName);
+          readTokenInfo.withArgs(apiTokenClaimer).returns(Promise.resolve({
+            permissions,
+            id: accountId,
+          }));
+          await service.createStubUser(models, { accountName });
           response = await service.claimStubApiToken(models, user.email, apiTokenClaimer, true);
         });
 

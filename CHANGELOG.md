@@ -11,7 +11,7 @@
 ## [1.5.0] - unreleased
 ### Added
 - Eu/na pvp leaderboard data fetch
-- Stub user generation
+- Stub user generation for leaderboards and guilds
 - Stub user claim (new user/existing user with apiToken)
 
 ### Changed

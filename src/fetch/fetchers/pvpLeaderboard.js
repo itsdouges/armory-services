@@ -3,13 +3,10 @@
 import type { Models } from 'flowTypes';
 
 import _ from 'lodash';
-import throat from 'throat';
 
-import config from 'config';
 import gw2, { readLatestPvpSeason } from 'lib/gw2';
-import { read as readUser, createStubUser } from 'lib/services/user';
+import { bulkCreateStubUser } from 'lib/services/user';
 import { saveList as saveStandings, list as listStandings } from 'lib/services/pvpStandings';
-import { allSettled } from 'lib/promise';
 import createLogger from 'lib/gitter';
 import buildLadderByAccountName from '../lib/leaderboard';
 
@@ -41,23 +38,8 @@ const sortByRating = (a, b) => {
 };
 
 async function addMissingUsers (models, ladder) {
-  const users = await Promise.all(
-    ladder.map(({ name }) => readUser(models, { accountName: name }))
-  );
-
-  const newUsers = _.zip(users, ladder)
-    .filter(([user]) => !user)
-    .map(([, standing]) => standing.name);
-
-  if (newUsers.length) {
-    return await allSettled(
-      newUsers.map(
-        throat(config.fetch.concurrentCalls, (accountName) => createStubUser(models, accountName))
-      )
-    );
-  }
-
-  return [];
+  const users = ladder.map(({ name }) => ({ accountName: name }));
+  return await bulkCreateStubUser(models, users);
 }
 
 const mergeLadders = ({ standings, na, eu }) => {
