@@ -1,11 +1,11 @@
-function parseAccountName (userResult) {
+const parseAccountName = (userResult) => {
   const token = userResult.gw2_api_tokens &&
     userResult.gw2_api_tokens.filter((tkn) => tkn.primary)[0];
 
   return token && token.accountName;
-}
+};
 
-function controller (models) {
+export default function searchControllerFactory (models) {
   function search (term) {
     const users = models.User.findAll({
       where: {
@@ -85,5 +85,3 @@ function controller (models) {
     search,
   };
 }
-
-module.exports = controller;

@@ -56,28 +56,23 @@ export default function guildControllerFactory (models: Models) {
     };
   }
 
-  const findAllGuilds = memoize(
-    () => console.log('\n=== Reading guilds ===\n') ||
-    listGuilds(models), {
-      maxAge: config.cache.findAllCharacters,
-      promise: true,
-      preFetch: true,
+  const findAllGuilds = memoize(listGuilds, {
+    maxAge: config.cache.findAllCharacters,
+    promise: true,
+    preFetch: true,
+  });
+
+  async function random (n = 1) {
+    const guilds = await findAllGuilds(models);
+    if (!guilds.length) {
+      return undefined;
     }
-  );
 
-  function random (n = 1) {
-    return findAllGuilds()
-      .then((guilds) => {
-        if (!guilds.length) {
-          return undefined;
-        }
-
-        return _.sampleSize(guilds, limit(n, 10)).map((guild) => ({
-          name: guild.name,
-          id: guild.id,
-          tag: guild.tag,
-        }));
-      });
+    return _.sampleSize(guilds, limit(n, 10)).map((guild) => ({
+      name: guild.name,
+      id: guild.id,
+      tag: guild.tag,
+    }));
   }
 
   async function readGuildWithAccess (name, accessType, { email } = {}) {

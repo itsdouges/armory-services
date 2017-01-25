@@ -1,6 +1,5 @@
-const password = require('password-hash-and-salt');
-const controller = require('./index');
-const Models = require('lib/models');
+import password from 'password-hash-and-salt';
+import controller from './';
 
 describe('auth controller', () => {
   let sut;

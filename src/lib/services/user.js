@@ -245,7 +245,12 @@ async function readToken (apiToken) {
   };
 }
 
-export async function claimStubApiToken (models: Models, email: string, apiToken: string) {
+export async function claimStubApiToken (
+  models: Models,
+  email: string,
+  apiToken: string,
+  primary: boolean = false
+) {
   const { name, permissions } = await readToken(apiToken);
 
   const user = await read(models, { email });
@@ -258,6 +263,7 @@ export async function claimStubApiToken (models: Models, email: string, apiToken
     permissions,
     stub: false,
     UserId: user.id,
+    primary,
   }, {
     where: {
       accountName: name,
@@ -277,7 +283,13 @@ export async function claimStubApiToken (models: Models, email: string, apiToken
     },
   });
 
-  await fetchToken(models, { token: apiToken, permissions, id });
+  return {
+    token: apiToken,
+    id,
+    accountName: name,
+    permissions,
+    primary,
+  };
 }
 
 type ClaimUser = CreateUser & {
@@ -312,5 +324,85 @@ export async function claimStubUser (models: Models, user: ClaimUser) {
     },
   });
 
-  await fetchToken(models, { token: user.apiToken, permissions, id });
+  fetchToken(models, { token: user.apiToken, permissions, id });
+}
+
+export async function getUserId (models: Models, email: string) {
+  const user = await models.User.findOne({
+    where: {
+      email,
+    },
+  });
+
+  return user.id;
+}
+
+export async function doesUserHaveTokens (models: Models, userId: number) {
+  const tokens = await models.Gw2ApiToken.findAll({
+    include: [{
+      model: models.User,
+      where: {
+        id: userId,
+      },
+    }],
+  });
+
+  return !!tokens.length;
+}
+
+export async function doesTokenExist (models: Models, accountName: string) {
+  const tokenExists = await models.Gw2ApiToken.findOne({
+    where: {
+      accountName,
+    },
+  });
+
+  return !!tokenExists;
+}
+
+export async function selectPrimaryToken (models: Models, email: string, token: string) {
+  const id = await getUserId(models, email);
+
+  await models.Gw2ApiToken.update({
+    primary: false,
+  }, {
+    where: {
+      UserId: id,
+    },
+  });
+
+  await models.Gw2ApiToken.update({
+    primary: true,
+  }, {
+    where: {
+      UserId: id,
+      token,
+    },
+  });
+}
+
+export async function listTokens (models: Models, email: string) {
+  return await models.Gw2ApiToken.findAll({
+    include: [{
+      model: models.User,
+      where: {
+        email,
+      },
+    }],
+  });
+}
+
+export async function removeToken (models: Models, email: string, apiToken: string) {
+  const user = await models.User.findOne({
+    where: {
+      email,
+    },
+  });
+
+  await models.Gw2ApiToken.destroy({
+    where: {
+      UserId: user.id,
+      token: apiToken,
+    },
+  });
 }

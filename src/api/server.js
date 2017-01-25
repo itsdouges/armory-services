@@ -13,9 +13,8 @@ import characterControllerFactory from './controllers/character';
 import pvpControllerFactory from './controllers/pvp';
 import sitemapControllerFactory from './controllers/sitemap';
 import checkControllerFactory from './controllers/check';
-
-const authControllerFactory = require('./controllers/auth');
-const statisticsControllerFactory = require('./controllers/statistics');
+import authControllerFactory from './controllers/auth';
+import statisticsControllerFactory from './controllers/statistics';
 
 export default function createServer (models: Models, config: any) {
   createValidator.addDefaultRules();

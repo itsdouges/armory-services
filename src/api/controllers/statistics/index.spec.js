@@ -1,6 +1,5 @@
 import * as testData from 'test/testData';
-
-const controllerFactory = require('./');
+import controllerFactory from './';
 
 const setupTestData = async (models) => {
   await models.User.create(testData.user());

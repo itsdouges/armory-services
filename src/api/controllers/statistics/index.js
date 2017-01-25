@@ -1,6 +1,6 @@
 /* eslint no-param-reassign:0 */
 
-module.exports = (models) => {
+export default function statisticsControllerFactory (models) {
   function users () {
     return models.User.findAll()
       .then((usrs) => {
@@ -62,4 +62,4 @@ module.exports = (models) => {
     guilds,
     characters,
   };
-};
+}

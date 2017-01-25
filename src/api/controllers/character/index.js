@@ -81,15 +81,14 @@ export default function characterControllerFactory (models: Models) {
     return await listCharacters(models, { email, alias, ignorePrivacy });
   }
 
-  const findAllCharacters = memoize(() => console.log('\n=== Reading chars ===\n') ||
-  listPublic(models), {
+  const findAllCharacters = memoize(listPublic, {
     maxAge: config.cache.findAllCharacters,
     promise: true,
     preFetch: true,
   });
 
   async function random (n: number = 1) {
-    const characters = await findAllCharacters();
+    const characters = await findAllCharacters(models);
     if (!characters.length) {
       return undefined;
     }

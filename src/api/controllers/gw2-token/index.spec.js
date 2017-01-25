@@ -108,21 +108,6 @@ describe('gw2 token controller', () => {
       }
     });
 
-    it('should return true if user has tokens', async () => {
-      await seedDb(user.email);
-      const result = await controller.doesUserHaveTokens(user.id);
-
-      expect(result).to.equal(true);
-    });
-
-    it('should return false if user has no tokens', async () => {
-      await seedDb('fake@stuff.com', false);
-
-      const result = await controller.doesUserHaveTokens(user.id);
-
-      expect(result).to.equal(false);
-    });
-
     it('should add token to db as not primary', async () => {
       validate.returns(Promise.resolve());
 
@@ -165,7 +150,6 @@ describe('gw2 token controller', () => {
         primary: true,
         permissions: 'cool,yeah!',
         accountName: 'nameee',
-        world: 1122,
       });
 
       expect(httpPost).to.have.been.calledWith('http://host:port/fetch', {

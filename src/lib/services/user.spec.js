@@ -299,12 +299,13 @@ describe('user service', () => {
       context('when being claimed by an existing user', () => {
         const accountName = 'anotherSickUser.1234';
         const apiTokenClaimer = '4444-1111-4444';
+        let response;
 
         before(async () => {
           readAccount.withArgs(apiTokenClaimer).returns({ name: accountName });
           readTokenInfo.withArgs(apiTokenClaimer).returns(Promise.resolve({ permissions }));
           await service.createStubUser(models, accountName);
-          await service.claimStubApiToken(models, user.email, apiTokenClaimer);
+          response = await service.claimStubApiToken(models, user.email, apiTokenClaimer, true);
         });
 
         it('should update token', async () => {
@@ -319,12 +320,17 @@ describe('user service', () => {
             token: apiTokenClaimer,
             permissions: permissions.join(','),
           });
+        });
 
-          expect(fetchToken).to.have.been.calledWith(models, {
-            token: apiTokenClaimer,
+        it('should return response', () => {
+          expect(response).to.include({
+            accountName,
             permissions: permissions.join(','),
-            id: token.id,
+            token: apiTokenClaimer,
+            primary: true,
           });
+
+          expect(response.id).to.exist;
         });
 
         it('should delete stub user', async () => {

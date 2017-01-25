@@ -1,4 +1,4 @@
-export default function CheckController (createValidator) {
+export default function checkControllerFactory (createValidator) {
   createValidator.addResource({
     name: 'check',
     mode: 'gw2-token',

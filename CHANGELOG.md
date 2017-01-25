@@ -11,9 +11,12 @@
 ## [1.5.0] - unreleased
 ### Added
 - Eu/na pvp leaderboard data fetch
+- Stub user generation
+- Stub user claim (new user/existing user with apiToken)
 
 ### Changed
 - Cleaned up config
+- Api token primary key and supporting foreign keys $$_MIGRATIONS_$$
 - Consolidated gitter logging to be used in other modules
 
 ## [1.4.1] - 2017/01/15
