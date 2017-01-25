@@ -32,9 +32,12 @@ export default function characterControllerFactory (models: Models) {
 
   async function read (name: string, { ignorePrivacy, email }: ReadOptions = {}) {
     const character = await readCharacter(models, name, email);
-    if (!character ||
-      (!character.showPublic && !canIgnorePrivacy(character, email, ignorePrivacy))) {
-      return Promise.reject(new Error('Unauthorized'));
+    if (!character) {
+      throw new Error('Character not found');
+    }
+
+    if (!character.showPublic && !canIgnorePrivacy(character, email, ignorePrivacy)) {
+      return Promise.reject(new Error('Unauthorized to view character'));
     }
 
     const characterFromGw2Api = await gw2.readCharacter(character.Gw2ApiToken.token, name);

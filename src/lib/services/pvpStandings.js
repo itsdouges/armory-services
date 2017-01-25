@@ -10,11 +10,18 @@ export async function saveList (models: Models, pvpStandings: Array<PvpStandingM
         apiTokenId: standing.apiTokenId,
         seasonId: standing.seasonId,
       },
-    })
-    .then((standingInDb) => models.PvpStandings.upsert({
-      ...standing,
-      id: standingInDb && standingInDb.id,
-    }));
+    }).then((standingInDb) => {
+      const id = standingInDb && standingInDb.id;
+      if (!id) {
+        return models.PvpStandings.create(standing);
+      }
+
+      return models.PvpStandings.update(standing, {
+        where: {
+          id,
+        },
+      });
+    });
   }));
 }
 

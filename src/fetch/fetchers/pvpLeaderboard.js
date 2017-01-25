@@ -75,15 +75,13 @@ const mergeLadders = ({ standings, na, eu }) => {
   return _.values(mergedStandings);
 };
 
-async function saveLadder (models, { standings, na, eu }) {
-  const sortedStandings = mergeLadders({ standings, na, eu })
+function buildStandings ({ standings, na, eu }) {
+  return mergeLadders({ standings, na, eu })
     .sort(sortByRating)
     .map((standing, index) => ({
       ...standing,
       gw2aRank: hasJoined(standing) ? index + 1 : null,
     }));
-
-  await saveStandings(models, sortedStandings);
 }
 
 export default async function calculatePvpLeaderboards (models: Models) {
@@ -107,7 +105,9 @@ export default async function calculatePvpLeaderboards (models: Models) {
     buildLadderByAccountName(models, euLadder, { key: 'euRank', seasonId: season.id }),
   ]);
 
-  await saveLadder(models, { standings, na, eu });
+  const compiledStandings = buildStandings({ standings, na, eu });
+
+  await saveStandings(models, compiledStandings);
 
   logger.finish(results);
 }
