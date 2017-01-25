@@ -1,8 +1,8 @@
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define('Gw2Guild', {
     id: {
-      // This has caused the field to be called token! Rename it to id.
-      field: 'token',
+      // MIGRATION! token -> id
+      // field: 'token',
       type: DataTypes.STRING,
       primaryKey: true,
     },
@@ -16,13 +16,17 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    apiToken: {
-      type: DataTypes.STRING,
+    // REQUIRE MIGRATION (apiToken -> apiTokenId)
+    apiTokenId: {
+      // REQUIRED MIGRATION (STRING -> INT
+      type: DataTypes.INTEGER,
       allowNull: true,
       onDelete: 'SET NULL',
       references: {
         model: 'Gw2ApiTokens',
-        key: 'token',
+        // MIGRATION! token -> id
+        // key: 'token',
+        key: 'id',
       },
     },
     favor: {

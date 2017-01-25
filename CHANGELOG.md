@@ -14,6 +14,7 @@
 - Stub user generation for leaderboards and guilds
 - Stub user claim (new user/existing user with apiToken)
 - Healthcheck
+- Local db migration test run
 
 ### Changed
 - Cleaned up config

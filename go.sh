@@ -60,6 +60,20 @@ run() {
     $4
 }
 
+exec() {
+  log "Running $1.."
+
+  local TAG="$DOCKERHUB_PREFIX-$APP_NAME:$APP_VERSION"
+  local NAME="$DOCKER_IMAGE_PREFIX-$1"
+
+  docker run \
+    --rm \
+    $3 \
+    --name $NAME \
+    $TAG \
+    $2
+}
+
 build() {
   log "Building app image.."
 
@@ -75,18 +89,29 @@ kill() {
   remove api
 }
 
+db() {
+  run db db "-e MYSQL_ROOT_PASSWORD=$MYSQL_PASS -e MYSQL_PASSWORD=$MYSQL_PASS -e MYSQL_USER=$MYSQL_USER -e MYSQL_DATABASE=$MYSQL_DB -p 3306:3306"
+
+  pause 10
+}
+
 dev() {
   kill
 
   build db ./src/db
   build $APP_NAME .
 
-  run db db "-e MYSQL_ROOT_PASSWORD=$MYSQL_PASS -e MYSQL_PASSWORD=$MYSQL_PASS -e MYSQL_USER=$MYSQL_USER -e MYSQL_DATABASE=$MYSQL_DB"
-
-  pause 10
+  db
 
   run $APP_NAME fetch "--link $DOCKER_IMAGE_PREFIX-db:db" "npm run fetch"
   run $APP_NAME api "-p 80:80 --link $DOCKER_IMAGE_PREFIX-db:db --link $DOCKER_IMAGE_PREFIX-fetch:fetch" "npm run api"
+}
+
+setupMtr() {
+  build db ./src/db
+  remove db
+
+  db
 }
 
 case "$1" in
@@ -96,6 +121,10 @@ case "$1" in
     push $APP_NAME;;
   dev)
     dev;;
+  mtr)
+    testmigrate;;
+  setupMtr)
+    setupMtr;;
   clean)
     clean;;
   kill)

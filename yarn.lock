@@ -3085,6 +3085,10 @@ next-tick@~0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-0.2.2.tgz#75da4a927ee5887e39065880065b7336413b310d"
 
+node-cmd@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/node-cmd/-/node-cmd-1.2.0.tgz#ba35c1892436829da62697c0d744576397fca337"
+
 node-gitter@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/node-gitter/-/node-gitter-2.0.5.tgz#c53c3b6b2d5a901100f1458c2b3b819fea456460"
@@ -4373,7 +4377,7 @@ util-deprecate@~1.0.1:
   dependencies:
     inherits "2.0.1"
 
-uuid@3.0.0, uuid@^3.0.0:
+uuid@3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.0.0.tgz#6728fc0459c450d796a99c31837569bdf672d728"
 
@@ -4381,7 +4385,7 @@ uuid@^2.0.1:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-2.0.3.tgz#67e2e863797215530dff318e5bf9dcebfd47b21a"
 
-uuid@^3.0.1:
+uuid@^3.0.0, uuid@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.0.1.tgz#6544bba2dfda8c1cf17e629a3a305e2bb1fee6c1"
 

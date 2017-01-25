@@ -19,7 +19,9 @@
     "flow": "flow",
     "flowtypes": "flow-typed install --overwrite",
     "clean-docker": "./go.sh clean",
-    "kill": "./go.sh kill"
+    "kill": "./go.sh kill",
+    "prepare-mtr": "./go.sh setupMtr",
+    "mtr": "ENV=local babel-node ./src/migration/testRun && npm run migration"
   },
   "repository": {
     "type": "git",
@@ -80,6 +82,7 @@
     "hash-files": "^1.0.0",
     "mocha": "^3.1.1",
     "mustache": "^2.2.0",
+    "node-cmd": "^1.2.0",
     "nodemon": "^1.4.1",
     "proxyquire": "^1.7.10",
     "run-sequence": "^1.1.2",

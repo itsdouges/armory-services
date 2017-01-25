@@ -6,6 +6,7 @@ switch (ENVIRONMENT) {
   case 'PROD':
   case 'TEST':
   case 'ABCD':
+  case 'local':
     break;
 
   default:
