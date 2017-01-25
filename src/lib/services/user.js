@@ -6,10 +6,10 @@ import moment from 'moment';
 import uuid from 'uuid/v4';
 import { allSettled } from 'lib/promise';
 import throat from 'throat';
+import axios from 'axios';
 
 import config from 'config';
 import gw2, { readLatestPvpSeason } from 'lib/gw2';
-import fetchToken from 'fetch/fetchers/account';
 import { read as readGuild } from './guild';
 
 type ListOptions = {
@@ -401,7 +401,11 @@ export async function claimStubUser (models: Models, user: ClaimUser) {
     },
   });
 
-  fetchToken(models, { token: user.apiToken, permissions, id });
+  axios.post(`http://${config.fetch.host}:${config.fetch.port}/fetch`, {
+    token: user.apiToken,
+    permissions,
+    id,
+  });
 }
 
 export async function getUserId (models: Models, email: string) {

@@ -13,6 +13,7 @@
 - Eu/na pvp leaderboard data fetch
 - Stub user generation for leaderboards and guilds
 - Stub user claim (new user/existing user with apiToken)
+- Healthcheck
 
 ### Changed
 - Cleaned up config

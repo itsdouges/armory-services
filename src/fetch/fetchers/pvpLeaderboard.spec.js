@@ -70,7 +70,9 @@ describe('pvp leaderboard fetcher', () => {
     'winner.1299',
   ]);
 
-  before(() => {
+  before(async () => {
+    saveStandings.returns(Promise.resolve([]));
+    bulkCreateStubUser.returns(Promise.resolve([]));
     readLatestPvpSeason.returns({ id: seasonId, active: true });
     listStandings.withArgs(models, seasonId).returns(standings);
 
@@ -86,6 +88,8 @@ describe('pvp leaderboard fetcher', () => {
       standingg(standings[2].apiTokenId, 5, 'euRank'),
       standingg(apiTokenId2, 2, 'euRank'),
     ]);
+
+    await fetcher(models);
   });
 
   const addRanking = (stnding, gw2aRank, naRank, euRank) => ({
@@ -101,8 +105,6 @@ describe('pvp leaderboard fetcher', () => {
     standingThree,
     standingFour,
   ] = standings;
-
-  before(async () => await fetcher(models));
 
   it('should add users from na and eu ladder', () => {
     expect(bulkCreateStubUser).to.have.been.calledWith(models, [

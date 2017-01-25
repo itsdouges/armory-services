@@ -6,8 +6,19 @@ const readGuild = sandbox.stub();
 const readLatestPvpSeason = sandbox.stub();
 const validateApiToken = sandbox.stub();
 const readAccount = sandbox.stub();
-const fetchToken = sandbox.spy();
 const readTokenInfo = sandbox.stub();
+const httpPost = sandbox.spy();
+
+const config = {
+  fetch: {
+    host: '10.123.123',
+    port: '9888',
+    concurrentCalls: 1,
+  },
+  forgotMyPassword: {
+    expiry: 123,
+  },
+};
 
 const service = proxyquire('lib/services/user', {
   './guild': {
@@ -21,7 +32,10 @@ const service = proxyquire('lib/services/user', {
   'lib/services/tokens': {
     validate: validateApiToken,
   },
-  'fetch/fetchers/account': fetchToken,
+  axios: {
+    post: httpPost,
+  },
+  config,
 });
 
 describe('user service', () => {
@@ -363,7 +377,7 @@ describe('user service', () => {
             permissions: permissions.join(','),
           });
 
-          expect(fetchToken).to.have.been.calledWith(models, {
+          expect(httpPost).to.have.been.calledWith(`http://${config.fetch.host}:${config.fetch.port}/fetch`, {
             token: newUser.apiToken,
             permissions: permissions.join(','),
             id: token.id,

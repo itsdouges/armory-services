@@ -33,7 +33,7 @@ const server = restify.createServer({
 
 server.use(restify.bodyParser());
 
-server.get('/', (req, res, next) => {
+server.get('/healthcheck', (req, res, next) => {
   res.send(200, 'hi, im alive');
   return next();
 });
