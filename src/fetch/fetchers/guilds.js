@@ -12,12 +12,12 @@ export default async function guildsFetcher (
   { token, id, permissions }: Fetcher$Token
 ) {
   if (!_.includes(permissions, 'guilds')) {
-    return;
+    return undefined;
   }
 
   const { guildLeader } = await gw2.readAccount(token);
   if (!guildLeader) {
-    return;
+    return undefined;
   }
 
   const promises = guildLeader.map(async (guildId) => {
@@ -39,5 +39,5 @@ export default async function guildsFetcher (
     ]);
   });
 
-  await Promise.all(promises);
+  return await Promise.all(promises);
 }

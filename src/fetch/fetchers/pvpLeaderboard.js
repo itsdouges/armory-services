@@ -80,7 +80,7 @@ export default async function calculatePvpLeaderboards (models: Models) {
     listStandings(models, season.id),
   ]);
 
-  const results = await addMissingUsers(models, naLadder.concat(euLadder));
+  const newUsersResults = await addMissingUsers(models, naLadder.concat(euLadder));
 
   const [na, eu] = await Promise.all([
     buildLadderByAccountName(models, naLadder, { key: 'naRank', seasonId: season.id }),
@@ -89,7 +89,10 @@ export default async function calculatePvpLeaderboards (models: Models) {
 
   const compiledStandings = buildStandings({ standings, na, eu });
 
-  await saveStandings(models, compiledStandings);
+  const saveResults = await saveStandings(models, compiledStandings);
 
-  logger.finish(results);
+  logger.finish([
+    ...newUsersResults,
+    ...saveResults,
+  ]);
 }

@@ -28,5 +28,5 @@ export default async function fetchPvpStandings (models: Models, { token, id }: 
     decayBest: standing.best.decay,
   }));
 
-  await saveList(models, mappedStandings);
+  return await saveList(models, mappedStandings);
 };

@@ -69,10 +69,14 @@ build() {
     $2
 }
 
-dev() {
+kill() {
   remove db
   remove fetch
   remove api
+}
+
+dev() {
+  kill
 
   build db ./src/db
   build $APP_NAME .
@@ -94,6 +98,8 @@ case "$1" in
     dev;;
   clean)
     clean;;
+  kill)
+    kill;;
   *)
     exit 1;;
 esac

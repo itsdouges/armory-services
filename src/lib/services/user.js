@@ -214,18 +214,19 @@ export async function finishPasswordReset (models: Models, resetId: string): Pro
 }
 
 type StubUser = {
-  id?: number,
-  accountName: string,
   guilds?: Array<string>,
-};
-
-type StubUserUpdate = {
-  id: number,
   accountName: string,
-  guilds: Array<string>,
 };
 
-async function updateStubUser (models: Models, { guilds, id: userId }: StubUserUpdate) {
+type StubUserWithId = StubUser & {
+  id?: number,
+};
+
+async function updateStubUser (models: Models, { guilds, id: userId }: StubUserWithId) {
+  if (!guilds) {
+    return null;
+  }
+
   const apiToken = await models.Gw2ApiToken.findOne({
     include: [{
       model: models.User,
@@ -247,9 +248,9 @@ async function updateStubUser (models: Models, { guilds, id: userId }: StubUserU
   };
 }
 
-export async function createStubUser (
+async function createStubUser (
   models: Models,
-  { accountName, guilds, id: userId }: StubUser
+  { accountName, guilds, id: userId }: StubUserWithId
 ): Promise<> {
   const stubUserValue = 'stubuser';
 
@@ -260,7 +261,7 @@ export async function createStubUser (
     stub: true,
   };
 
-  if (userId && guilds) {
+  if (userId) {
     return updateStubUser(models, { accountName, guilds, id: userId });
   }
 
@@ -290,7 +291,10 @@ export async function bulkCreateStubUser (models: Models, users: Array<StubUser>
 
   const newUsers = _.zip(foundUsers, users)
     .filter(([user]) => (!user || user.stub))
-    .map(([, user]) => user);
+    .map(([userInDb, user]) => ({
+      ..._.pick(userInDb, ['id']),
+      ...user,
+    }));
 
   if (newUsers.length) {
     return await allSettled(

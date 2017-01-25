@@ -18,7 +18,8 @@
     "lint": "eslint .",
     "flow": "flow",
     "flowtypes": "flow-typed install --overwrite",
-    "clean-docker": "./go.sh clean"
+    "clean-docker": "./go.sh clean",
+    "kill": "./go.sh kill"
   },
   "repository": {
     "type": "git",

@@ -217,18 +217,15 @@ describe('user service', () => {
     });
   });
 
-  describe('stub user', () => {
+  describe('stub users', () => {
     describe('adding', () => {
       const accountName = 'doobie.1234';
       const guilds = ['1234-1234', '4444-4444'];
 
       let stubUser;
-      let stubUserId;
 
       beforeEach(async () => {
-        const { id } = await service.createStubUser(models, { accountName, guilds });
-
-        stubUserId = id;
+        await service.bulkCreateStubUser(models, [{ accountName, guilds }]);
         stubUser = await service.read(models, { accountName });
       });
 
@@ -246,7 +243,6 @@ describe('user service', () => {
           fractalLevel: null,
           guilds: guilds.join(','),
           gw2aRank: null,
-          id: stubUserId,
           monthlyAp: null,
           naRank: null,
           passwordHash: stubUserValue,
@@ -261,7 +257,6 @@ describe('user service', () => {
         await service.bulkCreateStubUser(models, [{
           accountName,
           guilds: moreGuilds,
-          id: stubUserId,
         }]);
 
         const updatedStubUser = await service.read(models, { accountName });
@@ -270,6 +265,18 @@ describe('user service', () => {
           ...moreGuilds,
           guilds[1],
         ].join(','));
+      });
+
+      it('should do nothing if guilds is not defined', async () => {
+        const [e] = await service.bulkCreateStubUser(models, [{
+          accountName,
+        }]);
+
+        expect(e.state).to.equal('fulfilled');
+
+        const updatedStubUser = await service.read(models, { accountName });
+
+        expect(updatedStubUser.guilds).to.eql(guilds.join(','));
       });
 
       describe('bulk', () => {
@@ -314,9 +321,16 @@ describe('user service', () => {
         };
 
         beforeEach(async () => {
-          const { apiTokenId } = await service.createStubUser(models, { accountName });
+          await service.bulkCreateStubUser(models, [{ accountName }]);
+
+          const token = await models.Gw2ApiToken.findOne({
+            where: {
+              accountName,
+            },
+          });
+
           await models.PvpStandings.create({
-            apiTokenId,
+            apiTokenId: token.id,
             seasonId: 'a',
           });
           readTokenInfo.withArgs(newUser.apiToken).returns(Promise.resolve({
@@ -368,7 +382,7 @@ describe('user service', () => {
             permissions,
             id: accountId,
           }));
-          await service.createStubUser(models, { accountName });
+          await service.bulkCreateStubUser(models, [{ accountName }]);
           response = await service.claimStubApiToken(models, user.email, apiTokenClaimer, true);
         });
 
