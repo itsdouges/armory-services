@@ -34,13 +34,6 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       defaultValue: false,
     },
-
-    // REQUIRES MIGRATION
-    stub: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-      allowNull: false,
-    },
   }, {
     classMethods: {
       associate (models) {

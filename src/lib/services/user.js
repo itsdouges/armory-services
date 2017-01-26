@@ -257,7 +257,7 @@ async function createStubUser (
   const data = {
     alias: accountName,
     passwordHash: stubUserValue,
-    email: stubUserValue,
+    email: `${accountName}@stub.com`,
     stub: true,
   };
 

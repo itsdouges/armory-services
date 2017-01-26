@@ -1,19 +1,9 @@
 module.exports = function (sequelize, DataTypes) {
   const Gw2ApiToken = sequelize.define('Gw2ApiToken', {
-    // REQUIRES MIGRATION (new field, new primary key)
-    id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-
     token: {
+      field: 'token',
       type: DataTypes.STRING,
-      // REQUIRES MIGRATION (primaryKey: false, allowNull false, unique true)
-      // primaryKey: true,
-      allowNull: false,
-      unique: true,
+      primaryKey: true,
     },
     accountName: {
       type: DataTypes.STRING,
@@ -27,6 +17,7 @@ module.exports = function (sequelize, DataTypes) {
     },
     world: {
       type: DataTypes.INTEGER,
+      field: 'world',
       allowNull: false,
     },
     accountId: {
@@ -39,24 +30,33 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+      field: 'primary',
     },
     guilds: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    created: DataTypes.STRING,
-    access: DataTypes.STRING,
-    commander: DataTypes.BOOLEAN,
-    fractalLevel: DataTypes.INTEGER,
-    dailyAp: DataTypes.INTEGER,
-    monthlyAp: DataTypes.INTEGER,
-    wvwRank: DataTypes.INTEGER,
-
-    // REQUIRES MIGRATION (new field)
-    stub: {
+    // ----------- NEW FIELDS -----------
+    created: {
+      type: DataTypes.STRING,
+    },
+    access: {
+      type: DataTypes.STRING,
+    },
+    commander: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false,
-      allowNull: false,
+    },
+    fractalLevel: {
+      type: DataTypes.INTEGER,
+    },
+    dailyAp: {
+      type: DataTypes.INTEGER,
+    },
+    monthlyAp: {
+      type: DataTypes.INTEGER,
+    },
+    wvwRank: {
+      type: DataTypes.INTEGER,
     },
   }, {
     classMethods: {

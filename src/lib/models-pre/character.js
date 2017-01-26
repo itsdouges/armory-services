@@ -97,9 +97,9 @@ module.exports = function (sequelize, DataTypes) {
     classMethods: {
       associate (models) {
         Gw2Character.belongsTo(models.Gw2ApiToken, {
+          // field: 'apiTokenId',
           onDelete: 'CASCADE',
           foreignKey: {
-            name: 'apiTokenId',
             allowNull: false,
           },
         });

@@ -14,7 +14,7 @@ export default async function fetchUserCharacterData (
 
   await models.Gw2Character.destroy({
     where: {
-      Gw2ApiTokenId: id,
+      apiTokenId: id,
       name: {
         $notIn: characters.map(({ name }) => name),
       },
@@ -25,7 +25,7 @@ export default async function fetchUserCharacterData (
     const promise = models.Gw2Character.findOne({
       where: {
         name: char.name,
-        Gw2ApiTokenId: id,
+        apiTokenId: id,
       },
     })
     .then((character) => {
@@ -40,7 +40,7 @@ export default async function fetchUserCharacterData (
         created: char.created,
         age: char.age,
         deaths: char.deaths,
-        Gw2ApiTokenId: id,
+        apiTokenId: id,
       });
     });
 

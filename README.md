@@ -36,7 +36,7 @@ ENV={ENV} npm run migrate
 Starts a database container and exposes it to 127.0.0.1:3306
 
 ```
-npm run prepare-mtr
+npm run mtr-prepare
 ```
 
 ##### Run step
@@ -44,6 +44,12 @@ Runs the migration against the test database. Make sure to have your migrations 
 
 ```
 npm run mtr
+```
+
+##### Revert step
+Run after running test migration to roll back changes.
+```
+npm run mtr-revert
 ```
 
 ## Pull Requests

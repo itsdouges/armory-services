@@ -20,8 +20,9 @@
     "flowtypes": "flow-typed install --overwrite",
     "clean-docker": "./go.sh clean",
     "kill": "./go.sh kill",
-    "prepare-mtr": "./go.sh setupMtr",
-    "mtr": "ENV=local babel-node ./src/migration/testRun && npm run migration"
+    "mtr-prepare": "./go.sh setupMtr",
+    "mtr": "ENV=local babel-node ./src/migration/testRun && npm run migration",
+    "mtr-revert": "ENV=local sequelize db:migrate:undo"
   },
   "repository": {
     "type": "git",

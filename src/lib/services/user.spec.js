@@ -233,92 +233,70 @@ describe('user service', () => {
 
   describe('stub users', () => {
     describe('adding', () => {
-      const accountName = 'doobie.1234';
-      const guilds = ['1234-1234', '4444-4444'];
-
-      let stubUser;
-
-      beforeEach(async () => {
-        await service.bulkCreateStubUser(models, [{ accountName, guilds }]);
-        stubUser = await service.read(models, { accountName });
+      const newUser = (name) => ({
+        accountName: name,
+        guilds: ['1234-1234', '4444-4444'],
       });
 
-      it('should add user to db', async () => {
+      const users = [newUser('doobie.1234'), newUser('madou.13234'), newUser('blastrn.4321')];
+
+      beforeEach(async () => {
+        await service.bulkCreateStubUser(models, users);
+      });
+
+      it('should add users to db', async () => {
+        const dataSet = await Promise.all(
+          users.map(({ accountName }) => service.read(models, { accountName }))
+        );
         const stubUserValue = 'stubuser';
 
-        expect(stubUser).to.include({
-          access: null,
-          accountName,
-          alias: accountName,
-          commander: null,
-          dailyAp: null,
-          email: stubUserValue,
-          euRank: null,
-          fractalLevel: null,
-          guilds: guilds.join(','),
-          gw2aRank: null,
-          monthlyAp: null,
-          naRank: null,
-          passwordHash: stubUserValue,
-          world: -1,
-          wvwRank: null,
+        _.zip(dataSet, users).forEach(([actual, expected]) => {
+          expect(actual).to.include({
+            access: null,
+            accountName: expected.accountName,
+            alias: expected.accountName,
+            commander: null,
+            dailyAp: null,
+            email: `${expected.accountName}@stub.com`,
+            euRank: null,
+            fractalLevel: null,
+            guilds: users[0].guilds.join(','),
+            gw2aRank: null,
+            monthlyAp: null,
+            naRank: null,
+            passwordHash: stubUserValue,
+            world: -1,
+            wvwRank: null,
+          });
         });
       });
 
       it('should merge guilds if user already a stub user', async () => {
-        const moreGuilds = [guilds[0], '12344444-4444'];
+        const moreGuilds = [users[0].guilds[0], '12344444-4444'];
 
         await service.bulkCreateStubUser(models, [{
-          accountName,
+          accountName: users[0].accountName,
           guilds: moreGuilds,
         }]);
 
-        const updatedStubUser = await service.read(models, { accountName });
+        const updatedStubUser = await service.read(models, { accountName: users[0].accountName });
 
         expect(updatedStubUser.guilds).to.eql([
           ...moreGuilds,
-          guilds[1],
+          users[0].guilds[1],
         ].join(','));
       });
 
       it('should do nothing if guilds is not defined', async () => {
         const [e] = await service.bulkCreateStubUser(models, [{
-          accountName,
+          accountName: users[0].accountName,
         }]);
 
         expect(e.state).to.equal('fulfilled');
 
-        const updatedStubUser = await service.read(models, { accountName });
+        const updatedStubUser = await service.read(models, { accountName: users[0].accountName });
 
-        expect(updatedStubUser.guilds).to.eql(guilds.join(','));
-      });
-
-      describe('bulk', () => {
-        const userr = (name) => ({
-          accountName: name,
-          guilds: ['1234-4321'],
-        });
-
-        it('should add all users', async () => {
-          const users = [userr('madou.13234'), userr('blastrn.4321')];
-
-          await service.bulkCreateStubUser(models, users);
-
-          const madou = await models.User.findOne({
-            where: {
-              alias: users[0].accountName,
-            },
-          });
-
-          const blastrn = await models.User.findOne({
-            where: {
-              alias: users[1].accountName,
-            },
-          });
-
-          expect(madou).to.exist;
-          expect(blastrn).to.exist;
-        });
+        expect(updatedStubUser.guilds).to.eql(users[0].guilds.join(','));
       });
     });
 

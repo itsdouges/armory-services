@@ -104,7 +104,7 @@ export const character = ({
   age = 30,
   deaths = 10,
   guild: gld = guild().name,
-  Gw2ApiTokenId = apiToken().id,
+  apiTokenId = apiToken().id,
   Gw2ApiToken = apiToken(),
   showPublic,
 }: Character = {}): Character => ({
@@ -117,7 +117,7 @@ export const character = ({
   age,
   deaths,
   guild: gld,
-  Gw2ApiTokenId,
+  apiTokenId,
   Gw2ApiToken,
   showPublic,
 });

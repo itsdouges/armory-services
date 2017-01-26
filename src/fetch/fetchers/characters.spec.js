@@ -22,7 +22,7 @@ describe('characters fetcher', () => {
   });
 
   const assertCharacter = (actual, expected) => {
-    expect(actual.Gw2ApiTokenId).to.equal(token.id);
+    expect(actual.apiTokenId).to.equal(token.id);
     expect(actual.dataValues).to.include(_.omit(expected, ['created']));
   };
 

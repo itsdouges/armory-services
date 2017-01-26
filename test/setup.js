@@ -55,7 +55,7 @@ const seed = async (models, {
     created: '01/01/90',
     age: 20,
     deaths: 2,
-    Gw2ApiTokenId: token.id,
+    apiTokenId: token.id,
   });
 
   await models.Gw2ApiToken.create({
