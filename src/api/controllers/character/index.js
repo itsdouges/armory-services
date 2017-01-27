@@ -40,9 +40,13 @@ export default function characterControllerFactory (models: Models) {
       return Promise.reject(new Error('Unauthorized to view character'));
     }
 
-    const characterFromGw2Api = await gw2.readCharacter(character.Gw2ApiToken.token, name);
-    if (characterFromGw2Api === 1) {
-      return undefined;
+    let characterFromGw2Api;
+    try {
+      characterFromGw2Api = await gw2.readCharacter(character.Gw2ApiToken.token, name);
+    } catch (e) {
+      characterFromGw2Api = {
+        apiToken: false,
+      };
     }
 
     const characterResponse = {
