@@ -1,31 +1,23 @@
-module.exports = function (sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes) => {
   return sequelize.define('Gw2Guild', {
     id: {
-      // MIGRATION! token -> id
-      // field: 'token',
       type: DataTypes.STRING,
       primaryKey: true,
     },
     name: {
-      field: 'name',
       type: DataTypes.STRING,
       allowNull: false,
     },
     tag: {
-      field: 'tag',
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
-    // REQUIRE MIGRATION (apiToken -> apiTokenId)
     apiTokenId: {
-      // REQUIRED MIGRATION (STRING -> INT
       type: DataTypes.INTEGER,
       allowNull: true,
       onDelete: 'SET NULL',
       references: {
         model: 'Gw2ApiTokens',
-        // MIGRATION! token -> id
-        // key: 'token',
         key: 'id',
       },
     },
@@ -47,6 +39,8 @@ module.exports = function (sequelize, DataTypes) {
     motd: {
       // eslint-disable-next-line new-cap
       type: DataTypes.STRING(1000),
+      collate: 'utf8_general_ci',
+      charset: 'utf8',
     },
   });
 };

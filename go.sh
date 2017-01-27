@@ -89,29 +89,49 @@ kill() {
   remove api
 }
 
-db() {
+runDb() {
   run db db "-e MYSQL_ROOT_PASSWORD=$MYSQL_PASS -e MYSQL_PASSWORD=$MYSQL_PASS -e MYSQL_USER=$MYSQL_USER -e MYSQL_DATABASE=$MYSQL_DB -p 3306:3306"
 
   pause 10
 }
 
+runFetch() {
+  run $APP_NAME fetch "--link $DOCKER_IMAGE_PREFIX-db:db" "npm run fetch"
+}
+
+runApi() {
+  run $APP_NAME api "-p 80:80 --link $DOCKER_IMAGE_PREFIX-db:db --link $DOCKER_IMAGE_PREFIX-fetch:fetch" "npm run api"
+}
+
+# Runs environment including database
 dev() {
-  kill
+  remove db
+  remove fetch
+  remove api
 
   build db ./src/db
   build $APP_NAME .
 
-  db
-
-  run $APP_NAME fetch "--link $DOCKER_IMAGE_PREFIX-db:db" "npm run fetch"
-  run $APP_NAME api "-p 80:80 --link $DOCKER_IMAGE_PREFIX-db:db --link $DOCKER_IMAGE_PREFIX-fetch:fetch" "npm run api"
+  runDb
+  runFetch
+  runApi
 }
 
 setupMtr() {
   build db ./src/db
   remove db
+  runDb
+}
 
-  db
+# Runs environment without database
+start() {
+  remove fetch
+  remove api
+
+  build $APP_NAME .
+
+  runFetch
+  runApi
 }
 
 case "$1" in
@@ -121,6 +141,8 @@ case "$1" in
     push $APP_NAME;;
   dev)
     dev;;
+  start)
+    start;;
   mtr)
     testmigrate;;
   setupMtr)

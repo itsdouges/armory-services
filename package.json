@@ -4,7 +4,7 @@
   "description": "Backend services for gw2armory",
   "main": "index.js",
   "scripts": {
-    "start": "node ./dist",
+    "start": "ENV=local ./go.sh start",
     "dev": "./go.sh build && ./go.sh dev",
     "fetch": "node ./dist/fetch",
     "api": "node ./dist/api",

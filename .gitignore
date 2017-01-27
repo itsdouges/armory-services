@@ -7,3 +7,4 @@ Dockerrun.aws.json
 .env
 dist/
 *.log
+backup.sql

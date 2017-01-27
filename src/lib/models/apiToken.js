@@ -1,17 +1,13 @@
-module.exports = function (sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes) => {
   const Gw2ApiToken = sequelize.define('Gw2ApiToken', {
-    // REQUIRES MIGRATION (new field, new primary key)
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
     },
-
     token: {
       type: DataTypes.STRING,
-      // REQUIRES MIGRATION (primaryKey: false, allowNull false, unique true)
-      // primaryKey: true,
       allowNull: false,
       unique: true,
     },
@@ -51,8 +47,6 @@ module.exports = function (sequelize, DataTypes) {
     dailyAp: DataTypes.INTEGER,
     monthlyAp: DataTypes.INTEGER,
     wvwRank: DataTypes.INTEGER,
-
-    // REQUIRES MIGRATION (new field)
     stub: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
