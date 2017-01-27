@@ -94,6 +94,7 @@ describe('character controller', () => {
         },
         accountName: apiToken.accountName,
         alias: user.alias,
+        apiTokenAvailable: true,
       });
     });
 
@@ -119,6 +120,7 @@ describe('character controller', () => {
         },
         accountName: apiToken.accountName,
         alias: user.alias,
+        apiTokenAvailable: true,
       });
     });
   });

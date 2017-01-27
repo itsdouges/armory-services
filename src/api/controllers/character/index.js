@@ -43,9 +43,10 @@ export default function characterControllerFactory (models: Models) {
     let characterFromGw2Api;
     try {
       characterFromGw2Api = await gw2.readCharacter(character.Gw2ApiToken.token, name);
+      characterFromGw2Api.apiTokenAvailable = true;
     } catch (e) {
       characterFromGw2Api = {
-        apiToken: false,
+        apiTokenAvailable: false,
       };
     }
 

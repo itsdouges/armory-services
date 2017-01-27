@@ -236,11 +236,9 @@ async function updateStubUser (models: Models, { guilds, id: userId }: StubUserW
     }],
   });
 
-  const mappedGuilds = guilds.concat(apiToken.guilds.split(','));
-
-  await apiToken.update({
-    guilds: _.uniq(mappedGuilds).join(','),
-  });
+  const mappedGuilds = apiToken.guilds ? guilds.concat((apiToken.guilds).split(',')) : guilds;
+  await apiToken.set('guilds', _.uniq(mappedGuilds).join(','));
+  await apiToken.save();
 
   return {
     id: userId,
@@ -254,18 +252,16 @@ async function createStubUser (
 ): Promise<> {
   const stubUserValue = 'stubuser';
 
-  const data = {
-    alias: accountName,
-    passwordHash: stubUserValue,
-    email: `${accountName}@stub.com`,
-    stub: true,
-  };
-
   if (userId) {
     return updateStubUser(models, { accountName, guilds, id: userId });
   }
 
-  const { id } = await models.User.create(data);
+  const { id } = await models.User.create({
+    alias: accountName,
+    passwordHash: stubUserValue,
+    email: `${accountName}@stub.com`,
+    stub: true,
+  });
   const { id: tokenId } = await models.Gw2ApiToken.create({
     permissions: '',
     world: -1,
