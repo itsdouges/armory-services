@@ -35,7 +35,9 @@ describe('statistics', () => {
     const stats = await controller.users();
 
     expect(stats).to.eql({
-      count: 1,
+      total: 1,
+      claimed: 1,
+      unclaimed: 0,
     });
   });
 

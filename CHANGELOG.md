@@ -20,6 +20,7 @@
 - Cleaned up config
 - Api token primary key and supporting foreign keys $$_MIGRATIONS_$$
 - Consolidated gitter logging to be used in other modules
+- User count statistics to be split between stub and real
 
 ## [1.4.1] - 2017/01/15
 ### Fixed
