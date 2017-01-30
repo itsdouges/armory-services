@@ -24,13 +24,11 @@ module.exports = {
     'default-case': 0,
     'global-require': 0,
     'import/no-unresolved': 0,
+    'no-duplicate-imports': 'off',
     'import/no-extraneous-dependencies': 0,
     'arrow-body-style': 0,
-    'no-unused-expressions': 0,
-    'no-unused-vars': ['error', {
-      varsIgnorePattern: '(.*\.\.\.)',
-    }],
-
+    'no-unused-expressions': 'error',
+    'no-unused-vars': ['error'],
     'mocha/no-exclusive-tests': 'error',
   },
 

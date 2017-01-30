@@ -1,28 +1,24 @@
-module.exports = function (sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes) => {
   return sequelize.define('Gw2Guild', {
     id: {
-      // This has caused the field to be called token! Rename it to id.
-      field: 'token',
       type: DataTypes.STRING,
       primaryKey: true,
     },
     name: {
-      field: 'name',
       type: DataTypes.STRING,
       allowNull: false,
     },
     tag: {
-      field: 'tag',
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
-    apiToken: {
-      type: DataTypes.STRING,
+    apiTokenId: {
+      type: DataTypes.INTEGER,
       allowNull: true,
       onDelete: 'SET NULL',
       references: {
         model: 'Gw2ApiTokens',
-        key: 'token',
+        key: 'id',
       },
     },
     favor: {
@@ -43,6 +39,8 @@ module.exports = function (sequelize, DataTypes) {
     motd: {
       // eslint-disable-next-line new-cap
       type: DataTypes.STRING(1000),
+      collate: 'utf8_general_ci',
+      charset: 'utf8',
     },
   });
 };

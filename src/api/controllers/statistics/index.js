@@ -1,24 +1,6 @@
 /* eslint no-param-reassign:0 */
 
-module.exports = (models) => {
-  function users () {
-    return models.User.findAll()
-      .then((usrs) => {
-        return {
-          count: usrs.length,
-        };
-      });
-  }
-
-  function guilds () {
-    return models.Gw2Guild.findAll()
-      .then((glds) => {
-        return {
-          count: glds.length,
-        };
-      });
-  }
-
+export default function statisticsControllerFactory (models) {
   function extractData (chars, name) {
     return chars.reduce((genders, char) => {
       if (genders[char[name]]) {
@@ -43,18 +25,46 @@ module.exports = (models) => {
     }, { yes: 0, no: 0 });
   }
 
-  function characters () {
-    return models.Gw2Character.findAll()
-      .then((chars) => {
+  async function users () {
+    const stubUsers = await models.User.findAll({
+      where: {
+        stub: true,
+      },
+    });
+
+    const realUsers = await models.User.findAll({
+      where: {
+        stub: false,
+      },
+    });
+
+    return {
+      unclaimed: stubUsers.length,
+      claimed: realUsers.length,
+      total: stubUsers.length + realUsers.length,
+    };
+  }
+
+  async function guilds () {
+    return models.Gw2Guild.findAll()
+      .then((glds) => {
         return {
-          race: extractData(chars, 'race'),
-          gender: extractData(chars, 'gender'),
-          profession: extractData(chars, 'profession'),
-          level: extractData(chars, 'level'),
-          guild: extractGuilds(chars),
-          count: chars.length,
+          count: glds.length,
         };
       });
+  }
+
+  async function characters () {
+    const chars = await models.Gw2Character.findAll();
+
+    return {
+      race: extractData(chars, 'race'),
+      gender: extractData(chars, 'gender'),
+      profession: extractData(chars, 'profession'),
+      level: extractData(chars, 'level'),
+      guild: extractGuilds(chars),
+      count: chars.length,
+    };
   }
 
   return {
@@ -62,4 +72,4 @@ module.exports = (models) => {
     guilds,
     characters,
   };
-};
+}

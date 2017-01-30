@@ -22,6 +22,7 @@ const readGuildStash = sinon.stub();
 const readGuildTreasury = sinon.stub();
 const readGuildTeams = sinon.stub();
 const readGuildUpgrades = sinon.stub();
+const readToken = sinon.stub();
 
 const controller = proxyquire('api/controllers/guild', {
   config,
@@ -45,6 +46,9 @@ const controller = proxyquire('api/controllers/guild', {
     readGuildTreasury,
     readGuildTeams,
     readGuildUpgrades,
+  },
+  'lib/services/tokens': {
+    read: readToken,
   },
 });
 
@@ -70,6 +74,8 @@ describe('guild controller', () => {
     testData.user(),
     testData.user(),
   ];
+
+  const apiToken = testData.apiToken();
 
   before(() => {
     readGuild
@@ -157,9 +163,11 @@ describe('guild controller', () => {
         context('and a access token', () => {
           it(`should return ${key}`, async () => {
             const name = 'guild-name';
-            const guild = { name, id: 'hahaha', apiToken: '1234-1234' };
+            const guild = { name, id: 'hahaha', apiTokenId: apiToken.id };
+
+            readToken.withArgs(models, { id: guild.apiTokenId }).returns(Promise.resolve(apiToken));
             readGuildPrivate.withArgs(models, { name }).returns(guild);
-            apiFunc.withArgs(guild.apiToken, guild.id).returns(Promise.resolve(data));
+            apiFunc.withArgs(apiToken.token, guild.id).returns(Promise.resolve(data));
 
             canAccess
               .withArgs(models, { type: key, guildName: name, email })

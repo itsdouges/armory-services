@@ -7,16 +7,14 @@ import createValidator from 'gotta-validate';
 
 import type { Models } from 'flowTypes';
 
-import gw2Api from 'lib/gw2';
 import tokenControllerFactory from './controllers/gw2-token';
 import usersControllerFactory from './controllers/user';
 import characterControllerFactory from './controllers/character';
 import pvpControllerFactory from './controllers/pvp';
 import sitemapControllerFactory from './controllers/sitemap';
-
-const authControllerFactory = require('./controllers/auth');
-const statisticsControllerFactory = require('./controllers/statistics');
-const CheckController = require('./controllers/check');
+import checkControllerFactory from './controllers/check';
+import authControllerFactory from './controllers/auth';
+import statisticsControllerFactory from './controllers/statistics';
 
 export default function createServer (models: Models, config: any) {
   createValidator.addDefaultRules();
@@ -54,10 +52,6 @@ export default function createServer (models: Models, config: any) {
       func: require('lib/rules/password'),
     });
 
-  const gw2Tokens = tokenControllerFactory(models, createValidator, gw2Api);
-
-  const checks = new CheckController(createValidator);
-
   const server = restify.createServer({
     name: 'api.gw2armory.com',
     version: config.version,
@@ -85,10 +79,10 @@ export default function createServer (models: Models, config: any) {
   require('./resources')(server);
   require('./resources/guilds')(server, models);
   require('./resources/search')(server, models);
-  require('./resources/users/check')(server, checks);
-  require('./resources/users/gw2-token')(server, gw2Tokens);
   require('./resources/sign-upload')(server, models);
-
+  require('./resources/users/check')(server, checkControllerFactory(createValidator));
+  require('./resources/users/gw2-token')
+    .default(server, tokenControllerFactory(models, createValidator));
   require('./resources/pvp')(server, pvpControllerFactory(models));
   require('./resources/characters')(server, characterControllerFactory(models));
   require('./resources/statistics')(server, statisticsControllerFactory(models));

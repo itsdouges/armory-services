@@ -22,7 +22,7 @@ module.exports = (fields, tableName) => ({
 
         if (bailOut) {
           console.log('=== Aborting migration ===');
-          return Promise.resolve();
+          return Promise.resolve('COMPLETE');
         }
 
         return _.reduce(newFields, (promise, options, name) => {

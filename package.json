@@ -1,10 +1,10 @@
 {
   "name": "armory-back",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "Backend services for gw2armory",
   "main": "index.js",
   "scripts": {
-    "start": "node ./dist",
+    "start": "ENV=local ./go.sh start",
     "dev": "./go.sh build && ./go.sh dev",
     "fetch": "node ./dist/fetch",
     "api": "node ./dist/api",
@@ -18,7 +18,11 @@
     "lint": "eslint .",
     "flow": "flow",
     "flowtypes": "flow-typed install --overwrite",
-    "clean-docker": "./scripts/go.sh clean"
+    "clean-docker": "./go.sh clean",
+    "kill": "./go.sh kill",
+    "mtr-prepare": "./go.sh setupMtr",
+    "mtr": "ENV=local babel-node ./src/migration/testRun && npm run migration",
+    "mtr-revert": "ENV=local sequelize db:migrate:undo"
   },
   "repository": {
     "type": "git",
@@ -53,6 +57,7 @@
     "sequelize": "^3.6.0",
     "sequelize-cli": "^2.4.0",
     "throat": "^2.0.2",
+    "uuid": "^3.0.1",
     "yargs": "^3.29.0"
   },
   "devDependencies": {
@@ -78,6 +83,7 @@
     "hash-files": "^1.0.0",
     "mocha": "^3.1.1",
     "mustache": "^2.2.0",
+    "node-cmd": "^1.2.0",
     "nodemon": "^1.4.1",
     "proxyquire": "^1.7.10",
     "run-sequence": "^1.1.2",

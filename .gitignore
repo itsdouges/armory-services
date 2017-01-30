@@ -1,10 +1,10 @@
 node_modules/
 .DS_Store
 .tmp/
-.npm-debug.log
-npm-debug.log
 Dockerrun.aws.json
 *.zip
 .cmds
 .env
 dist/
+*.log
+backup.sql

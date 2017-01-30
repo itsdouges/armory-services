@@ -8,6 +8,25 @@
 - Changes
 ```
 
+## [1.5.0] - 30/01/17
+### Added
+- Eu/na pvp leaderboard data fetch
+- Stub user generation for leaderboards and guilds
+- Stub user claim (new user/existing user with apiToken)
+- Healthcheck
+- Local db migration test run
+- Pvp leaderboard endpoints
+
+### Fixed
+- Guild motd from not being saved to db if using obsucure unicode characters
+- Guild from not being added to db if tag is not defined
+
+### Changed
+- Cleaned up config
+- Api token primary key and supporting foreign keys $$_MIGRATIONS_$$
+- Consolidated gitter logging to be used in other modules
+- User count statistics to be split between stub and real
+
 ## [1.4.1] - 2017/01/15
 ### Fixed
 - Users appearing high in the ladder if their rank is `null`

@@ -1,7 +1,21 @@
+// @flow
+
+import type { Models } from 'flowTypes';
+
 import axios from 'axios';
 import config from 'config';
+import gw2Api from 'lib/gw2';
+import {
+  claimStubApiToken,
+  doesUserHaveTokens,
+  getUserId,
+  selectPrimaryToken,
+  removeToken,
+  doesTokenExist,
+  listTokens,
+} from 'lib/services/user';
 
-export default function tokenFactory (models, createValidator, gw2Api) {
+export default function tokenFactory (models: Models, createValidator: any) {
   createValidator.addResource({
     name: 'gw2-token',
     mode: 'add',
@@ -15,107 +29,53 @@ export default function tokenFactory (models, createValidator, gw2Api) {
     mode: 'add',
   });
 
-  async function getUserId (email) {
-    const user = await models.User.findOne({
-      where: {
-        email,
-      },
-    });
+  async function addTokenToUser (id, apiToken, email) {
+    const [tokenInfo, hasTokens] = await Promise.all([
+      gw2Api.readTokenInfoWithAccount(apiToken),
+      await doesUserHaveTokens(models, id),
+    ]);
 
-    return user.id;
-  }
+    const setPrimary = !hasTokens;
+    const tokenExists = await doesTokenExist(models, tokenInfo.accountName);
 
-  async function doesUserHaveTokens (userId) {
-    const tokens = await models
-      .Gw2ApiToken
-      .findAll({
-        include: [{
-          model: models.User,
-          where: {
-            id: userId,
-          },
-        }],
-      });
+    if (tokenExists) {
+      // Stub token is being replaced
+      return await claimStubApiToken(models, email, apiToken, setPrimary);
+    }
 
-    return !!tokens.length;
-  }
-
-  async function selectPrimary (email, token) {
-    const id = await getUserId(email);
-
-    await models.Gw2ApiToken.update({
-      primary: false,
-    }, {
-      where: {
-        UserId: id,
-      },
-    });
-
-    await models.Gw2ApiToken.update({
-      primary: true,
-    }, {
-      where: {
-        UserId: id,
-        token,
-      },
-    });
-  }
-
-  async function addTokenToUser (id, gw2Token) {
-    const tokenInfo = await gw2Api.readTokenInfoWithAccount(gw2Token);
-    const hasTokens = await doesUserHaveTokens(id);
-
-    const wrappedToken = {
-      token: gw2Token,
+    return await models.Gw2ApiToken.create({
+      token: apiToken,
       UserId: id,
       permissions: tokenInfo.info.join(','),
       world: tokenInfo.world,
       accountId: tokenInfo.accountId,
       accountName: tokenInfo.accountName,
-      primary: !hasTokens,
-    };
-
-    return await models.Gw2ApiToken.create(wrappedToken);
+      primary: setPrimary,
+    });
   }
 
-  async function add (email, token) {
+  async function add (email: string, token: string) {
     await validator.validate({ token });
+    const userId = await getUserId(models, email);
+    const createdToken = await addTokenToUser(userId, token, email);
 
-    const user = await models.User.findOne({
-      where: {
-        email,
-      },
-    });
-
-    const createdToken = await addTokenToUser(user.id, token);
-
-    const url = `http://${config.fetch.host}:${config.fetch.port}/fetch`;
-    console.log(`Posting to ${url}`);
-    axios.post(url, {
+    axios.post(`http://${config.fetch.host}:${config.fetch.port}/fetch`, {
       token: createdToken.token,
       permissions: createdToken.permissions,
+      id: createdToken.id,
     });
 
     return {
       token: createdToken.token,
+      id: createdToken.id,
       accountName: createdToken.accountName,
       permissions: createdToken.permissions,
-      world: createdToken.world,
       primary: createdToken.primary,
     };
   }
 
-  async function list (email) {
-    const tokens = await models
-      .Gw2ApiToken
-      .findAll({
-        include: [{
-          model: models.User,
-          where: {
-            email,
-          },
-        }],
-      });
+  async function list (email: string) {
+    const tokens = await listTokens(models, email);
 
     return tokens.map((token) => {
       return {
@@ -128,22 +88,12 @@ export default function tokenFactory (models, createValidator, gw2Api) {
     });
   }
 
-  async function remove (email, token) {
-    const user = await models
-      .User
-      .findOne({
-        where: {
-          email,
-        },
-      });
+  async function remove (email: string, apiToken: string) {
+    await removeToken(models, email, apiToken);
+  }
 
-    await models.Gw2ApiToken
-      .destroy({
-        where: {
-          UserId: user.id,
-          token,
-        },
-      });
+  async function selectPrimary (email: string, apiToken: string) {
+    await selectPrimaryToken(models, email, apiToken);
   }
 
   return {
@@ -151,6 +101,5 @@ export default function tokenFactory (models, createValidator, gw2Api) {
     remove,
     selectPrimary,
     add,
-    doesUserHaveTokens,
   };
 }

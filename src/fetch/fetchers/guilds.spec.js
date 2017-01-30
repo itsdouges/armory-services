@@ -4,26 +4,31 @@ import * as testData from 'test/testData';
 const sandbox = sinon.sandbox.create();
 const account = sandbox.stub();
 const readGuild = sandbox.stub();
+const readGuildMembers = sandbox.stub();
+const bulkCreateStubUser = sandbox.spy();
 
 const fetcher = proxyquire('fetch/fetchers/guilds', {
   'lib/gw2': {
     readAccount: account,
     readGuild,
+    readGuildMembers,
+  },
+  'lib/services/user': {
+    bulkCreateStubUser,
   },
 });
 
 describe('guild fetcher', () => {
-  const guilds = [
-    testData.guild({ id: '1', apiToken: '1234-12341234-1234' }),
-    testData.guild({ id: '2', apiToken: '1234-12341234-1234' }),
-    testData.guild({ id: '3', apiToken: '1234-12341234-1234' }),
-    testData.guild({ id: '4', apiToken: '1234-12341234-1234' }),
-  ];
+  const token = testData.apiToken({
+    permissions: 'guilds',
+  });
 
-  const token = {
-    token: '1234-12341234-1234',
-    permissions: 'guilds,account',
-  };
+  const guilds = [
+    testData.guild({ id: '1', apiTokenId: token.id }),
+    testData.guild({ id: '2', apiTokenId: token.id }),
+    testData.guild({ id: '3', apiTokenId: token.id }),
+    testData.guild({ id: '4', apiTokenId: token.id }),
+  ];
 
   const accountInfoData = {
     guildLeader: guilds.map(({ id }) => id),
@@ -36,7 +41,7 @@ describe('guild fetcher', () => {
   };
 
   before(async () => {
-    models = await setupTestDb({ seed: true, apiToken: token.token });
+    models = await setupTestDb({ seed: true });
 
     const promises = guilds.map((guild) => {
       return models.Gw2Guild.create(_.pick(guild, [
@@ -50,6 +55,9 @@ describe('guild fetcher', () => {
   });
 
   context('when token has permissions and is guild leader', () => {
+    const member = (name) => ({ name });
+    const members = [member('madou.4321'), member('blastrn.1234')];
+
     before(async () => {
       account
         .withArgs(token.token)
@@ -59,6 +67,10 @@ describe('guild fetcher', () => {
         readGuild
           .withArgs(token.token, guild.id)
           .returns(Promise.resolve(guild));
+
+        readGuildMembers
+          .withArgs(token.token, guild.id)
+          .returns(members);
       });
 
       await fetcher(models, token);
@@ -71,7 +83,7 @@ describe('guild fetcher', () => {
     it('should associate guilds that token is a leader of', async () => {
       const guildz = await findGuilds();
 
-      guildz.forEach((guild) => expect(guild.apiToken).to.equal(token.token));
+      guildz.forEach((guild) => expect(guild.apiTokenId).to.equal(token.id));
     });
 
     it('should add authenticated data into guild using token', async () => {
@@ -93,6 +105,15 @@ describe('guild fetcher', () => {
       const guildz = await findGuilds();
 
       expect(guildz.length).to.equal(guilds.length);
+    });
+
+    it('should bulk create found users', () => {
+      guilds.forEach(({ id }) => {
+        expect(bulkCreateStubUser).to.have.been.calledWith(models, members.map((mbr) => ({
+          accountName: mbr.name,
+          guilds: [id],
+        })));
+      });
     });
   });
 

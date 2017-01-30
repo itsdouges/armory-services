@@ -60,8 +60,21 @@ const simpleCalls = _.reduce({
   readCharactersDeep: { resource: 'characters?page=0&page_size=200' },
   readAchievements: { resource: 'account/achievements' },
   readPvpLadder: {
-    resource: 'pvp/seasons/{id}/leaderboards/ladder/{region}',
+    resource: 'pvp/seasons/{id}/leaderboards/ladder/{region}?page_size=200{page}',
     noAuth: true,
+    // TODO: Add proper pagination for endpoints. THIS_IS_NASTY.
+    onResult: async (token, response, id, params) => {
+      if (params.page) {
+        return response;
+      }
+
+      const moreStandings = await simpleCalls.readPvpLadder(null, id, {
+        ...params,
+        page: '&page=1',
+      });
+
+      return { data: response.data.concat(moreStandings) };
+    },
   },
 }, (obj, { resource, onResult, normalise, noAuth }, key) => {
   // eslint-disable-next-line max-len
@@ -72,7 +85,7 @@ const simpleCalls = _.reduce({
   })
   .then((result) => {
     if (onResult) {
-      return onResult(token, result);
+      return onResult(token, result, id, params);
     }
 
     return result;
@@ -122,11 +135,11 @@ const getLatestPvpSeason = async (): Promise<PvpSeason> => {
     const aStart = new Date(a.start);
     const bStart = new Date(b.start);
 
-    if (a < b) {
+    if (aStart < bStart) {
       return -1;
     }
 
-    if (a > b) {
+    if (aStart > bStart) {
       return 1;
     }
 

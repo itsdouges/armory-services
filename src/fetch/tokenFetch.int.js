@@ -1,3 +1,6 @@
+import * as testData from 'test/testData';
+
+import { stubLogger } from 'test/utils';
 import characterFetcher from './fetchers/characters';
 import accountFetcher from './fetchers/account';
 
@@ -12,31 +15,30 @@ const config = {
 };
 
 const createFetchFactory = (fetchTokens) => proxyquire('fetch/tokenFetch', {
-  'lib/services/tokens': fetchTokens,
+  'lib/services/tokens': { list: fetchTokens },
   config,
+  ...stubLogger(),
 });
 
 describe('fetch integration', () => {
-  const token = {
-    token: 'EE920D9D-F7CF-A146-A5F5-95455980577B0DC68745-969C-4ED9-8462-1299FE6FB078',
+  const user = testData.user();
+  const apiToken = testData.apiToken();
 
-  };
   let models;
 
   beforeEach(async () => {
-    models = await setupTestDb({
-      seed: true,
-      apiToken: token.token,
-    });
+    models = await setupTestDb();
+    models.User.create(user);
+    models.Gw2ApiToken.create(apiToken);
   });
 
   const initiateFetch = (tokens = []) => {
     const fetchTokensStub = sinon.stub().returns(Promise.resolve(tokens));
 
-    const { batchFetch } = createFetchFactory(fetchTokensStub)(
-      models,
-      [accountFetcher, characterFetcher]
-    );
+    const { batchFetch } = createFetchFactory(fetchTokensStub)(models, [
+      accountFetcher,
+      characterFetcher,
+    ]);
 
     return batchFetch();
   };
@@ -50,7 +52,7 @@ describe('fetch integration', () => {
 
     await initiateFetch([
       'dont-exist-lol',
-      token,
+      apiToken,
     ]);
 
     const characters = await models.Gw2Character.findAll();

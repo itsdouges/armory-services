@@ -1,15 +1,13 @@
-module.exports = function (sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     id: {
       type: DataTypes.UUID,
-      field: 'id',
       required: true,
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
     },
     alias: {
       type: DataTypes.STRING,
-      field: 'alias',
       unique: true,
       required: true,
       allowNull: false,
@@ -17,7 +15,6 @@ module.exports = function (sequelize, DataTypes) {
     email: {
       type: DataTypes.STRING,
       required: true,
-      field: 'email',
       unique: true,
       allowNull: false,
     },
@@ -33,6 +30,11 @@ module.exports = function (sequelize, DataTypes) {
       field: 'email_validated',
       allowNull: false,
       defaultValue: false,
+    },
+    stub: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
     },
   }, {
     classMethods: {

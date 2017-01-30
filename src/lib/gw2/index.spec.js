@@ -121,14 +121,17 @@ describe('gw2 api', () => {
       it('should get data', async () => {
         const id = '1234-1234';
         const region = 'na';
-        const resource = `${config.gw2.endpoint}v2/pvp/seasons/${id}/leaderboards/ladder/${region}`;
-        const data = { neat: 'data' };
+        // eslint-disable-next-line max-len
+        const resource = `${config.gw2.endpoint}v2/pvp/seasons/${id}/leaderboards/ladder/${region}?page_size=200`;
+        const data = [{ neat: 'data' }];
 
-        axiosGet.withArgs(resource).returns(Promise.resolve({ data }));
+        // dirty pagination hacks
+        axiosGet.withArgs(`${resource}{page}`).returns(Promise.resolve({ data }));
+        axiosGet.withArgs(`${resource}&page=1`).returns(Promise.resolve({ data }));
 
         const result = await gw2Api.readPvpLadder(null, id, { region });
 
-        expect(result).to.equal(data);
+        expect(result).to.eql(data.concat(data));
       });
     });
   });

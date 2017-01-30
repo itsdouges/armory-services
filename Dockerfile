@@ -3,7 +3,8 @@ MAINTAINER madou <laheen@gmail.com>
 LABEL Description="Guild Wars 2 Armory Services"
 
 COPY package.json package.json
-RUN npm install --silent
+RUN npm install yarn -g
+RUN yarn
 
 COPY .babelrc .babelrc
 COPY .sequelizerc .sequelizerc

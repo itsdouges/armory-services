@@ -1,9 +1,15 @@
-module.exports = function (sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes) => {
   const Gw2ApiToken = sequelize.define('Gw2ApiToken', {
-    token: {
-      field: 'token',
-      type: DataTypes.STRING,
+    id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      autoIncrement: true,
       primaryKey: true,
+    },
+    token: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
     },
     accountName: {
       type: DataTypes.STRING,
@@ -17,7 +23,6 @@ module.exports = function (sequelize, DataTypes) {
     },
     world: {
       type: DataTypes.INTEGER,
-      field: 'world',
       allowNull: false,
     },
     accountId: {
@@ -30,33 +35,22 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
-      field: 'primary',
     },
     guilds: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    // ----------- NEW FIELDS -----------
-    created: {
-      type: DataTypes.STRING,
-    },
-    access: {
-      type: DataTypes.STRING,
-    },
-    commander: {
+    created: DataTypes.STRING,
+    access: DataTypes.STRING,
+    commander: DataTypes.BOOLEAN,
+    fractalLevel: DataTypes.INTEGER,
+    dailyAp: DataTypes.INTEGER,
+    monthlyAp: DataTypes.INTEGER,
+    wvwRank: DataTypes.INTEGER,
+    stub: {
       type: DataTypes.BOOLEAN,
-    },
-    fractalLevel: {
-      type: DataTypes.INTEGER,
-    },
-    dailyAp: {
-      type: DataTypes.INTEGER,
-    },
-    monthlyAp: {
-      type: DataTypes.INTEGER,
-    },
-    wvwRank: {
-      type: DataTypes.INTEGER,
+      defaultValue: false,
+      allowNull: false,
     },
   }, {
     classMethods: {
@@ -65,6 +59,7 @@ module.exports = function (sequelize, DataTypes) {
           as: 'gw2_characters',
           foreignKey: {
             allowNull: false,
+            name: 'apiTokenId',
           },
           onDelete: 'CASCADE',
         });

@@ -16,47 +16,18 @@ const getUpdatedAt = async (model) => {
   return data.updatedAt.toISOString();
 };
 
+const user = testData.user();
+const apiToken = testData.apiToken();
+const standing = testData.dbStanding();
+const character = testData.character();
+const guild = testData.guild();
+
 async function init (models) {
-  const user = await models.User.create({
-    email: 'cool@email.com',
-    passwordHash: 'password',
-    alias: 'madou',
-  });
-
-  const token = {
-    token: 'i-am-token',
-    accountName: 'coolaccount.1234',
-    permissions: 'abc,def',
-    world: 'aus',
-    accountId: 'i-am-id',
-    UserId: user.id,
-    primary: true,
-  };
-
-  const result = await models.Gw2ApiToken.create(token);
-  await models.PvpStandings.create(testData.dbStanding({
-    apiToken: token.token,
-  }));
-
-  const character = {
-    name: 'madoubie',
-    race: 'yolon',
-    gender: 'male',
-    profession: 'elementalist',
-    level: '69',
-    created: 'Sat Oct 24 2015 19:30:34',
-    age: 1234,
-    guild: 'a-guild',
-    deaths: 0,
-    Gw2ApiTokenToken: result.token,
-  };
-
-  const char = await models.Gw2Character.create(character);
-  const guild = await models.Gw2Guild.create({
-    id: 'hahah',
-    name: 'cool guild',
-    tag: 'yeah no',
-  });
+  await models.User.create(user);
+  await models.Gw2ApiToken.create(apiToken);
+  await models.PvpStandings.create(standing);
+  await models.Gw2Character.create(character);
+  await models.Gw2Guild.create(guild);
 }
 
 describe('sitemap', () => {
@@ -97,7 +68,17 @@ describe('sitemap', () => {
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>http://gw2-local.com/leaderboards</loc>
+    <loc>http://gw2-local.com/leaderboards/pvp</loc>
+    <lastmod>${standingsUpdated}</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>http://gw2-local.com/leaderboards/pvp/na</loc>
+    <lastmod>${standingsUpdated}</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>http://gw2-local.com/leaderboards/pvp/eu</loc>
     <lastmod>${standingsUpdated}</lastmod>
     <priority>0.9</priority>
   </url>
@@ -106,47 +87,47 @@ describe('sitemap', () => {
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>http://gw2-local.com/madou</loc>
+    <loc>http://gw2-local.com/${user.alias}</loc>
     <lastmod>${userUpdated}</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>http://gw2-local.com/madou/characters</loc>
+    <loc>http://gw2-local.com/${user.alias}/characters</loc>
     <lastmod>${userUpdated}</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>http://gw2-local.com/madou/matches</loc>
+    <loc>http://gw2-local.com/${user.alias}/matches</loc>
     <lastmod>${userUpdated}</lastmod>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>http://gw2-local.com/madou/guilds</loc>
+    <loc>http://gw2-local.com/${user.alias}/guilds</loc>
     <lastmod>${userUpdated}</lastmod>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>http://gw2-local.com/g/cool guild</loc>
+    <loc>http://gw2-local.com/g/${guild.name}</loc>
     <lastmod>${guildUpdated}</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>http://gw2-local.com/g/cool guild/users</loc>
+    <loc>http://gw2-local.com/g/${guild.name}/users</loc>
     <lastmod>${guildUpdated}</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://gw2-local.com/g/cool guild/characters</loc>
+    <loc>http://gw2-local.com/g/${guild.name}/characters</loc>
     <lastmod>${guildUpdated}</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://gw2-local.com/g/cool guild/logs</loc>
+    <loc>http://gw2-local.com/g/${guild.name}/logs</loc>
     <lastmod>${guildUpdated}</lastmod>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>http://gw2-local.com/madou/c/madoubie</loc>
+    <loc>http://gw2-local.com/${user.alias}/c/${character.name}</loc>
     <lastmod>${characterUpdated}</lastmod>
     <priority>1.0</priority>
   </url>

@@ -63,6 +63,40 @@ export default function UserResource (server, controller) {
       });
   });
 
+  server.post('claim/user', async (req, res, next) => {
+    try {
+      await controller.claim({
+        alias: req.params.alias,
+        email: req.params.email.toLowerCase(),
+        password: req.params.password,
+        apiToken: req.params.apiToken,
+      });
+
+      res.send(200);
+    } catch (e) {
+      res.send(400, e);
+      console.error(e);
+    }
+
+    return next();
+  });
+
+  server.post('claim/api-token', async (req, res, next) => {
+    if (!req.username) {
+      return res.sendUnauthenticated();
+    }
+
+    try {
+      await controller.claimApiToken(req.username, req.params.apiToken);
+      res.send(200);
+    } catch (e) {
+      res.send(400, e);
+      console.error(e);
+    }
+
+    return next();
+  });
+
   server.post('/forgot-my-password', (req, res, next) => {
     controller
       .forgotMyPasswordStart(req.params.email.toLowerCase())

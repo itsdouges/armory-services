@@ -1,12 +1,23 @@
+// @flow
+
+import type { Models } from 'flowTypes';
 import _ from 'lodash';
 
-export async function readPrivate (models, { id, name }) {
+type Guild$Read = {
+  id?: string,
+  name?: string,
+};
+
+export async function readPrivate (models: Models, { id, name }: Guild$Read) {
   return await models.Gw2Guild.findOne({
-    where: id ? { id } : { name },
+    where: _.pickBy({
+      id,
+      name,
+    }),
   });
 }
 
-export async function read (models, { id, name }) {
+export async function read (models: Models, { id, name }: Guild$Read) {
   const guild = await readPrivate(models, { id, name });
   if (!guild) {
     return undefined;
@@ -26,15 +37,15 @@ export async function read (models, { id, name }) {
 
   return {
     ...data,
-    claimed: !!guild.apiToken,
+    claimed: !!guild.apiTokenId,
   };
 }
 
-export async function list (models) {
+export async function list (models: Models) {
   return await models.Gw2Guild.findAll();
 }
 
-export async function isAccessAllowed (models, type) {
+export async function isAccessAllowed (models: Models, type: string) {
   if (type === 'members') {
     return await Promise.resolve(true);
   }

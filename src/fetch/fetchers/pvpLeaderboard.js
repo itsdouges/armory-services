@@ -1,24 +1,98 @@
 // @flow
 
 import type { Models } from 'flowTypes';
-import { readLatestPvpSeason } from 'lib/gw2';
-import { saveList as saveStandings, list as listStandings } from 'lib/services/pvpStandings';
 
-function sortByRating (a, b) {
+import _ from 'lodash';
+
+import gw2, { readLatestPvpSeason } from 'lib/gw2';
+import { bulkCreateStubUser } from 'lib/services/user';
+import { saveList as saveStandings, list as listStandings } from 'lib/services/pvpStandings';
+import createLogger from 'lib/gitter';
+import buildLadderByAccountName from '../lib/leaderboard';
+
+const logger = createLogger('Pvp_leaderboard');
+
+const hasJoined = (standing) => !!standing.totalPointsBest;
+
+const sortByRating = (a, b) => {
+  const aJoined = hasJoined(a);
+  const bJoined = hasJoined(b);
+
+  // A hasn't joined the armory, B has
+  if (!aJoined && bJoined) {
+    return 1;
+  }
+
+  // B hasn't joined the armory, A has
+  if (!bJoined && aJoined) {
+    return -1;
+  }
+
+  // Both haven't joined the armory.
+  if (!aJoined && !bJoined) {
+    return 0;
+  }
+
+  // Both have joined the armory.
   return (b.ratingCurrent - b.decayCurrent) - (a.ratingCurrent - a.decayCurrent);
+};
+
+async function addMissingUsers (models, ladder) {
+  const users = ladder.map(({ name }) => ({ accountName: name }));
+  return await bulkCreateStubUser(models, users);
 }
 
-export default async function calculatePvpLeaderboard (models: Models) {
-  const season = await readLatestPvpSeason();
+const mergeLadders = ({ standings, na, eu }) => {
+  const key = 'apiTokenId';
+  const standingsMap = _.keyBy(standings, key);
+  const naMap = _.keyBy(na, key);
+  const euMap = _.keyBy(eu, key);
 
-  const pvpStandings = await listStandings(models, season.id);
+  const mergedStandings = _.merge(
+    standingsMap,
+    naMap,
+    euMap,
+  );
 
-  const sortedStandings = pvpStandings
+  return _.values(mergedStandings);
+};
+
+function buildStandings ({ standings, na, eu }) {
+  return mergeLadders({ standings, na, eu })
     .sort(sortByRating)
     .map((standing, index) => ({
       ...standing,
-      gw2aRank: index + 1,
+      gw2aRank: hasJoined(standing) ? index + 1 : null,
     }));
+}
 
-  await saveStandings(models, sortedStandings);
+export default async function calculatePvpLeaderboards (models: Models) {
+  logger.start();
+
+  const season = await readLatestPvpSeason();
+  if (!season.active) {
+    return;
+  }
+
+  const [naLadder, euLadder, standings] = await Promise.all([
+    gw2.readPvpLadder(null, season.id, { region: 'na' }),
+    gw2.readPvpLadder(null, season.id, { region: 'eu' }),
+    listStandings(models, season.id),
+  ]);
+
+  const newUsersResults = await addMissingUsers(models, naLadder.concat(euLadder));
+
+  const [na, eu] = await Promise.all([
+    buildLadderByAccountName(models, naLadder, { key: 'naRank', seasonId: season.id }),
+    buildLadderByAccountName(models, euLadder, { key: 'euRank', seasonId: season.id }),
+  ]);
+
+  const compiledStandings = buildStandings({ standings, na, eu });
+
+  const saveResults = await saveStandings(models, compiledStandings);
+
+  logger.finish([
+    ...newUsersResults,
+    ...saveResults,
+  ]);
 }

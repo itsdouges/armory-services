@@ -4,20 +4,42 @@ import type { Models, PvpStandingModel } from 'flowTypes';
 import _ from 'lodash';
 
 export async function saveList (models: Models, pvpStandings: Array<PvpStandingModel>) {
-  await Promise.all(pvpStandings.map((standing) => models.PvpStandings.upsert(standing)));
+  return await Promise.all(pvpStandings.map((standing) => {
+    return models.PvpStandings.findOne({
+      where: {
+        apiTokenId: standing.apiTokenId,
+        seasonId: standing.seasonId,
+      },
+    }).then((standingInDb) => {
+      if (!standingInDb) {
+        return models.PvpStandings.create(standing);
+      }
+
+      return standingInDb.update(standing);
+    });
+  }));
 }
 
 export async function list (
   models: Models,
-  seasonId: string
+  seasonId: string,
+  region?: 'gw2a' | 'na' | 'eu',
 ): Promise<Array<PvpStandingModel>> {
-  const standings = await models.PvpStandings.findAll({
+  const query = {
     where: {
       seasonId,
+      ...region && {
+        [`${region}Rank`]: {
+          $ne: null,
+        },
+      },
     },
-  });
+    raw: true,
+  };
 
-  return standings.map((standing) => _.omit(standing.dataValues, [
+  const standingsLatest = await models.PvpStandings.findAll(query);
+
+  return standingsLatest.map((standing) => _.omit(standing, [
     'updatedAt',
     'createdAt',
     'id',

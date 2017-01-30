@@ -1,4 +1,4 @@
-const searchFactory = require('api/controllers/search');
+import searchFactory from 'api/controllers/search';
 
 module.exports = function searchResource (server, models) {
   const controller = searchFactory(models);

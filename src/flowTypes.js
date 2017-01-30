@@ -6,6 +6,7 @@ type Sequelize = {
   findOne: () => Promise<>,
   findAll: () => Promise<>,
   create: () => Promise<>,
+  destroy: () => Promise<>,
 };
 
 export type Models = {
@@ -15,10 +16,8 @@ export type Models = {
   Gw2Character: Sequelize,
   Gw2Guild: Sequelize,
   UserReset: Sequelize,
-};
-
-export type FetchOptions = {
-  token: string,
+  PvpStandingsHistory: Sequelize,
+  sequelize: any,
 };
 
 type Gw2Standing = {
@@ -38,7 +37,7 @@ export type Gw2PvpStanding = {
 
 export type PvpStandingModel = {
   seasonId: string,
-  apiToken: string,
+  apiTokenId: number,
   ratingCurrent: number,
   decayCurrent: number,
 };
@@ -65,6 +64,7 @@ export type UserModel = {
   email: string,
 
   // ApiKey values
+  tokenId: number,
   token?: string,
   accountName?: string,
   guilds?: string,
@@ -76,6 +76,7 @@ export type UserModel = {
 };
 
 export type ApiToken = {
+  id: number,
   token: string,
   accountName: string,
   accountId: string,
@@ -123,4 +124,16 @@ export type PasswordReset = {
 export type Pagination = {
   take: number,
   pick: number,
+};
+
+type Gw2StandingScore = {
+  id: string,
+  value: number,
+};
+
+export type Gw2LadderStanding = {
+  name: string,
+  rank: number,
+  date: string,
+  scores: Array<Gw2StandingScore>,
 };

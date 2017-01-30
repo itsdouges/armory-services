@@ -31,14 +31,14 @@ function validGw2Token (name, val, dependencies) {
       },
     })
     .then((response) => {
-      const accountId = response.data.id;
       const accountName = response.data.name;
 
       return dependencies.models
           .Gw2ApiToken
           .findOne({
             where: {
-              accountId,
+              accountName,
+              stub: false,
             },
           })
           .then((item) => {

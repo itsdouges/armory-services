@@ -1,4 +1,4 @@
-import { standing } from 'test/testData';
+import * as testData from 'test/testData';
 
 const sandbox = sinon.sandbox.create();
 const readPvpStandings = sandbox.stub();
@@ -12,27 +12,30 @@ const pvpStandingsFetcher = proxyquire('fetch/fetchers/pvpStandings', {
 describe('pvp standings fetcher', () => {
   let models;
 
-  const token = '1234-1234-1234';
+  const token = testData.apiToken();
   const standings = [
-    standing({
+    testData.standing({
       season_id: '1111',
     }),
-    standing({
+    testData.standing({
       season_id: '2222',
     }),
-    standing({
+    testData.standing({
       season_id: '3333',
     }),
   ];
 
   before(async () => {
-    models = await setupTestDb({ seed: true, apiToken: token });
-    readPvpStandings.withArgs(token).returns(Promise.resolve(standings));
-    await pvpStandingsFetcher(models, { token });
+    models = await setupTestDb({ seed: true });
+    readPvpStandings.withArgs(token.token).returns(Promise.resolve(standings));
+    await pvpStandingsFetcher(models, token);
+    await pvpStandingsFetcher(models, token);
   });
 
   it('should insert all pvp data into db', async () => {
-    const rows = await models.PvpStandings.findAll();
+    const rows = await models.PvpStandings.findAll({
+      order: ['createdAt'],
+    });
 
     expect(rows.length).to.equal(standings.length);
     rows.map((row) => row.dataValues).forEach((row, index) => {
@@ -40,7 +43,7 @@ describe('pvp standings fetcher', () => {
 
       expect(row).to.include({
         seasonId: pvpStanding.season_id,
-        apiToken: token,
+        apiTokenId: token.id,
 
         totalPointsCurrent: pvpStanding.current.total_points,
         divisionCurrent: pvpStanding.current.division,

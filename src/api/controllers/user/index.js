@@ -17,6 +17,7 @@ import {
   createPasswordReset,
   readPasswordReset,
   finishPasswordReset,
+  claimStubUser,
 } from 'lib/services/user';
 import { list as listCharacters } from 'lib/services/character';
 
@@ -28,6 +29,16 @@ export default function userControllerFactory (models: Models) {
       alias: ['required', 'unique-alias', 'no-white-space', 'min5'],
       email: ['required', 'unique-email', 'no-white-space'],
       password: ['required', 'ezpassword', 'no-white-space'],
+    },
+  })
+  .addResource({
+    name: 'users',
+    mode: 'claim',
+    rules: {
+      alias: ['required', 'unique-alias', 'no-white-space', 'min5'],
+      email: ['required', 'unique-email', 'no-white-space'],
+      password: ['required', 'ezpassword', 'no-white-space'],
+      apiToken: ['required', 'valid-gw2-token', 'no-white-space'],
     },
   })
   .addResource({
@@ -93,7 +104,6 @@ export default function userControllerFactory (models: Models) {
     const characters = await listCharacters(models, { alias: user.alias, email, ignorePrivacy });
 
     let guilds = [];
-
     if (user.guilds) {
       const promises = user.guilds.split(',').map((id) => readGuild(models, { id }));
 
@@ -119,12 +129,6 @@ export default function userControllerFactory (models: Models) {
       passwordHash,
     });
   }
-
-  type UpdateUser = {
-    email: string,
-    currentPassword: string,
-    password: string,
-  };
 
   type UpdatePasswordOptions = {
     email: string,
@@ -189,11 +193,32 @@ export default function userControllerFactory (models: Models) {
     return undefined;
   }
 
+  type ClaimUser = CreateUser & {
+    apiToken: string,
+  };
+
+  async function claim (user: ClaimUser) {
+    const validator = createValidator({
+      resource: 'users',
+      mode: 'claim',
+    });
+
+    await validator.validate(user);
+
+    const passwordHash = await hashPassword(user.password);
+
+    await claimStubUser(models, {
+      ...user,
+      passwordHash,
+    });
+  }
+
   return {
     create,
     read,
     updatePassword,
     forgotMyPasswordStart,
     forgotMyPasswordFinish,
+    claim,
   };
 }

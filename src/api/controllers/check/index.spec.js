@@ -1,4 +1,4 @@
-const CheckResource = require('./index');
+import checkResourceFactory from './';
 
 describe('check resource', () => {
   let systemUnderTest;
@@ -25,7 +25,7 @@ describe('check resource', () => {
 
   describe('initialisation', () => {
     it('should add gw2 token resource to validator', () => {
-      systemUnderTest = new CheckResource(mockValidator);
+      systemUnderTest = checkResourceFactory(mockValidator);
 
       expect(mockValidator.addResource).to.have.been.calledWith({
         name: 'check',
@@ -37,7 +37,7 @@ describe('check resource', () => {
     });
 
     it('should add email resource to validator', () => {
-      systemUnderTest = new CheckResource(mockValidator);
+      systemUnderTest = checkResourceFactory(mockValidator);
 
       expect(mockValidator.addResource).to.have.been.calledWith({
         name: 'check',
@@ -49,7 +49,7 @@ describe('check resource', () => {
     });
 
     it('should add alias resource to validator', () => {
-      systemUnderTest = new CheckResource(mockValidator);
+      systemUnderTest = checkResourceFactory(mockValidator);
 
       expect(mockValidator.addResource).to.have.been.calledWith({
         name: 'check',
@@ -63,7 +63,7 @@ describe('check resource', () => {
 
   describe('gw2-token', () => {
     it('should resolve', (done) => {
-      systemUnderTest = new CheckResource(mockValidator);
+      systemUnderTest = checkResourceFactory(mockValidator);
 
       sinon.stub(mocks, 'validate').returns(Promise.resolve());
 
@@ -76,7 +76,7 @@ describe('check resource', () => {
     });
 
     it('should reject', (done) => {
-      systemUnderTest = new CheckResource(mockValidator);
+      systemUnderTest = checkResourceFactory(mockValidator);
 
       sinon.stub(mocks, 'validate').returns(Promise.reject());
 
@@ -91,7 +91,7 @@ describe('check resource', () => {
 
   describe('email', () => {
     it('should resolve', (done) => {
-      systemUnderTest = new CheckResource(mockValidator);
+      systemUnderTest = checkResourceFactory(mockValidator);
 
       sinon.stub(mocks, 'validate').returns(Promise.resolve());
 
@@ -104,7 +104,7 @@ describe('check resource', () => {
     });
 
     it('should reject', (done) => {
-      systemUnderTest = new CheckResource(mockValidator);
+      systemUnderTest = checkResourceFactory(mockValidator);
 
       sinon.stub(mocks, 'validate').returns(Promise.reject('ahh!!!'));
 
@@ -119,7 +119,7 @@ describe('check resource', () => {
 
   describe('alias', () => {
     it('should resolve', (done) => {
-      systemUnderTest = new CheckResource(mockValidator);
+      systemUnderTest = checkResourceFactory(mockValidator);
 
       sinon.stub(mocks, 'validate').returns(Promise.resolve());
 
@@ -132,7 +132,7 @@ describe('check resource', () => {
     });
 
     it('should reject', (done) => {
-      systemUnderTest = new CheckResource(mockValidator);
+      systemUnderTest = checkResourceFactory(mockValidator);
 
       sinon.stub(mocks, 'validate').returns(Promise.reject('ahh!!!'));
 

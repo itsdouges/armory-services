@@ -1,11 +1,10 @@
 import * as testData from 'test/testData';
-import _ from 'lodash';
 
 const readPvpStats = sinon.stub();
 const readPvpGames = sinon.stub();
 const readPvpStandings = sinon.stub();
 const readAchievements = sinon.stub();
-const listUserStandings = sinon.stub();
+const listPvpStandings = sinon.stub();
 const getUserPrimaryToken = sinon.stub();
 const readUser = sinon.stub();
 
@@ -25,7 +24,7 @@ const controllerFactory = proxyquire('api/controllers/pvp', {
     read: readUser,
   },
   'lib/services/pvpStandings': {
-    list: listUserStandings,
+    list: listPvpStandings,
   },
 });
 
@@ -85,14 +84,15 @@ describe('pvp controller', () => {
   });
 
   describe('leaderboard', () => {
-    const apiToken = '1234-1234';
+    const apiTokenId = 3;
     const user = testData.user({
-      token: apiToken,
-      accountName: 'yes',
+      tokenId: apiTokenId,
+      alias: 'madou',
+      accountName: 'madou.1234',
     });
 
     const createStanding = (rank) => testData.dbStanding({
-      apiToken,
+      apiTokenId,
       seasonId: season.id,
       gw2aRank: rank,
       naRank: rank,
@@ -117,12 +117,6 @@ describe('pvp controller', () => {
       four,
     ];
 
-    const cleanStanding = (standing) => ({
-      ..._.omit(standing, ['apiToken']),
-      accountName: user.accountName,
-      alias: user.alias,
-    });
-
     const assertIsSorted = (arr, key) => {
       const fromOneArr = arr.slice(1);
       fromOneArr.forEach((item, index) => {
@@ -131,33 +125,45 @@ describe('pvp controller', () => {
       });
     };
 
+    const assertUsers = (leaderboard) => {
+      leaderboard.forEach((standing) => {
+        expect(standing).to.include({
+          alias: user.alias,
+          accountName: user.accountName,
+        });
+      });
+    };
+
     beforeEach(() => {
-      readUser.withArgs(models, { apiToken }).returns(Promise.resolve(user));
-      listUserStandings.withArgs(models, season.id).returns(Promise.resolve(standings));
+      readUser.withArgs(models, { apiTokenId }).returns(Promise.resolve(user));
     });
 
     ['na', 'gw2a', 'eu'].forEach((region) => {
+      beforeEach(() => {
+        listPvpStandings.withArgs(models, season.id, region).returns(Promise.resolve(standings));
+      });
+
       describe(region, () => {
         it('should return maxium of 250', async () => {
           const longStandings = Array(300).fill(one);
-          listUserStandings.withArgs(models, season.id).returns(Promise.resolve(longStandings));
+          listPvpStandings
+            .withArgs(models, season.id, region)
+            .returns(Promise.resolve(longStandings));
           const leaderboard = await controller.leaderboard(region);
 
           expect(leaderboard.length).to.equal(250);
-        });
-
-        it('should filter out null entries', async () => {
-          const leaderboard = await controller.leaderboard(region);
-
-          leaderboard.forEach((standing) => {
-            expect(standing[`${region}Rank`]).to.exist;
-          });
         });
 
         it('should build leaderboard and sort by highest to lowest rating', async () => {
           const leaderboard = await controller.leaderboard(region);
 
           assertIsSorted(leaderboard, `${region}Rank`);
+        });
+
+        it('should add user data to each standing', async () => {
+          const leaderboard = await controller.leaderboard(region);
+
+          assertUsers(leaderboard);
         });
       });
     });
