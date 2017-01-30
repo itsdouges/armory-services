@@ -68,7 +68,17 @@ describe('sitemap', () => {
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>http://gw2-local.com/leaderboards</loc>
+    <loc>http://gw2-local.com/leaderboards/pvp</loc>
+    <lastmod>${standingsUpdated}</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>http://gw2-local.com/leaderboards/pvp/na</loc>
+    <lastmod>${standingsUpdated}</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>http://gw2-local.com/leaderboards/pvp/eu</loc>
     <lastmod>${standingsUpdated}</lastmod>
     <priority>0.9</priority>
   </url>

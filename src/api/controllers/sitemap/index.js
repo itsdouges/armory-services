@@ -49,7 +49,13 @@ const publicRoutes = [{
   loc: 'statistics',
   priority: '0.9',
 }, {
-  loc: 'leaderboards',
+  loc: 'leaderboards/pvp',
+  priority: '0.9',
+}, {
+  loc: 'leaderboards/pvp/na',
+  priority: '0.9',
+}, {
+  loc: 'leaderboards/pvp/eu',
   priority: '0.9',
 }, {
   loc: 'embeds',

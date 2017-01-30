@@ -15,6 +15,11 @@
 - Stub user claim (new user/existing user with apiToken)
 - Healthcheck
 - Local db migration test run
+- Pvp leaderboard endpoints
+
+### Fixed
+- Guild motd from not being saved to db if using obsucure unicode characters
+- Guild from not being added to db if tag is not defined
 
 ### Changed
 - Cleaned up config
