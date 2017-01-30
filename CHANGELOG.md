@@ -8,7 +8,7 @@
 - Changes
 ```
 
-## [1.5.0] - unreleased
+## [1.5.0] - 30/01/17
 ### Added
 - Eu/na pvp leaderboard data fetch
 - Stub user generation for leaderboards and guilds

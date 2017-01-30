@@ -116,7 +116,9 @@ export default function sitemapControllerFactory (models: Models) {
     const [users, guilds, characters, standing] = await getAllResources();
 
     const publicUpdatedMap = {
-      leaderboards: standing.updatedAt,
+      'leaderboards/pvp': standing.updatedAt,
+      'leaderboards/pvp/na': standing.updatedAt,
+      'leaderboards/pvp/eu': standing.updatedAt,
     };
 
     return buildSitemap(publicUpdatedMap, [
