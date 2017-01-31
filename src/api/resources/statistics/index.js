@@ -1,7 +1,9 @@
-const memoize = require('memoizee');
-const config = require('config');
+// @flow
 
-module.exports = function StatisticsResource (server, controller) {
+import config from 'config';
+import memoize from 'memoizee';
+
+export default function StatisticsResource (server: any, controller: any) {
   const getStats = memoize(() => console.log('\n=== Reading stats ===\n') || Promise.all([
     controller.users(),
     controller.guilds(),
@@ -27,4 +29,4 @@ module.exports = function StatisticsResource (server, controller) {
       return next();
     });
   });
-};
+}

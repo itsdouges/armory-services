@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import controllerFactory from 'api/controllers/guild';
 
-function guildsResource (server, models) {
+export default function guildsResource (server, models) {
   const controller = controllerFactory(models);
 
   const routeMap = {
@@ -42,5 +42,3 @@ function guildsResource (server, models) {
     return next();
   });
 }
-
-module.exports = guildsResource;

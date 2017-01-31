@@ -8,6 +8,14 @@
 - Changes
 ```
 
+## [1.5.2] - 31/01/17
+### Fixed
+- Config from throwing
+
+### Changed
+- Healthcheck url in beanstalk
+- Resources to use es6 exports
+
 ## [1.5.1] - 31/01/17
 ### Changed
 - Interval for recalculating leaderboards

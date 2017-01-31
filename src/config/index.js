@@ -12,7 +12,7 @@ if (validEnvironments.indexOf(environment) === -1) {
 
 console.log(`\n== Running with ${environment} settings. ==\n`);
 
-const environmentConfig = require(`./${environment.toLowerCase()}`).default;
+const environmentConfig = require(`./${environment}`).default;
 
 export default _.merge({},
   defaultConfig,

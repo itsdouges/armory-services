@@ -76,18 +76,20 @@ export default function createServer (models: Models, config: any) {
     tokenExpirationTime: config.jwtTokens.expiresIn,
   });
 
-  require('./resources')(server);
-  require('./resources/guilds')(server, models);
-  require('./resources/search')(server, models);
-  require('./resources/sign-upload')(server, models);
-  require('./resources/users/check')(server, checkControllerFactory(createValidator));
-  require('./resources/users/gw2-token')
-    .default(server, tokenControllerFactory(models, createValidator));
-  require('./resources/pvp')(server, pvpControllerFactory(models));
-  require('./resources/characters')(server, characterControllerFactory(models));
-  require('./resources/statistics')(server, statisticsControllerFactory(models));
+  require('./resources').default(server);
+  require('./resources/guilds').default(server, models);
+  require('./resources/search').default(server, models);
+  require('./resources/sign-upload').default(server, models);
+  require('./resources/users/check').default(server, checkControllerFactory(createValidator));
+  require('./resources/users/gw2-token').default(
+    server,
+    tokenControllerFactory(models, createValidator)
+  );
+  require('./resources/pvp').default(server, pvpControllerFactory(models));
+  require('./resources/characters').default(server, characterControllerFactory(models));
+  require('./resources/statistics').default(server, statisticsControllerFactory(models));
   require('./resources/users').default(server, usersControllerFactory(models));
-  require('./resources/sitemap')(server, sitemapControllerFactory(models));
+  require('./resources/sitemap').default(server, sitemapControllerFactory(models));
 
   return server;
 }

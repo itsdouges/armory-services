@@ -1,7 +1,7 @@
 import s3 from 'lib/s3';
 import { getUserByEmail } from 'lib/services/user';
 
-module.exports = function signUploadResource (server, models) {
+export default function signUploadResource (server, models) {
   server.get('/sign-upload', (req, res, next) => {
     if (!req.username) {
       return res.sendUnauthenticated();
@@ -23,4 +23,4 @@ module.exports = function signUploadResource (server, models) {
         return next();
       });
   });
-};
+}

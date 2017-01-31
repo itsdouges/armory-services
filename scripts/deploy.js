@@ -113,7 +113,7 @@ function deployToEb (zipPath) {
     {
       Namespace: 'aws:elasticbeanstalk:application',
       OptionName: 'Application Healthcheck URL',
-      Value: '/',
+      Value: '/healthcheck',
     },
     {
       Namespace: 'aws:elb:listener:443',
@@ -160,7 +160,6 @@ function deployToEb (zipPath) {
     process.exit(1);
   });
 }
-
 
 function zipConfigs () {
   const zipPath = `./scripts/${applicationName}-gw2armoryapi:${new Date().getTime()}.zip`;

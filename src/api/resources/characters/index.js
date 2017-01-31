@@ -1,4 +1,4 @@
-function charactersResource (server, controller) {
+export default function charactersResource (server, controller) {
   server.get('random/characters/:n', (req, res, next) => {
     controller
       .random(req.params.n)
@@ -60,5 +60,3 @@ function charactersResource (server, controller) {
       });
   });
 }
-
-module.exports = charactersResource;

@@ -1,11 +1,17 @@
-const nodemailer = require('nodemailer');
-const ses = require('nodemailer-ses-transport');
-const config = require('config');
+// @flow
+
+import config from 'config';
+import nodemailer from 'nodemailer';
+import ses from 'nodemailer-ses-transport';
 
 let transporter;
 
-module.exports = {
-  send (options) {
+type MailOptions = {
+  subject: string,
+};
+
+export default {
+  send (options: MailOptions) {
     return new Promise((resolve, reject) => {
       if (!transporter) {
         transporter = nodemailer.createTransport(ses({

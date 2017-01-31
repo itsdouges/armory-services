@@ -1,7 +1,7 @@
 import memoize from 'memoizee';
 import config from 'config';
 
-function PvpResource (server, controller) {
+export default function PvpResource (server, controller) {
   server.get('/users/:alias/pvp/stats', (req, res, next) => {
     controller
       .stats(req.params.alias)
@@ -73,5 +73,3 @@ function PvpResource (server, controller) {
       });
   });
 }
-
-module.exports = PvpResource;

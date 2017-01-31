@@ -1,6 +1,6 @@
 import searchFactory from 'api/controllers/search';
 
-module.exports = function searchResource (server, models) {
+export default function searchResource (server, models) {
   const controller = searchFactory(models);
 
   server.get('/search', (req, res, next) =>
@@ -18,4 +18,4 @@ module.exports = function searchResource (server, models) {
         res.send(500, error);
         return next();
       }));
-};
+}
