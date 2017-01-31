@@ -8,6 +8,15 @@
 - Changes
 ```
 
+## [1.5.1] - 31/01/17
+### Changed
+- Interval for recalculating leaderboards
+- Interval for fetching leaderboard data
+- Config declarations
+
+### Added
+- Small time module for converting hours/minutes to milliseconds
+
 ## [1.5.0] - 30/01/17
 ### Added
 - Eu/na pvp leaderboard data fetch

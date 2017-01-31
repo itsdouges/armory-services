@@ -1,22 +1,20 @@
-const ENVIRONMENT = process.env.ENV || 'DEV';
-const { merge } = require('lodash');
+// @flow
 
-switch (ENVIRONMENT) {
-  case 'DEV':
-  case 'PROD':
-  case 'TEST':
-  case 'ABCD':
-  case 'local':
-    break;
+import _ from 'lodash';
+import defaultConfig from './default';
 
-  default:
-    throw new Error(`${ENVIRONMENT} is not a supported environment!`);
+const environment = (process.env.ENV || 'dev').toLowerCase();
+const validEnvironments = ['dev', 'prod', 'test', 'local'];
+
+if (validEnvironments.indexOf(environment) === -1) {
+  throw new Error(`${environment} is not a supported environment!`);
 }
 
-console.log(`\n== Running with ${ENVIRONMENT} settings. ==\n`);
+console.log(`\n== Running with ${environment} settings. ==\n`);
 
-module.exports = merge(
-  {},
-  require('./default'),
-  require(`./${ENVIRONMENT.toLowerCase()}`)
+const environmentConfig = require(`./${environment.toLowerCase()}`).default;
+
+export default _.merge({},
+  defaultConfig,
+  environmentConfig,
 );

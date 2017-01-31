@@ -1,4 +1,6 @@
-module.exports = {
+// @flow
+
+export default {
   db: {
     username: process.env.DB_USER || 'admin',
     password: process.env.DB_PASS || 'password',
@@ -7,10 +9,5 @@ module.exports = {
 
   web: {
     publicUrl: 'https://gw2armory.com',
-  },
-
-  cache: {
-    findAllCharacters: 60000 * 60,
-    statistics: 60000 * 60,
   },
 };

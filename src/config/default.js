@@ -1,4 +1,8 @@
-module.exports = {
+// @flow
+
+import { hours, minutes } from 'lib/time';
+
+export default {
   api: {
     port: '80',
   },
@@ -49,19 +53,19 @@ module.exports = {
   fetch: {
     concurrentCalls: 20,
     port: 8081,
-    interval: 60000 * 60 * 8,
+    interval: hours(8),
     retries: 5,
     host: process.env.FETCH_PORT_8081_TCP_ADDR,
   },
 
   leaderboards: {
-    refreshInterval: 60000 * 60 * 24,
-    latestSeasonCacheTtl: 60000 * 60 * 1,
-    getCacheTtl: 60000 * 60 * 0.5,
+    latestSeasonCacheTtl: hours(1),
+    refreshInterval: minutes(30),
+    getCacheTtl: minutes(30),
   },
 
   cache: {
-    findAllCharacters: 1,
-    statistics: 1,
+    findAllCharacters: hours(1),
+    statistics: hours(1),
   },
 };

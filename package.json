@@ -1,6 +1,6 @@
 {
   "name": "armory-back",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Backend services for gw2armory",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "dev": "./go.sh build && ./go.sh dev",
     "fetch": "node ./dist/fetch",
     "api": "node ./dist/api",
-    "migration": "sequelize db:migrate",
+    "migration": "./node_modules/.bin/babel-node ./node_modules/.bin/sequelize db:migrate",
     "deploy": "node ./scripts/deploy",
     "build": "babel src --out-dir dist --ignore spec.js,int.js",
     "test": "npm run flow && mocha \"src/**/*.spec.js\" && npm run test:int",
