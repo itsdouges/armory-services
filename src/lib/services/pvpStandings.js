@@ -24,24 +24,49 @@ export async function list (
   models: Models,
   seasonId: string,
   region?: 'gw2a' | 'na' | 'eu',
+  offset?: number = 0,
+  limit?: number = 249,
 ): Promise<Array<PvpStandingModel>> {
-  const query = {
+  const rankColumn = `${region || ''}Rank`;
+
+  const withRegionQuery = region && {
+    order: [
+      [rankColumn, 'ASC'],
+    ],
     where: {
-      seasonId,
-      ...region && {
-        [`${region}Rank`]: {
-          $ne: null,
-        },
+      [rankColumn]: {
+        $ne: null,
       },
     },
-    raw: true,
   };
 
-  const standingsLatest = await models.PvpStandings.findAll(query);
+  const standingsLatest = await models.PvpStandings.findAll(_.merge({
+    where: {
+      seasonId,
+      apiTokenId: {
+        $ne: null,
+      },
+    },
+    include: [{
+      model: models.Gw2ApiToken,
+      include: [{
+        model: models.User,
+      }],
+    }],
+    offset,
+    limit,
+    raw: true,
+  }, withRegionQuery));
 
-  return standingsLatest.map((standing) => _.omit(standing, [
-    'updatedAt',
-    'createdAt',
-    'id',
-  ]));
+  return standingsLatest.map((standing) => ({
+    ..._.pick(standing, [
+      'euRank',
+      'gw2aRank',
+      'naRank',
+      'ratingCurrent',
+      'seasonId',
+    ]),
+    alias: standing['Gw2ApiToken.User.alias'],
+    accountName: standing['Gw2ApiToken.accountName'],
+  }));
 }

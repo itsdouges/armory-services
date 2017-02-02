@@ -1,19 +1,10 @@
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define('PvpStandings', {
+  const PvpStandings = sequelize.define('PvpStandings', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
-    },
-    apiTokenId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      onDelete: 'CASCADE',
-      references: {
-        model: 'Gw2ApiTokens',
-        key: 'id',
-      },
     },
     seasonId: {
       allowNull: false,
@@ -34,5 +25,19 @@ module.exports = (sequelize, DataTypes) => {
     euRank: DataTypes.INTEGER,
     naRank: DataTypes.INTEGER,
     gw2aRank: DataTypes.INTEGER,
+  }, {
+    classMethods: {
+      associate (models) {
+        PvpStandings.belongsTo(models.Gw2ApiToken, {
+          onDelete: 'SET NULL',
+          foreignKey: {
+            name: 'apiTokenId',
+            allowNull: false,
+          },
+        });
+      },
+    },
   });
+
+  return PvpStandings;
 };

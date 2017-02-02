@@ -29,14 +29,16 @@ export default async function buildLadderByAccountName (
     ladder.map(({ name }) => readUser(models, { accountName: name }))
   );
 
-  return users.filter((user) => !!user).map((user, index) => ({
-    apiTokenId: user && user.tokenId ? user.tokenId : -1,
-    [key]: ladder[index].rank,
-    seasonId,
+  return users
+    .filter((user) => !!user)
+    .map((user, index) => ({
+      apiTokenId: user && user.tokenId ? user.tokenId : -1,
+      [key]: ladder[index].rank,
+      seasonId,
 
-    // KLUDGE: Dynamically find these instead of looking at the array.
-    ratingCurrent: ladder[index].scores[0].value,
-    kills: ladder[index].scores[1].value,
-    deaths: ladder[index].scores[2].value,
-  }));
+      // KLUDGE: Dynamically find these instead of looking at the array.
+      ratingCurrent: ladder[index].scores[0].value,
+      kills: ladder[index].scores[1].value,
+      deaths: ladder[index].scores[2].value,
+    }));
 }

@@ -2,7 +2,6 @@
 
 import type { Models } from 'flowTypes';
 
-import _ from 'lodash';
 import * as userService from 'lib/services/user';
 import { list as listPvpStandings } from 'lib/services/pvpStandings';
 import gw2, { readLatestPvpSeason } from 'lib/gw2';
@@ -52,32 +51,9 @@ export default function pvpControllerFactory (models: Models) {
   type LeaderboardRegion = 'gw2a' | 'na' | 'eu';
 
   async function leaderboard (region: LeaderboardRegion) {
-    const rankField = `${region}Rank`;
     const season = await readLatestPvpSeason();
-
     const pvpStandings = await listPvpStandings(models, season.id, region);
-
-    const users = await Promise.all(pvpStandings.map((standing) => {
-      return userService.read(models, { apiTokenId: standing.apiTokenId });
-    }));
-
-    const userMap = users.reduce((obj, { tokenId, ...user } = {}) => {
-      // eslint-disable-next-line
-      obj[tokenId] = user;
-      return obj;
-    }, {});
-
-    const pvpStandingsWithUser = pvpStandings
-      .map(({ apiTokenId, ...standing }) => ({
-        ...standing,
-        ..._.pick(userMap[apiTokenId], [
-          'accountName',
-          'alias',
-        ]),
-      }))
-      .sort((a, b) => a[rankField] - b[rankField]);
-
-    return pvpStandingsWithUser.slice(0, 250);
+    return pvpStandings;
   }
 
   return {

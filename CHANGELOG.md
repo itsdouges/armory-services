@@ -8,6 +8,13 @@
 - Changes
 ```
 
+## [1.5.3] - 02/02/17
+### Changed
+- List pvp standings service to serve associated user data
+
+### Fixed
+- List pvp standings to not serve null users
+
 ## [1.5.2] - 31/01/17
 ### Fixed
 - Config from throwing

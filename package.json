@@ -1,10 +1,10 @@
 {
   "name": "armory-back",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "Backend services for gw2armory",
   "main": "index.js",
   "scripts": {
-    "start": "ENV=local ./go.sh start",
+    "start": "./go.sh start",
     "dev": "./go.sh build && ./go.sh dev",
     "fetch": "node ./dist/fetch",
     "api": "node ./dist/api",

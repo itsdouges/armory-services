@@ -60,6 +60,14 @@ describe('pvp standings service', () => {
 
     const actual = await service.list(models, standingOne.seasonId, 'gw2a');
 
-    expect(actual[0]).to.include(latestStanding);
+    expect(actual[0]).to.eql({
+      accountName: apiToken.accountName,
+      alias: user.alias,
+      gw2aRank: latestStanding.gw2aRank,
+      naRank: latestStanding.naRank,
+      euRank: latestStanding.euRank,
+      ratingCurrent: latestStanding.ratingCurrent,
+      seasonId: standingOne.seasonId,
+    });
   });
 });

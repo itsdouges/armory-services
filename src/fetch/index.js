@@ -61,6 +61,11 @@ models.sequelize.sync()
   .then(() => {
     try {
       console.log(`\n=== Starting server on port ${config.fetch.port}.. ===\n`);
+      server.listen(config.fetch.port);
+
+      if (config.fetch.disabled) {
+        return;
+      }
 
       batchFetch();
       setInterval(batchFetch, config.fetch.interval);
@@ -70,8 +75,6 @@ models.sequelize.sync()
         interval: config.leaderboards.refreshInterval,
         callImmediately: true,
       }]);
-
-      server.listen(config.fetch.port);
     } catch (e) {
       console.log(e);
     }
