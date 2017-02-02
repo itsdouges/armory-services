@@ -25,7 +25,7 @@ export async function list (
   seasonId: string,
   region?: 'gw2a' | 'na' | 'eu',
   offset?: number = 0,
-  limit?: number = 249,
+  limit?: number = 250,
 ): Promise<Array<PvpStandingModel>> {
   const rankColumn = `${region || ''}Rank`;
 
