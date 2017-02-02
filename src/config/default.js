@@ -4,6 +4,7 @@ import { hours, minutes } from 'lib/time';
 
 export default {
   api: {
+    publicUrl: 'http://localhost',
     port: '80',
   },
 
@@ -68,4 +69,9 @@ export default {
     findAllCharacters: hours(1),
     statistics: hours(1),
   },
+
+  sitemap: {
+    pageLimit: 50000,
+  },
+
 };

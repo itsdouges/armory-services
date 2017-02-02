@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [1.6.1] - 03/02/17
+### Changed
+- Sitemap to be paginated
+
 ## [1.6.0] - 03/02/17
 ### Added
 - Leaderboard pagination
