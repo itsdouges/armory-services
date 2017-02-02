@@ -8,6 +8,14 @@
 - Changes
 ```
 
+## [1.6.0] - 03/02/17
+### Added
+- Leaderboard pagination
+
+### Fixed
+- Leaderboard calculation from not clearing na/eu users who dropped off the ladder
+- Leaderboard calculation throwing because expected values from service were not being returned
+
 ## [1.5.3] - 02/02/17
 ### Changed
 - List pvp standings service to serve associated user data

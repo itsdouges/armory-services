@@ -1,6 +1,6 @@
 // @flow
 
-import type { Models, PvpStandingModel } from 'flowTypes';
+import type { Models, PvpStandingModel, Pagination } from 'flowTypes';
 import _ from 'lodash';
 
 export async function saveList (models: Models, pvpStandings: Array<PvpStandingModel>) {
@@ -24,8 +24,7 @@ export async function list (
   models: Models,
   seasonId: string,
   region?: 'gw2a' | 'na' | 'eu',
-  offset?: number = 0,
-  limit?: number = 250,
+  params?: Pagination,
 ): Promise<Array<PvpStandingModel>> {
   const rankColumn = `${region || ''}Rank`;
 
@@ -53,9 +52,8 @@ export async function list (
         model: models.User,
       }],
     }],
-    offset,
-    limit,
     raw: true,
+    ...params,
   }, withRegionQuery));
 
   return standingsLatest.map((standing) => ({
@@ -65,7 +63,10 @@ export async function list (
       'naRank',
       'ratingCurrent',
       'seasonId',
+      'totalPointsBest',
+      'decayCurrent',
     ]),
+    apiTokenId: standing['Gw2ApiToken.id'],
     alias: standing['Gw2ApiToken.User.alias'],
     accountName: standing['Gw2ApiToken.accountName'],
   }));

@@ -26,7 +26,7 @@ const fetcher = proxyquire('fetch/fetchers/pvpLeaderboard', {
 });
 
 describe('pvp leaderboard fetcher', () => {
-  const seasonId = '1234-1234-1234';
+  const { seasonId } = testData.dbStanding();
   const models = { i: 'exit' };
   const apiTokenId = 5;
   const apiTokenId2 = 9;
@@ -114,7 +114,7 @@ describe('pvp leaderboard fetcher', () => {
   });
 
   it('should save standings', async () => {
-    expect(saveStandings).to.have.been.calledWith(models, [
+    const expectedStandings = [
       addRanking(standingFour, 1, null, null),
       addRanking(standingTwo, 2, 1, null),
       addRanking(standingThree, 3, null, 5),
@@ -122,13 +122,17 @@ describe('pvp leaderboard fetcher', () => {
         apiTokenId,
         gw2aRank: null,
         naRank: 2,
-        seasonId: '1234-1234-1234',
+        seasonId,
       }, {
         apiTokenId: apiTokenId2,
         euRank: 2,
         gw2aRank: null,
-        seasonId: '1234-1234-1234',
+        seasonId,
       },
-    ]);
+    ];
+
+    saveStandings.firstCall.args[1].forEach((arg, index) => {
+      expect(arg).to.eql(expectedStandings[index]);
+    });
   });
 });

@@ -57,14 +57,23 @@ const mergeLadders = ({ standings, na, eu }) => {
   return _.values(mergedStandings);
 };
 
-function buildStandings ({ standings, na, eu }) {
-  return mergeLadders({ standings, na, eu })
+const clearRanks = (standings) => standings.map((standing) => ({
+  ...standing,
+  euRank: null,
+  naRank: null,
+  gw2aRank: null,
+}));
+
+const buildStandings = ({ standings, na, eu }) => {
+  const cleanedStandings = clearRanks(standings);
+
+  return mergeLadders({ standings: cleanedStandings, na, eu })
     .sort(sortByRating)
     .map((standing, index) => ({
       ...standing,
       gw2aRank: hasJoined(standing) ? index + 1 : null,
     }));
-}
+};
 
 export default async function calculatePvpLeaderboards (models: Models) {
   logger.start();

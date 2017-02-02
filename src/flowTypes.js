@@ -20,6 +20,11 @@ export type Models = {
   sequelize: any,
 };
 
+export type Pagination = {
+  limit?: number,
+  offset?: number,
+};
+
 type Gw2Standing = {
   total_points: number,
   division: number,
@@ -119,11 +124,6 @@ export type PasswordReset = {
   expires: Date,
   used: boolean,
   UserId: string,
-};
-
-export type Pagination = {
-  take: number,
-  pick: number,
 };
 
 type Gw2StandingScore = {

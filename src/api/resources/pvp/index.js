@@ -1,7 +1,12 @@
+// @flow
+
+import type { Server } from 'restify';
+
+import _ from 'lodash';
 import memoize from 'memoizee';
 import config from 'config';
 
-export default function PvpResource (server, controller) {
+export default function PvpResource (server: Server, controller: any) {
   server.get('/users/:alias/pvp/stats', (req, res, next) => {
     controller
       .stats(req.params.alias)
@@ -48,16 +53,20 @@ export default function PvpResource (server, controller) {
     preFetch: true,
   });
 
-  server.get('/leaderboards/pvp/:region', (req, res, next) => {
-    memoizedLeaderboard(req.params.region)
-      .then((leaderboard) => {
-        res.send(200, leaderboard);
-        return next();
-      }, (error) => {
-        console.error(error);
-        res.send(500);
-        return next();
+  server.get('/leaderboards/pvp/:region', async (req, res, next) => {
+    try {
+      const leaderboard = await memoizedLeaderboard(req.params.region, {
+        limit: _.toInteger(req.params.limit) || 250,
+        offset: _.toInteger(req.params.offset) || 0,
       });
+
+      res.send(200, leaderboard);
+    } catch (e) {
+      res.send(500);
+      console.error(e);
+    }
+
+    return next();
   });
 
   server.get('/users/:alias/achievements', (req, res, next) => {
