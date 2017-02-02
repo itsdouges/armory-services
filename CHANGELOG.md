@@ -8,6 +8,11 @@
 - Changes
 ```
 
+## [1.6.2] - 03/02/17
+### Changed
+- Sitemap code to be a little cleaner
+- Travis ci to use yarn by the official means
+
 ## [1.6.1] - 03/02/17
 ### Changed
 - Sitemap to be paginated

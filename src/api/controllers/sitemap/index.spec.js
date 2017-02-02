@@ -13,7 +13,7 @@ const createSitemapController = proxyquire('api/controllers/sitemap', {
       publicUrl: apiPublicUrl,
     },
     sitemap: {
-      pageLimit: 7,
+      pageItemLimit: 7,
     },
   },
   moment: () => date,
@@ -51,10 +51,12 @@ describe('sitemap', () => {
     models = await setupTestDb();
     await init(models);
 
-    userUpdated = await getUpdatedAt(models.User);
-    guildUpdated = await getUpdatedAt(models.Gw2Guild);
-    characterUpdated = await getUpdatedAt(models.Gw2Character);
-    standingsUpdated = await getUpdatedAt(models.PvpStandings);
+    [userUpdated, guildUpdated, characterUpdated, standingsUpdated] = await Promise.all([
+      getUpdatedAt(models.User),
+      getUpdatedAt(models.Gw2Guild),
+      getUpdatedAt(models.Gw2Character),
+      getUpdatedAt(models.PvpStandings),
+    ]);
 
     sitemap = createSitemapController(models);
   });
@@ -62,8 +64,8 @@ describe('sitemap', () => {
   it('should render index', async () => {
     const index = await sitemap.index();
 
-    expect(index).to.equal(`
-<?xml version="1.0" encoding="UTF-8"?>
+    expect(index).to.equal(
+`<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
     <loc>http://api.gw2.com/sitemap0.xml</loc>
@@ -77,7 +79,8 @@ describe('sitemap', () => {
     <loc>http://api.gw2.com/sitemap2.xml</loc>
     <lastmod>${date.toISOString()}</lastmod>
   </sitemap>
-</sitemapindex>`);
+</sitemapindex>`
+);
   });
 
   it('should render render page one', async () => {

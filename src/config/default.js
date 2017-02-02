@@ -71,7 +71,7 @@ export default {
   },
 
   sitemap: {
-    pageLimit: 50000,
+    pageItemLimit: 50000,
   },
 
 };

@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 export default function SitemapResource (server: Server, controller: any) {
   server.get('/sitemap.xml', async (req, res, next) => {
-    res.setHeader('content-type', 'text/xml; charset=utf-8');
+    res.setHeader('Content-Type', 'text/xml');
 
     try {
       const sitemapIndex = await controller.index();
@@ -20,7 +20,7 @@ export default function SitemapResource (server: Server, controller: any) {
   });
 
   server.get(/^\/sitemap(\d+)\.xml/, async (req, res, next) => {
-    res.setHeader('content-type', 'text/xml; charset=utf-8');
+    res.setHeader('Content-Type', 'text/xml');
 
     const page = _.toInteger(req.params[0]);
 

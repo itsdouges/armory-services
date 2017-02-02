@@ -92,27 +92,27 @@ ${items.join('\n')}
 </urlset>`;
 
 const buildSitemapData = (users, guilds, characters, publicUpdatedAtMap) => {
-  return [
+  return [].concat(
     publicRoutes.map((route) => buildUrlTemplate({
       ...route,
       // $FlowFixMe
       updatedAt: publicUpdatedAtMap[route.loc],
     })),
-    ...userRoutes.map(
+    userRoutes.map(
       (route) => users.map((user) => buildUrlTemplate({
         loc: `${user.alias}${route.loc}`,
         priority: route.priority,
         updatedAt: user.updatedAt,
       }))
     ),
-    ...guildRoutes.map(
+    guildRoutes.map(
       (route) => guilds.map((guild) => buildUrlTemplate({
         loc: `g/${guild.name}${route.loc}`,
         priority: route.priority,
         updatedAt: guild.updatedAt,
       }))
     ),
-    ...characterRoutes.map(
+    characterRoutes.map(
       (route) =>
         characters.map((character) =>
           buildUrlTemplate({
@@ -121,9 +121,8 @@ const buildSitemapData = (users, guilds, characters, publicUpdatedAtMap) => {
             updatedAt: character.updatedAt,
           }))
     ),
-  ].reduce((acc, items) => {
-    return acc.concat(items);
-  }, []);
+  )
+  .reduce((acc, items) => acc.concat(items), []);
 };
 
 export default function sitemapControllerFactory (models: Models) {
@@ -152,8 +151,8 @@ export default function sitemapControllerFactory (models: Models) {
       'leaderboards/pvp/eu': standing.updatedAt,
     };
 
-    const offset = page * config.sitemap.pageLimit;
-    const limit = offset + config.sitemap.pageLimit;
+    const offset = page * config.sitemap.pageItemLimit;
+    const limit = offset + config.sitemap.pageItemLimit;
 
     const sitemapData = await buildSitemapData(users, guilds, characters, publicUpdatedAtMap);
     const slicedData = sitemapData.slice(offset, limit);
@@ -166,7 +165,7 @@ export default function sitemapControllerFactory (models: Models) {
     const sitemapData = await buildSitemapData(users, guilds, characters, {});
     const urlCount = sitemapData.length;
 
-    const pages = Math.ceil(urlCount / config.sitemap.pageLimit);
+    const pages = Math.ceil(urlCount / config.sitemap.pageItemLimit);
     const sitemaps = [];
 
     for (let i = 0; i < pages; i++) {
@@ -176,8 +175,7 @@ export default function sitemapControllerFactory (models: Models) {
   </sitemap>`);
     }
 
-    return `
-<?xml version="1.0" encoding="UTF-8"?>
+    return `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${sitemaps.join('\n')}
 </sitemapindex>`;
