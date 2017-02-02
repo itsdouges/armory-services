@@ -1,6 +1,6 @@
 // @flow
 
-import type { Models } from 'flowTypes';
+import type { Models, Pagination } from 'flowTypes';
 
 import * as userService from 'lib/services/user';
 import { list as listPvpStandings } from 'lib/services/pvpStandings';
@@ -50,9 +50,10 @@ export default function pvpControllerFactory (models: Models) {
 
   type LeaderboardRegion = 'gw2a' | 'na' | 'eu';
 
-  async function leaderboard (region: LeaderboardRegion) {
+  async function leaderboard (region: LeaderboardRegion, params: Pagination) {
     const season = await readLatestPvpSeason();
-    const pvpStandings = await listPvpStandings(models, season.id, region);
+    const pvpStandings = await listPvpStandings(models, season.id, region, params);
+
     return pvpStandings;
   }
 

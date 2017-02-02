@@ -68,6 +68,9 @@ describe('pvp standings service', () => {
       euRank: latestStanding.euRank,
       ratingCurrent: latestStanding.ratingCurrent,
       seasonId: standingOne.seasonId,
+      totalPointsBest: latestStanding.totalPointsBest,
+      apiTokenId: apiToken.id,
+      decayCurrent: latestStanding.decayCurrent,
     });
   });
 });
