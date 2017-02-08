@@ -4,7 +4,7 @@ import { hours, minutes } from 'lib/time';
 
 export default {
   api: {
-    publicUrl: 'http://localhost',
+    publicUrl: 'https://api.gw2armory.com',
     port: '80',
   },
 
@@ -48,7 +48,7 @@ export default {
   },
 
   web: {
-    publicUrl: 'http://localhost:3000',
+    publicUrl: 'https://gw2armory.com',
   },
 
   fetch: {

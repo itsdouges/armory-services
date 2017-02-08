@@ -23,6 +23,10 @@ export default {
     statistics: minutes(1),
   },
 
+  api: {
+    publicUrl: 'http://localhost',
+  },
+
   web: {
     publicUrl: 'http://localhost:3000',
   },
