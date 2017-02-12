@@ -8,7 +8,7 @@
 - Changes
 ```
 
-## [1.6.3] - 09/02/17
+## [1.6.3] - 13/02/17
 ### Changed
 - Gw2 api to filter out undefined items
 
