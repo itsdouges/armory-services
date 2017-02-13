@@ -52,11 +52,11 @@ describe('gw2 api', () => {
     });
 
     it('should not explode if there were no games found', () => {
-      const data = [];
+      const data = [undefined];
 
       stubAxiosGet('pvp/games', data);
 
-      return gw2Api.readPvpGames(token).then((result) => expect(result).to.equal(data));
+      return gw2Api.readPvpGames(token).then((result) => expect(result).to.eql([]));
     });
   });
 

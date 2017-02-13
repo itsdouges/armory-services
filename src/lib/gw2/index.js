@@ -10,15 +10,15 @@ import retryFactory from 'lib/retry';
 
 const withRetry = retryFactory({ retryPredicate: (e) => (e.status >= 500) });
 
-function normaliseObject (data) {
+const normaliseObject = (data) => {
   return _.reduce(data, (obj, value, key) => {
     // eslint-disable-next-line
     obj[_.camelCase(key)] = value;
     return obj;
   }, {});
-}
+};
 
-function replaceParams (endpoint, id, params) {
+const buildUrl = (endpoint, id, params) => {
   let url = endpoint.replace('{id}', id);
 
   _.forEach(params, (value, key) => {
@@ -26,11 +26,16 @@ function replaceParams (endpoint, id, params) {
   });
 
   return url;
-}
+};
+
+const filterEmptyItems = (response) => {
+  return Array.isArray(response) ? response.filter((item) => !!item) : response;
+};
 
 const simpleCalls = _.reduce({
-  readPvpGames: { resource: 'pvp/games',
-    onResult: (token, result) => {
+  readPvpGames: {
+    resource: 'pvp/games',
+    onSuccess: (token, result) => {
       const ids = result.data.join(',');
       if (!ids) {
         return result;
@@ -63,7 +68,7 @@ const simpleCalls = _.reduce({
     resource: 'pvp/seasons/{id}/leaderboards/ladder/{region}?page_size=200{page}',
     noAuth: true,
     // TODO: Add proper pagination for endpoints. THIS_IS_NASTY.
-    onResult: async (token, response, id, params) => {
+    onSuccess: async (token, response, id, params) => {
       if (params.page) {
         return response;
       }
@@ -76,27 +81,30 @@ const simpleCalls = _.reduce({
       return { data: response.data.concat(moreStandings) };
     },
   },
-}, (obj, { resource, onResult, normalise, noAuth }, key) => {
-  // eslint-disable-next-line max-len
-  const func = (token, id = '', params = {}) => axios.get(replaceParams(`${config.gw2.endpoint}v2/${resource}`, id, params), !noAuth && {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-  .then((result) => {
-    if (onResult) {
-      return onResult(token, result, id, params);
+}, (obj, { resource, onSuccess, normalise, noAuth, filterUndefined }, key) => {
+  const func = async (token, id = '', params = {}) => {
+    const url = buildUrl(`${config.gw2.endpoint}v2/${resource}`, id, params);
+    const response = await axios.get(url, !noAuth && {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    let { data } = response;
+
+    if (onSuccess) {
+      const nextResponse = await onSuccess(token, response, id, params);
+      data = nextResponse.data;
     }
 
-    return result;
-  })
-  .then(({ data }) => {
     if (normalise) {
-      return normaliseObject(data);
+      data = normaliseObject(data);
     }
+
+    data = filterEmptyItems(data);
 
     return data;
-  });
+  };
 
   // eslint-disable-next-line
   obj[key] = withRetry(func);

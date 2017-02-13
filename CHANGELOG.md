@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [1.6.3] - 13/02/17
+### Changed
+- Gw2 api to filter out undefined items
+
 ## [1.6.2] - 03/02/17
 ### Changed
 - Sitemap code to be a little cleaner
