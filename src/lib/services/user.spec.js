@@ -95,12 +95,12 @@ describe('user service', () => {
     });
   });
 
-  describe('is user in guild', () => {
+  describe.only('is user in guild', () => {
     context('when user is in guild', () => {
       it('should return true', async () => {
         const inGuild = await service.isUserInGuild(models, user.email, guild.name);
 
-        expect(inGuild).to.be.true;
+        expect(inGuild).to.equal(true);
       });
     });
 
@@ -108,7 +108,7 @@ describe('user service', () => {
       it('should return false', async () => {
         const inGuild = await service.isUserInGuild(models, userTwo.email, guild.name);
 
-        expect(inGuild).to.be.false;
+        expect(inGuild).to.equal(false);
       });
     });
   });

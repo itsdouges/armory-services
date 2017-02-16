@@ -1,8 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 
+// const executeFirst = ['User', 'Gw2ApiToken'];
+
 function Models (sequelize) {
-  const db = {};
+  const db = {
+    sequelize,
+  };
 
   fs
     .readdirSync(__dirname)
@@ -12,13 +16,22 @@ function Models (sequelize) {
       db[model.name] = model;
     });
 
+  // executeFirst.forEach((modelName) => {
+  //   if ('associate' in db[modelName]) {
+  //     db[modelName].associate(db);
+  //   }
+  // });
+
   Object.keys(db).forEach((modelName) => {
+    // if (executeFirst.indexOf(modelName) > -1) {
+    //   return;
+    // }
+
     if ('associate' in db[modelName]) {
       db[modelName].associate(db);
     }
   });
 
-  db.sequelize = sequelize;
   return db;
 }
 
