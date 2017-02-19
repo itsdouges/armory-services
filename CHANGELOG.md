@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [1.7.0] - 16/02/17
+### Added
+- Advanced health check for beanstalk
+
 ## [1.6.3] - 13/02/17
 ### Changed
 - Gw2 api to filter out undefined items
