@@ -95,7 +95,7 @@ describe('user service', () => {
     });
   });
 
-  describe.only('is user in guild', () => {
+  describe('is user in guild', () => {
     context('when user is in guild', () => {
       it('should return true', async () => {
         const inGuild = await service.isUserInGuild(models, user.email, guild.name);

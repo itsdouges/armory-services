@@ -27,17 +27,16 @@ module.exports = (sequelize, DataTypes) => {
     gw2aRank: DataTypes.INTEGER,
     wins: DataTypes.INTEGER,
     losses: DataTypes.INTEGER,
-    // apiTokenId: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: true,
-    //   onDelete: 'SET NULL',
-    //   references: {
-    //     model: 'Gw2ApiTokens',
-    //     key: 'id',
-    //   },
-    // },
-  },
-  {
+    apiTokenId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      onDelete: 'SET NULL',
+      references: {
+        model: 'Gw2ApiTokens',
+        key: 'id',
+      },
+    },
+  }, {
     classMethods: {
       associate (models) {
         PvpStandings.belongsTo(models.Gw2ApiToken, {
@@ -49,8 +48,7 @@ module.exports = (sequelize, DataTypes) => {
         });
       },
     },
-  }
-  );
+  });
 
   return PvpStandings;
 };
