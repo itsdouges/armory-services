@@ -25,6 +25,16 @@ module.exports = (sequelize, DataTypes) => {
     euRank: DataTypes.INTEGER,
     naRank: DataTypes.INTEGER,
     gw2aRank: DataTypes.INTEGER,
+
+    apiTokenId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      onDelete: 'SET NULL',
+      references: {
+        model: 'Gw2ApiTokens',
+        key: 'id',
+      },
+    },
   }, {
     classMethods: {
       associate (models) {

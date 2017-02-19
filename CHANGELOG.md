@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [1.7.1] - 20/02/17
+### Fixed
+- Local environment from not being able to start up correctly
+
 ## [1.7.0] - 16/02/17
 ### Added
 - Advanced health check for beanstalk

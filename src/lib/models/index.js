@@ -18,6 +18,8 @@ function Models (sequelize) {
     }
   });
 
+  // This has to be assigned last for some reason else
+  // things blow up. ????????
   db.sequelize = sequelize;
   return db;
 }
