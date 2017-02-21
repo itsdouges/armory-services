@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [1.8.0] - unreleased
+### Added
+- Wins/losses to pvp standings
+
 ## [1.7.1] - 20/02/17
 ### Fixed
 - Local environment from not being able to start up correctly
