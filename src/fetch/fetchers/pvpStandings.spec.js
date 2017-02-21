@@ -3,10 +3,12 @@ import * as gw2 from 'test/testData/gw2';
 
 const sandbox = sinon.sandbox.create();
 const readPvpStandings = sandbox.stub();
+const readPvpStats = sandbox.stub();
 
 const pvpStandingsFetcher = proxyquire('fetch/fetchers/pvpStandings', {
   'lib/gw2': {
     readPvpStandings,
+    readPvpStats,
   },
 });
 
@@ -14,6 +16,8 @@ describe('pvp standings fetcher', () => {
   let models;
 
   const token = testData.apiToken();
+  const stats = gw2.pvpStats();
+
   const standings = [
     gw2.pvpStanding({
       season_id: '1111',
@@ -29,6 +33,8 @@ describe('pvp standings fetcher', () => {
   before(async () => {
     models = await setupTestDb({ seed: true });
     readPvpStandings.withArgs(token.token).returns(Promise.resolve(standings));
+    readPvpStats.withArgs(token.token).returns(Promise.resolve(stats));
+
     await pvpStandingsFetcher(models, token);
     await pvpStandingsFetcher(models, token);
   });
@@ -59,6 +65,9 @@ describe('pvp standings fetcher', () => {
         repeatsBest: pvpStanding.best.repeats,
         ratingBest: pvpStanding.best.rating,
         decayBest: pvpStanding.best.decay,
+
+        wins: stats.ladders.ranked.wins,
+        losses: stats.ladders.ranked.losses,
       });
     });
   });

@@ -73,3 +73,48 @@ export const character = ({
   guild: gld,
   created,
 });
+
+export const pvpStats = () => ({
+  pvp_rank: 5,
+  pvp_rank_points: 6513,
+  pvp_rank_rollovers: 4,
+  aggregate: {
+    wins: 6,
+    losses: 14,
+    desertions: 0,
+    byes: 0,
+    forfeits: 0,
+  },
+  professions: {
+    elementalist: {
+      wins: 3,
+      losses: 7,
+      desertions: 0,
+      byes: 0,
+      forfeits: 0,
+    },
+    guardian: {
+      wins: 3,
+      losses: 7,
+      desertions: 0,
+      byes: 0,
+      forfeits: 0,
+    },
+  },
+  ladders: {
+    ranked: {
+      wins: 4,
+      losses: 10,
+      desertions: 0,
+      byes: 0,
+      forfeits: 0,
+    },
+    unranked: {
+      wins: 2,
+      losses: 4,
+      desertions: 0,
+      byes: 0,
+      forfeits: 0,
+    },
+  },
+});

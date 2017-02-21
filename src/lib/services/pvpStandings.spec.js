@@ -71,6 +71,8 @@ describe('pvp standings service', () => {
       totalPointsBest: latestStanding.totalPointsBest,
       apiTokenId: apiToken.id,
       decayCurrent: latestStanding.decayCurrent,
+      wins: latestStanding.wins,
+      losses: latestStanding.losses,
     });
   });
 });

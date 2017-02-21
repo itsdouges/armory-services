@@ -122,6 +122,8 @@ export const standing = ({
   gw2aRank = 1,
   naRank = null,
   euRank = null,
+  wins = 123,
+  losses = 1,
 } = {}) => ({
   apiTokenId,
   seasonId,
@@ -140,6 +142,8 @@ export const standing = ({
   gw2aRank,
   naRank,
   euRank,
+  wins,
+  losses,
 });
 
 export const character = ({

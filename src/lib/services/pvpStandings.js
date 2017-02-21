@@ -65,6 +65,8 @@ export async function list (
       'seasonId',
       'totalPointsBest',
       'decayCurrent',
+      'wins',
+      'losses',
     ]),
     apiTokenId: standing['Gw2ApiToken.id'],
     alias: standing['Gw2ApiToken.User.alias'],
