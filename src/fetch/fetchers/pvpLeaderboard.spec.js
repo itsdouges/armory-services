@@ -1,5 +1,6 @@
 import { stubLogger } from 'test/utils';
-import * as testData from 'test/testData';
+import * as testData from 'test/testData/db';
+import * as gw2 from 'test/testData/gw2';
 
 const sandbox = sinon.sandbox.create();
 const readLatestPvpSeason = sandbox.stub();
@@ -26,7 +27,7 @@ const fetcher = proxyquire('fetch/fetchers/pvpLeaderboard', {
 });
 
 describe('pvp leaderboard fetcher', () => {
-  const { seasonId } = testData.dbStanding();
+  const { seasonId } = testData.standing();
   const models = { i: 'exit' };
   const apiTokenId = 5;
   const apiTokenId2 = 9;
@@ -47,10 +48,10 @@ describe('pvp leaderboard fetcher', () => {
     ratingCurrent: 1100,
     decayCurrent: 0,
     apiTokenId: 4,
-  }].map((standing) => (testData.dbStanding(standing)));
+  }].map((standing) => (testData.standing(standing)));
 
   const toLadder = (names) =>
-    names.map((name, index) => testData.gw2LadderStanding({ name, rank: index }));
+    names.map((name, index) => gw2.leaderboardStanding({ name, rank: index }));
 
   const standingg = (apiTokenIdd, rank, key) => ({
     apiTokenId: apiTokenIdd,

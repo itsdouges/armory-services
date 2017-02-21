@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import * as testData from 'test/testData';
+import * as testData from 'test/testData/db';
 
 const sandbox = sinon.sandbox.create();
 const readGuild = sandbox.stub();
@@ -62,7 +62,7 @@ describe('user service', () => {
     accountName: 'hot4gw2.1234',
   });
 
-  const standing = testData.dbStanding({
+  const standing = testData.standing({
     apiTokenId: apiTokenForUserTwo.id,
   });
 

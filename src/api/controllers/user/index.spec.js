@@ -1,7 +1,7 @@
 import moment from 'moment';
 import _ from 'lodash';
 
-import * as testData from 'test/testData';
+import * as testData from 'test/testData/db';
 import { stubValidator } from 'test/utils';
 
 const sandbox = sinon.sandbox.create();

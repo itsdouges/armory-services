@@ -1,4 +1,5 @@
-import * as testData from 'test/testData';
+import * as db from 'test/testData/db';
+import * as gw2 from 'test/testData/gw2';
 
 const readUser = sinon.stub();
 
@@ -12,13 +13,13 @@ const models = { yeah: 'modle' };
 
 describe('leaderboard lib', () => {
   const accountName = 'madou.1234';
-  const user = testData.user({
+  const user = db.user({
     accountName,
     tokenId: 1,
   });
 
   const input = [
-    testData.gw2LadderStanding({
+    gw2.leaderboardStanding({
       name: accountName,
     }),
   ];
@@ -38,8 +39,8 @@ describe('leaderboard lib', () => {
 
     expect(actual).to.eql([{
       apiTokenId: user.tokenId,
-      deaths: 9,
-      kills: 28,
+      losses: 9,
+      wins: 28,
       ratingCurrent: 1775,
       [key]: 201,
       seasonId,

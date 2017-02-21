@@ -1,4 +1,4 @@
-import * as testData from 'test/testData';
+import * as testData from 'test/testData/db';
 
 describe('gw2 token controller', () => {
   let controller;

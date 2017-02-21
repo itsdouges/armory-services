@@ -1,4 +1,4 @@
-import * as testData from 'test/testData';
+import * as testData from 'test/testData/db';
 import controllerFactory from './';
 
 const setupTestData = async (models) => {

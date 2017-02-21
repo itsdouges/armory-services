@@ -9,8 +9,8 @@ type Standing = {
   seasonId: string,
   ['naRank' | 'euRank']: number,
   ratingCurrent: number,
-  kills: number,
-  deaths: number,
+  wins: number,
+  losses: number,
 };
 
 type Options = {
@@ -38,7 +38,7 @@ export default async function buildLadderByAccountName (
 
       // KLUDGE: Dynamically find these instead of looking at the array.
       ratingCurrent: ladder[index].scores[0].value,
-      kills: ladder[index].scores[1].value,
-      deaths: ladder[index].scores[2].value,
+      wins: ladder[index].scores[1].value,
+      losses: ladder[index].scores[2].value,
     }));
 }

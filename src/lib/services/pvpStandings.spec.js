@@ -1,4 +1,4 @@
-import * as testData from 'test/testData';
+import * as testData from 'test/testData/db';
 
 const service = proxyquire('lib/services/pvpStandings', {});
 
@@ -21,7 +21,7 @@ describe('pvp standings service', () => {
     seasonId: 's4',
     ratingCurrent: 1100,
     decayCurrent: 0,
-  }].map((standing) => (testData.dbStanding(standing)));
+  }].map((standing) => (testData.standing(standing)));
 
   let models;
 
@@ -44,7 +44,7 @@ describe('pvp standings service', () => {
   });
 
   it('should read all user standings for a season', async () => {
-    const standingOne = testData.dbStanding({
+    const standingOne = testData.standing({
       apiToken: apiToken.id,
     });
 

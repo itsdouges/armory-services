@@ -1,4 +1,5 @@
-import * as testData from 'test/testData';
+import * as testData from 'test/testData/db';
+import * as gw2 from 'test/testData/gw2';
 
 const sandbox = sinon.sandbox.create();
 const readPvpStandings = sandbox.stub();
@@ -14,13 +15,13 @@ describe('pvp standings fetcher', () => {
 
   const token = testData.apiToken();
   const standings = [
-    testData.standing({
+    gw2.pvpStanding({
       season_id: '1111',
     }),
-    testData.standing({
+    gw2.pvpStanding({
       season_id: '2222',
     }),
-    testData.standing({
+    gw2.pvpStanding({
       season_id: '3333',
     }),
   ];
