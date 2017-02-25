@@ -1,6 +1,6 @@
 {
   "name": "armory-back",
-  "version": "1.8.0",
+  "version": "2.0.0",
   "description": "Backend services for gw2armory",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "flowtypes": "flow-typed install --overwrite",
     "clean-docker": "./go.sh clean",
     "kill": "./go.sh kill",
-    "mtr-prepare": "./go.sh setupMtr",
+    "mtr-prepare": "./go.sh db",
     "mtr": "ENV=local babel-node ./src/migration/testRun && npm run migration",
     "mtr-revert": "ENV=local sequelize db:migrate:undo"
   },

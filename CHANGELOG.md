@@ -8,9 +8,12 @@
 - Changes
 ```
 
-## [1.8.0] - unreleased
+## [2.0.0] - 25/02/17
 ### Added
 - Wins/losses to pvp standings
+
+### Removed
+- Properties from leaderboard endpoints that weren't needed
 
 ## [1.7.1] - 20/02/17
 ### Fixed

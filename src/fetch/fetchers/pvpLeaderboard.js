@@ -8,7 +8,7 @@ import gw2, { readLatestPvpSeason } from 'lib/gw2';
 import { bulkCreateStubUser } from 'lib/services/user';
 import { saveList as saveStandings, list as listPvpStandings } from 'lib/services/pvpStandings';
 import createLogger from 'lib/gitter';
-import buildLadderByAccountName from '../lib/leaderboard';
+import buildLadderByAccountName from '../lib/leaderboardBuilder';
 
 const logger = createLogger('Pvp_leaderboard');
 
@@ -79,9 +79,6 @@ export default async function calculatePvpLeaderboards (models: Models) {
   logger.start();
 
   const season = await readLatestPvpSeason();
-  // if (!season.active) {
-  //   return;
-  // }
 
   const [naLadder, euLadder, standings] = await Promise.all([
     gw2.readPvpLadder(null, season.id, { region: 'na' }),

@@ -3,7 +3,7 @@ import * as gw2 from 'test/testData/gw2';
 
 const readUser = sinon.stub();
 
-const sut = proxyquire('fetch/lib/leaderboard', {
+const sut = proxyquire('fetch/lib/leaderboardBuilder', {
   'lib/services/user': {
     read: readUser,
   },

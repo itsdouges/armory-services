@@ -22,7 +22,7 @@ const fetcher = proxyquire('fetch/fetchers/pvpLeaderboard', {
   'lib/services/user': {
     bulkCreateStubUser,
   },
-  '../lib/leaderboard': buildLadderByAccountName,
+  '../lib/leaderboardBuilder': buildLadderByAccountName,
   ...stubLogger(),
 });
 

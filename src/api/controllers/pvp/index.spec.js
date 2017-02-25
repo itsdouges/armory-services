@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import * as db from 'test/testData/db';
 import * as gw2 from 'test/testData/gw2';
 
@@ -121,7 +123,17 @@ describe('pvp controller', () => {
       describe(region, () => {
         it('should add user data to each standing', async () => {
           const leaderboard = await controller.leaderboard(region);
-          expect(leaderboard).to.equal(standings);
+          expect(leaderboard).to.eql(standings.map((standing) => _.pick(standing, [
+            'euRank',
+            'gw2aRank',
+            'naRank',
+            'ratingCurrent',
+            'seasonId',
+            'wins',
+            'losses',
+            'alias',
+            'accountName',
+          ])));
         });
       });
     });
