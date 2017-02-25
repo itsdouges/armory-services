@@ -120,11 +120,15 @@ describe('user service', () => {
         naRank: null,
         gw2aRank: null,
         ratingCurrent: null,
+        wins: null,
+        losses: null,
       } : _.pick(standing, [
         'euRank',
         'naRank',
         'gw2aRank',
         'ratingCurrent',
+        'wins',
+        'losses',
       ]);
 
       expect(usr).to.eql({

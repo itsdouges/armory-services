@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [2.1.0] - 25/02/17
+### Added
+- Wins/losses to user resource
+
 ## [2.0.0] - 25/02/17
 ### Added
 - Wins/losses to pvp standings

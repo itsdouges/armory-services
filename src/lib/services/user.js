@@ -170,6 +170,8 @@ export async function read (models: Models, {
     naRank: standing && standing.naRank,
     gw2aRank: standing && standing.gw2aRank,
     rating: standing && standing.ratingCurrent,
+    wins: standing && standing.wins,
+    losses: standing && standing.losses,
   };
 }
 
