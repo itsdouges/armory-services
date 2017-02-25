@@ -1,6 +1,7 @@
 // @flow
 
 import type { Models, Pagination } from 'flowTypes';
+import _ from 'lodash';
 
 import * as userService from 'lib/services/user';
 import { list as listPvpStandings } from 'lib/services/pvpStandings';
@@ -54,7 +55,17 @@ export default function pvpControllerFactory (models: Models) {
     const season = await readLatestPvpSeason();
     const pvpStandings = await listPvpStandings(models, season.id, region, params);
 
-    return pvpStandings;
+    return pvpStandings.map((standing) => _.pick(standing, [
+      'euRank',
+      'gw2aRank',
+      'naRank',
+      'ratingCurrent',
+      'seasonId',
+      'wins',
+      'losses',
+      'alias',
+      'accountName',
+    ]));
   }
 
   return {

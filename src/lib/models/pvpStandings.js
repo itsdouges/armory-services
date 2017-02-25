@@ -25,7 +25,8 @@ module.exports = (sequelize, DataTypes) => {
     euRank: DataTypes.INTEGER,
     naRank: DataTypes.INTEGER,
     gw2aRank: DataTypes.INTEGER,
-
+    wins: DataTypes.INTEGER,
+    losses: DataTypes.INTEGER,
     apiTokenId: {
       type: DataTypes.INTEGER,
       allowNull: true,

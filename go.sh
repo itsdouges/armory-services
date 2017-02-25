@@ -145,7 +145,7 @@ case "$1" in
     start;;
   mtr)
     testmigrate;;
-  setupMtr)
+  db)
     setupMtr;;
   clean)
     clean;;

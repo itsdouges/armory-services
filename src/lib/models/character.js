@@ -1,39 +1,32 @@
-module.exports = function (sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes) => {
   const Gw2Character = sequelize.define('Gw2Character', {
     id: {
-      field: 'id',
       type: DataTypes.INTEGER,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
     },
     name: {
-      field: 'name',
       type: DataTypes.STRING,
       allowNull: false,
     },
     race: {
-      field: 'race',
       allowNull: false,
       type: DataTypes.STRING,
     },
     gender: {
-      field: 'gender',
       allowNull: false,
       type: DataTypes.STRING,
     },
     profession: {
-      field: 'profession',
       allowNull: false,
       type: DataTypes.STRING,
     },
     level: {
-      field: 'level',
       allowNull: false,
       type: DataTypes.INTEGER,
     },
     created: {
-      field: 'created',
       allowNull: false,
       type: DataTypes.DATE,
     },
@@ -43,12 +36,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER,
     },
     deaths: {
-      field: 'deaths',
       allowNull: false,
       type: DataTypes.INTEGER,
     },
     guild: {
-      field: 'guild',
       type: DataTypes.STRING,
     },
     showBuilds: {

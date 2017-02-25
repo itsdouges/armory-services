@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import * as testData from 'test/testData';
+import * as testData from 'test/testData/db';
 
 const sandbox = sinon.sandbox.create();
 const account = sandbox.stub();

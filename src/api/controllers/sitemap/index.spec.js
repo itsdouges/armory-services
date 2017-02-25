@@ -1,4 +1,4 @@
-import * as testData from 'test/testData';
+import * as testData from 'test/testData/db';
 
 const publicUrl = 'http://gw2-local.com';
 const apiPublicUrl = 'http://api.gw2.com';
@@ -27,7 +27,7 @@ const getUpdatedAt = async (model) => {
 
 const user = testData.user();
 const apiToken = testData.apiToken();
-const standing = testData.dbStanding();
+const standing = testData.standing();
 const character = testData.character();
 const guild = testData.guild();
 

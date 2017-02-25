@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import * as testData from 'test/testData';
+import * as testData from 'test/testData/db';
 
 const sandbox = sinon.sandbox.create();
 const readGuild = sandbox.stub();
@@ -62,7 +62,7 @@ describe('user service', () => {
     accountName: 'hot4gw2.1234',
   });
 
-  const standing = testData.dbStanding({
+  const standing = testData.standing({
     apiTokenId: apiTokenForUserTwo.id,
   });
 
@@ -100,7 +100,7 @@ describe('user service', () => {
       it('should return true', async () => {
         const inGuild = await service.isUserInGuild(models, user.email, guild.name);
 
-        expect(inGuild).to.be.true;
+        expect(inGuild).to.equal(true);
       });
     });
 
@@ -108,7 +108,7 @@ describe('user service', () => {
       it('should return false', async () => {
         const inGuild = await service.isUserInGuild(models, userTwo.email, guild.name);
 
-        expect(inGuild).to.be.false;
+        expect(inGuild).to.equal(false);
       });
     });
   });

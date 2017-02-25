@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define('Gw2Guild', {
+  const Gw2Guild = sequelize.define('Gw2Guild', {
     id: {
       type: DataTypes.STRING,
       primaryKey: true,
@@ -11,15 +11,6 @@ module.exports = (sequelize, DataTypes) => {
     tag: {
       type: DataTypes.STRING,
       allowNull: true,
-    },
-    apiTokenId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      onDelete: 'SET NULL',
-      references: {
-        model: 'Gw2ApiTokens',
-        key: 'id',
-      },
     },
     favor: {
       type: DataTypes.INTEGER,
@@ -42,5 +33,30 @@ module.exports = (sequelize, DataTypes) => {
       collate: 'utf8_general_ci',
       charset: 'utf8',
     },
-  });
+    apiTokenId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      onDelete: 'SET NULL',
+      references: {
+        model: 'Gw2ApiTokens',
+        key: 'id',
+      },
+    },
+  },
+  // {
+  //   classMethods: {
+  //     associate (models) {
+  //       Gw2Guild.belongsTo(models.Gw2ApiToken, {
+  //         onDelete: 'SET NULL',
+  //         foreignKey: {
+  //           name: 'apiTokenId',
+  //           allowNull: false,
+  //         },
+  //       });
+  //     },
+  //   },
+  // }
+  );
+
+  return Gw2Guild;
 };

@@ -1,4 +1,4 @@
-import * as testData from 'test/testData';
+import * as testData from 'test/testData/db';
 import { list } from './character';
 
 describe('character service', () => {

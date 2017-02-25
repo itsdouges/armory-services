@@ -1,4 +1,7 @@
-import * as testData from 'test/testData';
+import _ from 'lodash';
+
+import * as db from 'test/testData/db';
+import * as gw2 from 'test/testData/gw2';
 
 const readPvpStats = sinon.stub();
 const readPvpGames = sinon.stub();
@@ -8,7 +11,7 @@ const listPvpStandings = sinon.stub();
 const getUserPrimaryToken = sinon.stub();
 const readUser = sinon.stub();
 
-const season = testData.pvpSeason();
+const season = gw2.pvpSeason();
 const readLatestPvpSeason = () => Promise.resolve(season);
 
 const controllerFactory = proxyquire('api/controllers/pvp', {
@@ -86,7 +89,7 @@ describe('pvp controller', () => {
   describe('leaderboard', () => {
     const apiTokenId = 3;
 
-    const createStanding = (rank) => testData.dbStanding({
+    const createStanding = (rank) => db.standing({
       apiTokenId,
       seasonId: season.id,
       gw2aRank: rank,
@@ -120,7 +123,17 @@ describe('pvp controller', () => {
       describe(region, () => {
         it('should add user data to each standing', async () => {
           const leaderboard = await controller.leaderboard(region);
-          expect(leaderboard).to.equal(standings);
+          expect(leaderboard).to.eql(standings.map((standing) => _.pick(standing, [
+            'euRank',
+            'gw2aRank',
+            'naRank',
+            'ratingCurrent',
+            'seasonId',
+            'wins',
+            'losses',
+            'alias',
+            'accountName',
+          ])));
         });
       });
     });

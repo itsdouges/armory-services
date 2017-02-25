@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
-import * as testData from 'test/testData';
+import * as testData from 'test/testData/db';
+import * as gw2 from 'test/testData/gw2';
 
 const createFetchCharacters = ({ characters }) => proxyquire('fetch/fetchers/characters', {
   'lib/gw2': {
@@ -10,8 +11,8 @@ const createFetchCharacters = ({ characters }) => proxyquire('fetch/fetchers/cha
 
 describe('characters fetcher', () => {
   const token = testData.apiToken();
-  const character = testData.characterModel();
-  const characterTwo = testData.characterModel({
+  const character = gw2.character();
+  const characterTwo = gw2.character({
     name: 'maddddou',
   });
 

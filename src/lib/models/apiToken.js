@@ -19,7 +19,6 @@ module.exports = (sequelize, DataTypes) => {
     permissions: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: 'permissions',
     },
     world: {
       type: DataTypes.INTEGER,
@@ -56,6 +55,7 @@ module.exports = (sequelize, DataTypes) => {
     classMethods: {
       associate (models) {
         Gw2ApiToken.hasMany(models.Gw2Character, {
+          // as: 'characters',
           as: 'gw2_characters',
           foreignKey: {
             allowNull: false,

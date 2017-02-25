@@ -55,7 +55,7 @@ export async function isUserInGuild (
     }],
   });
 
-  return !!token.length;
+  return !!token && !!token.length;
 }
 
 function cleanApiToken (apiToken) {

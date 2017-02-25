@@ -3,11 +3,19 @@
 import type { Models } from 'flowTypes';
 import type { Fetcher$Token } from 'fetch/tokenFetch';
 
+import _ from 'lodash';
+
 import { saveList } from 'lib/services/pvpStandings';
 import gw2 from 'lib/gw2';
 
 export default async function fetchPvpStandings (models: Models, { token, id }: Fetcher$Token) {
-  const standings = await gw2.readPvpStandings(token);
+  const [
+    standings,
+    stats,
+  ] = await Promise.all([
+    gw2.readPvpStandings(token),
+    gw2.readPvpStats(token),
+  ]);
 
   const mappedStandings = standings.map((standing) => ({
     apiTokenId: id,
@@ -26,6 +34,9 @@ export default async function fetchPvpStandings (models: Models, { token, id }: 
     repeatsBest: standing.best.repeats,
     ratingBest: standing.best.rating,
     decayBest: standing.best.decay,
+
+    wins: _.get(stats, 'ladders.ranked.wins'),
+    losses: _.get(stats, 'ladders.ranked.losses'),
   }));
 
   return await saveList(models, mappedStandings);
