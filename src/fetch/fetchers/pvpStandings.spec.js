@@ -66,8 +66,8 @@ describe('pvp standings fetcher', () => {
         ratingBest: pvpStanding.best.rating,
         decayBest: pvpStanding.best.decay,
 
-        wins: stats.ladders.ranked.wins,
-        losses: stats.ladders.ranked.losses,
+        // wins: stats.ladders.ranked.wins,
+        // losses: stats.ladders.ranked.losses,
       });
     });
   });
