@@ -1,6 +1,8 @@
 import axios from 'axios';
 import config from 'config';
 
+const version = require('../../../package.json').version;
+
 const up = 'UP';
 const down = 'DOWN';
 
@@ -23,6 +25,7 @@ export default function IndexResource (server) {
     res.send(fetchAlive ? 200 : 500, {
       api: up,
       fetch: fetchAlive ? up : down,
+      version: `v${version}`,
     });
 
     return next();

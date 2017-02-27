@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [2.2.0] - 27/02/17
+### Added
+- Version to healthcheck endpoint
+
 ## [2.1.1] - 27/02/17
 ### Removed
 - Standing stats for wins/losses from being fetched (it's a combined wins/losses, not specific to the current season!). If https://github.com/arenanet/api-cdi/issues/452 is ever implemented, add this back.
