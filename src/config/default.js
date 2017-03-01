@@ -26,9 +26,7 @@ export default {
   },
 
   allowedCors: [
-    'https://gw2armory.com',
-    'https://preview.gw2armory.com',
-    'http://localhost:3000',
+    '*',
   ],
 
   gitter: {

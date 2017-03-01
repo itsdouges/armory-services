@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [2.2.1] - 01/03/17
+### Removed
+- CORS restrictions
+
 ## [2.2.0] - 27/02/17
 ### Added
 - Version to healthcheck endpoint
