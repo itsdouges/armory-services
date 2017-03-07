@@ -8,51 +8,55 @@
 - Changes
 ```
 
-## [2.2.1] - 01/03/17
+## [2.2.2] - 2017/03/07
+### Added
+- Corrects changelog
+
+## [2.2.1] - 2017/03/01
 ### Removed
 - CORS restrictions
 
-## [2.2.0] - 27/02/17
+## [2.2.0] - 2017/02/27
 ### Added
 - Version to healthcheck endpoint
 
-## [2.1.1] - 27/02/17
+## [2.1.1] - 2017/02/27
 ### Removed
 - Standing stats for wins/losses from being fetched (it's a combined wins/losses, not specific to the current season!). If https://github.com/arenanet/api-cdi/issues/452 is ever implemented, add this back.
 
-## [2.1.0] - 25/02/17
+## [2.1.0] - 2017/02/25
 ### Added
 - Wins/losses to user resource
 
-## [2.0.0] - 25/02/17
+## [2.0.0] - 2017/02/25
 ### Added
 - Wins/losses to pvp standings
 
 ### Removed
 - Properties from leaderboard endpoints that weren't needed
 
-## [1.7.1] - 20/02/17
+## [1.7.1] - 2017/02/20
 ### Fixed
 - Local environment from not being able to start up correctly
 
-## [1.7.0] - 16/02/17
+## [1.7.0] - 2017/02/16
 ### Added
 - Advanced health check for beanstalk
 
-## [1.6.3] - 13/02/17
+## [1.6.3] - 2017/02/13
 ### Changed
 - Gw2 api to filter out undefined items
 
-## [1.6.2] - 03/02/17
+## [1.6.2] - 2017/02/03
 ### Changed
 - Sitemap code to be a little cleaner
 - Travis ci to use yarn by the official means
 
-## [1.6.1] - 03/02/17
+## [1.6.1] - 2017/02/03
 ### Changed
 - Sitemap to be paginated
 
-## [1.6.0] - 03/02/17
+## [1.6.0] - 2017/02/03
 ### Added
 - Leaderboard pagination
 
@@ -60,14 +64,14 @@
 - Leaderboard calculation from not clearing na/eu users who dropped off the ladder
 - Leaderboard calculation throwing because expected values from service were not being returned
 
-## [1.5.3] - 02/02/17
+## [1.5.3] - 2017/02/02
 ### Changed
 - List pvp standings service to serve associated user data
 
 ### Fixed
 - List pvp standings to not serve null users
 
-## [1.5.2] - 31/01/17
+## [1.5.2] - 2017/01/31
 ### Fixed
 - Config from throwing
 
@@ -75,7 +79,7 @@
 - Healthcheck url in beanstalk
 - Resources to use es6 exports
 
-## [1.5.1] - 31/01/17
+## [1.5.1] - 2017/01/31
 ### Changed
 - Interval for recalculating leaderboards
 - Interval for fetching leaderboard data
@@ -84,7 +88,7 @@
 ### Added
 - Small time module for converting hours/minutes to milliseconds
 
-## [1.5.0] - 30/01/17
+## [1.5.0] - 2017/01/30
 ### Added
 - Eu/na pvp leaderboard data fetch
 - Stub user generation for leaderboards and guilds
