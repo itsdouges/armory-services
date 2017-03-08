@@ -9,7 +9,7 @@ import { allSettled } from 'lib/promise';
 import { list as listTokens } from 'lib/services/tokens';
 import createLogger from 'lib/gitter';
 
-const logger = createLogger('Token_fetchers');
+const logger = createLogger('TokenFetchers');
 
 export type Fetcher$Token = {
   id: number,

@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [2.2.3] - 2017/03/08
+### Fixed
+- User image uploads from not working
+
 ## [2.2.2] - 2017/03/07
 ### Added
 - Corrects changelog

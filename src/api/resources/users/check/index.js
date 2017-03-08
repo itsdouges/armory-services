@@ -1,4 +1,8 @@
-export default function CheckResource (server, controller) {
+// @flow
+
+import type { Server } from 'restify';
+
+export default function CheckResource (server: Server, controller: any) {
   server.get('/users/check/gw2-token/:token', (req, res, next) => {
     controller.gw2Token({
       token: req.params.token,

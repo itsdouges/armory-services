@@ -10,7 +10,7 @@ import { saveList as saveStandings, list as listPvpStandings } from 'lib/service
 import createLogger from 'lib/gitter';
 import buildLadderByAccountName from '../lib/leaderboardBuilder';
 
-const logger = createLogger('Pvp_leaderboard');
+const logger = createLogger('PvpLeaderboard');
 
 const hasJoined = (standing) => !!standing.totalPointsBest;
 

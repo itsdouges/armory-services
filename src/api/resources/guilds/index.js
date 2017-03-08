@@ -1,7 +1,12 @@
+// @flow
+
+import type { Server } from 'restify';
+import type { Models } from 'flowTypes';
+
 import _ from 'lodash';
 import controllerFactory from 'api/controllers/guild';
 
-export default function guildsResource (server, models) {
+export default function guildsResource (server: Server, models: Models) {
   const controller = controllerFactory(models);
 
   const routeMap = {
