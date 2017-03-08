@@ -1,4 +1,8 @@
-export default function UserResource (server, controller) {
+// @flow
+
+import type { Server } from 'restify';
+
+export default function UserResource (server: Server, controller: any) {
   server.get('/users/me', (req, res, next) => {
     if (!req.username) {
       return res.sendUnauthenticated();

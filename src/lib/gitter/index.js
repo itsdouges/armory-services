@@ -33,11 +33,8 @@ ${_.get(error, 'config.headers.Authorization')}
   }
 }
 
-type LogOptions = {
-  roomName: string,
-};
 
-const createLog = (title: string, { roomName = 'fetch' }: LogOptions = {}) => ({
+const createLog = (title: string, roomName?: string = 'fetch') => ({
   async log (message: string) {
     try {
       const room = await gitter.rooms.join(`gw2armory/${roomName}`);

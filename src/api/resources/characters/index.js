@@ -1,4 +1,8 @@
-export default function charactersResource (server, controller) {
+// @flow
+
+import type { Server } from 'restify';
+
+export default function charactersResource (server: Server, controller: any) {
   server.get('random/characters/:n', (req, res, next) => {
     controller
       .random(req.params.n)

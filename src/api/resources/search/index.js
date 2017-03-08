@@ -1,6 +1,11 @@
+// @flow
+
+import type { Server } from 'restify';
+import type { Models } from 'flowTypes';
+
 import searchFactory from 'api/controllers/search';
 
-export default function searchResource (server, models) {
+export default function searchResource (server: Server, models: Models) {
   const controller = searchFactory(models);
 
   server.get('/search', (req, res, next) =>

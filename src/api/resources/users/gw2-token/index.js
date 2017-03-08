@@ -1,4 +1,8 @@
-export default function tokenResourceFactory (server, controller) {
+// @flow
+
+import type { Server } from 'restify';
+
+export default function tokenResourceFactory (server: Server, controller: any) {
   server.get('/users/me/gw2-tokens', (req, res, next) => {
     if (!req.username) {
       return res.sendUnauthenticated();
