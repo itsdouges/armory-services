@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [2.2.4] - 2017/03/20
+### Changed
+- Turned off fetch temporarily while gw2 apis are down
+
 ## [2.2.3] - 2017/03/08
 ### Fixed
 - User image uploads from not working

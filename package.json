@@ -1,6 +1,6 @@
 {
   "name": "armory-back",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "description": "Backend services for gw2armory",
   "main": "index.js",
   "scripts": {
