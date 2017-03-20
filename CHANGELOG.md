@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [2.2.5] - 2017/03/20
+### Fixed
+- Users `me` resource from not catching exception and returning
+
 ## [2.2.4] - 2017/03/20
 ### Changed
 - Turned off fetch temporarily while gw2 apis are down

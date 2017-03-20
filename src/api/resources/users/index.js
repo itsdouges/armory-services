@@ -12,6 +12,10 @@ export default function UserResource (server: Server, controller: any) {
       .then((data) => {
         res.send(200, data);
         return next();
+      }, (err) => {
+        console.error(err);
+        res.send(500);
+        return next();
       });
   });
 
