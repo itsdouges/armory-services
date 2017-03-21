@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [2.2.6] - 2017/03/21
+### Fixed
+- `getLatestPvpSeason` from breaking half the site when GW2API is down
+
 ## [2.2.5] - 2017/03/20
 ### Fixed
 - Users `me` resource from not catching exception and returning

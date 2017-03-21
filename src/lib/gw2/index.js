@@ -135,28 +135,34 @@ export async function readPvpSeason (id: number) {
   return response.data;
 }
 
-const getLatestPvpSeason = async (): Promise<PvpSeason> => {
-  const { data: seasons } = await axios
-    .get(`${config.gw2.endpoint}v2/pvp/seasons?page=0&page_size=200`);
+async function getLatestPvpSeason (): Promise<PvpSeason> {
+  try {
+    const { data: seasons } = await axios
+      .get(`${config.gw2.endpoint}v2/pvp/seasons?page=0&page_size=200`);
 
-  const sortedSeasons = seasons.sort((a, b) => {
-    const aStart = new Date(a.start);
-    const bStart = new Date(b.start);
+    const sortedSeasons = seasons.sort((a, b) => {
+      const aStart = new Date(a.start);
+      const bStart = new Date(b.start);
 
-    if (aStart < bStart) {
-      return -1;
-    }
+      if (aStart < bStart) {
+        return -1;
+      }
 
-    if (aStart > bStart) {
-      return 1;
-    }
+      if (aStart > bStart) {
+        return 1;
+      }
 
-    return 0;
-  });
+      return 0;
+    });
 
-  const latestSeason = _.last(sortedSeasons);
-  return latestSeason;
-};
+    const latestSeason = _.last(sortedSeasons);
+    return latestSeason;
+  } catch (e) {
+    return {
+      id: config.leaderboards.backupLatestSeasonId,
+    };
+  }
+}
 
 export const readLatestPvpSeason: () => Promise<PvpSeason> = memoize(getLatestPvpSeason, {
   maxAge: config.leaderboards.latestSeasonCacheTtl,
@@ -166,6 +172,7 @@ export const readLatestPvpSeason: () => Promise<PvpSeason> = memoize(getLatestPv
 
 export default {
   ...simpleCalls,
+  readLatestPvpSeason,
   readTokenInfoWithAccount,
   readGuildPublic,
 };

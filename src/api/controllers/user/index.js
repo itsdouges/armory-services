@@ -189,8 +189,6 @@ export default function userControllerFactory (models: Models) {
     await changePassword(row.UserId, newPassword);
 
     await finishPasswordReset(models, guid);
-
-    return undefined;
   }
 
   type ClaimUser = CreateUser & {

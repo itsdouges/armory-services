@@ -6,6 +6,7 @@ const config = {
   },
   leaderboards: {
     latestSeasonCacheTtl: 123,
+    backupLatestSeasonId: 'cool-meme',
   },
 };
 
@@ -82,6 +83,7 @@ describe('gw2 api', () => {
       'readTokenInfo',
       'readTokenInfoWithAccount',
       'readPvpLadder',
+      'readLatestPvpSeason',
     ]);
   });
 
@@ -132,6 +134,22 @@ describe('gw2 api', () => {
         const result = await gw2Api.readPvpLadder(null, id, { region });
 
         expect(result).to.eql(data.concat(data));
+      });
+    });
+  });
+
+  describe('reading latest pvp season', () => {
+    context('when api call fails', () => {
+      it('should return backup season id', async () => {
+        axiosGet
+          .withArgs(`${config.gw2.endpoint}v2/pvp/seasons?page=0&page_size=200`)
+          .returns(Promise.reject());
+
+        const season = await gw2Api.readLatestPvpSeason();
+
+        expect(season).to.eql({
+          id: config.leaderboards.backupLatestSeasonId,
+        });
       });
     });
   });

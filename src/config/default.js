@@ -61,6 +61,7 @@ export default {
     latestSeasonCacheTtl: hours(1),
     refreshInterval: minutes(30),
     getCacheTtl: minutes(30),
+    backupLatestSeasonId: '14E58A5B-9139-4B9B-A0B7-D2B79E303332',
   },
 
   cache: {
