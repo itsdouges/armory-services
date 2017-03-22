@@ -8,6 +8,6 @@ export default {
   },
 
   fetch: {
-    disabled: true,
+    disabled: false,
   },
 };

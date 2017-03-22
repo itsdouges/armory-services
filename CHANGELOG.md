@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [2.2.7] - 2017/03/23
+### Changed
+- Fetch to be enabled
+
 ## [2.2.6] - 2017/03/21
 ### Fixed
 - `getLatestPvpSeason` from breaking half the site when GW2API is down
