@@ -1,9 +1,13 @@
 language: node_js
 node_js:
   - "6.9.1"
+sudo: required
 services:
   - docker
-cache: yarn
+cache:
+  yarn: true
+  directories:
+    - node_modules
 script:
   - npm run test &&
     bash ./go.sh build
