@@ -4,10 +4,7 @@ node_js:
 sudo: required
 services:
   - docker
-cache:
-  yarn: true
-  directories:
-    - node_modules
+cache: yarn
 script:
   - npm run test &&
     bash ./go.sh build
