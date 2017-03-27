@@ -59,20 +59,20 @@ module.exports = ({ zipPath, environmentName }) => ({
     OptionName: 'Application Healthcheck URL',
     Value: '/healthcheck',
   },
-  {
-    Namespace: 'aws:elasticbeanstalk:environment',
-    OptionName: 'EnvironmentType',
-    Value: 'LoadBalanced',
-  },
+  // {
+  //   Namespace: 'aws:elasticbeanstalk:healthreporting:system',
+  //   OptionName: 'SystemType',
+  //   Value: 'enhanced',
+  // },
   {
     Namespace: 'aws:elasticbeanstalk:environment',
     OptionName: 'ServiceRole',
     Value: 'aws-elasticbeanstalk-service-role',
   },
   {
-    Namespace: 'aws:elasticbeanstalk:healthreporting:system',
-    OptionName: 'SystemType',
-    Value: 'enhanced',
+    Namespace: 'aws:elasticbeanstalk:environment',
+    OptionName: 'EnvironmentType',
+    Value: 'LoadBalanced',
   },
   {
     Namespace: 'aws:elb:listener:443',
