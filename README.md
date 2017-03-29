@@ -1,4 +1,6 @@
-# api.gw2armory.com [![Build Status](https://travis-ci.org/madou/armory-back.svg?branch=master)](https://travis-ci.org/madou/armory-back)
+# api.gw2armory.com
+
+[![Build Status](https://travis-ci.org/madou/armory-back.svg?branch=master)](https://travis-ci.org/madou/armory-back) [![codecov](https://codecov.io/gh/madou/armory-back/branch/master/graph/badge.svg)](https://codecov.io/gh/madou/armory-back)
 
 ## Usage
 
@@ -51,6 +53,10 @@ Run after running test migration to roll back changes.
 ```
 npm run mtr-revert
 ```
+
+## Deployments
+
+Deployments to production are triggered by tagged commits, tag with `npm version major|minor|patch`. Deployments to test are done adhoc and are _almost_ manual.
 
 ## Pull Requests
 

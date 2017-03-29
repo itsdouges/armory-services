@@ -8,3 +8,6 @@ Dockerrun.aws.json
 dist/
 *.log
 backup.sql
+coverage/
+*.lcov
+.nyc_output/

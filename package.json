@@ -11,7 +11,8 @@
     "migration": "./node_modules/.bin/babel-node ./node_modules/.bin/sequelize db:migrate",
     "deploy": "node ./scripts/deploy",
     "build": "babel src --out-dir dist --ignore spec.js,int.js",
-    "test": "npm run flow && mocha \"src/**/*.spec.js\"",
+    "test": "npm run flow && npm run coverage",
+    "unit": "mocha \"src/**/*.spec.js\"",
     "test:int": "mocha \"src/**/*.int.js\"",
     "tdd": "mocha \"src/**/*.spec.js\" --watch",
     "tdd:int": "npm run test:int -- --watch",
@@ -22,7 +23,11 @@
     "kill": "./go.sh kill",
     "mtr-prepare": "./go.sh db",
     "mtr": "ENV=local babel-node ./src/migration/testRun && npm run migration",
-    "mtr-revert": "ENV=local sequelize db:migrate:undo"
+    "mtr-revert": "ENV=local sequelize db:migrate:undo",
+    "coverage": "BABEL_ENV=test nyc npm run unit",
+    "codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "preversion": "npm test",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
@@ -64,6 +69,7 @@
     "app-module-path": "^2.1.0",
     "babel-cli": "^6.18.0",
     "babel-eslint": "^7.1.1",
+    "babel-plugin-istanbul": "^4.1.1",
     "babel-plugin-syntax-flow": "^6.18.0",
     "babel-plugin-transform-flow-strip-types": "^6.18.0",
     "babel-plugin-transform-object-rest-spread": "^6.20.2",
@@ -72,6 +78,7 @@
     "beanstalkify": "0.0.9",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
+    "codecov": "^2.1.0",
     "easy-zip": "0.0.4",
     "eslint": "^3.4.0",
     "eslint-config-airbnb": "^10.0.1",
@@ -82,13 +89,19 @@
     "flow-typed": "^2.0.0",
     "hash-files": "^1.0.0",
     "mocha": "^3.1.1",
+    "mocha-lcov-reporter": "^1.3.0",
     "mustache": "^2.2.0",
     "node-cmd": "^1.2.0",
     "nodemon": "^1.4.1",
+    "nyc": "^10.2.0",
+    "pre-commit": "^1.2.2",
     "proxyquire": "^1.7.10",
     "run-sequence": "^1.1.2",
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0",
     "sqlite3": "^3.0.10"
-  }
+  },
+  "pre-commit": [
+    "test"
+  ]
 }

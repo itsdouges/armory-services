@@ -8,6 +8,14 @@
 - Changes
 ```
 
+## [2.3.0] - unreleased
+### Changed
+- Deployment process to deploy to production with tagged commits
+
+### Added
+- Precommit hook
+- Code coverage
+
 ## [2.2.8] - 2017/03/29
 ### Changed
 - Fetch config to fetch as slow as possible for now
