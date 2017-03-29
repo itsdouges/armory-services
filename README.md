@@ -1,6 +1,6 @@
 # api.gw2armory.com
 
-[![Build Status](https://travis-ci.org/madou/armory-back.svg?branch=master)](https://travis-ci.org/madou/armory-back) [![codecov](https://codecov.io/gh/madou/armory-back/branch/master/graph/badge.svg)](https://codecov.io/gh/madou/armory-back)
+[![Build Status](https://travis-ci.org/madou/armory-back.svg?branch=master)](https://travis-ci.org/madou/armory-back) [![Dependencies](https://david-dm.org/madou/armory-react.svg)](https://david-dm.org/madou/armory-back) [![Dev Dependencies](https://david-dm.org/madou/armory-react/dev-status.svg)](https://david-dm.org/madou/armory-back?type=dev) [![codecov](https://codecov.io/gh/madou/armory-back/branch/master/graph/badge.svg)](https://codecov.io/gh/madou/armory-back)
 
 ## Usage
 
