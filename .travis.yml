@@ -17,3 +17,4 @@ deploy:
   script: bash ./scripts/deploy.sh
   on:
     all_branches: true
+after_success: npm run codecov
