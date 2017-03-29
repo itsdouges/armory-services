@@ -9,12 +9,11 @@ cache:
   directories:
     - node_modules
 script:
-  - npm run test &&
-    bash ./go.sh build
+  - npm run test
 deploy:
   skip_cleanup: true
   provider: script
-  script: bash ./scripts/deploy.sh
+  script: bash ./go.sh build && bash ./scripts/deploy.sh
   on:
     all_branches: true
 after_success: npm run codecov
