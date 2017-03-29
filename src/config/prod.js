@@ -1,5 +1,7 @@
 // @flow
 
+import { hours } from 'lib/time';
+
 export default {
   db: {
     username: process.env.DB_USER || 'admin',
@@ -8,6 +10,8 @@ export default {
   },
 
   fetch: {
-    disabled: false,
+    concurrentCalls: 1,
+    interval: hours(24),
+    retries: 1,
   },
 };

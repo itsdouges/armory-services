@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [2.2.8] - 2017/03/29
+### Changed
+- Fetch config to fetch as slow as possible for now
+
 ## [2.2.7] - 2017/03/23
 ### Changed
 - Fetch to be enabled
