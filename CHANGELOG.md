@@ -8,7 +8,7 @@
 - Changes
 ```
 
-## [2.3.0] - unreleased
+## [2.3.0] - 2017/03/29
 ### Changed
 - Deployment process to deploy to production with tagged commits
 
