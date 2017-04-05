@@ -8,6 +8,10 @@
 - Changes
 ```
 
+## [2.4.0] - unreleased
+### Added
+- Character tabs to sitemap
+
 ## [2.3.0] - 2017/03/29
 ### Changed
 - Deployment process to deploy to production with tagged commits

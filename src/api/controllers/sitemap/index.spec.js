@@ -188,6 +188,21 @@ describe('sitemap', () => {
     <lastmod>${characterUpdated}</lastmod>
     <priority>1.0</priority>
   </url>
+  <url>
+    <loc>http://gw2-local.com/${user.alias}/c/${character.name}/pvp</loc>
+    <lastmod>${characterUpdated}</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>http://gw2-local.com/${user.alias}/c/${character.name}/wvw</loc>
+    <lastmod>${characterUpdated}</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>http://gw2-local.com/${user.alias}/c/${character.name}/bags</loc>
+    <lastmod>${characterUpdated}</lastmod>
+    <priority>0.9</priority>
+  </url>
 </urlset>`);
   });
 });
