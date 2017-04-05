@@ -35,6 +35,15 @@ const guildRoutes = [{
 const characterRoutes = [{
   loc: '',
   priority: '1.0',
+}, {
+  loc: '/pvp',
+  priority: '0.9',
+}, {
+  loc: '/wvw',
+  priority: '0.9',
+}, {
+  loc: '/bags',
+  priority: '0.9',
 }];
 
 const publicRoutes = [{
