@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased][]
 ### Updated
 - Babel configuration to use `babel-preset-env`
-- Docker images to use node `7.9.0`
+- Docker images to use node `7.8.0`
 
 ## [2.4.0] - 2017/04/05
 ### Added
