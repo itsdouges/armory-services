@@ -1,3 +1,7 @@
+// @flow
+
+import type { Models } from 'flowTypes';
+
 const parseAccountName = (userResult) => {
   const token = userResult.gw2_api_tokens &&
     userResult.gw2_api_tokens.filter((tkn) => tkn.primary)[0];
@@ -5,8 +9,8 @@ const parseAccountName = (userResult) => {
   return token && token.accountName;
 };
 
-export default function searchControllerFactory (models) {
-  function search (term) {
+export default function searchControllerFactory (models: Models) {
+  function search (term: string) {
     const users = models.User.findAll({
       where: {
         alias: {

@@ -26,7 +26,7 @@
     "mtr-revert": "ENV=local sequelize db:migrate:undo",
     "coverage": "BABEL_ENV=test nyc npm run unit",
     "codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-    "preversion": "npm test",
+    "preversion": "npm test && npm run changelog",
     "changelog": "version-changelog CHANGELOG.md && changelog-verify CHANGELOG.md && git add CHANGELOG.md",
     "postversion": "git push && git push --tags"
   },
@@ -58,7 +58,7 @@
     "password-hash-and-salt": "^0.1.2",
     "path": "^0.11.14",
     "q": "^1.4.1",
-    "restify": "^3.0.3",
+    "restify": "^4.3.0",
     "restify-oauth2": "^4.0.3",
     "sequelize": "^3.6.0",
     "sequelize-cli": "^2.4.0",

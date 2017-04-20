@@ -16,6 +16,19 @@ export default function charactersResource (server: Server, controller: any) {
       });
   });
 
+  server.get('characters/of-the-day', (req, res, next) => {
+    controller
+      .charactersOfTheDay()
+      .then((name) => {
+        res.send(200, name);
+        return next();
+      }, (error) => {
+        console.log(error);
+        res.send(500);
+        return next();
+      });
+  });
+
   server.get('users/:alias/characters', (req, res, next) => {
     controller
       .list({ alias: req.params.alias, ignorePrivacy: !!req.username, email: req.username })

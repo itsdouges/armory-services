@@ -1,6 +1,6 @@
 // @flow
 
-import type { Models, User, UserModel, DbUser } from 'flowTypes';
+import type { Models, User, UserModel, DbUser, PaginatedResponse } from 'flowTypes';
 import _ from 'lodash';
 import moment from 'moment';
 import uuid from 'uuid/v4';
@@ -14,10 +14,17 @@ import { read as readGuild } from './guild';
 
 type ListOptions = {
   guild?: string,
+  limit?: number,
+  offset?: number,
 };
 
-export async function list (models: Models, { guild }: ListOptions): Promise<Array<UserModel>> {
-  const tokens = await models.Gw2ApiToken.findAll({
+export async function list (
+  models: Models,
+  { guild, limit, offset }: ListOptions
+): Promise<PaginatedResponse<UserModel>> {
+  const { rows, count } = await models.Gw2ApiToken.findAndCount({
+    limit,
+    offset,
     where: {
       guilds: {
         $like: `%${guild || ''}%`,
@@ -28,10 +35,15 @@ export async function list (models: Models, { guild }: ListOptions): Promise<Arr
     }],
   });
 
-  return tokens.map((token) => ({
-    name: token.User.alias,
-    accountName: token.accountName,
-  }));
+  return {
+    rows: rows.map((token) => ({
+      name: token.User.alias,
+      accountName: token.accountName,
+    })),
+    count,
+    limit: limit || count,
+    offset: offset || 0,
+  };
 }
 
 export async function isUserInGuild (

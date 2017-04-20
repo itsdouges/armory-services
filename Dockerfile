@@ -2,8 +2,11 @@ FROM node:7.8.0
 MAINTAINER madou <laheen@gmail.com>
 LABEL Description="Guild Wars 2 Armory Services"
 
+RUN curl -o- -L https://yarnpkg.com/install.sh | bash
+RUN $HOME/.yarn/bin/yarn install
+
 COPY package.json package.json
-RUN npm install yarn -g
+COPY yarn.lock yarn.lock
 RUN yarn
 
 COPY .babelrc .babelrc

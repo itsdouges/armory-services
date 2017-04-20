@@ -10,6 +10,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Babel configuration to use `babel-preset-env`
 - Docker images to use node `7.8.0`
 
+### Removed
+- Characters from base guild resource
+- Users from base guild resource
+
+### Added
+- guild/characters resource
+- guild/users resource
+- Characters/guilds of the day
+
 ## [2.4.0] - 2017/04/05
 ### Added
 - Character tabs to sitemap

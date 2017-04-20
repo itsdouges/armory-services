@@ -6,7 +6,7 @@ import memoize from 'memoizee';
 import _ from 'lodash';
 
 import config from 'config';
-import { limit } from 'lib/math';
+import { limit as limitTo } from 'lib/math';
 import {
   read as readGuild,
   list as listGuilds,
@@ -20,26 +20,19 @@ import { list as listCharacters } from 'lib/services/character';
 import { read as readToken } from 'lib/services/tokens';
 import access from './access';
 
-const guildMethodMap = {
-  logs: gw2.readGuildLogs,
-  members: gw2.readGuildMembers,
-  ranks: gw2.readGuildRanks,
-  stash: gw2.readGuildStash,
-  treasury: gw2.readGuildTreasury,
-  teams: gw2.readGuildTeams,
-  upgrades: gw2.readGuildUpgrades,
+type Params = {
+  email?: string,
+  limit?: number,
+  offset?: number,
 };
 
 export default function guildControllerFactory (models: Models) {
   const checkAccess = (type, guildName, email) => access(models, { type, guildName, email });
 
   async function read (name, { email } = {}) {
-    const guild = await readGuild(models, { name });
-
-    const [canAccess, characters, users] = await Promise.all([
+    const [guild, canAccess] = await Promise.all([
+      readGuild(models, { name }),
       checkAccess('read', name, email),
-      listCharacters(models, { guild: guild && guild.id }),
-      listUsers(models, { guild: guild && guild.id }),
     ]);
 
     const parsedGuild = canAccess ? guild : _.pick(guild, [
@@ -51,9 +44,19 @@ export default function guildControllerFactory (models: Models) {
 
     return {
       ...parsedGuild,
-      characters,
-      users,
     };
+  }
+
+  async function readUsers (name, { email, limit, offset }: Params = {}) {
+    const [guild] = await read(name, { email });
+    const users = await listUsers(models, { guild: guild && guild.id, limit, offset });
+    return users;
+  }
+
+  async function readCharacters (name, { email, limit, offset }: Params = {}) {
+    const [guild] = await read(name, { email });
+    const characters = await listCharacters(models, { guild: guild && guild.id, limit, offset });
+    return characters;
   }
 
   const findAllGuilds = memoize(listGuilds, {
@@ -68,12 +71,19 @@ export default function guildControllerFactory (models: Models) {
       return undefined;
     }
 
-    return _.sampleSize(guilds, limit(n, 10)).map((guild) => ({
+    return _.sampleSize(guilds, limitTo(n, 10)).map((guild) => ({
       name: guild.name,
       id: guild.id,
       tag: guild.tag,
     }));
   }
+
+  // TODO: If we ever scale this will have to be persisted to the database.
+  const guildsOfTheDay = memoize(() => random(config.ofTheDay.guilds), {
+    maxAge: config.cache.resourceOfTheDay,
+    promise: true,
+    preFetch: true,
+  });
 
   async function readGuildWithAccess (name, accessType, { email } = {}) {
     const canAccess = await checkAccess(accessType, name, email);
@@ -88,6 +98,16 @@ export default function guildControllerFactory (models: Models) {
 
     return guild;
   }
+
+  const guildMethodMap = {
+    logs: gw2.readGuildLogs,
+    members: gw2.readGuildMembers,
+    ranks: gw2.readGuildRanks,
+    stash: gw2.readGuildStash,
+    treasury: gw2.readGuildTreasury,
+    teams: gw2.readGuildTeams,
+    upgrades: gw2.readGuildUpgrades,
+  };
 
   const guildMethods = _.reduce(guildMethodMap, (obj, func, methodName) => {
     // eslint-disable-next-line no-param-reassign
@@ -108,6 +128,9 @@ export default function guildControllerFactory (models: Models) {
   return {
     read,
     random,
+    guildsOfTheDay,
+    readCharacters,
+    readUsers,
     ...guildMethods,
   };
 }
