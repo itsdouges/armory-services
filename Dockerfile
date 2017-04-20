@@ -1,4 +1,4 @@
-FROM node:6.9.1
+FROM node:7.8.0
 MAINTAINER madou <laheen@gmail.com>
 LABEL Description="Guild Wars 2 Armory Services"
 

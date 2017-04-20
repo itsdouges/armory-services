@@ -27,6 +27,7 @@
     "coverage": "BABEL_ENV=test nyc npm run unit",
     "codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "preversion": "npm test",
+    "changelog": "version-changelog CHANGELOG.md && changelog-verify CHANGELOG.md && git add CHANGELOG.md",
     "postversion": "git push && git push --tags"
   },
   "repository": {
@@ -73,11 +74,12 @@
     "babel-plugin-syntax-flow": "^6.18.0",
     "babel-plugin-transform-flow-strip-types": "^6.18.0",
     "babel-plugin-transform-object-rest-spread": "^6.20.2",
-    "babel-preset-latest": "^6.16.0",
+    "babel-preset-env": "^1.4.0",
     "babel-register": "^6.18.0",
     "beanstalkify": "0.0.9",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
+    "changelog-verify": "^1.0.4",
     "codecov": "^2.1.0",
     "easy-zip": "0.0.4",
     "eslint": "^3.4.0",
@@ -99,7 +101,8 @@
     "run-sequence": "^1.1.2",
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0",
-    "sqlite3": "^3.0.10"
+    "sqlite3": "^3.0.10",
+    "version-changelog": "^2.0.1"
   },
   "pre-commit": [
     "test"
