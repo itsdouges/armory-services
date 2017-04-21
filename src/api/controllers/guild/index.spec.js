@@ -6,6 +6,10 @@ const config = {
   cache: {
     findAllCharacters: 12,
   },
+
+  ofTheDay: {
+    guilds: 1,
+  },
 };
 
 const readGuild = sinon.stub();
@@ -165,6 +169,12 @@ describe('guild controller', () => {
   it('should select random guild', async () => {
     const guild = await sut.random(2);
     expect(guild.length).to.equal(2);
+  });
+
+  it('should select guilds of the day', async () => {
+    const ofTheDay = await sut.guildsOfTheDay();
+
+    expect(ofTheDay.length).to.equal(config.ofTheDay.guilds);
   });
 
   _.forEach({

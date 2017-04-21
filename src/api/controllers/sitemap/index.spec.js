@@ -92,7 +92,7 @@ describe('sitemap', () => {
   <url>
     <loc>http://gw2-local.com/</loc>
     <priority>1.0</priority>
-    <changefreq>always</changefreq>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>http://gw2-local.com/join</loc>
@@ -110,16 +110,19 @@ describe('sitemap', () => {
     <loc>http://gw2-local.com/leaderboards/pvp</loc>
     <lastmod>${standingsUpdated}</lastmod>
     <priority>0.9</priority>
+    <changefreq>hourly</changefreq>
   </url>
   <url>
     <loc>http://gw2-local.com/leaderboards/pvp/na</loc>
     <lastmod>${standingsUpdated}</lastmod>
     <priority>0.9</priority>
+    <changefreq>hourly</changefreq>
   </url>
   <url>
     <loc>http://gw2-local.com/leaderboards/pvp/eu</loc>
     <lastmod>${standingsUpdated}</lastmod>
     <priority>0.9</priority>
+    <changefreq>hourly</changefreq>
   </url>
 </urlset>`);
   });

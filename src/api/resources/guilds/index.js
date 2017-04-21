@@ -55,7 +55,7 @@ export default function guildsResource (server: Server, models: Models) {
     return next();
   });
 
-  server.get('guilds/of-the-day', async (req, res, next) => {
+  server.get('of-the-day/guilds', async (req, res, next) => {
     try {
       const guilds = await controller.guildsOfTheDay();
       res.send(200, guilds);

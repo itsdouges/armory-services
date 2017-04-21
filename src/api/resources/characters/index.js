@@ -16,7 +16,7 @@ export default function charactersResource (server: Server, controller: any) {
       });
   });
 
-  server.get('characters/of-the-day', (req, res, next) => {
+  server.get('of-the-day/characters', (req, res, next) => {
     controller
       .charactersOfTheDay()
       .then((name) => {

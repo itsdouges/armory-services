@@ -49,7 +49,7 @@ const characterRoutes = [{
 const publicRoutes = [{
   loc: '',
   priority: '1.0',
-  changefreq: 'always',
+  changefreq: 'daily',
 }, {
   loc: 'join',
   priority: '0.6',
@@ -62,11 +62,14 @@ const publicRoutes = [{
 }, {
   loc: 'leaderboards/pvp',
   priority: '0.9',
+  changefreq: 'hourly',
 }, {
   loc: 'leaderboards/pvp/na',
+  changefreq: 'hourly',
   priority: '0.9',
 }, {
   loc: 'leaderboards/pvp/eu',
+  changefreq: 'hourly',
   priority: '0.9',
 }, {
   loc: 'embeds',
