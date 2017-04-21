@@ -117,13 +117,15 @@ describe('pvp controller', () => {
 
     ['na', 'gw2a', 'eu'].forEach((region) => {
       beforeEach(() => {
-        listPvpStandings.withArgs(models, season.id, region).returns(Promise.resolve(standings));
+        listPvpStandings
+          .withArgs(models, season.id, region)
+          .returns(Promise.resolve({ rows: standings }));
       });
 
       describe(region, () => {
         it('should add user data to each standing', async () => {
           const leaderboard = await controller.leaderboard(region);
-          expect(leaderboard).to.eql(standings.map((standing) => _.pick(standing, [
+          expect(leaderboard.rows).to.eql(standings.map((standing) => _.pick(standing, [
             'euRank',
             'gw2aRank',
             'naRank',

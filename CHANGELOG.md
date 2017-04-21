@@ -9,15 +9,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Updated
 - Babel configuration to use `babel-preset-env`
 - Docker images to use node `7.8.0`
+- Leaderboard pagination to match everything else
 
 ### Removed
 - Characters from base guild resource
+- Characters from user resource
 - Users from base guild resource
 
 ### Added
 - guild/characters resource
 - guild/users resource
 - Characters/guilds of the day
+
+### Fixed
+- Guild resource to return 404 if not found
 
 ## [2.4.0] - 2017/04/05
 ### Added

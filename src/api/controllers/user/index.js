@@ -19,7 +19,6 @@ import {
   finishPasswordReset,
   claimStubUser,
 } from 'lib/services/user';
-import { list as listCharacters } from 'lib/services/character';
 
 export default function userControllerFactory (models: Models) {
   createValidator.addResource({
@@ -91,7 +90,7 @@ export default function userControllerFactory (models: Models) {
     'email',
   ]);
 
-  async function read ({ email, alias, ignorePrivacy, excludeChildren }: ReadPublicOptions = {}) {
+  async function read ({ email, alias, excludeChildren }: ReadPublicOptions = {}) {
     const user = await readUser(models, { alias, email });
     if (!user) {
       throw new Error('No user was found.');
@@ -100,8 +99,6 @@ export default function userControllerFactory (models: Models) {
     if (excludeChildren) {
       return cleanUser(user);
     }
-
-    const characters = await listCharacters(models, { alias: user.alias, email, ignorePrivacy });
 
     let guilds = [];
     if (user.guilds) {
@@ -117,7 +114,6 @@ export default function userControllerFactory (models: Models) {
 
     return {
       ...cleanUser(user),
-      characters,
       guilds,
     };
   }

@@ -57,7 +57,7 @@ const mergeLadders = ({ standings, na, eu }) => {
   return _.values(mergedStandings);
 };
 
-const clearRanks = (standings) => standings.map((standing) => ({
+const clearRanks = (standings) => standings.rows.map((standing) => ({
   ...standing,
   euRank: null,
   naRank: null,

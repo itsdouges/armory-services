@@ -35,6 +35,10 @@ export default function guildControllerFactory (models: Models) {
       checkAccess('read', name, email),
     ]);
 
+    if (!guild) {
+      throw new Error('No guild was found.');
+    }
+
     const parsedGuild = canAccess ? guild : _.pick(guild, [
       'name',
       'id',

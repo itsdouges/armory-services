@@ -75,7 +75,7 @@ describe('pvp leaderboard fetcher', () => {
     saveStandings.returns(Promise.resolve([]));
     bulkCreateStubUser.returns(Promise.resolve([]));
     readLatestPvpSeason.returns({ id: seasonId, active: true });
-    listStandings.withArgs(models, seasonId).returns(standings);
+    listStandings.withArgs(models, seasonId).returns({ rows: standings });
 
     readPvpLadder.withArgs(null, seasonId, { region: 'na' }).returns(naLadder);
     readPvpLadder.withArgs(null, seasonId, { region: 'eu' }).returns(euLadder);
