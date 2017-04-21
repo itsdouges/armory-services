@@ -16,7 +16,6 @@ type ListOptions = {
   offset?: number,
 };
 
-// eslint-disable-next-line
 export async function list (models: Models, {
   email,
   alias,

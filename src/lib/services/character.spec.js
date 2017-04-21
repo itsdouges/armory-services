@@ -23,25 +23,32 @@ describe('character service', () => {
     await models.Gw2Character.create(testData.character());
   });
 
-  it('should return all characters in guild', () => {
-    return list(models, { guild }).should.eventually.become([{
-      name: characters[0].name,
-      gender: characters[0].gender,
-      profession: characters[0].profession,
-      level: characters[0].level,
-      race: characters[0].race,
-      userAlias: user.alias,
-      world: apiToken.world,
-      accountName: apiToken.accountName,
-    }, {
-      name: characters[0].name,
-      gender: characters[0].gender,
-      profession: characters[0].profession,
-      level: characters[0].level,
-      race: characters[0].race,
-      userAlias: user.alias,
-      world: apiToken.world,
-      accountName: apiToken.accountName,
-    }]);
+  it('should return all characters in guild', async () => {
+    const actual = await list(models, { guild });
+
+    expect(actual).to.eql({
+      count: 2,
+      limit: 2,
+      offset: 0,
+      rows: [{
+        name: characters[0].name,
+        gender: characters[0].gender,
+        profession: characters[0].profession,
+        level: characters[0].level,
+        race: characters[0].race,
+        userAlias: user.alias,
+        world: apiToken.world,
+        accountName: apiToken.accountName,
+      }, {
+        name: characters[0].name,
+        gender: characters[0].gender,
+        profession: characters[0].profession,
+        level: characters[0].level,
+        race: characters[0].race,
+        userAlias: user.alias,
+        world: apiToken.world,
+        accountName: apiToken.accountName,
+      }],
+    });
   });
 });

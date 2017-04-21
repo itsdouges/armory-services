@@ -88,10 +88,15 @@ describe('user service', () => {
     it('should return all users in guild', async () => {
       const list = await service.list(models, { guild: guild.id });
 
-      expect(list).to.eql([{
-        accountName: apiToken.accountName,
-        name: user.alias,
-      }]);
+      expect(list).to.eql({
+        count: 1,
+        limit: 1,
+        offset: 0,
+        rows: [{
+          accountName: apiToken.accountName,
+          name: user.alias,
+        }],
+      });
     });
   });
 

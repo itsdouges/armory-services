@@ -129,12 +129,12 @@ describe('character controller', () => {
     context('when ignoring privacy', async () => {
       it('should return all characters by email', async () => {
         const list = await controller.list({ email, ignorePrivacy: true });
-        expect(list.length).to.equal(3);
+        expect(list.rows.length).to.equal(3);
       });
 
       it('should return all characters by alias', async () => {
         const list = await controller.list({ alias: user.alias, email, ignorePrivacy: true });
-        expect(list.length).to.equal(3);
+        expect(list.rows.length).to.equal(3);
       });
     });
 
@@ -142,9 +142,9 @@ describe('character controller', () => {
       it('should return all characters by email', async () => {
         const list = await controller.list({ email });
 
-        expect(list.length).to.equal(2);
+        expect(list.rows.length).to.equal(2);
 
-        const [charOne, charTwo] = list;
+        const [charOne, charTwo] = list.rows;
 
         expect(charOne).to.eql({
           ..._.pick(characterOne, [
@@ -175,9 +175,9 @@ describe('character controller', () => {
 
       it('should return all characters by alias', async () => {
         const list = await controller.list({ alias: user.alias });
-        expect(list.length).to.equal(2);
+        expect(list.rows.length).to.equal(2);
 
-        const [charOne, charTwo] = list;
+        const [charOne, charTwo] = list.rows;
 
         expect(charOne).to.eql({
           ..._.pick(characterOne, [

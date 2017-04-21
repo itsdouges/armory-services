@@ -42,19 +42,17 @@ export default function guildControllerFactory (models: Models) {
       'claimed',
     ]);
 
-    return {
-      ...parsedGuild,
-    };
+    return parsedGuild;
   }
 
   async function readUsers (name, { email, limit, offset }: Params = {}) {
-    const [guild] = await read(name, { email });
+    const guild = await read(name, { email });
     const users = await listUsers(models, { guild: guild && guild.id, limit, offset });
     return users;
   }
 
   async function readCharacters (name, { email, limit, offset }: Params = {}) {
-    const [guild] = await read(name, { email });
+    const guild = await read(name, { email });
     const characters = await listCharacters(models, { guild: guild && guild.id, limit, offset });
     return characters;
   }
@@ -65,7 +63,7 @@ export default function guildControllerFactory (models: Models) {
     preFetch: true,
   });
 
-  async function random (n = 1) {
+  async function random (n: number = 1) {
     const guilds = await findAllGuilds(models);
     if (!guilds.length) {
       return undefined;

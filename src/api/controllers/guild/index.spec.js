@@ -54,6 +54,8 @@ const controller = proxyquire('api/controllers/guild', {
 
 describe('guild controller', () => {
   const models = { stub: 'models' };
+  const limit = 2;
+  const offset = 3;
 
   let sut;
 
@@ -66,14 +68,21 @@ describe('guild controller', () => {
     testData.guild(),
   ];
 
-  const characters = [
-    testData.character(),
-    testData.character(),
-  ];
-  const users = [
-    testData.user(),
-    testData.user(),
-  ];
+  const characters = {
+    count: 4,
+    rows: [
+      testData.character(),
+      testData.character(),
+    ],
+  };
+
+  const users = {
+    count: 2,
+    rows: [
+      testData.user(),
+      testData.user(),
+    ],
+  };
 
   const apiToken = testData.apiToken();
 
@@ -83,11 +92,11 @@ describe('guild controller', () => {
       .returns(Promise.resolve(guildData));
 
     listCharacters
-      .withArgs(models, { guild: guildData.id })
+      .withArgs(models, { guild: guildData.id, limit, offset })
       .returns(Promise.resolve(characters));
 
     listUsers
-      .withArgs(models, { guild: guildData.id })
+      .withArgs(models, { guild: guildData.id, limit, offset })
       .returns(Promise.resolve(users));
 
     listGuilds
@@ -108,16 +117,12 @@ describe('guild controller', () => {
 
         return sut.read(guildData.name, { email })
           .then((guild) => {
-            expect(guild).to.eql({
-              ..._.pick(guildData, [
-                'name',
-                'id',
-                'tag',
-                'claimed',
-              ]),
-              characters,
-              users,
-            });
+            expect(guild).to.eql(_.pick(guildData, [
+              'name',
+              'id',
+              'tag',
+              'claimed',
+            ]));
           });
       });
     });
@@ -132,18 +137,34 @@ describe('guild controller', () => {
 
         const guild = await sut.read(guildData.name, { email });
 
-        expect(guild).to.eql({
-          ...guildData,
-          characters,
-          users,
-        });
+        expect(guild).to.eql(guildData);
       });
     });
   });
 
-  it('should select random guild', () => {
-    return sut.random(2)
-      .then((guild) => expect(guild.length).to.equal(2));
+  describe('reading users in a guild', () => {
+    it('should output all data', async () => {
+      const email = 'cool@kkkemail.com';
+
+      const guildUsers = await sut.readUsers(guildData.name, { email, limit, offset });
+
+      expect(guildUsers).to.eql(users);
+    });
+  });
+
+  describe('reading characters in a guild', () => {
+    it('should output all data', async () => {
+      const email = 'cool@kkkemail.com';
+
+      const guildCharacters = await sut.readCharacters(guildData.name, { email, limit, offset });
+
+      expect(guildCharacters).to.eql(characters);
+    });
+  });
+
+  it('should select random guild', async () => {
+    const guild = await sut.random(2);
+    expect(guild.length).to.equal(2);
   });
 
   _.forEach({
