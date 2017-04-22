@@ -23,12 +23,12 @@ const createTestDb = () => {
   });
 };
 
-const seed = async (models, {
+async function seed (models, {
   addTokens = true,
   apiToken,
   email,
   alias,
-} = {}) => {
+} = {}) {
   const user = await models.User.create({
     email: email || 'cool@email.com',
     alias: alias || 'huedwell',
@@ -90,9 +90,9 @@ const seed = async (models, {
   });
 
   return user.id;
-};
+}
 
-global.setupTestDb = async ({ seed: seedDb, ...options } = {}) => {
+async function setupTestDb ({ seed: seedDb, ...options } = {}) {
   const models = new Models(createTestDb());
 
   await models.sequelize.sync({
@@ -104,7 +104,9 @@ global.setupTestDb = async ({ seed: seedDb, ...options } = {}) => {
   }
 
   return models;
-};
+}
+
+global.setupTestDb = setupTestDb;
 
 const proxyquire = require('proxyquire').noCallThru();
 
