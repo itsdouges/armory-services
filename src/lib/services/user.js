@@ -30,6 +30,9 @@ export async function list (
         $like: `%${guild || ''}%`,
       },
     },
+    order: [
+      ['stub', 'ASC'],
+    ],
     include: [{
       model: models.User,
     }],

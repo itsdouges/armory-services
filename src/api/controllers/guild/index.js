@@ -44,6 +44,7 @@ export default function guildControllerFactory (models: Models) {
       'id',
       'tag',
       'claimed',
+      'leader',
     ]);
 
     return parsedGuild;

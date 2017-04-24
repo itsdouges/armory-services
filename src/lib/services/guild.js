@@ -14,6 +14,11 @@ export async function readPrivate (models: Models, { id, name }: Guild$Read) {
       id,
       name,
     }),
+    raw: true,
+    include: [{
+      model: models.Gw2ApiToken,
+      include: models.User,
+    }],
   });
 }
 
@@ -38,6 +43,10 @@ export async function read (models: Models, { id, name }: Guild$Read) {
   return {
     ...data,
     claimed: !!guild.apiTokenId,
+    leader: guild['Gw2ApiToken.User.alias'] && {
+      alias: guild['Gw2ApiToken.User.alias'],
+      accountName: guild['Gw2ApiToken.accountName'],
+    },
   };
 }
 

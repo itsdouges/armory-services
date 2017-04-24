@@ -6,10 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
-### Updated
+### Changed
 - Babel configuration to use `babel-preset-env`
 - Docker images to use node `7.8.0`
 - Leaderboard pagination to match everything else
+- Guild members to be orded by armory users first
 
 ### Removed
 - Characters from base guild resource

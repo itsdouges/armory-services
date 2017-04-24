@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     passwordHash: {
-      /* eslint new-cap:0 */
+      // eslint-disable-next-line new-cap
       type: DataTypes.STRING(500),
       required: true,
       allowNull: false,
