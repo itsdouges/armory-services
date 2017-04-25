@@ -1,6 +1,6 @@
 // @flow
 
-import type { Models, PvpStandingModel, Pagination } from 'flowTypes';
+import type { Models, PvpStandingModel, Pagination, PaginatedResponse } from 'flowTypes';
 import _ from 'lodash';
 
 export async function saveList (models: Models, pvpStandings: Array<PvpStandingModel>) {
@@ -24,8 +24,8 @@ export async function list (
   models: Models,
   seasonId: string,
   region?: 'gw2a' | 'na' | 'eu',
-  params?: Pagination,
-): Promise<Array<PvpStandingModel>> {
+  params?: Pagination = {},
+): Promise<PaginatedResponse<PvpStandingModel>> {
   const rankColumn = `${region || ''}Rank`;
 
   const withRegionQuery = region && {
@@ -39,7 +39,7 @@ export async function list (
     },
   };
 
-  const standingsLatest = await models.PvpStandings.findAll(_.merge({
+  const { rows, count } = await models.PvpStandings.findAndCount(_.merge({
     where: {
       seasonId,
       apiTokenId: {
@@ -56,20 +56,25 @@ export async function list (
     ...params,
   }, withRegionQuery));
 
-  return standingsLatest.map((standing) => ({
-    ..._.pick(standing, [
-      'euRank',
-      'gw2aRank',
-      'naRank',
-      'ratingCurrent',
-      'seasonId',
-      'totalPointsBest',
-      'decayCurrent',
-      'wins',
-      'losses',
-    ]),
-    apiTokenId: standing['Gw2ApiToken.id'],
-    alias: standing['Gw2ApiToken.User.alias'],
-    accountName: standing['Gw2ApiToken.accountName'],
-  }));
+  return {
+    limit: params.limit || count,
+    offset: params.offset || 0,
+    count,
+    rows: rows.map((standing) => ({
+      ..._.pick(standing, [
+        'euRank',
+        'gw2aRank',
+        'naRank',
+        'ratingCurrent',
+        'seasonId',
+        'totalPointsBest',
+        'decayCurrent',
+        'wins',
+        'losses',
+      ]),
+      apiTokenId: standing['Gw2ApiToken.id'],
+      alias: standing['Gw2ApiToken.User.alias'],
+      accountName: standing['Gw2ApiToken.accountName'],
+    })),
+  };
 }

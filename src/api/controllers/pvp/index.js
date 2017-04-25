@@ -55,17 +55,20 @@ export default function pvpControllerFactory (models: Models) {
     const season = await readLatestPvpSeason();
     const pvpStandings = await listPvpStandings(models, season.id, region, params);
 
-    return pvpStandings.map((standing) => _.pick(standing, [
-      'euRank',
-      'gw2aRank',
-      'naRank',
-      'ratingCurrent',
-      'seasonId',
-      'wins',
-      'losses',
-      'alias',
-      'accountName',
-    ]));
+    return {
+      ...pvpStandings,
+      rows: pvpStandings.rows.map((standing) => _.pick(standing, [
+        'euRank',
+        'gw2aRank',
+        'naRank',
+        'ratingCurrent',
+        'seasonId',
+        'wins',
+        'losses',
+        'alias',
+        'accountName',
+      ])),
+    };
   }
 
   return {

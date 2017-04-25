@@ -8,6 +8,9 @@ const config = {
     latestSeasonCacheTtl: 123,
     backupLatestSeasonId: 'cool-meme',
   },
+  cache: {
+    gw2Api: 5000,
+  },
 };
 
 const axiosGet = sinon.stub();
@@ -17,7 +20,7 @@ const gw2Api = proxyquire('lib/gw2', {
     get: axiosGet,
   },
   config,
-  memoize: (func) => func,
+  memoizee: (func) => func,
 });
 
 describe('gw2 api', () => {
@@ -106,14 +109,15 @@ describe('gw2 api', () => {
       readGuildUpgrades: { resource: 'guild/{id}/upgrades', id: '1234-1234' },
       readAchievements: { resource: 'account/achievements' },
     }, ({ resource, id, normalise }, funcName) => {
-      it(`should call ${funcName} and resolve data`, () => {
+      it(`should call ${funcName} and resolve data`, async () => {
         const data = { some_data: 'data' };
         const normalisedData = { someData: 'data' };
 
         stubAxiosGet(resource, data, id);
 
-        return gw2Api[funcName](token, id)
-          .then((result) => expect(result).to.eql(normalise ? normalisedData : data));
+        const result = await gw2Api[funcName](token, id);
+
+        expect(result).to.eql(normalise ? normalisedData : data);
       });
     });
   });

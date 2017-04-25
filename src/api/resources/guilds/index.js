@@ -3,6 +3,7 @@
 import type { Server } from 'restify';
 import type { Models } from 'flowTypes';
 
+import config from 'config';
 import _ from 'lodash';
 import controllerFactory from 'api/controllers/guild';
 
@@ -11,8 +12,9 @@ export default function guildsResource (server: Server, models: Models) {
 
   const routeMap = {
     'guilds/:name': controller.read,
+    'guilds/:name/members': controller.readUsers,
+    'guilds/:name/characters': controller.readCharacters,
     'guilds/:name/logs': controller.logs,
-    'guilds/:name/members': controller.members,
     'guilds/:name/ranks': controller.ranks,
     'guilds/:name/stash': controller.stash,
     'guilds/:name/treasury': controller.treasury,
@@ -23,11 +25,17 @@ export default function guildsResource (server: Server, models: Models) {
   _.forEach(routeMap, (func, routeName) => {
     server.get(routeName, async (req, res, next) => {
       try {
-        const data = await func(req.params.name, { email: req.username });
+        const params = {
+          limit: _.toInteger(req.params.limit) || config.pagination.guilds,
+          offset: _.toInteger(req.params.offset) || 0,
+        };
 
-        data
-          ? res.send(200, data)
-          : res.send(404);
+        const data = await func(req.params.name, { email: req.username, ...params });
+        if (data) {
+          res.send(200, data);
+        } else {
+          res.send(404);
+        }
       } catch (e) {
         res.send(500, e);
       }
@@ -39,6 +47,17 @@ export default function guildsResource (server: Server, models: Models) {
   server.get('random/guilds/:n', async (req, res, next) => {
     try {
       const guilds = await controller.random(req.params.n);
+      res.send(200, guilds);
+    } catch (e) {
+      res.send(500, e);
+    }
+
+    return next();
+  });
+
+  server.get('of-the-day/guilds', async (req, res, next) => {
+    try {
+      const guilds = await controller.guildsOfTheDay();
       res.send(200, guilds);
     } catch (e) {
       res.send(500, e);

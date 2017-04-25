@@ -7,6 +7,7 @@ type Sequelize = {
   findAll: () => Promise<>,
   create: () => Promise<>,
   destroy: () => Promise<>,
+  findAndCount: () => Promise<>,
 };
 
 export type Models = {
@@ -24,6 +25,13 @@ export type Pagination = {
   limit?: number,
   offset?: number,
 };
+
+export type PaginatedResponse<T> = {
+  rows: Array<T>,
+  count: number,
+  limit: number,
+  offset: number,
+}
 
 type Gw2Standing = {
   total_points: number,
@@ -104,6 +112,17 @@ export type Guild = {
   motd: string,
   claimed: boolean,
   apiToken?: ?string,
+};
+
+export type CharacterSimple = {
+  accountName: string,
+  userAlias: string,
+  name: string,
+  race: string,
+  gender: 'Female' | 'Male',
+  profession: string,
+  level: number,
+  world: string,
 };
 
 export type Character = {

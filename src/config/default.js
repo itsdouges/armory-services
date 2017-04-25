@@ -67,6 +67,18 @@ export default {
   cache: {
     findAllCharacters: hours(1),
     statistics: hours(1),
+    resourceOfTheDay: hours(24),
+    gw2Api: minutes(5),
+  },
+
+  pagination: {
+    guilds: 10,
+    leaderboards: 250,
+  },
+
+  ofTheDay: {
+    characters: 1,
+    guilds: 8,
   },
 
   sitemap: {

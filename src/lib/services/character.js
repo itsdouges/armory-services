@@ -1,6 +1,6 @@
 // @flow
 
-import type { Models } from 'flowTypes';
+import type { Models, PaginatedResponse, CharacterSimple } from 'flowTypes';
 import _ from 'lodash';
 
 function canIgnorePrivacy (character, email, ignorePrivacy) {
@@ -12,16 +12,21 @@ type ListOptions = {
   alias?: string,
   guild?: string,
   ignorePrivacy?: boolean,
+  limit?: number,
+  offset?: number,
 };
 
-// eslint-disable-next-line
 export async function list (models: Models, {
   email,
   alias,
   guild,
   ignorePrivacy,
-}: ListOptions) {
-  const characters = await models.Gw2Character.findAll({
+  limit,
+  offset,
+}: ListOptions): Promise<PaginatedResponse<CharacterSimple>> {
+  const { rows, count } = await models.Gw2Character.findAndCount({
+    limit,
+    offset,
     where: _.pickBy({
       guild,
     }),
@@ -37,7 +42,7 @@ export async function list (models: Models, {
     }],
   });
 
-  return characters.filter((character) => (
+  const characters = rows.filter((character) => (
     character.showPublic || canIgnorePrivacy(character, email, ignorePrivacy))
   )
   .map((c) => {
@@ -52,6 +57,13 @@ export async function list (models: Models, {
       race: c.race,
     };
   });
+
+  return {
+    rows: characters,
+    count,
+    limit: limit || count,
+    offset: offset || 0,
+  };
 }
 
 export async function listPublic (models: Models) {

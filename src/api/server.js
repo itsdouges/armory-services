@@ -1,12 +1,13 @@
 // @flow
 
+import type { Models } from 'flowTypes';
+
 import restify from 'restify';
 import axios from 'axios';
 import restifyOAuth2 from 'restify-oauth2';
 import createValidator from 'gotta-validate';
 
-import type { Models } from 'flowTypes';
-
+import config from 'config';
 import tokenControllerFactory from './controllers/gw2-token';
 import usersControllerFactory from './controllers/user';
 import characterControllerFactory from './controllers/character';
@@ -16,7 +17,7 @@ import checkControllerFactory from './controllers/check';
 import authControllerFactory from './controllers/auth';
 import statisticsControllerFactory from './controllers/statistics';
 
-export default function createServer (models: Models, config: any) {
+export default function createServer (models: Models) {
   createValidator.addDefaultRules();
   createValidator
     .addRule({

@@ -92,7 +92,7 @@ kill() {
 runDb() {
   run db db "-e MYSQL_ROOT_PASSWORD=$MYSQL_PASS -e MYSQL_PASSWORD=$MYSQL_PASS -e MYSQL_USER=$MYSQL_USER -e MYSQL_DATABASE=$MYSQL_DB -p 3306:3306"
 
-  pause 10
+  pause 30
 }
 
 runFetch() {

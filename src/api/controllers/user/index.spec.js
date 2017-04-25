@@ -15,7 +15,6 @@ const addRule = sandbox.stub();
 const sendEmail = sandbox.spy();
 const verifyHash = sandbox.stub();
 const hashPassword = sandbox.stub();
-const listCharacters = sandbox.stub();
 const forgotMyPasswordTemplate = sandbox.stub();
 const createPasswordReset = sandbox.stub();
 const readPasswordReset = sandbox.stub();
@@ -42,9 +41,6 @@ describe('user controller', () => {
     },
     'lib/services/guild': {
       read: readGuild,
-    },
-    'lib/services/character': {
-      list: listCharacters,
     },
     'lib/services/user': {
       create: createUser,
@@ -114,12 +110,6 @@ describe('user controller', () => {
   });
 
   describe('read', () => {
-    beforeEach(() => {
-      listCharacters
-        .withArgs(models, { alias: user.alias, email, ignorePrivacy: true })
-        .returns(Promise.resolve([character]));
-    });
-
     const cleanUser = (usr) => _.omit(usr, [
       'id',
       'passwordHash',
@@ -139,7 +129,6 @@ describe('user controller', () => {
 
         expect(data).to.eql({
           ...cleanUser(user),
-          characters: [character],
           guilds: [_.pick(guild, [
             'tag',
             'name',
@@ -165,7 +154,6 @@ describe('user controller', () => {
         const data = await controller.read({ alias: user.alias, email, ignorePrivacy: true });
         expect(data).to.eql({
           ...cleanUser(userNoGuilds),
-          characters: [character],
           guilds: [],
         });
       });

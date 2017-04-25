@@ -82,7 +82,10 @@ const simpleCalls = _.reduce({
     },
   },
 }, (obj, { resource, onSuccess, normalise, noAuth, filterUndefined }, key) => {
-  const func = async (token, id = '', params = {}) => {
+  const func = async (token, idd, paramss) => {
+    const id = idd || '';
+    const params = paramss || {};
+
     const url = buildUrl(`${config.gw2.endpoint}v2/${resource}`, id, params);
     const response = await axios.get(url, !noAuth && {
       headers: {
@@ -106,10 +109,15 @@ const simpleCalls = _.reduce({
     return data;
   };
 
-  // eslint-disable-next-line
-  obj[key] = withRetry(func);
-
-  return obj;
+  return {
+    ...obj,
+    // TODO: If we ever scale out this will have to be moved to redis.
+    [key]: memoize(func, {
+      maxAge: config.cache.gw2Api,
+      promise: true,
+      preFetch: true,
+    }),
+  };
 }, {});
 
 function readTokenInfoWithAccount (token) {

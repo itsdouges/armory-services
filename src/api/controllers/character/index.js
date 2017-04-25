@@ -101,6 +101,13 @@ export default function characterControllerFactory (models: Models) {
     return _.sampleSize(characters, limit(n, 10)).map((character) => character.name);
   }
 
+  // TODO: If we ever scale this will have to be persisted to the database.
+  const charactersOfTheDay = memoize(() => random(config.ofTheDay.characters), {
+    maxAge: config.cache.resourceOfTheDay,
+    promise: true,
+    preFetch: true,
+  });
+
   async function update (email: string, fields: Character$UpdateProperties) {
     const character = await readCharacter(models, fields.name, email);
     if (!character) {
@@ -114,6 +121,7 @@ export default function characterControllerFactory (models: Models) {
     read,
     list,
     random,
+    charactersOfTheDay,
     update,
   };
 }
