@@ -3,6 +3,7 @@
   "version": "2.4.0",
   "description": "Backend services for gw2armory",
   "main": "index.js",
+  "private": true,
   "scripts": {
     "start": "./go.sh start",
     "dev": "./go.sh build && ./go.sh dev",
