@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+
+## [3.0.0][] - 2017-04-26
 ### Changed
 - Babel configuration to use `babel-preset-env`
 - Docker images to use node `7.8.0`
@@ -203,3 +205,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.0.0] - 2017/01/02
 ### Added
 - This CHANGELOG file to allow more insight to the changes made throughout the development of api.gw2armory.com
+
+
+[Unreleased]: https://github.com/madou/armory-back/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/madou/armory-back/tree/v3.0.0
