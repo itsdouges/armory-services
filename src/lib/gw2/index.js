@@ -106,10 +106,15 @@ const simpleCalls = _.reduce({
     return data;
   };
 
-  // eslint-disable-next-line
-  obj[key] = withRetry(func);
-
-  return obj;
+  return {
+    ...obj,
+    // TODO: If we ever scale out this will have to be moved to redis.
+    [key]: memoize(withRetry(func), {
+      maxAge: config.cache.gw2Api,
+      promise: true,
+      preFetch: true,
+    }),
+  };
 }, {});
 
 function readTokenInfoWithAccount (token) {

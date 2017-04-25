@@ -8,6 +8,9 @@ const config = {
     latestSeasonCacheTtl: 123,
     backupLatestSeasonId: 'cool-meme',
   },
+  cache: {
+    gw2Api: 5000,
+  },
 };
 
 const axiosGet = sinon.stub();
@@ -17,7 +20,7 @@ const gw2Api = proxyquire('lib/gw2', {
     get: axiosGet,
   },
   config,
-  memoize: (func) => func,
+  memoizee: (func) => func,
 });
 
 describe('gw2 api', () => {

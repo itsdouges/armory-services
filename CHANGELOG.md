@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Docker images to use node `7.8.0`
 - Leaderboard pagination to match everything else
 - Guild members to be orded by armory users first
+- Gw2 api fetch to cache in memory for 5 minutes
 
 ### Removed
 - Characters from base guild resource
