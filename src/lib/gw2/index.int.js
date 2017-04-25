@@ -29,6 +29,15 @@ describe('gw2 api', function () {
     });
   });
 
+  describe('test', () => {
+    it('should return unique stuffs', async () => {
+      const mdou = await gw2Api.readCharacter(testToken, 'Mdou');
+      const blastrn = await gw2Api.readCharacter(testToken, 'Blastrn');
+
+      expect(mdou).to.not.eql(blastrn);
+    });
+  });
+
   it('should return pvp stats', () => {
     return gw2Api.readPvpStats(testToken)
       .then((pvp) => {
