@@ -56,6 +56,7 @@ run() {
     -e "IMAGE_UPLOAD_SECRET_ACCESS_KEY" \
     -e "SES_ACCESS_KEY_ID" \
     -e "SES_SECRET_ACCESS_KEY" \
+    -e "SLACK_BOT_TOKEN" \
     $TAG \
     $4
 }

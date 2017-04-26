@@ -3,24 +3,16 @@
 /* eslint import/imports-first:off */
 
 import '../base';
-import Sequelize from 'sequelize';
+
+import { models, sync } from 'lib/db';
 import restify from 'restify';
-import Models from 'lib/models';
 import config from 'config';
-import tokenFetchFactory from './tokenFetch';
-import bespokeFetch from './bespokeFetch';
+import createLog from 'lib/logger';
 
-console.log(`\n=== Connecting to mysql host: ${config.db.host} ===\n`);
+import userFetchFactory from './userFetch';
+import fetchFactory from './fetch';
 
-const db = new Sequelize(
-  config.db.database,
-  config.db.username,
-  config.db.password, config.db
-);
-
-const models = new Models(db);
-
-const { batchFetch, fetch } = tokenFetchFactory(models, [
+const { fetchAll, fetch } = userFetchFactory(models, [
   require('./fetchers/guilds').default,
   require('./fetchers/characters').default,
   require('./fetchers/account').default,
@@ -39,7 +31,9 @@ server.get('/healthcheck', (req, res, next) => {
 });
 
 server.post('/fetch', async (req, res, next) => {
-  console.log(`\n=== Single fetch triggered for ${req.params.token} ===\n`);
+  console.log();
+  console.log(`>>> Fetching for ${req.params.token} triggered...`);
+  console.log();
 
   try {
     await fetch({
@@ -57,20 +51,24 @@ server.post('/fetch', async (req, res, next) => {
   return next();
 });
 
-models.sequelize.sync()
+sync()
   .then(() => {
     try {
-      console.log(`\n=== Starting server on port ${config.fetch.port}.. ===\n`);
+      console.log();
+      console.log(`>>> Starting server on port ${config.fetch.port}...`);
+      console.log();
+
       server.listen(config.fetch.port);
+      createLog('fetch', 'fetch').log(':wave:');
 
       if (config.fetch.disabled) {
         return;
       }
 
-      batchFetch();
-      setInterval(batchFetch, config.fetch.interval);
+      fetchAll();
+      setInterval(fetchAll, config.fetch.interval);
 
-      bespokeFetch(models, [{
+      fetchFactory(models, [{
         fetcher: require('./fetchers/pvpLeaderboard').default,
         interval: config.leaderboards.refreshInterval,
         callImmediately: true,
@@ -79,3 +77,4 @@ models.sequelize.sync()
       console.log(e);
     }
   });
+

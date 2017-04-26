@@ -7,10 +7,10 @@ import _ from 'lodash';
 import gw2, { readLatestPvpSeason } from 'lib/gw2';
 import { bulkCreateStubUser } from 'lib/services/user';
 import { saveList as saveStandings, list as listPvpStandings } from 'lib/services/pvpStandings';
-import createLogger from 'lib/gitter';
+import createLogger from 'lib/logger';
 import buildLadderByAccountName from '../lib/leaderboardBuilder';
 
-const logger = createLogger('PvpLeaderboard');
+const logger = createLogger('Pvp-leaderboard-fetcher', 'fetch-pvp');
 
 const hasJoined = (standing) => !!standing.totalPointsBest;
 

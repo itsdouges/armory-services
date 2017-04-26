@@ -14,7 +14,7 @@ const config = {
   },
 };
 
-const createFetchFactory = (fetchTokens) => proxyquire('fetch/tokenFetch', {
+const createFetchFactory = (fetchTokens) => proxyquire('fetch/userFetch', {
   'lib/services/tokens': { list: fetchTokens },
   config,
   ...stubLogger(),
@@ -35,12 +35,12 @@ describe('fetch integration', () => {
   const initiateFetch = (tokens = []) => {
     const fetchTokensStub = sinon.stub().returns(Promise.resolve(tokens));
 
-    const { batchFetch } = createFetchFactory(fetchTokensStub)(models, [
+    const { fetchAll } = createFetchFactory(fetchTokensStub)(models, [
       accountFetcher,
       characterFetcher,
     ]);
 
-    return batchFetch();
+    return fetchAll();
   };
 
   it('should not explode if fetching with no tokens', () => {

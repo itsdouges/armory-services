@@ -6,9 +6,9 @@ import type { Models } from 'flowTypes';
 import s3 from 'lib/s3';
 import { read as readUser } from 'lib/services/user';
 
-import createLogger from 'lib/gitter';
+import createLogger from 'lib/logger';
 
-const logger = createLogger('SignUpload', 'errors');
+const logger = createLogger('SignUpload', 's3-signing');
 
 export default function signUploadResource (server: Server, models: Models) {
   server.get('/sign-upload', async (req, res, next) => {

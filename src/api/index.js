@@ -3,20 +3,14 @@
 
 import '../base';
 
-import Sequelize from 'sequelize';
-import Models from 'lib/models';
+import { models, sync } from 'lib/db';
 import config from 'config';
+import createLog from 'lib/logger';
 import createServer from './server';
 
-console.log(`\n=== Connecting to mysql host: ${config.db.host} ===\n`);
-
-const db = new Sequelize(config.db.database, config.db.username, config.db.password, config.db);
-const models = new Models(db);
 const server = createServer(models, config);
 
-console.log('\n=== Syncing sequelize models... ===\n');
-
-models.sequelize.sync().then(() => {
-  console.log(`\n=== Starting server on port ${config.api.port}... ===\n`);
+sync().then(() => {
   server.listen(config.api.port);
+  createLog('api', 'api').log(':wave:');
 });
