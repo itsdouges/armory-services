@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+
+## [3.0.1][] - 2017-04-27
 ### Changed
 - Gitter to slack logging
 
@@ -209,5 +211,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - This CHANGELOG file to allow more insight to the changes made throughout the development of api.gw2armory.com
 
 
-[Unreleased]: https://github.com/madou/armory-back/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/madou/armory-back/compare/v3.0.1...HEAD
+[3.0.1]: https://github.com/madou/armory-back/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/madou/armory-back/tree/v3.0.0
