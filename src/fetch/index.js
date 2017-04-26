@@ -2,23 +2,11 @@
 
 /* eslint import/imports-first:off */
 
-import '../base';
-import Sequelize from 'sequelize';
+import { models, sync } from '../base';
 import restify from 'restify';
-import Models from 'lib/models';
 import config from 'config';
 import tokenFetchFactory from './tokenFetch';
 import bespokeFetch from './bespokeFetch';
-
-console.log(`\n=== Connecting to mysql host: ${config.db.host} ===\n`);
-
-const db = new Sequelize(
-  config.db.database,
-  config.db.username,
-  config.db.password, config.db
-);
-
-const models = new Models(db);
 
 const { batchFetch, fetch } = tokenFetchFactory(models, [
   require('./fetchers/guilds').default,
@@ -39,7 +27,9 @@ server.get('/healthcheck', (req, res, next) => {
 });
 
 server.post('/fetch', async (req, res, next) => {
-  console.log(`\n=== Single fetch triggered for ${req.params.token} ===\n`);
+  console.log();
+  console.log(`>>> Fetching for ${req.params.token} triggered...`);
+  console.log();
 
   try {
     await fetch({
@@ -57,10 +47,13 @@ server.post('/fetch', async (req, res, next) => {
   return next();
 });
 
-models.sequelize.sync()
+sync()
   .then(() => {
     try {
-      console.log(`\n=== Starting server on port ${config.fetch.port}.. ===\n`);
+      console.log();
+      console.log(`>>> Starting server on port ${config.fetch.port}...`);
+      console.log();
+
       server.listen(config.fetch.port);
 
       if (config.fetch.disabled) {
