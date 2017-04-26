@@ -10,7 +10,7 @@ import { saveList as saveStandings, list as listPvpStandings } from 'lib/service
 import createLogger from 'lib/logger';
 import buildLadderByAccountName from '../lib/leaderboardBuilder';
 
-const logger = createLogger('Pvp', 'fetch-pvp');
+const logger = createLogger('Pvp-leaderboard-fetcher', 'fetch-pvp');
 
 const hasJoined = (standing) => !!standing.totalPointsBest;
 

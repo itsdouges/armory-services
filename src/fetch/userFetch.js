@@ -9,7 +9,7 @@ import { allSettled } from 'lib/promise';
 import { list as listTokens } from 'lib/services/tokens';
 import createLogger from 'lib/logger';
 
-const logger = createLogger('userFetchers', 'fetch-user');
+const logger = createLogger('user-fetcher', 'fetch-user');
 
 export type Fetcher$Token = {
   id: number,
