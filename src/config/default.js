@@ -29,8 +29,8 @@ export default {
     '*',
   ],
 
-  gitter: {
-    apiKey: process.env.GITTER_API_KEY,
+  slack: {
+    token: process.env.SLACK_BOT_TOKEN,
   },
 
   email: {

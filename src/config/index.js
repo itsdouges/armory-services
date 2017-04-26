@@ -10,7 +10,9 @@ if (validEnvironments.indexOf(environment) === -1) {
   throw new Error(`${environment} is not a supported environment!`);
 }
 
-console.log(`\n== Running with ${environment} settings. ==\n`);
+console.log();
+console.log(`>>> Running ${environment}`);
+console.log();
 
 const environmentConfig = require(`./${environment}`).default;
 

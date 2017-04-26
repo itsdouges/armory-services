@@ -1,10 +1,18 @@
 // @flow
 
-import Gitter from 'node-gitter';
 import _ from 'lodash';
 import config from 'config';
+import SlackBot from 'slackbots';
+import PromiseThrottle from 'promise-throttle';
 
-const gitter = new Gitter(config.gitter.apiKey);
+const startBot = new Promise((resolve) => {
+  const slackBot = new SlackBot({
+    token: config.slack.token,
+    name: 'armory-bot',
+  });
+
+  slackBot.on('start', () => resolve(slackBot));
+});
 
 const hr = '---------------------------------------------------';
 
@@ -33,14 +41,20 @@ ${_.get(error, 'config.headers.Authorization')}
   }
 }
 
+const throttle = new PromiseThrottle({
+  requestsPerSecond: 1,
+  promiseImplementation: Promise,
+});
 
-const createLog = (title: string, roomName?: string = 'fetch') => ({
+const createLog = (title: string, channel: string) => ({
   async log (message: string) {
     try {
-      const room = await gitter.rooms.join(`gw2armory/${roomName}`);
-      room.send(`\`\`\`${message}\`\`\``);
+      const slackBot = await startBot;
+      throttle(() => slackBot.postMessageToChannel(channel, message));
     } catch (e) {
-      console.log('Couldn\'t connect to gitter, check the api key. Falling back to console log.');
+      console.log();
+      console.log('>>> Couldn\'t connect to slack (check api key)! Falling back to console.log()');
+      console.log();
       console.log(message);
       console.log(JSON.stringify(e));
     }

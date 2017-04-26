@@ -2,13 +2,17 @@
 
 /* eslint import/imports-first:off */
 
-import { models, sync } from '../base';
+import '../base';
+
+import { models, sync } from 'lib/db';
 import restify from 'restify';
 import config from 'config';
-import tokenFetchFactory from './tokenFetch';
-import bespokeFetch from './bespokeFetch';
+import createLog from 'lib/logger';
 
-const { batchFetch, fetch } = tokenFetchFactory(models, [
+import userFetchFactory from './userFetch';
+import fetchFactory from './fetch';
+
+const { fetchAll, fetch } = userFetchFactory(models, [
   require('./fetchers/guilds').default,
   require('./fetchers/characters').default,
   require('./fetchers/account').default,
@@ -55,15 +59,16 @@ sync()
       console.log();
 
       server.listen(config.fetch.port);
+      createLog('fetch', 'fetch').log(':wave:');
 
       if (config.fetch.disabled) {
         return;
       }
 
-      batchFetch();
-      setInterval(batchFetch, config.fetch.interval);
+      fetchAll();
+      setInterval(fetchAll, config.fetch.interval);
 
-      bespokeFetch(models, [{
+      fetchFactory(models, [{
         fetcher: require('./fetchers/pvpLeaderboard').default,
         interval: config.leaderboards.refreshInterval,
         callImmediately: true,
@@ -72,3 +77,4 @@ sync()
       console.log(e);
     }
   });
+

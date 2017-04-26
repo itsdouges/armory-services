@@ -1,7 +1,7 @@
 // @flow
 
 import type { Models } from 'flowTypes';
-import type { Fetcher$Token } from 'fetch/tokenFetch';
+import type { Fetcher$Token } from 'fetch/userFetch';
 
 // import _ from 'lodash';
 

@@ -1,4 +1,4 @@
-import { parseResults } from 'lib/gitter';
+import { parseResults } from 'lib/logger';
 import { stubLogger } from 'test/utils';
 
 const config = {
@@ -10,7 +10,7 @@ const config = {
   },
 };
 
-const createFetchFactory = (fetchTokenStub) => proxyquire('fetch/tokenFetch', {
+const createFetchFactory = (fetchTokenStub) => proxyquire('fetch/userFetch', {
   config,
   'lib/services/tokens': { list: fetchTokenStub },
   ...stubLogger(),
@@ -56,9 +56,9 @@ describe('fetch', () => {
 
     fetchers.push(failingFetcher);
 
-    const { batchFetch } = fetchFactory(models, fetchers);
+    const { fetchAll } = fetchFactory(models, fetchers);
 
-    result = await batchFetch();
+    result = await fetchAll();
   });
 
   it('should call all fetchers with every token', async () => {

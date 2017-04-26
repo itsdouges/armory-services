@@ -12,7 +12,7 @@ export const stubValidator = ({ addResource, addRule, validate }) => {
 };
 
 export const stubLogger = () => ({
-  'lib/gitter': () => ({
+  'lib/logger': () => ({
     finish () {},
     start () {},
     log () {},
