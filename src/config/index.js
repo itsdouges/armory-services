@@ -18,5 +18,7 @@ const environmentConfig = require(`./${environment}`).default;
 
 export default _.merge({},
   defaultConfig,
-  environmentConfig,
+  environmentConfig, {
+    environment,
+  },
 );

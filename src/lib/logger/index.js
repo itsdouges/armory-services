@@ -8,7 +8,7 @@ import PromiseThrottle from 'promise-throttle';
 const startBot = () => new Promise((resolve) => {
   const slackBot = new SlackBot({
     token: config.slack.token,
-    name: 'armorybot',
+    name: `armorybot[${config.environment}]`,
   });
 
   slackBot.on('start', () => resolve(slackBot));
