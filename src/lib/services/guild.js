@@ -38,6 +38,7 @@ export async function read (models: Models, { id, name }: Guild$Read) {
     'aetherium',
     'resonance',
     'favor',
+    'apiTokenId',
   ]);
 
   return {

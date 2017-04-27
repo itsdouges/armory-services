@@ -20,7 +20,7 @@ describe('guilds service', () => {
 
       const actual = await read(models, { id: guild.id });
 
-      const { apiToken, apiTokenId, ...expected } = guild;
+      const { apiToken, ...expected } = guild;
 
       expect(actual).to.eql({
         ...expected,
@@ -41,10 +41,11 @@ describe('guilds service', () => {
 
       const actual = await read(models, { id: leaderlessGuild.id });
 
-      const { apiToken, apiTokenId, ...expected } = leaderlessGuild;
+      const { apiToken, ...expected } = leaderlessGuild;
 
       expect(actual).to.eql({
         ...expected,
+        apiTokenId: null,
         leader: null,
       });
     });

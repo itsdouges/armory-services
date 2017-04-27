@@ -6,6 +6,7 @@ import memoize from 'memoizee';
 import _ from 'lodash';
 
 import config from 'config';
+import { tryFetch } from 'lib/services/fetch';
 import { limit as limitTo } from 'lib/math';
 import {
   read as readGuild,
@@ -38,6 +39,8 @@ export default function guildControllerFactory (models: Models) {
     if (!guild) {
       throw new Error('No guild was found.');
     }
+
+    guild.apiTokenId && tryFetch(models, guild.apiTokenId);
 
     const parsedGuild = canAccess ? guild : _.pick(guild, [
       'name',
@@ -99,6 +102,8 @@ export default function guildControllerFactory (models: Models) {
       return undefined;
     }
 
+    tryFetch(models, guild.apiTokenId);
+
     return guild;
   }
 
@@ -113,19 +118,19 @@ export default function guildControllerFactory (models: Models) {
   };
 
   const guildMethods = _.reduce(guildMethodMap, (obj, func, methodName) => {
-    // eslint-disable-next-line no-param-reassign
-    obj[methodName] = async (name, { email } = {}) => {
-      const guild = await readGuildWithAccess(name, methodName, { email });
-      if (!guild) {
-        return [];
-      }
+    return {
+      ...obj,
+      [methodName]: async (name, { email } = {}) => {
+        const guild = await readGuildWithAccess(name, methodName, { email });
+        if (!guild) {
+          return [];
+        }
 
-      const token = await readToken(models, { id: guild.apiTokenId });
+        const token = await readToken(models, { id: guild.apiTokenId });
 
-      return await func(token.token, guild.id);
+        return await func(token.token, guild.id);
+      },
     };
-
-    return obj;
   }, {});
 
   return {

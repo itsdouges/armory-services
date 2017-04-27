@@ -30,6 +30,7 @@ module.exports = {
     'no-unused-expressions': 'error',
     'no-unused-vars': ['error'],
     'mocha/no-exclusive-tests': 'error',
+    'no-unused-expressions': 'off',
   },
 
   globals: {

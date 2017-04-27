@@ -55,6 +55,7 @@ export default {
     interval: hours(8),
     retries: 5,
     host: process.env.FETCH_PORT_8081_TCP_ADDR,
+    refetchTimeout: hours(1),
   },
 
   leaderboards: {
