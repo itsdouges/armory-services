@@ -6,9 +6,6 @@ import memoize from 'memoizee';
 import _ from 'lodash';
 import axios from 'axios';
 import config from 'config';
-import retryFactory from 'lib/retry';
-
-const withRetry = retryFactory({ retryPredicate: (e) => (e.status >= 500) });
 
 const normaliseObject = (data) => {
   return _.reduce(data, (obj, value, key) => {

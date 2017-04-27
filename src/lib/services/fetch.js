@@ -3,7 +3,7 @@
 import type { Models } from 'flowTypes';
 
 import moment from 'moment';
-import { read } from 'lib/services/tokens';
+import { read, setValidity } from 'lib/services/tokens';
 import config from 'config';
 import axios from 'axios';
 
@@ -37,4 +37,12 @@ export async function tryFetch (models: Models, id: number) {
   }
 
   return;
+}
+
+export async function setTokenValidity (models: Models, statusCode: number, apiToken: string) {
+  if (statusCode < 500 && statusCode >= 400) {
+    await setValidity(models, false, apiToken);
+  } else if (statusCode <= 200) {
+    await setValidity(models, true, apiToken);
+  }
 }

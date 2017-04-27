@@ -51,6 +51,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false,
       allowNull: false,
     },
+    invalid: DataTypes.BOOLEAN,
   }, {
     classMethods: {
       associate (models) {

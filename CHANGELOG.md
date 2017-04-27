@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+### Fixed
+- Pvp fetcher fetching when user doesn't have pvp permissions
+
+### Added
+- Api token invalidator
 
 ## [3.1.0][] - 2017-04-28
 ### Added

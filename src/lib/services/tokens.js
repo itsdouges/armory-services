@@ -2,7 +2,6 @@
 
 import type { Models } from 'flowTypes';
 import _ from 'lodash';
-import moment from 'moment';
 
 import gw2 from 'lib/gw2';
 
@@ -25,6 +24,16 @@ export async function read (models: Models, { id }: Tokens$Read) {
     where: _.pickBy({
       id,
     }),
+  });
+}
+
+export async function setValidity (models: Models, valid: boolean, token: string) {
+  return await models.Gw2ApiToken.update({
+    invalid: !valid,
+  }, {
+    where: {
+      token,
+    },
   });
 }
 
