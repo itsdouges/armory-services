@@ -3,11 +3,13 @@ import _ from 'lodash';
 
 const sandbox = sinon.sandbox.create();
 const readCharacter = sandbox.stub();
+const tryFetch = sandbox.spy();
 
 const controllerFactory = proxyquire('api/controllers/character', {
   'lib/gw2': {
     readCharacter,
   },
+  'lib/services/fetch': { tryFetch },
 });
 
 describe('character controller', () => {
@@ -66,6 +68,8 @@ describe('character controller', () => {
       readCharacter.withArgs(apiToken.token, characterOne.name).returns(Promise.resolve(apiData));
 
       const data = await controller.read(characterOne.name, { ignorePrivacy: true, email });
+
+      expect(tryFetch).to.have.been.calledWith(models, apiToken.id);
 
       expect(data).to.eql({
         authorization: {

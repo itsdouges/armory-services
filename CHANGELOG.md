@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
 ### Added
-- Try fetch capability
+- Try fetch capability to all resources
 
 ## [3.0.1][] - 2017-04-27
 ### Changed

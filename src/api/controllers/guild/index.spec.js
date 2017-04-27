@@ -12,21 +12,23 @@ const config = {
   },
 };
 
-const readGuild = sinon.stub();
-const readGuildPrivate = sinon.stub();
-const listGuilds = sinon.stub();
-const listCharacters = sinon.stub();
-const listUsers = sinon.stub();
-const canAccess = sinon.stub();
+const sandbox = sinon.sandbox.create();
+const readGuild = sandbox.stub();
+const readGuildPrivate = sandbox.stub();
+const listGuilds = sandbox.stub();
+const listCharacters = sandbox.stub();
+const listUsers = sandbox.stub();
+const canAccess = sandbox.stub();
 
-const readGuildLogs = sinon.stub();
-const readGuildMembers = sinon.stub();
-const readGuildRanks = sinon.stub();
-const readGuildStash = sinon.stub();
-const readGuildTreasury = sinon.stub();
-const readGuildTeams = sinon.stub();
-const readGuildUpgrades = sinon.stub();
-const readToken = sinon.stub();
+const readGuildLogs = sandbox.stub();
+const readGuildMembers = sandbox.stub();
+const readGuildRanks = sandbox.stub();
+const readGuildStash = sandbox.stub();
+const readGuildTreasury = sandbox.stub();
+const readGuildTeams = sandbox.stub();
+const readGuildUpgrades = sandbox.stub();
+const readToken = sandbox.stub();
+const tryFetch = sandbox.spy();
 
 const controller = proxyquire('api/controllers/guild', {
   config,
@@ -54,6 +56,7 @@ const controller = proxyquire('api/controllers/guild', {
   'lib/services/tokens': {
     read: readToken,
   },
+  'lib/services/fetch': { tryFetch },
 });
 
 describe('guild controller', () => {
@@ -63,7 +66,11 @@ describe('guild controller', () => {
 
   let sut;
 
-  const guildData = testData.guild();
+  const apiToken = testData.apiToken();
+
+  const guildData = testData.guild({
+    apiTokenId: apiToken.id,
+  });
 
   const guilds = [
     testData.guild(),
@@ -87,8 +94,6 @@ describe('guild controller', () => {
       testData.user(),
     ],
   };
-
-  const apiToken = testData.apiToken();
 
   before(() => {
     readGuild
@@ -141,6 +146,7 @@ describe('guild controller', () => {
 
         const guild = await sut.read(guildData.name, { email });
 
+        expect(tryFetch).to.have.been.calledWith(models, apiToken.id);
         expect(guild).to.eql(guildData);
       });
     });
@@ -206,6 +212,7 @@ describe('guild controller', () => {
 
             const actual = await sut[key](name, { email });
 
+            expect(tryFetch).to.have.been.calledWith(models, apiToken.id);
             expect(actual).to.equal(data);
           });
         });

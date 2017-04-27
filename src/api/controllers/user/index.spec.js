@@ -21,13 +21,13 @@ const readPasswordReset = sandbox.stub();
 const finishPasswordReset = sandbox.stub();
 const claimStubUser = sandbox.stub();
 const claimStubApiToken = sandbox.stub();
+const tryFetch = sandbox.spy();
 
 describe('user controller', () => {
   const models = { neat: 'models' };
   const email = 'email@email.com';
   const fakeGuildId = 'fake-guild';
   const guild = testData.guild();
-  const character = testData.character();
   const apiToken = testData.apiToken({
     primary: true,
     guilds: [guild.id, fakeGuildId].join(','),
@@ -59,6 +59,7 @@ describe('user controller', () => {
     'lib/email/templates': {
       forgotMyPassword: forgotMyPasswordTemplate,
     },
+    'lib/services/fetch': { tryFetch },
   })(models);
 
   afterEach(() => sandbox.reset());
@@ -126,6 +127,8 @@ describe('user controller', () => {
 
       it('should return user data', async () => {
         const data = await controller.read({ alias: user.alias, email, ignorePrivacy: true });
+
+        expect(tryFetch).to.have.been.calledWith(models, apiToken.id);
 
         expect(data).to.eql({
           ...cleanUser(user),
