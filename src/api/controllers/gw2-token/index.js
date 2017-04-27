@@ -2,9 +2,8 @@
 
 import type { Models } from 'flowTypes';
 
-import axios from 'axios';
-import config from 'config';
 import gw2Api from 'lib/gw2';
+import { fetch } from 'lib/services/fetch';
 import {
   claimStubApiToken,
   doesUserHaveTokens,
@@ -59,7 +58,7 @@ export default function tokenFactory (models: Models, createValidator: any) {
     const userId = await getUserId(models, email);
     const createdToken = await addTokenToUser(userId, token, email);
 
-    axios.post(`http://${config.fetch.host}:${config.fetch.port}/fetch`, {
+    fetch({
       token: createdToken.token,
       permissions: createdToken.permissions,
       id: createdToken.id,

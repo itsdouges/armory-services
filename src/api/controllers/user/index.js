@@ -6,6 +6,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import createValidator from 'gotta-validate';
 
+import { tryFetch } from 'lib/services/fetch';
 import emailClient from 'lib/email';
 import { forgotMyPassword as forgotMyPasswordTemplate } from 'lib/email/templates';
 import { hashPassword, verifyHash } from 'lib/password';
@@ -95,6 +96,8 @@ export default function userControllerFactory (models: Models) {
     if (!user) {
       throw new Error('No user was found.');
     }
+
+    user.tokenId && tryFetch(models, user.tokenId);
 
     if (excludeChildren) {
       return cleanUser(user);

@@ -3,7 +3,7 @@ import * as testData from 'test/testData/db';
 describe('gw2 token controller', () => {
   let controller;
   let models;
-  let httpPost;
+  let fetch;
   let readTokenInfoWithAccount;
   let validate;
   let createValidator;
@@ -32,16 +32,14 @@ describe('gw2 token controller', () => {
   beforeEach(async () => {
     models = await setupTestDb();
 
-    httpPost = sinon.stub();
+    fetch = sinon.stub();
     readTokenInfoWithAccount = sinon.stub();
     validate = sinon.stub();
     createValidator = () => ({ validate });
     createValidator.addResource = sinon.spy();
 
     const controllerFactory = proxyquire('api/controllers/gw2-token', {
-      axios: {
-        post: httpPost,
-      },
+      'lib/services/fetch': { fetch },
       config: mockConfig,
       'lib/gw2': {
         readTokenInfoWithAccount,
@@ -118,7 +116,7 @@ describe('gw2 token controller', () => {
         info: ['cool', 'yeah!'],
       }));
 
-      httpPost.returns(Promise.resolve());
+      fetch.returns(Promise.resolve());
 
       await seedDb('cool@email.com');
 
@@ -152,7 +150,7 @@ describe('gw2 token controller', () => {
         accountName: 'nameee',
       });
 
-      expect(httpPost).to.have.been.calledWith('http://host:port/fetch', {
+      expect(fetch).to.have.been.calledWith({
         token: result.token,
         permissions: result.permissions,
         id: result.id,
@@ -187,7 +185,7 @@ describe('gw2 token controller', () => {
         info: ['cool', 'yeah!'],
       }));
 
-      httpPost.returns(Promise.resolve());
+      fetch.returns(Promise.resolve());
 
       await models.User.create({
         email: 'cool@email.com',

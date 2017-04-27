@@ -6,6 +6,7 @@ import type { UpdateFields as Character$UpdateProperties } from 'lib/services/ch
 import _ from 'lodash';
 import memoize from 'memoizee';
 
+import { tryFetch } from 'lib/services/fetch';
 import config from 'config';
 import gw2 from 'lib/gw2';
 
@@ -35,6 +36,8 @@ export default function characterControllerFactory (models: Models) {
     if (!character) {
       throw new Error('Character not found');
     }
+
+    tryFetch(models, character.Gw2ApiToken.id);
 
     if (!character.showPublic && !canIgnorePrivacy(character, email, ignorePrivacy)) {
       return Promise.reject(new Error('Unauthorized to view character'));
