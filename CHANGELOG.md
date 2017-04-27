@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+
+## [3.1.0][] - 2017-04-28
 ### Added
 - Try fetch capability to all resources
 
@@ -213,6 +215,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - This CHANGELOG file to allow more insight to the changes made throughout the development of api.gw2armory.com
 
 
-[Unreleased]: https://github.com/madou/armory-back/compare/v3.0.1...HEAD
+[Unreleased]: https://github.com/madou/armory-back/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/madou/armory-back/compare/v3.0.1...v3.1.0
 [3.0.1]: https://github.com/madou/armory-back/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/madou/armory-back/tree/v3.0.0
