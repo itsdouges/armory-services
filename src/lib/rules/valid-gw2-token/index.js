@@ -56,7 +56,8 @@ function validGw2Token (name, val, dependencies) {
     return Promise.all([authCheck, duplicateCheck])
       .then(([authResponse, duplicateResponse]) => {
         return authResponse || duplicateResponse;
-      }, () => Promise.resolve({
+      })
+      .catch(() => Promise.resolve({
         property: name,
         message: 'invalid token',
       }));

@@ -60,12 +60,13 @@ describe('fetch service', () => {
     });
 
     it('should only start fetching once', async () => {
+      sandbox.reset();
       momentStub.returns(moment().freeze().add(config.fetch.refetchTimeout));
       let rslv;
       const promise = new Promise((resolve) => (rslv = resolve));
       post.returns(promise);
 
-      setTimeout(rslv, 10);
+      setTimeout(rslv, 100);
 
       await Promise.all([
         tryFetch(models, apiToken.id),

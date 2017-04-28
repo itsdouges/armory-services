@@ -78,7 +78,7 @@ describe('check resource', () => {
     it('should reject', (done) => {
       systemUnderTest = checkResourceFactory(mockValidator);
 
-      sinon.stub(mocks, 'validate').returns(Promise.reject());
+      sinon.stub(mocks, 'validate').returns(Promise.reject('no token go boom boom'));
 
       systemUnderTest.gw2Token('token')
         .then(null, () => {

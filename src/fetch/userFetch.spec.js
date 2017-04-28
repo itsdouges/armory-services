@@ -51,7 +51,7 @@ describe('fetch', () => {
 
     failingFetcher = sinon.stub();
     tokens.forEach((token) => {
-      failingFetcher.withArgs(models, token).returns(Promise.reject('oh no'));
+      failingFetcher.withArgs(models, token).returns(Promise.reject('failed fetch'));
     });
 
     fetchers.push(failingFetcher);

@@ -147,7 +147,7 @@ describe('gw2 api', () => {
       it('should return backup season id', async () => {
         axiosGet
           .withArgs(`${config.gw2.endpoint}v2/pvp/seasons?page=0&page_size=200`)
-          .returns(Promise.reject());
+          .returns(Promise.reject('latest pvp season not found'));
 
         const season = await gw2Api.readLatestPvpSeason();
 
