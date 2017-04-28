@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased][]
 ### Fixed
 - Pvp fetcher fetching when user doesn't have pvp permissions
-
+- Guilds of the day to be cached for the day
 ### Added
 - Api token invalidator
 

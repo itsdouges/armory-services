@@ -5,6 +5,7 @@ import * as testData from 'test/testData/db';
 const config = {
   cache: {
     findAllCharacters: 12,
+    resourceOfTheDay: 10,
   },
 
   ofTheDay: {
