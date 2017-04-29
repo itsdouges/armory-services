@@ -1,4 +1,6 @@
-import gw2Api, * as gw2 from './';
+const { default: gw2Api, ...gw2 } = require('proxyquire')('lib/gw2', {
+  'lib/services/fetch': { setTokenValidity: () => {} },
+});
 
 describe('gw2 api', function () {
   this.timeout(40000);

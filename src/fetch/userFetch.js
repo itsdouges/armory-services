@@ -21,7 +21,7 @@ type Fetcher = (models: Models, token: Fetcher$Token) => Promise<>;
 
 export default function fetchFactory (models: Models, fetchers: Array<Fetcher>) {
   if (!fetchers || !fetchers.length) {
-    throw new Error('>>> No fetchers availabl');
+    throw new Error('>>> No fetchers available!');
   }
 
   async function fetch (token: Fetcher$Token) {

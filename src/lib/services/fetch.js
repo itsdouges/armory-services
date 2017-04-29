@@ -2,6 +2,7 @@
 
 import type { Models } from 'flowTypes';
 
+import { models } from 'lib/db';
 import moment from 'moment';
 import { read, setValidity } from 'lib/services/tokens';
 import config from 'config';
@@ -23,7 +24,7 @@ export function fetch ({ id, token, permissions }: Fetch) {
 
 const fetchBlock = {};
 
-export async function tryFetch (models: Models, id: number) {
+export async function tryFetch (mdls: Models, id: number) {
   const token = await read(models, { id });
   const now = moment();
   const time = moment(token.updatedAt).add(config.fetch.refetchTimeout, 'ms');
@@ -39,10 +40,10 @@ export async function tryFetch (models: Models, id: number) {
   return;
 }
 
-export async function setTokenValidity (models: Models, statusCode: number, apiToken: string) {
+export async function setTokenValidity (statusCode: number, apiToken: string) {
   if (statusCode < 500 && statusCode >= 400) {
     await setValidity(models, false, apiToken);
-  } else if (statusCode <= 200) {
+  } else if (statusCode >= 200 && statusCode < 400) {
     await setValidity(models, true, apiToken);
   }
 }

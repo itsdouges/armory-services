@@ -2,6 +2,7 @@
 
 import type { PvpSeason } from 'flowTypes';
 
+import { setTokenValidity } from 'lib/services/fetch';
 import memoize from 'memoizee';
 import _ from 'lodash';
 import axios from 'axios';
@@ -83,14 +84,27 @@ const simpleCalls = _.reduce({
     const id = idd || '';
     const params = paramss || {};
 
-    const url = buildUrl(`${config.gw2.endpoint}v2/${resource}`, id, params);
-    const response = await axios.get(url, !noAuth && {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    let data;
+    let response;
 
-    let { data } = response;
+    try {
+      const url = buildUrl(`${config.gw2.endpoint}v2/${resource}`, id, params);
+      response = await axios.get(url, !noAuth && {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      data = response.data;
+
+      setTokenValidity(response.status, token);
+    } catch (err) {
+      if (err.response) {
+        setTokenValidity(err.response.status, token);
+      }
+
+      throw err;
+    }
 
     if (onSuccess) {
       const nextResponse = await onSuccess(token, response, id, params);

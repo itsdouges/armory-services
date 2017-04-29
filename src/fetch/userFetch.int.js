@@ -1,14 +1,11 @@
 import * as testData from 'test/testData/db';
 
 import { stubLogger } from 'test/utils';
-import characterFetcher from './fetchers/characters';
-import accountFetcher from './fetchers/account';
 
 const config = {
   gitter: {
     apiKey: '1234',
   },
-
   fetch: {
     concurrentCalls: 10,
   },
@@ -35,10 +32,7 @@ describe('fetch integration', () => {
   const initiateFetch = (tokens = []) => {
     const fetchTokensStub = sinon.stub().returns(Promise.resolve(tokens));
 
-    const { fetchAll } = createFetchFactory(fetchTokensStub)(models, [
-      accountFetcher,
-      characterFetcher,
-    ]);
+    const { fetchAll } = createFetchFactory(fetchTokensStub)(models, [() => {}]);
 
     return fetchAll();
   };
@@ -54,11 +48,5 @@ describe('fetch integration', () => {
       'dont-exist-lol',
       apiToken,
     ]);
-
-    const characters = await models.Gw2Character.findAll();
-    expect(characters.length).to.be.above(5);
-
-    const guilds = await models.Gw2Guild.findAll();
-    expect(guilds.length).to.be.at.least(1);
   });
 });
