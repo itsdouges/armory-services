@@ -29,7 +29,7 @@ export async function read (models: Models, { id }: Tokens$Read) {
 
 export async function setValidity (models: Models, valid: boolean, token: string) {
   return await models.Gw2ApiToken.update({
-    invalid: !valid,
+    valid,
   }, {
     where: {
       token,

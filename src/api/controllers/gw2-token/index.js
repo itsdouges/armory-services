@@ -50,6 +50,7 @@ export default function tokenFactory (models: Models, createValidator: any) {
       accountId: tokenInfo.accountId,
       accountName: tokenInfo.accountName,
       primary: setPrimary,
+      valid: true,
     });
   }
 
@@ -70,6 +71,7 @@ export default function tokenFactory (models: Models, createValidator: any) {
       accountName: createdToken.accountName,
       permissions: createdToken.permissions,
       primary: createdToken.primary,
+      valid: true,
     };
   }
 
@@ -83,6 +85,9 @@ export default function tokenFactory (models: Models, createValidator: any) {
         permissions: token.permissions,
         world: token.world,
         primary: token.primary,
+        // Checking for undefined just for initial migration where
+        // valid doesn't exist yet.
+        valid: (token.valid === null || token.valid === undefined) ? true : token.valid,
       };
     });
   }

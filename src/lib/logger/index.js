@@ -17,12 +17,31 @@ const startBot = () => new Promise((resolve) => {
 let bot;
 
 export function parseResults (results: []) {
-  const errors = results.filter(({ state }) => state === 'rejected');
-  const successes = results.filter(({ state }) => state === 'fulfilled');
+  const errors = [];
+  const successes = [];
+  const removed = [];
+  const permissions = [];
+
+  results.forEach((result) => {
+    if (result.state === 'fulfilled') {
+      successes.push(result);
+      return;
+    }
+
+    if (result.value.status === 400) {
+      removed.push(result);
+    } else if (result.value.status === 403) {
+      permissions.push(result);
+    } else {
+      errors.push(result);
+    }
+  });
 
   return {
     errors,
     successes,
+    removed,
+    permissions,
   };
 }
 
@@ -72,15 +91,17 @@ const createLog = (title: string, channel: string) => ({
       throw new Error('Start first!');
     }
 
-    const { errors, successes } = parseResults(results);
+    const { errors, successes, removed, permissions } = parseResults(results);
 
     if (errors.length) {
       await Promise.all(errors.map((error) => this.log(humanifyError(error.value))));
     }
 
     await this.log(`${title.toUpperCase()} :ok_hand:
-${errors.length} errors
-${successes.length} success
+${successes.length} succesful fetches
+${errors.length} fetches errored
+${removed.length} tokens were removed from arenanet
+${permissions.length} fetches lacked permissions
 Duration: ${(new Date() - this.startTime) / 1000 / 60}mins`);
   },
 });
