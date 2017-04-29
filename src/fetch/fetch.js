@@ -2,6 +2,10 @@
 
 import type { Models } from 'flowTypes';
 
+import createLogger from 'lib/logger';
+
+const logger = createLogger('Fetcher', 'fetch-pvp');
+
 type Fetcher = {
   fetcher: (Models) => any,
   interval: number,
@@ -10,10 +14,12 @@ type Fetcher = {
 
 export default function initialise (models: Models, fetchers: Array<Fetcher>) {
   fetchers.forEach(({ fetcher, interval, callImmediately }) => {
-    setInterval(() => fetcher(models), interval);
+    const func = () => fetcher(models);
+
+    setInterval(() => logger.catchLog(func), interval);
 
     if (callImmediately) {
-      fetcher(models);
+      logger.catchLog(func);
     }
   });
 }

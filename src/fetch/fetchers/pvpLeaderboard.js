@@ -97,8 +97,6 @@ export default async function calculatePvpLeaderboards (models: Models) {
 
   const saveResults = await saveStandings(models, compiledStandings);
 
-  logger.finish([].concat(
-    newUsersResults,
-    saveResults
-  ));
+  logger.finish(`${newUsersResults.length} new or updated users
+${saveResults.length} standings saved`);
 }
