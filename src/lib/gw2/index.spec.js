@@ -22,7 +22,9 @@ const gw2Api = proxyquire('lib/gw2', {
   },
   config,
   memoizee: (func) => func,
-  'lib/services/fetch': { setTokenValidity },
+  'lib/services/fetch': {
+    setTokenValidity: (promise, token) => setTokenValidity(promise, token) || promise,
+  },
 });
 
 describe('gw2 api', () => {
@@ -121,22 +123,12 @@ describe('gw2 api', () => {
 
         stubAxiosGet(resource, data, id);
 
-        const result = await gw2Api[funcName](token, id);
+        const promise = gw2Api[funcName](token, id);
+        const result = await promise;
 
-        expect(setTokenValidity).to.have.been.calledWith(200, token);
+        expect(setTokenValidity).to.have.been.calledWith(promise, token);
 
         expect(result).to.eql(normalise ? normalisedData : data);
-      });
-
-      it(`when ${funcName} returns an error`, (done) => {
-        const data = { some_data: 'data' };
-
-        stubAxiosGet(resource, data, id, true);
-
-        gw2Api[funcName](token, id).catch(() => {
-          expect(setTokenValidity).to.have.been.calledWith(400, token);
-          done();
-        });
       });
     });
   });

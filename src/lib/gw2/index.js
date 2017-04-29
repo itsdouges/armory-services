@@ -9,11 +9,10 @@ import axios from 'axios';
 import config from 'config';
 
 const normaliseObject = (data) => {
-  return _.reduce(data, (obj, value, key) => {
-    // eslint-disable-next-line
-    obj[_.camelCase(key)] = value;
-    return obj;
-  }, {});
+  return _.reduce(data, (obj, value, key) => ({
+    ...obj,
+    [_.camelCase(key)]: value,
+  }), {});
 };
 
 const buildUrl = (endpoint, id, params) => {
@@ -84,27 +83,14 @@ const simpleCalls = _.reduce({
     const id = idd || '';
     const params = paramss || {};
 
-    let data;
-    let response;
+    const url = buildUrl(`${config.gw2.endpoint}v2/${resource}`, id, params);
+    const response = await setTokenValidity(axios.get(url, !noAuth && {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }), token);
 
-    try {
-      const url = buildUrl(`${config.gw2.endpoint}v2/${resource}`, id, params);
-      response = await axios.get(url, !noAuth && {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      data = response.data;
-
-      setTokenValidity(response.status, token);
-    } catch (err) {
-      if (err.response) {
-        setTokenValidity(err.response.status, token);
-      }
-
-      throw err;
-    }
+    let data = response.data;
 
     if (onSuccess) {
       const nextResponse = await onSuccess(token, response, id, params);

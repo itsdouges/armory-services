@@ -40,10 +40,17 @@ export async function tryFetch (mdls: Models, id: number) {
   return;
 }
 
-export async function setTokenValidity (statusCode: number, apiToken: string) {
-  if (statusCode < 500 && statusCode >= 400) {
+export async function setTokenValidity (promise: Promise<*>, apiToken: string) {
+  try {
+    const response = await promise;
     await setValidity(models, false, apiToken);
-  } else if (statusCode >= 200 && statusCode < 400) {
-    await setValidity(models, true, apiToken);
+    return response;
+  } catch (err) {
+    const statusCode = err.response && err.response.status;
+    if (statusCode < 500 && statusCode >= 400) {
+      await setValidity(models, true, apiToken);
+    }
+
+    throw err;
   }
 }

@@ -1,5 +1,5 @@
 const { default: gw2Api, ...gw2 } = require('proxyquire')('lib/gw2', {
-  'lib/services/fetch': { setTokenValidity: () => {} },
+  'lib/services/fetch': { setTokenValidity: (promise) => promise },
 });
 
 describe('gw2 api', function () {
