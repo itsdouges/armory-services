@@ -144,6 +144,7 @@ describe('user service', () => {
         passwordHash: userTwo.passwordHash,
         stub: false,
         rating: ratingCurrent,
+        valid: true,
         ...standingData,
         ..._.pick(apiTokenForUserTwo, [
           'token',
