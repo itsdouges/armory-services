@@ -14,12 +14,12 @@ type Fetcher = {
 
 export default function initialise (models: Models, fetchers: Array<Fetcher>) {
   fetchers.forEach(({ fetcher, interval, callImmediately }) => {
-    const func = () => fetcher(models);
+    const func = logger.catchLog(() => fetcher(models));
 
-    setInterval(() => logger.catchLog(func), interval);
+    setInterval(func, interval);
 
     if (callImmediately) {
-      logger.catchLog(func);
+      func();
     }
   });
 }

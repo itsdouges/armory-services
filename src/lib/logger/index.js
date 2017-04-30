@@ -62,14 +62,16 @@ const createLog = (title: string, channel: string) => ({
     await this.log(humanifyError(err));
   },
 
-  async catchLog (func: () => Promise<*>) {
-    try {
-      const result = await func();
-      return result;
-    } catch (err) {
-      this.error(err);
-      throw err;
-    }
+  catchLog (func: (any) => Promise<*>): (any) => Promise<*> {
+    return async (...args) => {
+      try {
+        const result = await func(...args);
+        return result;
+      } catch (err) {
+        this.error(err);
+        throw err;
+      }
+    };
   },
 
   async start () {

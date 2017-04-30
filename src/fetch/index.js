@@ -12,6 +12,8 @@ import createLog from 'lib/logger';
 import userFetchFactory from './userFetch';
 import fetchFactory from './fetch';
 
+const logger = createLog('fetch', 'fetch');
+
 const { fetchAll, fetch } = userFetchFactory(models, [
   require('./fetchers/guilds').default,
   require('./fetchers/characters').default,
@@ -51,30 +53,34 @@ server.post('/fetch', async (req, res, next) => {
   return next();
 });
 
+process.on('unhandledRejection', (err) => {
+  logger.error(err);
+});
+
+process.on('uncaughtException', (err) => {
+  logger.error(err);
+  throw err;
+});
+
 sync()
   .then(() => {
-    try {
-      console.log();
-      console.log(`>>> Starting server on port ${config.fetch.port}...`);
-      console.log();
+    console.log();
+    console.log(`>>> Starting server on port ${config.fetch.port}...`);
+    console.log();
 
-      server.listen(config.fetch.port);
-      createLog('fetch', 'fetch').log(':wave:');
+    server.listen(config.fetch.port);
+    logger.log(':wave:');
 
-      if (config.fetch.disabled) {
-        return;
-      }
-
-      fetchAll();
-      setInterval(fetchAll, config.fetch.interval);
-
-      fetchFactory(models, [{
-        fetcher: require('./fetchers/pvpLeaderboard').default,
-        interval: config.leaderboards.refreshInterval,
-        callImmediately: true,
-      }]);
-    } catch (e) {
-      console.log(e);
+    if (config.fetch.disabled) {
+      return;
     }
-  });
 
+    fetchAll();
+    setInterval(fetchAll, config.fetch.interval);
+
+    fetchFactory(models, [{
+      fetcher: require('./fetchers/pvpLeaderboard').default,
+      interval: config.leaderboards.refreshInterval,
+      callImmediately: true,
+    }]);
+  });
