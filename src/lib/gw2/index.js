@@ -2,20 +2,17 @@
 
 import type { PvpSeason } from 'flowTypes';
 
+import { setTokenValidity } from 'lib/services/fetch';
 import memoize from 'memoizee';
 import _ from 'lodash';
 import axios from 'axios';
 import config from 'config';
-import retryFactory from 'lib/retry';
-
-const withRetry = retryFactory({ retryPredicate: (e) => (e.status >= 500) });
 
 const normaliseObject = (data) => {
-  return _.reduce(data, (obj, value, key) => {
-    // eslint-disable-next-line
-    obj[_.camelCase(key)] = value;
-    return obj;
-  }, {});
+  return _.reduce(data, (obj, value, key) => ({
+    ...obj,
+    [_.camelCase(key)]: value,
+  }), {});
 };
 
 const buildUrl = (endpoint, id, params) => {
@@ -87,13 +84,13 @@ const simpleCalls = _.reduce({
     const params = paramss || {};
 
     const url = buildUrl(`${config.gw2.endpoint}v2/${resource}`, id, params);
-    const response = await axios.get(url, !noAuth && {
+    const response = await setTokenValidity(axios.get(url, !noAuth && {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    });
+    }), token);
 
-    let { data } = response;
+    let data = response.data;
 
     if (onSuccess) {
       const nextResponse = await onSuccess(token, response, id, params);

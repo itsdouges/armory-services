@@ -14,12 +14,15 @@ const config = {
   },
 };
 
+const db = {};
+
 const { tryFetch } = proxyquire('lib/services/fetch', {
   axios: {
     post,
   },
   config,
   moment: momentStub,
+  'lib/db': db,
 });
 
 describe('fetch service', () => {
@@ -29,6 +32,7 @@ describe('fetch service', () => {
 
   beforeEach(async () => {
     models = await setupTestDb();
+    db.models = models;
 
     await models.User.create(testData.user());
     const { updatedAt } = await models.Gw2ApiToken.create(apiToken);
@@ -60,12 +64,13 @@ describe('fetch service', () => {
     });
 
     it('should only start fetching once', async () => {
+      sandbox.reset();
       momentStub.returns(moment().freeze().add(config.fetch.refetchTimeout));
       let rslv;
       const promise = new Promise((resolve) => (rslv = resolve));
       post.returns(promise);
 
-      setTimeout(rslv, 10);
+      setTimeout(rslv, 100);
 
       await Promise.all([
         tryFetch(models, apiToken.id),

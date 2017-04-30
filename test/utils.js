@@ -16,5 +16,18 @@ export const stubLogger = () => ({
     finish () {},
     start () {},
     log () {},
+    catchLog (func) { return func; },
   }),
 });
+
+export const stubInterval = (stub) => {
+  const originalSetInterval = setInterval;
+
+  before(() => {
+    global.setInterval = stub;
+  });
+
+  after(() => {
+    global.setInterval = originalSetInterval;
+  });
+};

@@ -1,4 +1,3 @@
-import { parseResults } from 'lib/logger';
 import { stubLogger } from 'test/utils';
 
 const config = {
@@ -51,7 +50,7 @@ describe('fetch', () => {
 
     failingFetcher = sinon.stub();
     tokens.forEach((token) => {
-      failingFetcher.withArgs(models, token).returns(Promise.reject('oh no'));
+      failingFetcher.withArgs(models, token).returns(Promise.reject('failed fetch'));
     });
 
     fetchers.push(failingFetcher);
@@ -68,9 +67,10 @@ describe('fetch', () => {
   });
 
   it('should call each fetcher in succession', () => {
-    const { errors, successes } = parseResults(result);
+    const success = result.filter((res) => res.state === 'fulfilled');
+    const error = result.filter((res) => res.state !== 'fulfilled');
 
-    expect(errors.length).to.equal(1 * tokens.length);
-    expect(successes.length).to.equal(4 * tokens.length);
+    expect(success.length).to.equal(12);
+    expect(error.length).to.equal(3);
   });
 });

@@ -85,6 +85,7 @@ export const apiToken = ({
   wvwRank = 123,
   primary = false,
   stub = false,
+  valid = true,
 }: ApiToken = {}): ApiToken => ({
   id,
   token,
@@ -103,6 +104,7 @@ export const apiToken = ({
   wvwRank,
   primary,
   stub,
+  valid,
 });
 
 // $FlowFixMe

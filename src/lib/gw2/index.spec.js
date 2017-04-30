@@ -14,6 +14,7 @@ const config = {
 };
 
 const axiosGet = sinon.stub();
+const setTokenValidity = sinon.spy();
 
 const gw2Api = proxyquire('lib/gw2', {
   axios: {
@@ -21,6 +22,9 @@ const gw2Api = proxyquire('lib/gw2', {
   },
   config,
   memoizee: (func) => func,
+  'lib/services/fetch': {
+    setTokenValidity: (promise, token) => setTokenValidity(promise, token) || promise,
+  },
 });
 
 describe('gw2 api', () => {
@@ -28,11 +32,15 @@ describe('gw2 api', () => {
 
   beforeEach(() => axiosGet.reset());
 
-  const stubAxiosGet = (resource, data, id = '') => {
+  const stubAxiosGet = (resource, data, id = '', err = false) => {
     let endpoint = `${config.gw2.endpoint}v2/${resource}`;
     if (id) {
       endpoint = endpoint.replace('{id}', id);
     }
+
+    const response = err
+      ? Promise.reject({ response: { data, status: 400 } })
+      : Promise.resolve({ data, status: 200 });
 
     axiosGet
       .withArgs(endpoint, {
@@ -40,7 +48,7 @@ describe('gw2 api', () => {
           Authorization: `Bearer ${token}`,
         },
       })
-      .returns(Promise.resolve({ data }));
+      .returns(response);
   };
 
   describe('pvp games', () => {
@@ -115,7 +123,10 @@ describe('gw2 api', () => {
 
         stubAxiosGet(resource, data, id);
 
-        const result = await gw2Api[funcName](token, id);
+        const promise = gw2Api[funcName](token, id);
+        const result = await promise;
+
+        expect(setTokenValidity).to.have.been.calledWith(promise, token);
 
         expect(result).to.eql(normalise ? normalisedData : data);
       });
@@ -147,7 +158,7 @@ describe('gw2 api', () => {
       it('should return backup season id', async () => {
         axiosGet
           .withArgs(`${config.gw2.endpoint}v2/pvp/seasons?page=0&page_size=200`)
-          .returns(Promise.reject());
+          .returns(Promise.reject('latest pvp season not found'));
 
         const season = await gw2Api.readLatestPvpSeason();
 

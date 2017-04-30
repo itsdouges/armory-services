@@ -15,7 +15,9 @@ const pvpStandingsFetcher = proxyquire('fetch/fetchers/pvpStandings', {
 describe('pvp standings fetcher', () => {
   let models;
 
-  const token = testData.apiToken();
+  const token = testData.apiToken({
+    permissions: 'pvp',
+  });
   const stats = gw2.pvpStats();
 
   const standings = [
@@ -30,16 +32,24 @@ describe('pvp standings fetcher', () => {
     }),
   ];
 
-  before(async () => {
+  beforeEach(async () => {
     models = await setupTestDb({ seed: true });
     readPvpStandings.withArgs(token.token).returns(Promise.resolve(standings));
     readPvpStats.withArgs(token.token).returns(Promise.resolve(stats));
+  });
 
-    await pvpStandingsFetcher(models, token);
-    await pvpStandingsFetcher(models, token);
+  afterEach(() => sandbox.reset());
+
+  it('should resolve immediately if user doesnt have pvp permission', async () => {
+    await await pvpStandingsFetcher(models, { permissions: '' });
+
+    expect(readPvpStandings).to.not.have.been.called;
   });
 
   it('should insert all pvp data into db', async () => {
+    await pvpStandingsFetcher(models, token);
+    await pvpStandingsFetcher(models, token);
+
     const rows = await models.PvpStandings.findAll({
       order: ['createdAt'],
     });
@@ -65,9 +75,6 @@ describe('pvp standings fetcher', () => {
         repeatsBest: pvpStanding.best.repeats,
         ratingBest: pvpStanding.best.rating,
         decayBest: pvpStanding.best.decay,
-
-        // wins: stats.ladders.ranked.wins,
-        // losses: stats.ladders.ranked.losses,
       });
     });
   });

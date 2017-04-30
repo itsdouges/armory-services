@@ -8,9 +8,19 @@ import config from 'config';
 import createLog from 'lib/logger';
 import createServer from './server';
 
+const logger = createLog('api', 'api');
 const server = createServer(models, config);
 
 sync().then(() => {
   server.listen(config.api.port);
-  createLog('api', 'api').log(':wave:');
+  logger.log(':wave:');
+});
+
+process.on('unhandledRejection', (err) => {
+  logger.error(err);
+});
+
+process.on('uncaughtException', (err) => {
+  logger.error(err);
+  throw err;
 });

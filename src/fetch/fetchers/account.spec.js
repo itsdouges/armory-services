@@ -1,5 +1,10 @@
+import { defer } from 'lib/promise';
+
+const fetchDefer = defer();
+fetchDefer.reject('bad');
+
 const readAccount = sinon.stub();
-const fetch = sinon.stub().returns(Promise.reject());
+const fetch = sinon.stub().returns(fetchDefer.promise);
 
 const fetchAccount = proxyquire('fetch/fetchers/account', {
   'lib/gw2': {

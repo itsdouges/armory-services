@@ -1,9 +1,10 @@
 // @flow
 
 import _ from 'lodash';
-import config from 'config';
 import SlackBot from 'slackbots';
 import PromiseThrottle from 'promise-throttle';
+
+import config from 'config';
 
 const startBot = () => new Promise((resolve) => {
   const slackBot = new SlackBot({
@@ -16,71 +17,76 @@ const startBot = () => new Promise((resolve) => {
 
 let bot;
 
-export function parseResults (results: []) {
-  const errors = results.filter(({ state }) => state === 'rejected');
-  const successes = results.filter(({ state }) => state === 'fulfilled');
-
-  return {
-    errors,
-    successes,
-  };
-}
-
-function humanifyError (error = {}): string {
-  try {
-    return error.status
-      ? (`:fire::fire: [${error.status} ${error.statusText}] - ${_.get(error, 'data.text')}
-[${_.get(error, 'config.method')}] ${_.get(error, 'config.url')}
-${_.get(error, 'config.headers.Authorization')}`)
-    : JSON.stringify(error);
-  } catch (e) {
-    console.log(JSON.stringify(e));
-    return 'Something bad happened';
-  }
-}
-
 const throttle = new PromiseThrottle({
   requestsPerSecond: 1,
   promiseImplementation: Promise,
 });
 
+function humanifyError (error = {}): string {
+  try {
+    if (error.status) {
+      // eslint-disable-next-line max-len
+      return `:fire::fire: [${error.status} ${error.statusText}] - ${_.get(error, 'data.text')}
+[${_.get(error, 'config.method')}] ${_.get(error, 'config.url')}
+${_.get(error, 'config.headers.Authorization')}`;
+    }
+
+    return `:fire::fire:
+${JSON.stringify(error)}`;
+  } catch (err) {
+    console.error(err);
+    return 'Something bad happened';
+  }
+}
+
 const createLog = (title: string, channel: string) => ({
   async log (message: string) {
+    const messageWithTitle = `${title.toUpperCase()} - ${message}`;
+
     try {
       if (!bot) {
         bot = await startBot();
       }
 
-      throttle.add(() => bot.postMessageToChannel(channel, message));
+      throttle.add(() => bot.postMessageToChannel(channel, messageWithTitle));
     } catch (e) {
       console.log();
       console.log('>>> Couldn\'t connect to slack (check api key)! Falling back to console.log()');
       console.log();
-      console.log(message);
+      console.log(messageWithTitle);
       console.log(JSON.stringify(e));
     }
+  },
+
+  async error (err: any) {
+    await this.log(humanifyError(err));
+  },
+
+  catchLog (func: (any) => Promise<*>): (any) => Promise<*> {
+    return async (...args) => {
+      try {
+        const result = await func(...args);
+        return result;
+      } catch (err) {
+        this.error(err);
+        throw err;
+      }
+    };
   },
 
   async start () {
     this.startTime = new Date();
 
-    await this.log(`${title.toUpperCase()} :writing_hand:`);
+    await this.log(':writing_hand:');
   },
 
-  async finish (results: []) {
+  async finish (message: string) {
     if (!this.startTime) {
       throw new Error('Start first!');
     }
 
-    const { errors, successes } = parseResults(results);
-
-    if (errors.length) {
-      await Promise.all(errors.map((error) => this.log(humanifyError(error.value))));
-    }
-
-    await this.log(`${title.toUpperCase()} :ok_hand:
-${errors.length} errors
-${successes.length} success
+    await this.log(`:ok_hand:
+${message}
 Duration: ${(new Date() - this.startTime) / 1000 / 60}mins`);
   },
 });

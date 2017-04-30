@@ -1,7 +1,6 @@
-const token = require('./index');
-const Models = require('lib/models');
+import { defer } from 'lib/promise';
 
-// TODO: Something in here is erroring out during tests.
+const token = require('./index');
 
 describe('gw2 token validator', () => {
   let mockAxios;
@@ -163,7 +162,11 @@ describe('gw2 token validator', () => {
   });
 
   it('should resolve error if an error occurred during http', () => {
-    sinon.stub(mockAxios, 'get').returns(Promise.reject());
+    const error = defer();
+    error.reject(new Error('hup hup'));
+    error.promise.catch(() => {});
+
+    sinon.stub(mockAxios, 'get').returns(error.promise);
 
     return token('token', 'ee', {
       axios: mockAxios,

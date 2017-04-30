@@ -90,6 +90,7 @@ function cleanApiToken (apiToken) {
     monthlyAp: apiToken.monthlyAp,
     wvwRank: apiToken.wvwRank,
     guilds: apiToken.guilds,
+    valid: apiToken.valid,
   };
 }
 

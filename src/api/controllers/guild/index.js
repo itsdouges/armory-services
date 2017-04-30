@@ -86,7 +86,7 @@ export default function guildControllerFactory (models: Models) {
 
   // TODO: If we ever scale this will have to be persisted to the database.
   const guildsOfTheDay = memoize(() => random(config.ofTheDay.guilds), {
-    maxAge: 1,
+    maxAge: config.cache.resourceOfTheDay,
     promise: true,
     preFetch: true,
   });
