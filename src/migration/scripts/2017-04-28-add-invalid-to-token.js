@@ -4,4 +4,4 @@ const fields = (Sequelize = {}) => ({
   valid: Sequelize.BOOLEAN,
 });
 
-module.exports = newFields(fields, 'Gw2ApiToken');
+module.exports = newFields(fields, 'Gw2ApiTokens');
