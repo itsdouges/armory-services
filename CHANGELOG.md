@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Api token invalidator
+- Log when unhandled rejections/errors happen
 
 ## [3.1.0][] - 2017-04-28
 ### Added
