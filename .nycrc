@@ -9,7 +9,9 @@
     "flow-typed",
     "scripts",
     "test",
-    "config"
+    "config",
+    "src/migration"
+    "src/flowTypes"
   ],
   "require": [
     "babel-register"
