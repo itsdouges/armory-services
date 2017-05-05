@@ -21,27 +21,18 @@ import { read as readGuild } from 'lib/services/guild';
 
 import { limit } from 'lib/math';
 
-function canIgnorePrivacy (character, email, ignorePrivacy) {
-  return ignorePrivacy && email === character.Gw2ApiToken.User.email;
-}
-
 export default function characterControllerFactory (models: Models) {
   type ReadOptions = {
-    ignorePrivacy: boolean,
     email: string,
   };
 
-  async function read (name: string, { ignorePrivacy, email }: ReadOptions = {}) {
+  async function read (name: string, { email }: ReadOptions = {}) {
     const character = await readCharacter(models, name, email);
     if (!character) {
       throw new Error('Character not found');
     }
 
     tryFetch(models, character.Gw2ApiToken.id);
-
-    if (!character.showPublic && !canIgnorePrivacy(character, email, ignorePrivacy)) {
-      return Promise.reject(new Error('Unauthorized to view character'));
-    }
 
     let characterFromGw2Api;
     try {
@@ -82,11 +73,10 @@ export default function characterControllerFactory (models: Models) {
   type ListOptions = {
     email?: string,
     alias?: string,
-    ignorePrivacy: boolean,
   };
 
-  async function list ({ email, alias, ignorePrivacy }: ListOptions) {
-    return await listCharacters(models, { email, alias, ignorePrivacy });
+  async function list ({ email, alias }: ListOptions) {
+    return await listCharacters(models, { email, alias });
   }
 
   const findAllCharacters = memoize(listPublic, {

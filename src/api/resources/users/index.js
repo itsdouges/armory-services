@@ -23,7 +23,6 @@ export default function UserResource (server: Server, controller: any) {
     return controller.read({
       alias: req.params.alias,
       email: req.username,
-      ignorePrivacy: !!req.username,
     })
     .then((data) => {
       res.send(200, data);

@@ -3,15 +3,14 @@
 import type { Models, PaginatedResponse, CharacterSimple } from 'flowTypes';
 import _ from 'lodash';
 
-function canIgnorePrivacy (character, email, ignorePrivacy) {
-  return ignorePrivacy && email === character.Gw2ApiToken.User.email;
+function canIgnorePrivacy (character, email) {
+  return email === character.Gw2ApiToken.User.email;
 }
 
 type ListOptions = {
   email?: string,
   alias?: string,
   guild?: string,
-  ignorePrivacy?: boolean,
   limit?: number,
   offset?: number,
 };
@@ -20,7 +19,6 @@ export async function list (models: Models, {
   email,
   alias,
   guild,
-  ignorePrivacy,
   limit,
   offset,
 }: ListOptions): Promise<PaginatedResponse<CharacterSimple>> {
@@ -35,7 +33,8 @@ export async function list (models: Models, {
       include: [{
         model: models.User,
         where: _.pickBy({
-          email,
+          // We only want to search with one prop.
+          email: alias && email ? undefined : email,
           alias,
         }),
       }],
@@ -43,7 +42,7 @@ export async function list (models: Models, {
   });
 
   const characters = rows.filter((character) => (
-    character.showPublic || canIgnorePrivacy(character, email, ignorePrivacy))
+    character.showPublic || canIgnorePrivacy(character, email))
   )
   .map((c) => {
     return {
@@ -74,8 +73,8 @@ export async function listPublic (models: Models) {
   });
 }
 
-export async function read (models: Models, name: string, email: string) {
-  const query = {
+export async function read (models: Models, name: string, email?: string) {
+  const character = await models.Gw2Character.findOne({
     include: [{
       model: models.Gw2ApiToken,
       include: [{
@@ -85,18 +84,11 @@ export async function read (models: Models, name: string, email: string) {
     where: {
       name,
     },
-  };
+  });
 
-  if (email) {
-    query.include[0].include = [{
-      model: models.User,
-      where: {
-        email,
-      },
-    }];
-  }
-
-  return await models.Gw2Character.findOne(query);
+  return (character.showPublic || canIgnorePrivacy(character, email))
+    ? character
+    : undefined;
 }
 
 export type UpdateFields = {
