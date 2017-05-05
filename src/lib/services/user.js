@@ -126,7 +126,8 @@ async function readByToken (models, { accountName, apiToken, apiTokenId }): Prom
 
 async function readByUser (models, { alias, email }) {
   const user = await models.User.findOne({
-    where: _.pickBy({ alias, email }),
+    // We only want to use one prop to find the user.
+    where: _.pickBy({ alias, email: alias && email ? undefined : email }),
     include: {
       all: true,
     },

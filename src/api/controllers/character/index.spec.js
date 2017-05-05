@@ -144,7 +144,7 @@ describe('character controller', () => {
 
     context('when privacy is on', () => {
       it('should return all characters by email', async () => {
-        const list = await controller.list({ email });
+        const list = await controller.list({ alias: user.alias });
 
         expect(list.rows.length).to.equal(2);
 

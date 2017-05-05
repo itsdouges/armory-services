@@ -80,7 +80,6 @@ export default function userControllerFactory (models: Models) {
   type ReadPublicOptions = {
     alias?: string,
     email?: string,
-    ignorePrivacy?: boolean,
     excludeChildren?: boolean,
   };
 
