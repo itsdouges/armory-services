@@ -4,84 +4,25 @@ import type { Models } from 'flowTypes';
 import config from 'config';
 import moment from 'moment';
 
-const userRoutes = [{
-  loc: '',
-  priority: '1.0',
-}, {
-  loc: '/characters',
-  priority: '0.9',
-}, {
-  loc: '/matches',
-  priority: '0.5',
-}, {
-  loc: '/guilds',
-  priority: '0.5',
-}];
-
-const guildRoutes = [{
-  loc: '',
-  priority: '0.9',
-}, {
-  loc: '/users',
-  priority: '0.8',
-}, {
-  loc: '/characters',
-  priority: '0.8',
-}, {
-  loc: '/logs',
-  priority: '0.4',
-}];
-
-const characterRoutes = [{
-  loc: '',
-  priority: '1.0',
-}, {
-  loc: '/pvp',
-  priority: '0.9',
-}, {
-  loc: '/wvw',
-  priority: '0.9',
-}, {
-  loc: '/bags',
-  priority: '0.9',
-}];
-
-const publicRoutes = [{
-  loc: '',
-  priority: '1.0',
-  changefreq: 'daily',
-}, {
-  loc: 'join',
-  priority: '0.6',
-}, {
-  loc: 'login',
-  priority: '0.5',
-}, {
-  loc: 'statistics',
-  priority: '0.9',
-}, {
-  loc: 'leaderboards/pvp',
-  priority: '0.9',
-  changefreq: 'hourly',
-}, {
-  loc: 'leaderboards/pvp/na',
-  changefreq: 'hourly',
-  priority: '0.9',
-}, {
-  loc: 'leaderboards/pvp/eu',
-  changefreq: 'hourly',
-  priority: '0.9',
-}, {
-  loc: 'embeds',
-  priority: '0.4',
-}];
+import { publicRoutes, userRoutes, guildRoutes, characterRoutes } from './routes';
 
 type ChangeFrequency = 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never';
+
 type BuildUrlTemplateOptions = {
   loc: string,
   priority: string,
   updatedAt?: Date,
   changefreq?: ChangeFrequency,
+};
+
+const calcPages = (count) => Math.ceil(count / config.sitemap.pageItemLimit);
+
+const calcResourcesPerPage = () => {
+  return {
+    user: Math.floor(config.sitemap.pageItemLimit / userRoutes.length),
+    guild: Math.floor(config.sitemap.pageItemLimit / guildRoutes.length),
+    character: Math.floor(config.sitemap.pageItemLimit / characterRoutes.length),
+  };
 };
 
 const buildUrlTemplate = ({ loc, updatedAt, priority, changefreq }: BuildUrlTemplateOptions) => {
@@ -103,59 +44,58 @@ const buildSitemap = (items) =>
 ${items.join('\n')}
 </urlset>`;
 
-const buildSitemapData = (users, guilds, characters, publicUpdatedAtMap) => {
-  return [].concat(
-    publicRoutes.map((route) => buildUrlTemplate({
-      ...route,
-      // $FlowFixMe
-      updatedAt: publicUpdatedAtMap[route.loc],
-    })),
-    userRoutes.map(
-      (route) => users.map((user) => buildUrlTemplate({
-        loc: `${user.alias}${route.loc}`,
+const buildUserData = (users) =>
+  userRoutes.map(
+    (route) => users.map((user) => buildUrlTemplate({
+      loc: `${user.alias}${route.loc}`,
+      priority: route.priority,
+      updatedAt: user.updatedAt,
+    }))
+  );
+
+const buildGuildData = (guilds) =>
+  guildRoutes.map(
+    (route) => guilds.map((guild) => buildUrlTemplate({
+      loc: `g/${guild.name}${route.loc}`,
+      priority: route.priority,
+      updatedAt: guild.updatedAt,
+    }))
+  );
+
+const buildCharacterData = (characters) =>
+  characterRoutes.map(
+    (route) =>
+      characters.map((character) => buildUrlTemplate({
+        loc: `${character.Gw2ApiToken.User.alias}/c/${character.name}${route.loc}`,
         priority: route.priority,
-        updatedAt: user.updatedAt,
+        updatedAt: character.updatedAt,
       }))
-    ),
-    guildRoutes.map(
-      (route) => guilds.map((guild) => buildUrlTemplate({
-        loc: `g/${guild.name}${route.loc}`,
-        priority: route.priority,
-        updatedAt: guild.updatedAt,
-      }))
-    ),
-    characterRoutes.map(
-      (route) =>
-        characters.map((character) =>
-          buildUrlTemplate({
-            loc: `${character.Gw2ApiToken.User.alias}/c/${character.name}${route.loc}`,
-            priority: route.priority,
-            updatedAt: character.updatedAt,
-          }))
-    ),
-  )
-  .reduce((acc, items) => acc.concat(items), []);
-};
+  );
 
 export default function sitemapControllerFactory (models: Models) {
-  function getAllResources () {
-    return Promise.all([
-      models.User.findAll(),
-      models.Gw2Guild.findAll(),
-      models.Gw2Character.findAll({
-        include: [{
-          model: models.Gw2ApiToken,
-          include: [{
-            model: models.User,
-          }],
-        }],
-      }),
-      models.PvpStandings.findOne(),
-    ]);
+  function readResource (model, { offset, limit, include }: any) {
+    return model.findAll({
+      include,
+      offset,
+      limit,
+    });
   }
 
-  async function generate (page?: number = 0) {
-    const [users, guilds, characters, standing] = await getAllResources();
+  function countResources () {
+    return Promise.all([
+      models.User.count(),
+      models.Gw2Guild.count(),
+      models.Gw2Character.count(),
+    ])
+    .then(([users, guilds, characters]) => ({
+      users,
+      guilds,
+      characters,
+    }));
+  }
+
+  async function buildStaticPage () {
+    const standing = await models.PvpStandings.findOne();
 
     const publicUpdatedAtMap = {
       'leaderboards/pvp': standing.updatedAt,
@@ -163,29 +103,96 @@ export default function sitemapControllerFactory (models: Models) {
       'leaderboards/pvp/eu': standing.updatedAt,
     };
 
-    const offset = page * config.sitemap.pageItemLimit;
-    const limit = offset + config.sitemap.pageItemLimit;
-
-    const sitemapData = await buildSitemapData(users, guilds, characters, publicUpdatedAtMap);
-    const slicedData = sitemapData.slice(offset, limit);
-
-    return buildSitemap(slicedData);
+    return buildSitemap(
+      publicRoutes.map((route) => buildUrlTemplate({
+        ...route,
+        // $FlowFixMe
+        updatedAt: publicUpdatedAtMap[route.loc],
+      }))
+    );
   }
 
-  async function index () {
-    const [users, guilds, characters] = await getAllResources();
-    const sitemapData = await buildSitemapData(users, guilds, characters, {});
-    const urlCount = sitemapData.length;
+  type Resource = 'characters' | 'guilds' | 'users' | 'static';
 
-    const pages = Math.ceil(urlCount / config.sitemap.pageItemLimit);
+  async function generate (resource: Resource, page?: number = 0) {
+    if (resource === 'static') {
+      return buildStaticPage();
+    }
+
+    const resourcesPerPage = calcResourcesPerPage();
+
+    if (resource === 'users') {
+      const weightedOffset = resourcesPerPage.user * page;
+      const weightedLimit = resourcesPerPage.user;
+
+      const users = await readResource(models.User, {
+        offset: weightedOffset,
+        limit: weightedLimit,
+      });
+
+      return buildSitemap(buildUserData(users));
+    }
+
+    if (resource === 'characters') {
+      const weightedOffset = resourcesPerPage.character * page;
+      const weightedLimit = resourcesPerPage.character;
+
+      const characters = await readResource(models.Gw2Character, {
+        offset: weightedOffset,
+        limit: weightedLimit,
+        include: [{
+          model: models.Gw2ApiToken,
+          include: [{
+            model: models.User,
+          }],
+        }],
+      });
+
+      return buildSitemap(buildCharacterData(characters));
+    }
+
+    if (resource === 'guilds') {
+      const weightedOffset = resourcesPerPage.guild * page;
+      const weightedLimit = resourcesPerPage.guild;
+
+      const guilds = await readResource(models.Gw2Guild, {
+        offset: weightedOffset,
+        limit: weightedLimit,
+      });
+
+      return buildSitemap(buildGuildData(guilds));
+    }
+
+    throw new Error('Resource not supported!');
+  }
+
+  const buildSitemaps = (resource, count) => {
     const sitemaps = [];
 
-    for (let i = 0; i < pages; i++) {
+    for (let i = 0; i < count; i++) {
       sitemaps.push(`  <sitemap>
-    <loc>${config.api.publicUrl}/sitemap${i}.xml</loc>
+    <loc>${config.api.publicUrl}/sitemap-${resource}-${i}.xml</loc>
     <lastmod>${moment().toISOString()}</lastmod>
   </sitemap>`);
     }
+
+    return sitemaps;
+  };
+
+  async function index () {
+    const { users, guilds, characters } = await countResources();
+
+    const userPages = calcPages(users);
+    const characterPages = calcPages(characters);
+    const guildPages = calcPages(guilds);
+
+    const sitemaps = [
+      ...buildSitemaps('static', 1),
+      ...buildSitemaps('users', userPages),
+      ...buildSitemaps('characters', characterPages),
+      ...buildSitemaps('guilds', guildPages),
+    ];
+
 
     return `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

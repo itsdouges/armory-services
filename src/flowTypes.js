@@ -8,6 +8,7 @@ type Sequelize = {
   create: () => Promise<>,
   destroy: () => Promise<>,
   findAndCount: () => Promise<>,
+  count: () => Promise<number>,
 };
 
 export type Models = {
