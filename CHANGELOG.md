@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+
+## [3.2.3][] - 2017-05-18
 ### Changed
 - Sitemap to be calculated in a performant manner
 
@@ -238,7 +240,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - This CHANGELOG file to allow more insight to the changes made throughout the development of api.gw2armory.com
 
 
-[Unreleased]: https://github.com/madou/armory-back/compare/v3.2.2...HEAD
+[Unreleased]: https://github.com/madou/armory-back/compare/v3.2.3...HEAD
+[3.2.3]: https://github.com/madou/armory-back/compare/v3.2.2...v3.2.3
 [3.2.2]: https://github.com/madou/armory-back/compare/v3.2.1...v3.2.2
 [3.2.1]: https://github.com/madou/armory-back/compare/v3.2.0...v3.2.1
 [3.2.0]: https://github.com/madou/armory-back/compare/v3.1.0...v3.2.0
