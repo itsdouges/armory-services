@@ -83,7 +83,7 @@ export default {
   },
 
   sitemap: {
-    pageItemLimit: 50000,
+    pageItemLimit: 10000,
   },
 
 };

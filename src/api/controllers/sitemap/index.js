@@ -15,13 +15,21 @@ type BuildUrlTemplateOptions = {
   changefreq?: ChangeFrequency,
 };
 
-const calcPages = (count) => Math.ceil(count / config.sitemap.pageItemLimit);
-
 const calcResourcesPerPage = () => {
   return {
-    user: Math.floor(config.sitemap.pageItemLimit / userRoutes.length),
-    guild: Math.floor(config.sitemap.pageItemLimit / guildRoutes.length),
-    character: Math.floor(config.sitemap.pageItemLimit / characterRoutes.length),
+    users: Math.floor(config.sitemap.pageItemLimit / userRoutes.length),
+    guilds: Math.floor(config.sitemap.pageItemLimit / guildRoutes.length),
+    characters: Math.floor(config.sitemap.pageItemLimit / characterRoutes.length),
+  };
+};
+
+const calcPages = ({ users, characters, guilds }) => {
+  const resourcesPerPage = calcResourcesPerPage();
+
+  return {
+    users: users / resourcesPerPage.users,
+    characters: characters / resourcesPerPage.characters,
+    guilds: guilds / resourcesPerPage.guilds,
   };
 };
 
@@ -122,8 +130,8 @@ export default function sitemapControllerFactory (models: Models) {
     const resourcesPerPage = calcResourcesPerPage();
 
     if (resource === 'users') {
-      const weightedOffset = resourcesPerPage.user * page;
-      const weightedLimit = resourcesPerPage.user;
+      const weightedOffset = resourcesPerPage.users * page;
+      const weightedLimit = resourcesPerPage.users;
 
       const users = await readResource(models.User, {
         offset: weightedOffset,
@@ -134,8 +142,8 @@ export default function sitemapControllerFactory (models: Models) {
     }
 
     if (resource === 'characters') {
-      const weightedOffset = resourcesPerPage.character * page;
-      const weightedLimit = resourcesPerPage.character;
+      const weightedOffset = resourcesPerPage.characters * page;
+      const weightedLimit = resourcesPerPage.characters;
 
       const characters = await readResource(models.Gw2Character, {
         offset: weightedOffset,
@@ -152,8 +160,8 @@ export default function sitemapControllerFactory (models: Models) {
     }
 
     if (resource === 'guilds') {
-      const weightedOffset = resourcesPerPage.guild * page;
-      const weightedLimit = resourcesPerPage.guild;
+      const weightedOffset = resourcesPerPage.guilds * page;
+      const weightedLimit = resourcesPerPage.guilds;
 
       const guilds = await readResource(models.Gw2Guild, {
         offset: weightedOffset,
@@ -180,19 +188,18 @@ export default function sitemapControllerFactory (models: Models) {
   };
 
   async function index () {
-    const { users, guilds, characters } = await countResources();
+    const resourceCounts = await countResources();
 
-    const userPages = calcPages(users);
-    const characterPages = calcPages(characters);
-    const guildPages = calcPages(guilds);
+    const pages = calcPages(resourceCounts);
+
+    console.log(pages);
 
     const sitemaps = [
       ...buildSitemaps('static', 1),
-      ...buildSitemaps('users', userPages),
-      ...buildSitemaps('characters', characterPages),
-      ...buildSitemaps('guilds', guildPages),
+      ...buildSitemaps('users', pages.users),
+      ...buildSitemaps('characters', pages.characters),
+      ...buildSitemaps('guilds', pages.guilds),
     ];
-
 
     return `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
