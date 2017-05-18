@@ -6,8 +6,8 @@ import restify from 'restify';
 import axios from 'axios';
 import restifyOAuth2 from 'restify-oauth2';
 import createValidator from 'gotta-validate';
-
 import config from 'config';
+
 import tokenControllerFactory from './controllers/gw2-token';
 import usersControllerFactory from './controllers/user';
 import characterControllerFactory from './controllers/character';
@@ -56,19 +56,6 @@ export default function createServer (models: Models) {
   const server = restify.createServer({
     name: 'api.gw2armory.com',
     version: config.version,
-    formatters: {
-      'application/xml': (req, res, body, cb) => {
-        if (body instanceof Error) {
-          return body.stack;
-        }
-
-        if (Buffer.isBuffer(body)) {
-          return cb(null, body.toString('base64'));
-        }
-
-        return cb(null, body);
-      },
-    },
   });
 
   restify.CORS.ALLOW_HEADERS.push('authorization');
