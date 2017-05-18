@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+
+## [3.2.6][] - 2017-05-19
 ### Fixed
 - Slack messaging not working
 
@@ -250,7 +252,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - This CHANGELOG file to allow more insight to the changes made throughout the development of api.gw2armory.com
 
 
-[Unreleased]: https://github.com/madou/armory-back/compare/v3.2.5...HEAD
+[Unreleased]: https://github.com/madou/armory-back/compare/v3.2.6...HEAD
+[3.2.6]: https://github.com/madou/armory-back/compare/v3.2.5...v3.2.6
 [3.2.5]: https://github.com/madou/armory-back/compare/v3.2.4...v3.2.5
 [3.2.4]: https://github.com/madou/armory-back/compare/v3.2.3...v3.2.4
 [3.2.3]: https://github.com/madou/armory-back/compare/v3.2.2...v3.2.3
