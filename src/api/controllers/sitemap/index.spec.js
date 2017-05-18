@@ -68,25 +68,30 @@ describe('sitemap', () => {
 `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
-    <loc>http://api.gw2.com/sitemap0.xml</loc>
+    <loc>http://api.gw2.com/sitemap-static-0.xml</loc>
     <lastmod>${date.toISOString()}</lastmod>
   </sitemap>
   <sitemap>
-    <loc>http://api.gw2.com/sitemap1.xml</loc>
+    <loc>http://api.gw2.com/sitemap-users-0.xml</loc>
     <lastmod>${date.toISOString()}</lastmod>
   </sitemap>
   <sitemap>
-    <loc>http://api.gw2.com/sitemap2.xml</loc>
+    <loc>http://api.gw2.com/sitemap-characters-0.xml</loc>
+    <lastmod>${date.toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>http://api.gw2.com/sitemap-guilds-0.xml</loc>
     <lastmod>${date.toISOString()}</lastmod>
   </sitemap>
 </sitemapindex>`
 );
   });
 
-  it('should render render page one', async () => {
-    const actual = await sitemap.generate(0);
+  describe('static pages', () => {
+    it('should render sitemap', async () => {
+      const actual = await sitemap.generate('static');
 
-    expect(actual).to.equal(
+      expect(actual).to.equal(
 `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -124,88 +129,104 @@ describe('sitemap', () => {
     <priority>0.9</priority>
     <changefreq>hourly</changefreq>
   </url>
-</urlset>`);
-  });
-
-  it('should render render page two', async () => {
-    const actual = await sitemap.generate(1);
-
-    expect(actual).to.equal(
-`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>http://gw2-local.com/embeds</loc>
     <priority>0.4</priority>
   </url>
-  <url>
-    <loc>http://gw2-local.com/${user.alias}</loc>
-    <lastmod>${userUpdated}</lastmod>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>http://gw2-local.com/${user.alias}/characters</loc>
-    <lastmod>${userUpdated}</lastmod>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>http://gw2-local.com/${user.alias}/matches</loc>
-    <lastmod>${userUpdated}</lastmod>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>http://gw2-local.com/${user.alias}/guilds</loc>
-    <lastmod>${userUpdated}</lastmod>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>http://gw2-local.com/g/${guild.name}</loc>
-    <lastmod>${guildUpdated}</lastmod>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>http://gw2-local.com/g/${guild.name}/users</loc>
-    <lastmod>${guildUpdated}</lastmod>
-    <priority>0.8</priority>
-  </url>
 </urlset>`);
+    });
   });
 
-  it('should render render page three', async () => {
-    const actual = await sitemap.generate(2);
+  describe('users', () => {
+    it('should build users page', async () => {
+      const actual = await sitemap.generate('users', 0);
 
-    expect(actual).to.equal(
+      expect(actual).to.equal(
 `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://gw2-local.com/g/${guild.name}/characters</loc>
-    <lastmod>${guildUpdated}</lastmod>
-    <priority>0.8</priority>
+    <loc>http://gw2-local.com/huedwell</loc>
+    <lastmod>${userUpdated}</lastmod>
+    <priority>1.0</priority>
   </url>
   <url>
-    <loc>http://gw2-local.com/g/${guild.name}/logs</loc>
-    <lastmod>${guildUpdated}</lastmod>
-    <priority>0.4</priority>
+    <loc>http://gw2-local.com/huedwell/characters</loc>
+    <lastmod>${userUpdated}</lastmod>
+    <priority>0.9</priority>
   </url>
   <url>
-    <loc>http://gw2-local.com/${user.alias}/c/${character.name}</loc>
+    <loc>http://gw2-local.com/huedwell/matches</loc>
+    <lastmod>${userUpdated}</lastmod>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>http://gw2-local.com/huedwell/guilds</loc>
+    <lastmod>${userUpdated}</lastmod>
+    <priority>0.5</priority>
+  </url>
+</urlset>`);
+    });
+  });
+
+  describe('characters', () => {
+    it('should build page', async () => {
+      const actual = await sitemap.generate('characters', 0);
+
+      expect(actual).to.equal(
+`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>http://gw2-local.com/huedwell/c/maaodduu</loc>
     <lastmod>${characterUpdated}</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>http://gw2-local.com/${user.alias}/c/${character.name}/pvp</loc>
+    <loc>http://gw2-local.com/huedwell/c/maaodduu/pvp</loc>
     <lastmod>${characterUpdated}</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>http://gw2-local.com/${user.alias}/c/${character.name}/wvw</loc>
+    <loc>http://gw2-local.com/huedwell/c/maaodduu/wvw</loc>
     <lastmod>${characterUpdated}</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>http://gw2-local.com/${user.alias}/c/${character.name}/bags</loc>
+    <loc>http://gw2-local.com/huedwell/c/maaodduu/bags</loc>
     <lastmod>${characterUpdated}</lastmod>
     <priority>0.9</priority>
   </url>
 </urlset>`);
+    });
+  });
+
+  describe('guilds', () => {
+    it('should build page', async () => {
+      const actual = await sitemap.generate('guilds', 0);
+
+      expect(actual).to.equal(
+`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>http://gw2-local.com/g/name</loc>
+    <lastmod>${guildUpdated}</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>http://gw2-local.com/g/name/users</loc>
+    <lastmod>${guildUpdated}</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://gw2-local.com/g/name/characters</loc>
+    <lastmod>${guildUpdated}</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://gw2-local.com/g/name/logs</loc>
+    <lastmod>${guildUpdated}</lastmod>
+    <priority>0.4</priority>
+  </url>
+</urlset>`);
+    });
   });
 });

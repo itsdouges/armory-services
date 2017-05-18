@@ -56,6 +56,19 @@ export default function createServer (models: Models) {
   const server = restify.createServer({
     name: 'api.gw2armory.com',
     version: config.version,
+    formatters: {
+      'application/xml': (req, res, body, cb) => {
+        if (body instanceof Error) {
+          return body.stack;
+        }
+
+        if (Buffer.isBuffer(body)) {
+          return cb(null, body.toString('base64'));
+        }
+
+        return cb(null, body);
+      },
+    },
   });
 
   restify.CORS.ALLOW_HEADERS.push('authorization');

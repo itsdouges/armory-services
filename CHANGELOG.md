@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+### Changed
+- Sitemap to be calculated in a performant manner
 
 ## [3.2.2][] - 2017-05-06
 ### Fixed

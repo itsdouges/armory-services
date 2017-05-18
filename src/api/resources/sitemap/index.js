@@ -6,10 +6,9 @@ import _ from 'lodash';
 
 export default function SitemapResource (server: Server, controller: any) {
   server.get('/sitemap.xml', async (req, res, next) => {
-    res.setHeader('Content-Type', 'text/xml');
-
     try {
       const sitemapIndex = await controller.index();
+      res.setHeader('Content-Type', 'application/xml');
       res.send(200, sitemapIndex);
     } catch (error) {
       console.error(error);
@@ -19,13 +18,12 @@ export default function SitemapResource (server: Server, controller: any) {
     return next();
   });
 
-  server.get(/^\/sitemap(\d+)\.xml/, async (req, res, next) => {
-    res.setHeader('Content-Type', 'text/xml');
-
-    const page = _.toInteger(req.params[0]);
-
+  server.get(/^\/sitemap-([a-z]+)-(\d+)\.xml/, async (req, res, next) => {
     try {
-      const sitemapIndex = await controller.generate(page);
+      // eslint-disable-next-line quote-props
+      const { '0': resource, '1': page } = req.params;
+      const sitemapIndex = await controller.generate(resource, _.toInteger(page));
+      res.setHeader('Content-Type', 'application/xml');
       res.send(200, sitemapIndex);
     } catch (error) {
       console.error(error);
