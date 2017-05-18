@@ -19,13 +19,13 @@ export default function SitemapResource (server: Server, controller: any) {
     return next();
   });
 
-  server.get(/^\/sitemap(\d+)\.xml/, async (req, res, next) => {
+  server.get(/^\/sitemap-([a-z]+)-(\d+)\.xml/, async (req, res, next) => {
     res.setHeader('Content-Type', 'text/xml');
 
-    const page = _.toInteger(req.params[0]);
+    const [resource, page] = req.params;
 
     try {
-      const sitemapIndex = await controller.generate(page);
+      const sitemapIndex = await controller.generate(resource, _.toInteger(page));
       res.send(200, sitemapIndex);
     } catch (error) {
       console.error(error);
