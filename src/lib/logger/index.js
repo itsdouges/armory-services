@@ -39,7 +39,7 @@ ${JSON.stringify(error)}`;
   }
 }
 
-const createLog = (title: string, channel: string) => ({
+const createLog = (title: string, channel: string, privateChannel: boolean = true) => ({
   async log (message: string) {
     const messageWithTitle = `${title.toUpperCase()} - ${message}`;
 
@@ -48,7 +48,11 @@ const createLog = (title: string, channel: string) => ({
         bot = await startBot();
       }
 
-      throttle.add(() => bot.postMessageToChannel(channel, messageWithTitle));
+      const postMessage = privateChannel
+        ? bot.postMessageToGroup(channel, messageWithTitle)
+        : bot.postMessageToChannel(channel, messageWithTitle);
+
+      throttle.add(() => postMessage);
     } catch (e) {
       console.log();
       console.log('>>> Couldn\'t connect to slack (check api key)! Falling back to console.log()');
