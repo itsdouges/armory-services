@@ -6,8 +6,10 @@ import moment from 'moment';
 import _ from 'lodash';
 import createValidator from 'gotta-validate';
 
+import gw2 from 'lib/gw2';
 import { tryFetch } from 'lib/services/fetch';
 import emailClient from 'lib/email';
+import { read as readToken } from 'lib/services/tokens';
 import { forgotMyPassword as forgotMyPasswordTemplate } from 'lib/email/templates';
 import { hashPassword, verifyHash } from 'lib/password';
 import { read as readGuild } from 'lib/services/guild';
@@ -209,7 +211,43 @@ export default function userControllerFactory (models: Models) {
     });
   }
 
+  const userMethodMap = {
+    bank: gw2.readBank,
+    inventory: gw2.readInventory,
+    materials: gw2.readMaterials,
+    wallet: gw2.readWallet,
+    dungeons: gw2.readDungeons,
+    dyes: gw2.readDyes,
+    finishers: gw2.readFinishers,
+    masteries: gw2.readMasteries,
+    minis: gw2.readMinis,
+    outfits: gw2.readOutfits,
+    raids: gw2.readRaids,
+    recipes: gw2.readRecipes,
+    skins: gw2.readSkins,
+    titles: gw2.readTitles,
+    cats: gw2.readCats,
+    nodes: gw2.readNodes,
+  };
+
+  const userMethods = _.reduce(userMethodMap, (obj, func, methodName) => {
+    return {
+      ...obj,
+      [methodName]: async (alias) => {
+        const user = await read({ alias, excludeChildren: true });
+        if (!user) {
+          return null;
+        }
+
+        const token = await readToken(models, { id: user.tokenId });
+
+        return await func(token.token, user.id);
+      },
+    };
+  }, {});
+
   return {
+    ...userMethods,
     create,
     read,
     updatePassword,

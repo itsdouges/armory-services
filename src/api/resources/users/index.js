@@ -2,6 +2,8 @@
 
 import type { Server } from 'restify';
 
+import _ from 'lodash';
+
 export default function UserResource (server: Server, controller: any) {
   server.get('/users/me', (req, res, next) => {
     if (!req.username) {
@@ -128,5 +130,41 @@ export default function UserResource (server: Server, controller: any) {
         res.send(400, e);
         return next();
       });
+  });
+
+  const routeMap = {
+    '/users/:alias/bank': controller.bank,
+    '/users/:alias/inventory': controller.inventory,
+    '/users/:alias/materials': controller.materials,
+    '/users/:alias/wallet': controller.wallet,
+    '/users/:alias/dungeons': controller.dungeons,
+    '/users/:alias/dyes': controller.dyes,
+    '/users/:alias/finishers': controller.finishers,
+    '/users/:alias/masteries': controller.masteries,
+    '/users/:alias/minis': controller.minis,
+    '/users/:alias/outfits': controller.outfits,
+    '/users/:alias/raids': controller.raids,
+    '/users/:alias/recipes': controller.recipes,
+    '/users/:alias/skins': controller.skins,
+    '/users/:alias/titles': controller.titles,
+    '/users/:alias/cats': controller.cats,
+    '/users/:alias/nodes': controller.nodes,
+  };
+
+  _.forEach(routeMap, (func, routeName) => {
+    server.get(routeName, async (req, res, next) => {
+      try {
+        const data = await func(req.params.alias);
+        if (data) {
+          res.send(200, data);
+        } else {
+          res.send(404);
+        }
+      } catch (e) {
+        res.send(500, e);
+      }
+
+      return next();
+    });
   });
 }
