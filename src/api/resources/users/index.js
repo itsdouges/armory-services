@@ -154,7 +154,7 @@ export default function UserResource (server: Server, controller: any) {
   _.forEach(routeMap, (func, routeName) => {
     server.get(routeName, async (req, res, next) => {
       try {
-        const data = await func(req.params.alias);
+        const data = await func(req.params.alias, { email: req.username });
         if (data) {
           res.send(200, data);
         } else {

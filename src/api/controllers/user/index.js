@@ -22,8 +22,11 @@ import {
   finishPasswordReset,
   claimStubUser,
 } from 'lib/services/user';
+import access from './access';
 
 export default function userControllerFactory (models: Models) {
+  const checkAccess = (type, alias, email) => access(models, { type, alias, email });
+
   createValidator.addResource({
     name: 'users',
     mode: 'create',
@@ -211,6 +214,16 @@ export default function userControllerFactory (models: Models) {
     });
   }
 
+  async function readUserWithAccess (alias, accessType, { email } = {}) {
+    const canAccess = await checkAccess(accessType, alias, email);
+    if (!canAccess) {
+      return null;
+    }
+
+    const user = await read({ alias, excludeChildren: true });
+    return user;
+  }
+
   const userMethodMap = {
     bank: gw2.readBank,
     inventory: gw2.readInventory,
@@ -233,8 +246,8 @@ export default function userControllerFactory (models: Models) {
   const userMethods = _.reduce(userMethodMap, (obj, func, methodName) => {
     return {
       ...obj,
-      [methodName]: async (alias) => {
-        const user = await read({ alias, excludeChildren: true });
+      [methodName]: async (alias, { email } = {}) => {
+        const user = await readUserWithAccess(alias, methodName, email);
         if (!user) {
           return null;
         }
