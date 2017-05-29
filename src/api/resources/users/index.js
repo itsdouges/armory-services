@@ -133,26 +133,30 @@ export default function UserResource (server: Server, controller: any) {
   });
 
   const routeMap = {
-    '/users/:alias/bank': controller.bank,
-    '/users/:alias/inventory': controller.inventory,
-    '/users/:alias/materials': controller.materials,
-    '/users/:alias/wallet': controller.wallet,
-    '/users/:alias/dungeons': controller.dungeons,
-    '/users/:alias/dyes': controller.dyes,
-    '/users/:alias/finishers': controller.finishers,
-    '/users/:alias/masteries': controller.masteries,
-    '/users/:alias/minis': controller.minis,
-    '/users/:alias/outfits': controller.outfits,
-    '/users/:alias/raids': controller.raids,
-    '/users/:alias/recipes': controller.recipes,
-    '/users/:alias/skins': controller.skins,
-    '/users/:alias/titles': controller.titles,
-    '/users/:alias/cats': controller.cats,
-    '/users/:alias/nodes': controller.nodes,
+    achievements: controller.achievements,
+    bank: controller.bank,
+    inventory: controller.inventory,
+    materials: controller.materials,
+    wallet: controller.wallet,
+    dungeons: controller.dungeons,
+    dyes: controller.dyes,
+    finishers: controller.finishers,
+    masteries: controller.masteries,
+    minis: controller.minis,
+    outfits: controller.outfits,
+    raids: controller.raids,
+    recipes: controller.recipes,
+    skins: controller.skins,
+    titles: controller.titles,
+    cats: controller.cats,
+    nodes: controller.nodes,
+    'pvp/stats': controller.pvpStats,
+    'pvp/games': controller.pvpGames,
+    'pvp/standings': controller.pvpStandings,
   };
 
   _.forEach(routeMap, (func, routeName) => {
-    server.get(routeName, async (req, res, next) => {
+    server.get(`/users/:alias/${routeName}`, async (req, res, next) => {
       try {
         const data = await func(req.params.alias, { email: req.username });
         if (data) {
@@ -161,6 +165,7 @@ export default function UserResource (server: Server, controller: any) {
           res.send(404);
         }
       } catch (e) {
+        console.log(e);
         res.send(500, e);
       }
 

@@ -225,6 +225,7 @@ export default function userControllerFactory (models: Models) {
   }
 
   const userMethodMap = {
+    achievements: gw2.readAchievements,
     bank: gw2.readBank,
     inventory: gw2.readInventory,
     materials: gw2.readMaterials,
@@ -241,13 +242,16 @@ export default function userControllerFactory (models: Models) {
     titles: gw2.readTitles,
     cats: gw2.readCats,
     nodes: gw2.readNodes,
+    pvpStats: gw2.readPvpStats,
+    pvpGames: gw2.readPvpGames,
+    pvpStandings: gw2.readPvpStandings,
   };
 
   const userMethods = _.reduce(userMethodMap, (obj, func, methodName) => {
     return {
       ...obj,
       [methodName]: async (alias, { email } = {}) => {
-        const user = await readUserWithAccess(alias, methodName, email);
+        const user = await readUserWithAccess(alias, methodName, { email });
         if (!user) {
           return null;
         }
