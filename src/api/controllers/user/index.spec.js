@@ -23,6 +23,31 @@ const claimStubUser = sandbox.stub();
 const claimStubApiToken = sandbox.stub();
 const tryFetch = sandbox.spy();
 
+const gw2Api = {
+  readAchievements: sandbox.spy(),
+  readBank: sandbox.spy(),
+  readInventory: sandbox.spy(),
+  readMaterials: sandbox.spy(),
+  readWallet: sandbox.spy(),
+  readDungeons: sandbox.spy(),
+  readDyes: sandbox.spy(),
+  readFinishers: sandbox.spy(),
+  readMasteries: sandbox.spy(),
+  readMinis: sandbox.spy(),
+  readOutfits: sandbox.spy(),
+  readRaids: sandbox.spy(),
+  readRecipes: sandbox.spy(),
+  readSkins: sandbox.spy(),
+  readTitles: sandbox.spy(),
+  readCats: sandbox.spy(),
+  readNodes: sandbox.spy(),
+  readPvpStats: sandbox.spy(),
+  readPvpGames: sandbox.spy(),
+  readPvpStandings: sandbox.spy(),
+};
+
+const readToken = sandbox.stub();
+
 describe('user controller', () => {
   const models = { neat: 'models' };
   const email = 'email@email.com';
@@ -60,6 +85,8 @@ describe('user controller', () => {
       forgotMyPassword: forgotMyPasswordTemplate,
     },
     'lib/services/fetch': { tryFetch },
+    'lib/gw2': gw2Api,
+    'lib/services/tokens': { read: readToken },
   })(models);
 
   afterEach(() => sandbox.reset());
@@ -311,6 +338,41 @@ describe('user controller', () => {
       expect(claimStubUser).to.have.been.calledWith(models, {
         ...claimingUser,
         passwordHash: claimingUser.password,
+      });
+    });
+  });
+
+  describe('basic calls', () => {
+    [
+      ['achievements', gw2Api.readAchievements],
+      ['bank', gw2Api.readBank],
+      ['inventory', gw2Api.readInventory],
+      ['materials', gw2Api.readMaterials],
+      ['wallet', gw2Api.readWallet],
+      ['dungeons', gw2Api.readDungeons],
+      ['dyes', gw2Api.readDyes],
+      ['finishers', gw2Api.readFinishers],
+      ['masteries', gw2Api.readMasteries],
+      ['minis', gw2Api.readMinis],
+      ['outfits', gw2Api.readOutfits],
+      ['raids', gw2Api.readRaids],
+      ['recipes', gw2Api.readRecipes],
+      ['skins', gw2Api.readSkins],
+      ['titles', gw2Api.readTitles],
+      ['cats', gw2Api.readCats],
+      ['nodes', gw2Api.readNodes],
+      ['pvpStats', gw2Api.readPvpStats],
+      ['pvpGames', gw2Api.readPvpGames],
+      ['pvpStandings', gw2Api.readPvpStandings],
+    ].forEach(([funcName, spy]) => {
+      it(`should call ${funcName}'s spy`, async () => {
+        const token = '1234-1234';
+        readUser.withArgs(models, { email, alias: user.alias }).returns(Promise.resolve(user));
+        readToken.withArgs(models, { id: user.tokenId }).returns(Promise.resolve({ token }));
+
+        await controller[funcName](user.alias, { email });
+
+        expect(spy).to.have.been.called;
       });
     });
   });

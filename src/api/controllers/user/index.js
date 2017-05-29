@@ -221,8 +221,7 @@ export default function userControllerFactory (models: Models) {
       throw unauthorized();
     }
 
-    const user = await read({ alias, excludeChildren: true });
-    return user;
+    return read({ alias, email, excludeChildren: true });
   }
 
   const userMethodMap = {
@@ -257,9 +256,8 @@ export default function userControllerFactory (models: Models) {
           throw notFound();
         }
 
-        const token = await readToken(models, { id: user.tokenId });
-
-        return func(token.token, user.id);
+        const { token } = await readToken(models, { id: user.tokenId });
+        return func(token);
       },
     };
   }, {});
