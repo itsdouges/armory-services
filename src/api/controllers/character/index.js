@@ -15,6 +15,8 @@ import {
   list as listCharacters,
   update as updateCharacter,
   listPublic,
+  setPrivacy as setPrivacyCharacter,
+  removePrivacy as removePrivacyCharacter,
 } from 'lib/services/character';
 
 import { read as readGuild } from 'lib/services/guild';
@@ -110,11 +112,31 @@ export default function characterControllerFactory (models: Models) {
     return await updateCharacter(models, character.id, fields);
   }
 
+  async function setPrivacy (name: string, email: string, privacy: string) {
+    const character = await readCharacter(models, name, email);
+    if (!character) {
+      return Promise.reject(new Error('Not your character'));
+    }
+
+    return setPrivacyCharacter(models, name, privacy);
+  }
+
+  async function removePrivacy (name: string, email: string, privacy: string) {
+    const character = await readCharacter(models, name, email);
+    if (!character) {
+      return Promise.reject(new Error('Not your character'));
+    }
+
+    return removePrivacyCharacter(models, name, privacy);
+  }
+
   return {
     read,
     list,
     random,
     charactersOfTheDay,
     update,
+    setPrivacy,
+    removePrivacy,
   };
 }
