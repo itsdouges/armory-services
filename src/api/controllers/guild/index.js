@@ -12,6 +12,8 @@ import {
   read as readGuild,
   list as listGuilds,
   readPrivate as readGuildPrivate,
+  setPrivacy as setPrivacyGuild,
+  removePrivacy as removePrivacyGuild,
 } from 'lib/services/guild';
 
 import gw2 from 'lib/gw2';
@@ -107,6 +109,14 @@ export default function guildControllerFactory (models: Models) {
     return guild;
   }
 
+  async function setPublic (name: string, privacy: string) {
+    return setPrivacyGuild(models, name, privacy);
+  }
+
+  async function removePublic (name: string, privacy: string) {
+    return removePrivacyGuild(models, name, privacy);
+  }
+
   const guildMethodMap = {
     logs: gw2.readGuildLogs,
     members: gw2.readGuildMembers,
@@ -135,6 +145,8 @@ export default function guildControllerFactory (models: Models) {
 
   return {
     read,
+    setPublic,
+    removePublic,
     random,
     guildsOfTheDay,
     readCharacters,

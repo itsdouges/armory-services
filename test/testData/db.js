@@ -19,6 +19,7 @@ export const user = ({
   tokenId = 1,
   guilds,
   accountName,
+  privacy = 'yolo|swag',
 }: User = {}): User => ({
   id,
   email,
@@ -29,6 +30,7 @@ export const user = ({
   guilds,
   tokenId,
   accountName,
+  privacy,
 });
 
 export const passwordReset = ({
