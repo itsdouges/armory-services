@@ -25,11 +25,8 @@ import {
   setPrivacy as setPrivacyUser,
   removePrivacy as removePrivacyUser,
 } from 'lib/services/user';
-import access from './access';
 
 export default function userControllerFactory (models: Models) {
-  const checkAccess = (type, alias, email) => access(models, { type, alias, email });
-
   createValidator.addResource({
     name: 'users',
     mode: 'create',
@@ -218,12 +215,20 @@ export default function userControllerFactory (models: Models) {
   }
 
   async function readUserWithAccess (alias, accessType, { email } = {}) {
-    const canAccess = await checkAccess(accessType, alias, email);
-    if (!canAccess) {
+    const user = await read({ alias, email, excludeChildren: true });
+    if (!user) {
+      throw notFound();
+    }
+
+    if (user.email === email) {
+      return user;
+    }
+
+    if (user.privacy && user.privacy.includes(accessType)) {
       throw unauthorized();
     }
 
-    return read({ alias, email, excludeChildren: true });
+    return user;
   }
 
   async function setPrivacy (email: string, privacy: string) {
