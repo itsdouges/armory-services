@@ -1,6 +1,6 @@
 // @flow
 
-type Sequelize = {
+export type Sequelize = {
   upsert: () => Promise<>,
   update: () => Promise<>,
   findOne: () => Promise<>,
