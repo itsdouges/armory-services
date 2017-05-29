@@ -12,7 +12,7 @@ describe('generic model service', () => {
       },
     });
 
-    expect(data.privacy).to.include(privacy);
+    expect(data.privacy || '').to.include(privacy);
   };
 
   beforeEach(async () => {

@@ -132,7 +132,7 @@ export default function UserResource (server: Server, controller: any) {
       });
   });
 
-  server.put('/me/privacy', async (req, res, next) => {
+  server.put('/users/me/privacy', async (req, res, next) => {
     if (!req.username) {
       return res.sendUnauthenticated();
     }
@@ -147,7 +147,7 @@ export default function UserResource (server: Server, controller: any) {
     return next();
   });
 
-  server.delete('/me/privacy/:privacy', async (req, res, next) => {
+  server.del('/users/me/privacy/:privacy', async (req, res, next) => {
     if (!req.username) {
       return res.sendUnauthenticated();
     }

@@ -52,7 +52,7 @@ export async function removePrivacy (model: Sequelize, privacy: string, { key, v
   });
 
   const resourcePrivacy = user.privacy || '';
-  if (resourcePrivacy.includes(privacy)) {
+  if (!resourcePrivacy.includes(privacy)) {
     return Promise.resolve();
   }
 

@@ -76,6 +76,7 @@ export type UserModel = {
   alias: string,
   passwordHash: string,
   email: string,
+  privacy: ?string,
 
   // ApiKey values
   tokenId: number,
