@@ -23,6 +23,10 @@ import { read as readGuild } from 'lib/services/guild';
 
 import { limit } from 'lib/math';
 
+function removePrivateProps (character) {
+  return character;
+}
+
 export default function characterControllerFactory (models: Models) {
   type ReadOptions = {
     email: string,
@@ -47,7 +51,7 @@ export default function characterControllerFactory (models: Models) {
     }
 
     const characterResponse = {
-      ...characterFromGw2Api,
+      ...removePrivateProps(characterFromGw2Api),
       privacy: (character.privacy || '').split('|').filter(Boolean),
       accountName: character.Gw2ApiToken.accountName,
       alias: character.Gw2ApiToken.User.alias,
