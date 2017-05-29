@@ -126,7 +126,7 @@ async function readByToken (models, { accountName, apiToken, apiTokenId }): Prom
     passwordHash: token.User.passwordHash,
     email: token.User.email,
     stub: token.User.stub,
-    privacy: (token.User.privacy || '').split('|'),
+    privacy: (token.User.privacy || '').split('|').filter(Boolean),
   } : null;
 }
 
@@ -146,7 +146,7 @@ async function readByUser (models, { alias, email }) {
     passwordHash: user.passwordHash,
     email: user.email,
     stub: user.stub,
-    privacy: (user.privacy || '').split('|'),
+    privacy: (user.privacy || '').split('|').filter(Boolean),
   } : null;
 }
 

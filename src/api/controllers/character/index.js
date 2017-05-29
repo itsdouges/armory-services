@@ -48,6 +48,7 @@ export default function characterControllerFactory (models: Models) {
 
     const characterResponse = {
       ...characterFromGw2Api,
+      privacy: (character.privacy || '').split('|').filter(Boolean),
       accountName: character.Gw2ApiToken.accountName,
       alias: character.Gw2ApiToken.User.alias,
       authorization: {
@@ -103,30 +104,27 @@ export default function characterControllerFactory (models: Models) {
     preFetch: true,
   });
 
-  async function update (email: string, fields: Character$UpdateProperties) {
-    const character = await readCharacter(models, fields.name, email);
+  async function assertOwnCharacter (email: string, name: string) {
+    const character = await readCharacter(models, name, email);
     if (!character) {
-      return Promise.reject(new Error('Not your character'));
+      throw new Error('Not your character');
     }
 
+    return character;
+  }
+
+  async function update (email: string, fields: Character$UpdateProperties) {
+    const character = await assertOwnCharacter(email, fields.name);
     return await updateCharacter(models, character.id, fields);
   }
 
   async function setPrivacy (name: string, email: string, privacy: string) {
-    const character = await readCharacter(models, name, email);
-    if (!character) {
-      return Promise.reject(new Error('Not your character'));
-    }
-
+    await assertOwnCharacter(email, name);
     return setPrivacyCharacter(models, name, privacy);
   }
 
   async function removePrivacy (name: string, email: string, privacy: string) {
-    const character = await readCharacter(models, name, email);
-    if (!character) {
-      return Promise.reject(new Error('Not your character'));
-    }
-
+    await assertOwnCharacter(email, name);
     return removePrivacyCharacter(models, name, privacy);
   }
 
