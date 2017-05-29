@@ -22,6 +22,8 @@ import {
   readPasswordReset,
   finishPasswordReset,
   claimStubUser,
+  setPrivacy as setPrivacyUser,
+  removePrivacy as removePrivacyUser,
 } from 'lib/services/user';
 import access from './access';
 
@@ -224,6 +226,14 @@ export default function userControllerFactory (models: Models) {
     return read({ alias, email, excludeChildren: true });
   }
 
+  async function setPrivacy (email: string, privacy: string) {
+    return setPrivacyUser(models, email, privacy);
+  }
+
+  async function removePrivacy (email: string, privacy: string) {
+    return removePrivacyUser(models, email, privacy);
+  }
+
   const userMethodMap = {
     achievements: gw2.readAchievements,
     bank: gw2.readBank,
@@ -264,6 +274,8 @@ export default function userControllerFactory (models: Models) {
 
   return {
     ...userMethods,
+    setPrivacy,
+    removePrivacy,
     create,
     read,
     updatePassword,

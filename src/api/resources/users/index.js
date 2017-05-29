@@ -132,6 +132,36 @@ export default function UserResource (server: Server, controller: any) {
       });
   });
 
+  server.put('/me/privacy', async (req, res, next) => {
+    if (!req.username) {
+      return res.sendUnauthenticated();
+    }
+
+    try {
+      await controller.setPrivacy(req.username, req.params.privacy);
+      res.send(200);
+    } catch (e) {
+      res.send(500, e);
+    }
+
+    return next();
+  });
+
+  server.delete('/me/privacy/:privacy', async (req, res, next) => {
+    if (!req.username) {
+      return res.sendUnauthenticated();
+    }
+
+    try {
+      await controller.removePrivacy(req.username, req.params.privacy);
+      res.send(200);
+    } catch (e) {
+      res.send(500, e);
+    }
+
+    return next();
+  });
+
   const routeMap = {
     achievements: controller.achievements,
     bank: controller.bank,
