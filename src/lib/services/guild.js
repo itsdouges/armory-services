@@ -2,6 +2,11 @@
 
 import type { Models } from 'flowTypes';
 import _ from 'lodash';
+import {
+  setPrivacy as setPrivacyGeneric,
+  removePrivacy as removePrivacyGeneric,
+  hasPrivacy as hasPrivacyGeneric,
+} from './generic';
 
 type Guild$Read = {
   id?: string,
@@ -61,4 +66,25 @@ export async function isAccessAllowed (models: Models, type: string) {
   }
 
   return await Promise.resolve(false);
+}
+
+export async function setPrivacy (models: Models, name: string, privacy: string) {
+  return setPrivacyGeneric(models.Gw2Guild, privacy, {
+    key: 'name',
+    value: name,
+  });
+}
+
+export async function removePrivacy (models: Models, name: string, privacy: string) {
+  return removePrivacyGeneric(models.Gw2Guild, privacy, {
+    key: 'name',
+    value: name,
+  });
+}
+
+export async function hasPrivacy (models: Models, name: string, privacy: string) {
+  return hasPrivacyGeneric(models.Gw2Guild, privacy, {
+    key: 'name',
+    value: name,
+  });
 }

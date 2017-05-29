@@ -84,6 +84,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: true,
       field: 'show_guild',
     },
+    privacy: DataTypes.STRING,
   }, {
     classMethods: {
       associate (models) {

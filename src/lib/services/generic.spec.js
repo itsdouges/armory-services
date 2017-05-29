@@ -1,5 +1,5 @@
 import * as testData from 'test/testData/db';
-import { setPrivacy, removePrivacy } from './generic';
+import { setPrivacy, removePrivacy, hasPrivacy } from './generic';
 
 describe('generic model service', () => {
   const user = testData.user();
@@ -51,5 +51,19 @@ describe('generic model service', () => {
     await removePrivacy(models.User, 'standings', { key: 'email', value: user.email });
 
     await assertPrivacy('');
+  });
+
+  it('should return true if privacy exists', async () => {
+    await setPrivacy(models.User, 'standings', { key: 'email', value: user.email });
+
+    const actual = await hasPrivacy(models.User, 'standings', { key: 'email', value: user.email });
+
+    expect(actual).to.be.true;
+  });
+
+  it('should return false if privacy doesnt exists', async () => {
+    const actual = await hasPrivacy(models.User, 'standings', { key: 'email', value: user.email });
+
+    expect(actual).to.be.false;
   });
 });

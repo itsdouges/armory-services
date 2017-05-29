@@ -11,6 +11,11 @@ import axios from 'axios';
 import config from 'config';
 import gw2, { readLatestPvpSeason } from 'lib/gw2';
 import { read as readGuild } from './guild';
+import {
+  setPrivacy as setPrivacyGeneric,
+  removePrivacy as removePrivacyGeneric,
+  hasPrivacy as hasPrivacyGeneric,
+} from './generic';
 
 type ListOptions = {
   guild?: string,
@@ -500,5 +505,26 @@ export async function removeToken (models: Models, email: string, apiToken: stri
       UserId: user.id,
       token: apiToken,
     },
+  });
+}
+
+export async function setPrivacy (models: Models, email: string, privacy: string) {
+  return setPrivacyGeneric(models.User, privacy, {
+    key: 'email',
+    value: email,
+  });
+}
+
+export async function removePrivacy (models: Models, email: string, privacy: string) {
+  return removePrivacyGeneric(models.User, privacy, {
+    key: 'email',
+    value: email,
+  });
+}
+
+export async function hasPrivacy (models: Models, email: string, privacy: string) {
+  return hasPrivacyGeneric(models.User, privacy, {
+    key: 'email',
+    value: email,
   });
 }

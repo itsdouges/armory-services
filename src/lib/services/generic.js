@@ -9,6 +9,17 @@ type Id = {
 
 const delimiter = '|';
 
+export async function hasPrivacy (model: Sequelize, privacy: string, { key, value }: Id) {
+  const user = await model.findOne({
+    where: {
+      [key]: value,
+    },
+  });
+
+  const resourcePrivacy = user.privacy || '';
+  return resourcePrivacy.includes(privacy);
+}
+
 export async function setPrivacy (model: Sequelize, privacy: string, { key, value }: Id) {
   const user = await model.findOne({
     where: {
