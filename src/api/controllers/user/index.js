@@ -6,6 +6,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import createValidator from 'gotta-validate';
 
+import { notFound, unauthorized } from 'lib/errors';
 import gw2 from 'lib/gw2';
 import { tryFetch } from 'lib/services/fetch';
 import emailClient from 'lib/email';
@@ -217,7 +218,7 @@ export default function userControllerFactory (models: Models) {
   async function readUserWithAccess (alias, accessType, { email } = {}) {
     const canAccess = await checkAccess(accessType, alias, email);
     if (!canAccess) {
-      return null;
+      throw unauthorized();
     }
 
     const user = await read({ alias, excludeChildren: true });
@@ -253,12 +254,12 @@ export default function userControllerFactory (models: Models) {
       [methodName]: async (alias, { email } = {}) => {
         const user = await readUserWithAccess(alias, methodName, { email });
         if (!user) {
-          return null;
+          throw notFound();
         }
 
         const token = await readToken(models, { id: user.tokenId });
 
-        return await func(token.token, user.id);
+        return func(token.token, user.id);
       },
     };
   }, {});

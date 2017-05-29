@@ -7,46 +7,6 @@ import memoize from 'memoizee';
 import config from 'config';
 
 export default function PvpResource (server: Server, controller: any) {
-  // server.get('/users/:alias/pvp/stats', (req, res, next) => {
-  //   controller
-  //     .stats(req.params.alias)
-  //     .then((stats) => {
-  //       res.send(200, stats);
-
-  //       return next();
-  //     }, (error) => {
-  //       console.log(error);
-  //       res.send(404);
-  //       return next();
-  //     });
-  // });
-
-  // server.get('/users/:alias/pvp/games', (req, res, next) => {
-  //   controller
-  //     .games(req.params.alias)
-  //     .then((games) => {
-  //       res.send(200, games);
-  //       return next();
-  //     }, (error) => {
-  //       console.error(error);
-  //       res.send(404);
-  //       return next();
-  //     });
-  // });
-
-  // server.get('/users/:alias/pvp/standings', (req, res, next) => {
-  //   controller
-  //     .standings(req.params.alias)
-  //     .then((standings) => {
-  //       res.send(200, standings);
-  //       return next();
-  //     }, (error) => {
-  //       console.error(error);
-  //       res.send(404);
-  //       return next();
-  //     });
-  // });
-
   const memoizedLeaderboard = memoize(controller.leaderboard, {
     maxAge: config.leaderboards.getCacheTtl,
     promise: true,

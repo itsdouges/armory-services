@@ -159,14 +159,9 @@ export default function UserResource (server: Server, controller: any) {
     server.get(`/users/:alias/${routeName}`, async (req, res, next) => {
       try {
         const data = await func(req.params.alias, { email: req.username });
-        if (data) {
-          res.send(200, data);
-        } else {
-          res.send(404);
-        }
+        res.send(200, data);
       } catch (e) {
-        console.log(e);
-        res.send(500, e);
+        res.send(e.status || 500, e);
       }
 
       return next();
