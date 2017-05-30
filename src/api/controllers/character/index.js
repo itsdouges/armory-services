@@ -23,8 +23,14 @@ import { read as readGuild } from 'lib/services/guild';
 
 import { limit } from 'lib/math';
 
-function removePrivateProps (character) {
-  return character;
+function removePrivateProps (obj, privacy) {
+  const cleanObj = { ...obj };
+
+  privacy.forEach((key) => {
+    delete cleanObj[key];
+  });
+
+  return cleanObj;
 }
 
 export default function characterControllerFactory (models: Models) {
@@ -50,9 +56,10 @@ export default function characterControllerFactory (models: Models) {
       };
     }
 
+    const privacy = (character.privacy || '').split('|').filter(Boolean);
     const characterResponse = {
-      ...removePrivateProps(characterFromGw2Api),
-      privacy: (character.privacy || '').split('|').filter(Boolean),
+      ...removePrivateProps(characterFromGw2Api, privacy),
+      privacy,
       accountName: character.Gw2ApiToken.accountName,
       alias: character.Gw2ApiToken.User.alias,
       authorization: {

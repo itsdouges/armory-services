@@ -80,6 +80,7 @@ describe('character controller', () => {
         guild_tag: guild.tag,
         guild_name: guild.name,
         alias: user.alias,
+        privacy: ['yes', 'no'],
         ...apiData,
       });
     });
@@ -99,6 +100,7 @@ describe('character controller', () => {
         accountName: apiToken.accountName,
         alias: user.alias,
         apiTokenAvailable: true,
+        privacy: ['yes', 'no'],
       });
     });
 
@@ -125,6 +127,7 @@ describe('character controller', () => {
         accountName: apiToken.accountName,
         alias: user.alias,
         apiTokenAvailable: true,
+        privacy: ['yes', 'no'],
       });
     });
   });

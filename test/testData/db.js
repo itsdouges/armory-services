@@ -165,6 +165,7 @@ export const character = ({
   apiTokenId = apiToken().id,
   Gw2ApiToken = apiToken(),
   showPublic,
+  privacy = 'yes|no',
 }: Character = {}): Character => ({
   name,
   race,
@@ -178,4 +179,5 @@ export const character = ({
   apiTokenId,
   Gw2ApiToken,
   showPublic,
+  privacy,
 });
