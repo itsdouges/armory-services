@@ -23,7 +23,11 @@ import { read as readGuild } from 'lib/services/guild';
 
 import { limit } from 'lib/math';
 
-function removePrivateProps (obj, privacy) {
+function removePrivateProps (obj, privacy, ignore) {
+  if (ignore) {
+    return obj;
+  }
+
   const cleanObj = { ...obj };
 
   privacy.forEach((key) => {
@@ -58,7 +62,11 @@ export default function characterControllerFactory (models: Models) {
 
     const privacy = (character.privacy || '').split('|').filter(Boolean);
     const characterResponse = {
-      ...removePrivateProps(characterFromGw2Api, privacy),
+      ...removePrivateProps(
+        characterFromGw2Api,
+        privacy,
+        email === character.Gw2ApiToken.User.email,
+      ),
       privacy,
       accountName: character.Gw2ApiToken.accountName,
       alias: character.Gw2ApiToken.User.alias,
