@@ -81,7 +81,7 @@ export default function guildsResource (server: Server, models: Models) {
     return next();
   });
 
-  server.del('/guilds/:name/:privacy', async (req, res, next) => {
+  server.del('/guilds/:name/privacy/:privacy', async (req, res, next) => {
     if (!req.username) {
       return res.sendUnauthenticated();
     }
