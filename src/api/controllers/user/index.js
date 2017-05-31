@@ -215,7 +215,7 @@ export default function userControllerFactory (models: Models) {
   }
 
   async function readUserWithAccess (alias, accessType, { email } = {}) {
-    const user = await read({ alias, email, excludeChildren: true });
+    const user = await readUser(models, { alias, mode: 'lean' });
     if (!user) {
       throw notFound();
     }
