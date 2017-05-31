@@ -65,4 +65,34 @@ export default function guildsResource (server: Server, models: Models) {
 
     return next();
   });
+
+  server.put('/guilds/:name/privacy', async (req, res, next) => {
+    if (!req.username) {
+      return res.sendUnauthenticated();
+    }
+
+    try {
+      await controller.setPublic(req.params.name, req.username, req.params.privacy);
+      res.send(200);
+    } catch (e) {
+      res.send(500, e);
+    }
+
+    return next();
+  });
+
+  server.del('/guilds/:name/:privacy', async (req, res, next) => {
+    if (!req.username) {
+      return res.sendUnauthenticated();
+    }
+
+    try {
+      await controller.removePublic(req.params.name, req.username, req.params.privacy);
+      res.send(200);
+    } catch (e) {
+      res.send(500, e);
+    }
+
+    return next();
+  });
 }

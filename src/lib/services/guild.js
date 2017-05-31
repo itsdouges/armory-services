@@ -1,6 +1,8 @@
 // @flow
 
 import type { Models } from 'flowTypes';
+
+import { notFound } from 'lib/errors';
 import _ from 'lodash';
 import {
   setPrivacy as setPrivacyGeneric,
@@ -27,6 +29,17 @@ export async function readPrivate (models: Models, { id, name }: Guild$Read) {
   });
 }
 
+export async function isGuildLeader (models: Models, email: string, guildName: string) {
+  const guild = await readPrivate(models, { name: guildName });
+  if (!guild) {
+    throw notFound();
+  }
+
+  console.log(guildName, guild)
+
+  return guild['Gw2ApiToken.User.email'] === email;
+}
+
 export async function read (models: Models, { id, name }: Guild$Read) {
   const guild = await readPrivate(models, { id, name });
   if (!guild) {
@@ -49,6 +62,7 @@ export async function read (models: Models, { id, name }: Guild$Read) {
   return {
     ...data,
     claimed: !!guild.apiTokenId,
+    privacy: (guild.privacy || '').split('|').filter(Boolean),
     leader: guild['Gw2ApiToken.User.alias'] && {
       alias: guild['Gw2ApiToken.User.alias'],
       accountName: guild['Gw2ApiToken.accountName'],
@@ -58,14 +72,6 @@ export async function read (models: Models, { id, name }: Guild$Read) {
 
 export async function list (models: Models) {
   return await models.Gw2Guild.findAll();
-}
-
-export async function isAccessAllowed (models: Models, type: string) {
-  if (type === 'members') {
-    return await Promise.resolve(true);
-  }
-
-  return await Promise.resolve(false);
 }
 
 export async function setPrivacy (models: Models, name: string, privacy: string) {
@@ -87,4 +93,17 @@ export async function hasPrivacy (models: Models, name: string, privacy: string)
     key: 'name',
     value: name,
   });
+}
+
+const FORCE_ALLOWED_LIST = [
+  'members',
+];
+
+export async function isAccessAllowed (models: Models, type: string, guildName: string) {
+  if (FORCE_ALLOWED_LIST.includes(type)) {
+    return true;
+  }
+
+  const isAllowed = await hasPrivacy(models, guildName, type);
+  return isAllowed;
 }
