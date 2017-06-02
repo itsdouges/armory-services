@@ -2,8 +2,9 @@ module.exports = {
   up (queryInterface, Sequelize) {
     return queryInterface.describeTable('Gw2ApiTokens')
       .then((attributes) => {
-        if (!Object.prototype.hasOwnProperty.call(attributes, 'valid')) {
-          console.log('\nValid doesn\'t exist, aborting.\n');
+        if (!Object.prototype.hasOwnProperty.call(attributes, 'valid')
+        || Object.prototype.hasOwnProperty.call(attributes, 'primary')) {
+          console.log('\nMigration not needed, aborting.\n');
           return Promise.resolve();
         }
 
