@@ -11,13 +11,12 @@ describe('guilds service', () => {
   });
 
   beforeEach(async () => {
-    await setupTestDb({ seed: true }).then((mdls) => (models = mdls));
+    models = await setupTestDb({ seed: true });
+    await models.Gw2Guild.create(guild);
   });
 
   describe('reading', () => {
     it('should read a guild with leader', async () => {
-      await models.Gw2Guild.create(guild);
-
       const actual = await read(models, { id: guild.id });
 
       const { apiToken, ...expected } = guild;
@@ -25,6 +24,7 @@ describe('guilds service', () => {
       expect(actual).to.eql({
         ...expected,
         claimed: true,
+        privacy: guild.privacy.split('|'),
         leader: {
           accountName: apiTkn.accountName,
           alias: user.alias,
@@ -45,6 +45,7 @@ describe('guilds service', () => {
 
       expect(actual).to.eql({
         ...expected,
+        privacy: leaderlessGuild.privacy.split('|'),
         apiTokenId: null,
         leader: null,
       });
@@ -52,16 +53,22 @@ describe('guilds service', () => {
   });
 
   describe('access', () => {
-    it('should not give access', async () => {
-      const access = await isAccessAllowed();
+    it('should allow deny access to something not in privacy', async () => {
+      const access = await isAccessAllowed(models, 'dontexist', guild.name);
 
       expect(access).to.be.false;
     });
 
-    it('should give access for members', async () => {
-      const access = await isAccessAllowed();
+    it('should allow access to lol', async () => {
+      const access = await isAccessAllowed(models, 'lol', guild.name);
 
-      expect(access).to.be.false;
+      expect(access).to.be.true;
+    });
+
+    it('should force access for members', async () => {
+      const access = await isAccessAllowed(models, 'members', guild.name);
+
+      expect(access).to.be.true;
     });
   });
 });

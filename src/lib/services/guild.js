@@ -35,8 +35,6 @@ export async function isGuildLeader (models: Models, email: string, guildName: s
     throw notFound();
   }
 
-  console.log(guildName, guild)
-
   return guild['Gw2ApiToken.User.email'] === email;
 }
 

@@ -3,6 +3,7 @@ import _ from 'lodash';
 
 import * as testData from 'test/testData/db';
 import { stubValidator } from 'test/utils';
+import { unauthorized } from 'lib/errors';
 
 const sandbox = sinon.sandbox.create();
 const readGuild = sandbox.stub();
@@ -367,12 +368,43 @@ describe('user controller', () => {
     ].forEach(([funcName, spy]) => {
       it(`should call ${funcName}'s spy`, async () => {
         const token = '1234-1234';
-        readUser.withArgs(models, { email, alias: user.alias }).returns(Promise.resolve(user));
+        readUser.withArgs(models, { alias: user.alias, mode: 'lean' })
+          .returns(Promise.resolve(user));
         readToken.withArgs(models, { id: user.tokenId }).returns(Promise.resolve({ token }));
 
-        await controller[funcName](user.alias, { email });
+        await controller[funcName](user.alias, { email: 'other-dude@lol.com' });
 
-        expect(spy).to.have.been.called;
+        expect(spy).to.have.been.calledWith(token);
+      });
+
+      it(`should grant access if user owns user for ${funcName}`, async () => {
+        const token = '1234-1234';
+        readUser.withArgs(models, { alias: user.alias, mode: 'lean' })
+          .returns(Promise.resolve({
+            ...user,
+            privacy: [funcName],
+          }));
+        readToken.withArgs(models, { id: user.tokenId }).returns(Promise.resolve({ token }));
+
+        await controller[funcName](user.alias, { email: user.email });
+
+        expect(spy).to.have.been.calledWith(token);
+      });
+
+      it(`should reject access if user doessnt own and privacy is set for ${funcName}`, (done) => {
+        const token = '1234-1234';
+        readUser.withArgs(models, { alias: user.alias, mode: 'lean' })
+          .returns(Promise.resolve({
+            ...user,
+            privacy: [funcName],
+          }));
+        readToken.withArgs(models, { id: user.tokenId }).returns(Promise.resolve({ token }));
+
+        controller[funcName](user.alias, { email: 'nah@nah.com' })
+          .catch((e) => {
+            expect(e).to.eql(unauthorized());
+            done();
+          });
       });
     });
   });

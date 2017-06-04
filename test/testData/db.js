@@ -55,6 +55,7 @@ export const guild = ({
   motd = 'Cool message of the day',
   claimed = false,
   apiTokenId,
+  privacy = 'lol|nah',
 }: Guild = {}): Guild => ({
   id,
   tag,
@@ -67,6 +68,7 @@ export const guild = ({
   motd,
   claimed,
   apiTokenId,
+  privacy,
 });
 
 export const apiToken = ({

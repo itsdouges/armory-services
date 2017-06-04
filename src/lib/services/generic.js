@@ -10,24 +10,24 @@ type Id = {
 const delimiter = '|';
 
 export async function hasPrivacy (model: Sequelize, privacy: string, { key, value }: Id) {
-  const user = await model.findOne({
+  const resource = await model.findOne({
     where: {
       [key]: value,
     },
   });
 
-  const resourcePrivacy = user.privacy || '';
+  const resourcePrivacy = resource.privacy || '';
   return resourcePrivacy.includes(privacy);
 }
 
 export async function setPrivacy (model: Sequelize, privacy: string, { key, value }: Id) {
-  const user = await model.findOne({
+  const resource = await model.findOne({
     where: {
       [key]: value,
     },
   });
 
-  const resourcePrivacy = user.privacy || '';
+  const resourcePrivacy = resource.privacy || '';
   if (resourcePrivacy.includes(privacy)) {
     return Promise.resolve();
   }
@@ -45,13 +45,13 @@ export async function setPrivacy (model: Sequelize, privacy: string, { key, valu
 }
 
 export async function removePrivacy (model: Sequelize, privacy: string, { key, value }: Id) {
-  const user = await model.findOne({
+  const resource = await model.findOne({
     where: {
       [key]: value,
     },
   });
 
-  const resourcePrivacy = user.privacy || '';
+  const resourcePrivacy = resource.privacy || '';
   if (!resourcePrivacy.includes(privacy)) {
     return Promise.resolve();
   }

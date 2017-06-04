@@ -31,7 +31,7 @@ type Params = {
   offset?: number,
 };
 
-function allowPublicProps (guild, privacy) {
+function allowPublicProps (guild) {
   return _.pick(guild, [
     'name',
     'id',
