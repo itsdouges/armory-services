@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+### Added
+- New privacy system for all resources
+- New data for users
 
 ## [3.2.6][] - 2017-05-19
 ### Fixed
