@@ -2,6 +2,11 @@
 
 import type { Models, PaginatedResponse, CharacterSimple } from 'flowTypes';
 import _ from 'lodash';
+import {
+  setPrivacy as setPrivacyGeneric,
+  removePrivacy as removePrivacyGeneric,
+  hasPrivacy as hasPrivacyGeneric,
+} from './generic';
 
 function canIgnorePrivacy (character, email) {
   return email === character.Gw2ApiToken.User.email;
@@ -105,5 +110,26 @@ export async function update (models: Models, id: number, fields: UpdateFields) 
     where: {
       id,
     },
+  });
+}
+
+export async function setPrivacy (models: Models, name: string, privacy: string) {
+  return setPrivacyGeneric(models.Gw2Character, privacy, {
+    key: 'name',
+    value: name,
+  });
+}
+
+export async function removePrivacy (models: Models, name: string, privacy: string) {
+  return removePrivacyGeneric(models.Gw2Character, privacy, {
+    key: 'name',
+    value: name,
+  });
+}
+
+export async function hasPrivacy (models: Models, name: string, privacy: string) {
+  return hasPrivacyGeneric(models.Gw2Character, privacy, {
+    key: 'name',
+    value: name,
   });
 }

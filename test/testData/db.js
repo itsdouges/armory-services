@@ -19,6 +19,7 @@ export const user = ({
   tokenId = 1,
   guilds,
   accountName,
+  privacy = 'yolo|swag',
 }: User = {}): User => ({
   id,
   email,
@@ -29,6 +30,7 @@ export const user = ({
   guilds,
   tokenId,
   accountName,
+  privacy,
 });
 
 export const passwordReset = ({
@@ -53,6 +55,7 @@ export const guild = ({
   motd = 'Cool message of the day',
   claimed = false,
   apiTokenId,
+  privacy = 'lol|nah',
 }: Guild = {}): Guild => ({
   id,
   tag,
@@ -65,6 +68,7 @@ export const guild = ({
   motd,
   claimed,
   apiTokenId,
+  privacy,
 });
 
 export const apiToken = ({
@@ -163,6 +167,7 @@ export const character = ({
   apiTokenId = apiToken().id,
   Gw2ApiToken = apiToken(),
   showPublic,
+  privacy = 'yes|no',
 }: Character = {}): Character => ({
   name,
   race,
@@ -176,4 +181,5 @@ export const character = ({
   apiTokenId,
   Gw2ApiToken,
   showPublic,
+  privacy,
 });

@@ -76,4 +76,34 @@ export default function charactersResource (server: Server, controller: any) {
         return next();
       });
   });
+
+  server.put('/characters/:name/privacy', async (req, res, next) => {
+    if (!req.username) {
+      return res.sendUnauthenticated();
+    }
+
+    try {
+      await controller.setPrivacy(req.params.name, req.username, req.params.privacy);
+      res.send(200);
+    } catch (e) {
+      res.send(500, e);
+    }
+
+    return next();
+  });
+
+  server.del('/characters/:name/privacy/:privacy', async (req, res, next) => {
+    if (!req.username) {
+      return res.sendUnauthenticated();
+    }
+
+    try {
+      await controller.removePrivacy(req.params.name, req.username, req.params.privacy);
+      res.send(200);
+    } catch (e) {
+      res.send(500, e);
+    }
+
+    return next();
+  });
 }

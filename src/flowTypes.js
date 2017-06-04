@@ -1,6 +1,6 @@
 // @flow
 
-type Sequelize = {
+export type Sequelize = {
   upsert: () => Promise<>,
   update: () => Promise<>,
   findOne: () => Promise<>,
@@ -76,6 +76,7 @@ export type UserModel = {
   alias: string,
   passwordHash: string,
   email: string,
+  privacy: ?string,
 
   // ApiKey values
   tokenId: number,

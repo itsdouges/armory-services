@@ -2,6 +2,8 @@
 
 import type { Server } from 'restify';
 
+import _ from 'lodash';
+
 export default function UserResource (server: Server, controller: any) {
   server.get('/users/me', (req, res, next) => {
     if (!req.username) {
@@ -128,5 +130,71 @@ export default function UserResource (server: Server, controller: any) {
         res.send(400, e);
         return next();
       });
+  });
+
+  server.put('/users/me/privacy', async (req, res, next) => {
+    if (!req.username) {
+      return res.sendUnauthenticated();
+    }
+
+    try {
+      await controller.setPrivacy(req.username, req.params.privacy);
+      res.send(200);
+    } catch (e) {
+      res.send(500, e);
+    }
+
+    return next();
+  });
+
+  server.del('/users/me/privacy/:privacy', async (req, res, next) => {
+    if (!req.username) {
+      return res.sendUnauthenticated();
+    }
+
+    try {
+      await controller.removePrivacy(req.username, req.params.privacy);
+      res.send(200);
+    } catch (e) {
+      res.send(500, e);
+    }
+
+    return next();
+  });
+
+  const routeMap = {
+    achievements: controller.achievements,
+    bank: controller.bank,
+    inventory: controller.inventory,
+    materials: controller.materials,
+    wallet: controller.wallet,
+    dungeons: controller.dungeons,
+    dyes: controller.dyes,
+    finishers: controller.finishers,
+    masteries: controller.masteries,
+    minis: controller.minis,
+    outfits: controller.outfits,
+    raids: controller.raids,
+    recipes: controller.recipes,
+    skins: controller.skins,
+    titles: controller.titles,
+    cats: controller.cats,
+    nodes: controller.nodes,
+    'pvp/stats': controller.pvpStats,
+    'pvp/games': controller.pvpGames,
+    'pvp/standings': controller.pvpStandings,
+  };
+
+  _.forEach(routeMap, (func, routeName) => {
+    server.get(`/users/:alias/${routeName}`, async (req, res, next) => {
+      try {
+        const data = await func(req.params.alias, { email: req.username });
+        res.send(200, data);
+      } catch (e) {
+        res.send(e.status || 500, e);
+      }
+
+      return next();
+    });
   });
 }

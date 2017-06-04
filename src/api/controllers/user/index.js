@@ -6,8 +6,11 @@ import moment from 'moment';
 import _ from 'lodash';
 import createValidator from 'gotta-validate';
 
+import { notFound, unauthorized } from 'lib/errors';
+import gw2 from 'lib/gw2';
 import { tryFetch } from 'lib/services/fetch';
 import emailClient from 'lib/email';
+import { read as readToken } from 'lib/services/tokens';
 import { forgotMyPassword as forgotMyPasswordTemplate } from 'lib/email/templates';
 import { hashPassword, verifyHash } from 'lib/password';
 import { read as readGuild } from 'lib/services/guild';
@@ -19,6 +22,8 @@ import {
   readPasswordReset,
   finishPasswordReset,
   claimStubUser,
+  setPrivacy as setPrivacyUser,
+  removePrivacy as removePrivacyUser,
 } from 'lib/services/user';
 
 export default function userControllerFactory (models: Models) {
@@ -209,7 +214,73 @@ export default function userControllerFactory (models: Models) {
     });
   }
 
+  async function readUserWithAccess (alias, accessType, { email } = {}) {
+    const user = await readUser(models, { alias, mode: 'lean' });
+    if (!user) {
+      throw notFound();
+    }
+
+    if (user.email === email) {
+      return user;
+    }
+
+    if (user.privacy && user.privacy.includes(accessType)) {
+      throw unauthorized();
+    }
+
+    return user;
+  }
+
+  async function setPrivacy (email: string, privacy: string) {
+    return setPrivacyUser(models, email, privacy);
+  }
+
+  async function removePrivacy (email: string, privacy: string) {
+    return removePrivacyUser(models, email, privacy);
+  }
+
+  const userMethodMap = {
+    achievements: gw2.readAchievements,
+    bank: gw2.readBank,
+    inventory: gw2.readInventory,
+    materials: gw2.readMaterials,
+    wallet: gw2.readWallet,
+    dungeons: gw2.readDungeons,
+    dyes: gw2.readDyes,
+    finishers: gw2.readFinishers,
+    masteries: gw2.readMasteries,
+    minis: gw2.readMinis,
+    outfits: gw2.readOutfits,
+    raids: gw2.readRaids,
+    recipes: gw2.readRecipes,
+    skins: gw2.readSkins,
+    titles: gw2.readTitles,
+    cats: gw2.readCats,
+    nodes: gw2.readNodes,
+    pvpStats: gw2.readPvpStats,
+    pvpGames: gw2.readPvpGames,
+    pvpStandings: gw2.readPvpStandings,
+  };
+
+  const userMethods = _.reduce(userMethodMap, (obj, func, methodName) => {
+    return {
+      ...obj,
+      [methodName]: async (alias, { email } = {}) => {
+        const user = await readUserWithAccess(alias, methodName, { email });
+        if (!user) {
+          throw notFound();
+        }
+
+        const { token } = await readToken(models, { id: user.tokenId });
+        return func(token);
+      },
+    };
+  }, {});
+
   return {
+    ...userMethods,
+    setPrivacy,
+    removePrivacy,
     create,
     read,
     updatePassword,

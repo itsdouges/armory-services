@@ -42,6 +42,7 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id',
       },
     },
+    privacy: DataTypes.STRING,
   }, {
     classMethods: {
       associate (models) {

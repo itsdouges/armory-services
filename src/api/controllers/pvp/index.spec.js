@@ -50,42 +50,6 @@ describe('pvp controller', () => {
     controller = controllerFactory(models);
   });
 
-  it('should return pvp data for primary token', async () => {
-    const data = { neat: 'data' };
-    readPvpStats.withArgs(token).returns(data);
-
-    const stats = await controller.stats(alias);
-
-    expect(stats).to.equal(data);
-  });
-
-  it('should return pvp games for primary token', async () => {
-    const data = { neat: 'data' };
-    readPvpGames.withArgs(token).returns(data);
-
-    const games = await controller.games(alias);
-
-    expect(games).to.equal(data);
-  });
-
-  it('should return pvp standings for primary token', async () => {
-    const data = { neat: 'data' };
-    readPvpStandings.withArgs(token).returns(data);
-
-    const standings = await controller.standings(alias);
-
-    expect(standings).to.equal(data);
-  });
-
-  it('should return pvp achievements for primary token', async () => {
-    const data = { neat: 'data' };
-    readAchievements.withArgs(token).returns(data);
-
-    const achievements = await controller.achievements(alias);
-
-    expect(achievements).to.equal(data);
-  });
-
   describe('leaderboard', () => {
     const apiTokenId = 3;
 

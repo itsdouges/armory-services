@@ -5,6 +5,7 @@ import type { Models } from 'flowTypes';
 import memoize from 'memoizee';
 import _ from 'lodash';
 
+import { unauthorized } from 'lib/errors';
 import config from 'config';
 import { tryFetch } from 'lib/services/fetch';
 import { limit as limitTo } from 'lib/math';
@@ -12,6 +13,9 @@ import {
   read as readGuild,
   list as listGuilds,
   readPrivate as readGuildPrivate,
+  setPrivacy as setPrivacyGuild,
+  removePrivacy as removePrivacyGuild,
+  isGuildLeader,
 } from 'lib/services/guild';
 
 import gw2 from 'lib/gw2';
@@ -26,6 +30,18 @@ type Params = {
   limit?: number,
   offset?: number,
 };
+
+function allowPublicProps (guild) {
+  return _.pick(guild, [
+    'name',
+    'id',
+    'tag',
+    'claimed',
+    'leader',
+    'privacy',
+    ...guild.privacy,
+  ]);
+}
 
 export default function guildControllerFactory (models: Models) {
   const checkAccess = (type, guildName, email) => access(models, { type, guildName, email });
@@ -42,14 +58,7 @@ export default function guildControllerFactory (models: Models) {
 
     guild.apiTokenId && tryFetch(models, guild.apiTokenId);
 
-    const parsedGuild = canAccess ? guild : _.pick(guild, [
-      'name',
-      'id',
-      'tag',
-      'claimed',
-      'leader',
-    ]);
-
+    const parsedGuild = canAccess ? guild : allowPublicProps(guild);
     return parsedGuild;
   }
 
@@ -107,6 +116,25 @@ export default function guildControllerFactory (models: Models) {
     return guild;
   }
 
+  async function assertLeader (name: string, email: string) {
+    const isLeader = await isGuildLeader(models, email, name);
+    if (!isLeader) {
+      throw unauthorized();
+    }
+  }
+
+  async function setPublic (name: string, email: string, privacy: string) {
+    await assertLeader(name, email);
+
+    return setPrivacyGuild(models, name, privacy);
+  }
+
+  async function removePublic (name: string, email: string, privacy: string) {
+    await assertLeader(name, email);
+
+    return removePrivacyGuild(models, name, privacy);
+  }
+
   const guildMethodMap = {
     logs: gw2.readGuildLogs,
     members: gw2.readGuildMembers,
@@ -135,6 +163,8 @@ export default function guildControllerFactory (models: Models) {
 
   return {
     read,
+    setPublic,
+    removePublic,
     random,
     guildsOfTheDay,
     readCharacters,

@@ -142,6 +142,7 @@ describe('user service', () => {
         alias: userTwo.alias,
         email: userTwo.email,
         passwordHash: userTwo.passwordHash,
+        privacy: userTwo.privacy.split('|'),
         stub: false,
         rating: ratingCurrent,
         valid: true,

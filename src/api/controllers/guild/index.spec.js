@@ -132,6 +132,7 @@ describe('guild controller', () => {
               'id',
               'tag',
               'claimed',
+              'privacy',
             ]));
           });
       });
