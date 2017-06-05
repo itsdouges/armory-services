@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+
+## [3.3.1][] - 2017-06-05
 ### Changed
 - EB environment to single instance to reduce costs
 
@@ -259,7 +261,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - This CHANGELOG file to allow more insight to the changes made throughout the development of api.gw2armory.com
 
 
-[Unreleased]: https://github.com/madou/armory-back/compare/v3.3.0...HEAD
+[Unreleased]: https://github.com/madou/armory-back/compare/v3.3.1...HEAD
+[3.3.1]: https://github.com/madou/armory-back/compare/v3.3.0...v3.3.1
 [3.3.0]: https://github.com/madou/armory-back/compare/v3.2.6...v3.3.0
 [3.2.6]: https://github.com/madou/armory-back/compare/v3.2.5...v3.2.6
 [3.2.5]: https://github.com/madou/armory-back/compare/v3.2.4...v3.2.5
