@@ -67,7 +67,7 @@ module.exports = ({ zipPath, environmentName }) => ({
   {
     Namespace: 'aws:elasticbeanstalk:environment',
     OptionName: 'EnvironmentType',
-    Value: 'LoadBalanced',
+    Value: 'SingleInstance',
   },
   {
     Namespace: 'aws:elb:listener:443',
