@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+### Added
+- Ability to reclaim api token when removed from arenanet but not the armory
 
 ## [3.3.1][] - 2017-06-05
 ### Changed
