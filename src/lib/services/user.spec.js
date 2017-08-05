@@ -78,6 +78,7 @@ describe('user service', () => {
       primary: true,
       accountName: 'swag.4321',
       accountId: '4444',
+      valid: false,
       guilds: null,
     }));
     await models.Gw2ApiToken.create(apiTokenForUserTwo);
@@ -91,6 +92,59 @@ describe('user service', () => {
   });
 
   afterEach(() => sandbox.reset());
+
+  describe('has user tokens', () => {
+    it('should return true', async () => {
+      const actual = await service.doesUserHaveTokens(models, user.id);
+
+      expect(actual).to.equal(true);
+    });
+
+    it('should return false', async () => {
+      const actual = await service.doesUserHaveTokens(models, 33);
+
+      expect(actual).to.equal(false);
+    });
+  });
+
+  describe('token check', () => {
+    it('should return valid', async () => {
+      const status = await service.doesTokenExist(models, apiToken.accountName);
+
+      expect(status).to.equal('valid');
+    });
+
+    it('should return invalid', async () => {
+      const status = await service.doesTokenExist(models, 'swag.4321');
+
+      expect(status).to.equal('invalid');
+    });
+
+    it('should return stub', async () => {
+      const acc = 'swwag.4321';
+
+      await models.Gw2ApiToken.create(testData.apiToken({
+        id: 54,
+        token: '333333',
+        primary: false,
+        accountName: acc,
+        accountId: '44434',
+        valid: undefined,
+        stub: true,
+        guilds: null,
+      }));
+
+      const status = await service.doesTokenExist(models, acc);
+
+      expect(status).to.equal('stub');
+    });
+
+    it('should return false', async () => {
+      const status = await service.doesTokenExist(models, 'accountname');
+
+      expect(status).to.equal(false);
+    });
+  });
 
   describe('make primrary', () => {
     it('should set all tokens primary to false except for target', async () => {

@@ -152,6 +152,46 @@ describe('gw2 token controller', () => {
         id: result.id,
       });
     });
+
+    context('when replacing', () => {
+      it('should add token to db as not primary', async () => {
+        validate.returns(Promise.resolve());
+        replaceToken.returns(apiToken);
+        doesUserHaveTokens.returns(Promise.resolve(true));
+        doesTokenExist.returns(Promise.resolve('invalid'));
+        readTokenInfoWithAccount.returns(Promise.resolve({
+          accountName: 'nameee',
+          accountId: 'eeee',
+          world: 1122,
+          info: ['cool', 'yeah!'],
+        }));
+
+        await controller.add('cool@email.com', 'token');
+
+        expect(replaceToken.firstCall.args[1]).to.include({
+          makePrimary: false,
+        });
+      });
+    });
+
+    context('when claiming', () => {
+      it('should add token to db as not primary', async () => {
+        validate.returns(Promise.resolve());
+        claimStubApiToken.returns(apiToken);
+        doesUserHaveTokens.returns(Promise.resolve(true));
+        doesTokenExist.returns(Promise.resolve('stub'));
+        readTokenInfoWithAccount.returns(Promise.resolve({
+          accountName: 'nameee',
+          accountId: 'eeee',
+          world: 1122,
+          info: ['cool', 'yeah!'],
+        }));
+
+        await controller.add('cool@email.com', 'token');
+
+        expect(claimStubApiToken).to.have.been.calledWith(models, 'cool@email.com', 'token', false);
+      });
+    });
   });
 
   describe('removing', () => {

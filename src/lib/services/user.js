@@ -462,12 +462,12 @@ export async function doesTokenExist (models: Models, accountName: string): Prom
   });
 
   if (token) {
-    if (token.valid) {
-      return 'valid';
-    }
-
     if (token.stub) {
       return 'stub';
+    }
+
+    if (token.valid) {
+      return 'valid';
     }
 
     return 'invalid';
@@ -497,8 +497,8 @@ export async function selectPrimaryToken (models: Models, email: string, token: 
   });
 }
 
-export async function listTokens (models: Models, email: string) {
-  return await models.Gw2ApiToken.findAll({
+export function listTokens (models: Models, email: string) {
+  return models.Gw2ApiToken.findAll({
     include: [{
       model: models.User,
       where: {
