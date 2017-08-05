@@ -39,6 +39,7 @@ function validGw2Token (name, val, dependencies) {
             where: {
               accountName,
               stub: false,
+              valid: true,
             },
           })
           .then((item) => {

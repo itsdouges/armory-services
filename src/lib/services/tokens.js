@@ -19,16 +19,59 @@ type Tokens$Read = {
   id: number,
 };
 
-export async function read (models: Models, { id }: Tokens$Read) {
-  return await models.Gw2ApiToken.findOne({
+type Tokens$Create = {
+  apiToken: string,
+  userId: string,
+  world: string,
+  accountId: string,
+  accountName: string,
+  makePrimary: boolean,
+  permissions: Array<string>,
+};
+
+const dataToToken = (data: Tokens$Create) => ({
+  token: data.apiToken,
+  UserId: data.userId,
+  permissions: data.permissions.join(','),
+  world: data.world,
+  accountId: data.accountId,
+  accountName: data.accountName,
+  primary: data.makePrimary,
+  valid: true,
+});
+
+export function create (models: Models, data: Tokens$Create) {
+  return models.Gw2ApiToken.create(dataToToken(data));
+}
+
+export function read (models: Models, { id }: Tokens$Read) {
+  return models.Gw2ApiToken.findOne({
     where: _.pickBy({
       id,
     }),
   });
 }
 
-export async function setValidity (models: Models, valid: boolean, token: string) {
-  return await models.Gw2ApiToken.update({
+export async function replace (models: Models, data: Tokens$Create) {
+  const parsedData = dataToToken(data);
+  const [count] = await models.Gw2ApiToken.update(parsedData, {
+    where: {
+      accountName: data.accountName,
+      valid: false,
+    },
+  });
+
+  if (count === 1) {
+    return _.omit(parsedData, ['UserId']);
+  }
+
+  throw new Error(
+    `Trying to replace api token failed. Updated ${count} instead. ${JSON.stringify(data)}`
+  );
+}
+
+export function setValidity (models: Models, valid: boolean, token: string) {
+  return models.Gw2ApiToken.update({
     valid,
   }, {
     where: {

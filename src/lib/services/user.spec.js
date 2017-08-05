@@ -72,6 +72,14 @@ describe('user service', () => {
     await models.User.create(user);
     await models.User.create(userTwo);
     await models.Gw2ApiToken.create(apiToken);
+    await models.Gw2ApiToken.create(testData.apiToken({
+      id: 3,
+      token: '3333',
+      primary: true,
+      accountName: 'swag.4321',
+      accountId: '4444',
+      guilds: null,
+    }));
     await models.Gw2ApiToken.create(apiTokenForUserTwo);
     await models.PvpStandings.create({
       ...standing,
@@ -83,6 +91,23 @@ describe('user service', () => {
   });
 
   afterEach(() => sandbox.reset());
+
+  describe('make primrary', () => {
+    it('should set all tokens primary to false except for target', async () => {
+      await service.selectPrimaryToken(models, user.email, apiToken.token);
+
+      const tokens = await models.Gw2ApiToken.findAll({
+        where: {
+          UserId: user.id,
+        },
+      });
+
+      const primaryToken = tokens.filter(({ token }) => token === apiToken.token)[0];
+      const otherTokens = tokens.filter(({ token }) => token !== apiToken.token);
+      expect(primaryToken.primary).to.equal(true);
+      otherTokens.forEach((token) => expect(token.primary).to.equal(false));
+    });
+  });
 
   describe('list', () => {
     it('should return all users in guild', async () => {
