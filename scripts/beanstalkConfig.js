@@ -69,31 +69,31 @@ module.exports = ({ zipPath, environmentName }) => ({
     OptionName: 'EnvironmentType',
     Value: 'SingleInstance',
   },
-  {
-    Namespace: 'aws:elb:listener:443',
-    OptionName: 'SSLCertificateId',
-    Value: 'arn:aws:acm:us-east-1:521573301669:certificate/07c5ada9-db12-4e2d-ba97-69b36d41cf9e',
-  },
-  {
-    Namespace: 'aws:elb:listener:443',
-    OptionName: 'ListenerProtocol',
-    Value: 'HTTPS',
-  },
-  {
-    Namespace: 'aws:elb:listener:443',
-    OptionName: 'InstancePort',
-    Value: '80',
-  },
-  {
-    Namespace: 'aws:elb:listener:443',
-    OptionName: 'InstanceProtocol',
-    Value: 'HTTP',
-  },
-  {
-    Namespace: 'aws:elb:listener:80',
-    OptionName: 'ListenerEnabled',
-    Value: 'true',
-  },
+  // {
+  //   Namespace: 'aws:elb:listener:443',
+  //   OptionName: 'SSLCertificateId',
+  //   Value: 'arn:aws:acm:us-east-1:521573301669:certificate/07c5ada9-db12-4e2d-ba97-69b36d41cf9e',
+  // },
+  // {
+  //   Namespace: 'aws:elb:listener:443',
+  //   OptionName: 'ListenerProtocol',
+  //   Value: 'HTTPS',
+  // },
+  // {
+  //   Namespace: 'aws:elb:listener:443',
+  //   OptionName: 'InstancePort',
+  //   Value: '80',
+  // },
+  // {
+  //   Namespace: 'aws:elb:listener:443',
+  //   OptionName: 'InstanceProtocol',
+  //   Value: 'HTTP',
+  // },
+  // {
+  //   Namespace: 'aws:elb:listener:80',
+  //   OptionName: 'ListenerEnabled',
+  //   Value: 'true',
+  // },
   {
     Namespace: 'aws:elasticbeanstalk:sns:topics',
     OptionName: 'Notification Protocol',

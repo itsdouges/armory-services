@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TEST_BRANCH=feature/PvpSeasons
+TEST_BRANCH=feature/ReclaimToken
 
 docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 
