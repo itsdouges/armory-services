@@ -1,13 +1,17 @@
 // @flow
 
-import { minutes } from 'lib/time';
+import { hours } from 'lib/time';
 
 export default {
   db: {
-    host: 'gw2armory-test.cekbcmynaoxp.us-east-1.rds.amazonaws.com',
+    username: process.env.DB_USER || 'admin',
+    password: process.env.DB_PASS || 'password',
+    host: 'gw2armory-prod.cekbcmynaoxp.us-east-1.rds.amazonaws.com',
   },
 
   fetch: {
-    interval: minutes(1),
+    concurrentCalls: 1,
+    interval: hours(24),
+    retries: 1,
   },
 };
