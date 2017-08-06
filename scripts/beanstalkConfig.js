@@ -25,6 +25,11 @@ module.exports = ({ zipPath, environmentName }) => ({
   },
   {
     Namespace: 'aws:ec2:vpc',
+    OptionName: 'AssociatePublicIpAddress',
+    Value: 'true',
+  },
+  {
+    Namespace: 'aws:ec2:vpc',
     OptionName: 'VPCId',
     Value: 'vpc-7857f31c',
   },
