@@ -453,14 +453,27 @@ export async function doesUserHaveTokens (models: Models, userId: number) {
   return !!tokens.length;
 }
 
-export async function doesTokenExist (models: Models, accountName: string) {
-  const tokenExists = await models.Gw2ApiToken.findOne({
+type Token$Status = 'valid' | 'invalid' | 'stub' | false;
+export async function doesTokenExist (models: Models, accountName: string): Promise<Token$Status> {
+  const token = await models.Gw2ApiToken.findOne({
     where: {
       accountName,
     },
   });
 
-  return !!tokenExists;
+  if (token) {
+    if (token.stub) {
+      return 'stub';
+    }
+
+    if (token.valid) {
+      return 'valid';
+    }
+
+    return 'invalid';
+  }
+
+  return false;
 }
 
 export async function selectPrimaryToken (models: Models, email: string, token: string) {
@@ -484,8 +497,8 @@ export async function selectPrimaryToken (models: Models, email: string, token: 
   });
 }
 
-export async function listTokens (models: Models, email: string) {
-  return await models.Gw2ApiToken.findAll({
+export function listTokens (models: Models, email: string) {
+  return models.Gw2ApiToken.findAll({
     include: [{
       model: models.User,
       where: {

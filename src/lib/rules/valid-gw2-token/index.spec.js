@@ -144,6 +144,7 @@ describe('gw2 token validator', () => {
             accountId: 'ahh',
             world: 3344,
             UserId: e.id,
+            valid: true,
           })
           .then(() => {
             return token('token', 'another_token_i_generated', {

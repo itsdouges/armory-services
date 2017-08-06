@@ -2,7 +2,7 @@ module.exports = ({ zipPath, environmentName }) => ({
   archiveFilePath: zipPath,
   environmentName,
   // eslint-disable-next-line
-  awsStackName: '64bit Amazon Linux 2016.09 v2.3.0 running Multi-container Docker 1.11.2 (Generic)',
+  awsStackName: '64bit Amazon Linux 2017.03 v2.7.2 running Multi-container Docker 17.03.1-ce (Generic)',
   // http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html
   beanstalkConfig: [{
     Namespace: 'aws:autoscaling:asg',
@@ -67,7 +67,7 @@ module.exports = ({ zipPath, environmentName }) => ({
   {
     Namespace: 'aws:elasticbeanstalk:environment',
     OptionName: 'EnvironmentType',
-    Value: 'SingleInstance',
+    Value: 'LoadBalanced',
   },
   {
     Namespace: 'aws:elb:listener:443',

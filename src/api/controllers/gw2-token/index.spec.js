@@ -1,27 +1,52 @@
+import proxyquire from 'proxyquire';
 import * as testData from 'test/testData/db';
+
+const models = {};
+
+const sandbox = sinon.sandbox.create();
+const createToken = sandbox.stub();
+const replaceToken = sandbox.stub();
+const claimStubApiToken = sandbox.stub();
+const doesUserHaveTokens = sandbox.stub();
+const getUserId = sandbox.stub();
+const selectPrimaryToken = sandbox.stub();
+const removeToken = sandbox.stub();
+const doesTokenExist = sandbox.stub();
+const listTokens = sandbox.stub();
+const fetchUserData = sandbox.spy();
+const readTokenInfoWithAccount = sandbox.stub();
+
+const validate = sandbox.stub();
+const createValidator = () => ({ validate });
+createValidator.addResource = sandbox.spy();
+
+const controllerFactory = proxyquire('./', {
+  'lib/services/fetch': { fetch: fetchUserData },
+  'lib/gw2': {
+    default: { readTokenInfoWithAccount },
+  },
+  'lib/services/tokens': {
+    replace: replaceToken,
+    create: createToken,
+  },
+  'lib/services/user': {
+    claimStubApiToken,
+    doesUserHaveTokens,
+    getUserId,
+    selectPrimaryToken,
+    removeToken,
+    doesTokenExist,
+    listTokens,
+  },
+}).default;
 
 describe('gw2 token controller', () => {
   let controller;
-  let models;
-  let fetch;
-  let readTokenInfoWithAccount;
-  let validate;
-  let createValidator;
-
-  const mockConfig = {
-    fetch: {
-      host: 'host',
-      port: 'port',
-    },
-  };
-
-  const user = testData.user();
 
   const apiToken = testData.apiToken({
     token: 'cool_token',
     primary: true,
   });
-
   const apiTokenTwo = testData.apiToken({
     id: 2,
     token: 'another_token',
@@ -30,51 +55,27 @@ describe('gw2 token controller', () => {
   });
 
   beforeEach(async () => {
-    models = await setupTestDb();
-
-    fetch = sinon.stub();
-    readTokenInfoWithAccount = sinon.stub();
-    validate = sinon.stub();
-    createValidator = () => ({ validate });
-    createValidator.addResource = sinon.spy();
-
-    const controllerFactory = proxyquire('api/controllers/gw2-token', {
-      'lib/services/fetch': { fetch },
-      config: mockConfig,
-      'lib/gw2': {
-        readTokenInfoWithAccount,
-      },
-    });
-
     controller = controllerFactory(models, createValidator);
   });
 
-  const seedDb = async function (email, addTokens = true) {
-    await models.User.create({ ...user, email });
-
-    if (!addTokens) {
-      return;
-    }
-
-    await models.Gw2ApiToken.create(apiTokenTwo);
-    await models.Gw2ApiToken.create(apiToken);
-  };
+  afterEach(() => sandbox.reset());
 
   describe('list', () => {
     it('should list tokens in db', async () => {
-      await seedDb('email@email.com');
+      const email = 'email@email.com';
+      listTokens.withArgs(models, email).returns([
+        apiToken,
+        apiTokenTwo,
+      ]);
 
-      const tokens = await controller.list('email@email.com');
+      const tokens = await controller.list(email);
 
       expect(2).to.equal(tokens.length);
-
       const [token1, token2] = tokens;
-
       expect(apiToken.token).to.equal(token1.token);
       expect(apiToken.accountName).to.equal(token1.accountName);
       expect(apiToken.world).to.equal(token1.world);
       expect(apiToken.primary).to.equal(token1.primary);
-
       expect(apiTokenTwo.token).to.equal(token2.token);
       expect(apiTokenTwo.accountName).to.equal(token2.accountName);
       expect(apiTokenTwo.world).to.equal(token2.world);
@@ -108,7 +109,8 @@ describe('gw2 token controller', () => {
 
     it('should add token to db as not primary', async () => {
       validate.returns(Promise.resolve());
-
+      createToken.returns(apiToken);
+      doesUserHaveTokens.returns(Promise.resolve(true));
       readTokenInfoWithAccount.returns(Promise.resolve({
         accountName: 'nameee',
         accountId: 'eeee',
@@ -116,98 +118,90 @@ describe('gw2 token controller', () => {
         info: ['cool', 'yeah!'],
       }));
 
-      fetch.returns(Promise.resolve());
+      await controller.add('cool@email.com', 'token');
 
-      await seedDb('cool@email.com');
-
-      const result = await controller.add('cool@email.com', 'token');
-
-      expect(result.primary).to.equal(false);
+      expect(createToken.firstCall.args[1]).to.include({
+        makePrimary: false,
+      });
     });
 
     it('should add token to db as primary if first token', async () => {
+      const info = ['cool', 'yeah!'];
       validate.returns(Promise.resolve());
-
+      createToken.returns(apiToken);
+      doesUserHaveTokens.returns(Promise.resolve(false));
       readTokenInfoWithAccount.returns(Promise.resolve({
         accountName: 'nameee',
         accountId: 'eeee',
         world: 1122,
-        info: ['cool', 'yeah!'],
+        info,
       }));
-
-      await models.User.create({
-        email: 'cool@email.com',
-        passwordHash: 'lolz',
-        alias: 'swagn',
-      });
 
       const result = await controller.add('cool@email.com', 'token');
 
-      expect(result).to.include({
-        token: 'token',
-        primary: true,
-        permissions: 'cool,yeah!',
+      expect(createToken.firstCall.args[1]).to.include({
+        makePrimary: true,
+        apiToken: 'token',
+        permissions: info,
         accountName: 'nameee',
       });
 
-      expect(fetch).to.have.been.calledWith({
+      expect(fetchUserData).to.have.been.calledWith({
         token: result.token,
         permissions: result.permissions,
         id: result.id,
       });
     });
-  });
 
-  describe('select primary', () => {
-    it('should set all tokens primary to false except for target', async () => {
-      await seedDb('email@email.com');
+    context('when replacing', () => {
+      it('should add token to db as not primary', async () => {
+        validate.returns(Promise.resolve());
+        replaceToken.returns(apiToken);
+        doesUserHaveTokens.returns(Promise.resolve(true));
+        doesTokenExist.returns(Promise.resolve('invalid'));
+        readTokenInfoWithAccount.returns(Promise.resolve({
+          accountName: 'nameee',
+          accountId: 'eeee',
+          world: 1122,
+          info: ['cool', 'yeah!'],
+        }));
 
-      await controller.selectPrimary('email@email.com', 'another_token');
+        await controller.add('cool@email.com', 'token');
 
-      const tokens = await models.Gw2ApiToken.findAll();
-      const primaryToken = tokens.filter(({ token }) => token === 'another_token')[0];
+        expect(replaceToken.firstCall.args[1]).to.include({
+          makePrimary: false,
+        });
+      });
+    });
 
-      const otherTokens = tokens.filter(({ token }) => token !== 'another_token');
+    context('when claiming', () => {
+      it('should add token to db as not primary', async () => {
+        validate.returns(Promise.resolve());
+        claimStubApiToken.returns(apiToken);
+        doesUserHaveTokens.returns(Promise.resolve(true));
+        doesTokenExist.returns(Promise.resolve('stub'));
+        readTokenInfoWithAccount.returns(Promise.resolve({
+          accountName: 'nameee',
+          accountId: 'eeee',
+          world: 1122,
+          info: ['cool', 'yeah!'],
+        }));
 
-      expect(primaryToken.primary).to.equal(true);
+        await controller.add('cool@email.com', 'token');
 
-      otherTokens.forEach((token) => expect(token.primary).to.equal(false));
+        expect(claimStubApiToken).to.have.been.calledWith(models, 'cool@email.com', 'token', false);
+      });
     });
   });
 
   describe('removing', () => {
     it('should remove token from db', async () => {
-      validate.returns(Promise.resolve());
-      readTokenInfoWithAccount.returns(Promise.resolve({
-        accountName: 'nameee',
-        accountId: 'eeee',
-        world: 1122,
-        info: ['cool', 'yeah!'],
-      }));
+      const email = 'email@email.email';
+      const token = '1234';
 
-      fetch.returns(Promise.resolve());
+      await controller.remove(email, token);
 
-      await models.User.create({
-        email: 'cool@email.com',
-        passwordHash: 'lolz',
-        alias: 'swagn',
-      });
-
-
-      const result = await controller.add('cool@email.com', 'token');
-
-      expect(result.token).to.equal('token');
-      expect(result.accountName).to.equal('nameee');
-
-      await controller.remove('cool@email.com', 'token');
-
-      const tokens = await models.Gw2ApiToken.findOne({
-        where: {
-          token: 'token',
-        },
-      });
-
-      expect(tokens).to.equal(null);
+      expect(removeToken).to.have.been.calledWith(models, email, token);
     });
   });
 });

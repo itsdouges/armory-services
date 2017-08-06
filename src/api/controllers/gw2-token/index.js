@@ -14,6 +14,11 @@ import {
   listTokens,
 } from 'lib/services/user';
 
+import {
+  replace as replaceToken,
+  create as createToken,
+} from 'lib/services/tokens';
+
 export default function tokenFactory (models: Models, createValidator: any) {
   createValidator.addResource({
     name: 'gw2-token',
@@ -35,23 +40,27 @@ export default function tokenFactory (models: Models, createValidator: any) {
     ]);
 
     const setPrimary = !hasTokens;
-    const tokenExists = await doesTokenExist(models, tokenInfo.accountName);
+    const tokenStatus = await doesTokenExist(models, tokenInfo.accountName);
 
-    if (tokenExists) {
-      // Stub token is being replaced
+    if (tokenStatus === 'stub') {
       return await claimStubApiToken(models, email, apiToken, setPrimary);
     }
 
-    return await models.Gw2ApiToken.create({
-      token: apiToken,
-      UserId: id,
-      permissions: tokenInfo.info.join(','),
+    const tokenData = {
+      apiToken,
+      userId: id,
       world: tokenInfo.world,
       accountId: tokenInfo.accountId,
       accountName: tokenInfo.accountName,
-      primary: setPrimary,
-      valid: true,
-    });
+      makePrimary: setPrimary,
+      permissions: tokenInfo.info,
+    };
+
+    if (tokenStatus === 'invalid') {
+      return await replaceToken(models, tokenData);
+    }
+
+    return createToken(models, tokenData);
   }
 
   async function add (email: string, token: string) {
@@ -92,8 +101,8 @@ export default function tokenFactory (models: Models, createValidator: any) {
     });
   }
 
-  async function remove (email: string, apiToken: string) {
-    await removeToken(models, email, apiToken);
+  function remove (email: string, apiToken: string) {
+    return removeToken(models, email, apiToken);
   }
 
   async function selectPrimary (email: string, apiToken: string) {
