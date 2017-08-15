@@ -39,7 +39,7 @@ describe('auth controller', () => {
           username: 'cool@email',
           password: 'coolpassword',
         }, null, (err, res) => {
-          expect(res).to.be.truthy;
+          expect(res).to.exist;
 
           models
             .UserToken

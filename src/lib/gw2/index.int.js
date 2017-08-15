@@ -52,11 +52,9 @@ describe('gw2 api', function () {
       });
   });
 
-  it('should return invalid token error', () => {
-    return gw2Api.readCharacter('invalid', 'Blastrn')
-    .then(null, (response) => {
-      expect(response.status).to.equal(403);
-    });
+  it('should return invalid token error', async () => {
+    return expect(gw2Api.readCharacter('invalid', 'Blastrn'))
+      .to.be.rejectedWith('Request failed with status code 403');
   });
 
   it('should return characters data as expected', () => {

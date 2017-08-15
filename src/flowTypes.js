@@ -1,14 +1,22 @@
 // @flow
 
+type Query = {
+  where?: { [string]: any },
+};
+
+type Data = {
+  [string]: any,
+};
+
 export type Sequelize = {
-  upsert: () => Promise<>,
-  update: () => Promise<>,
-  findOne: () => Promise<>,
-  findAll: () => Promise<>,
-  create: () => Promise<>,
-  destroy: () => Promise<>,
-  findAndCount: () => Promise<>,
-  count: () => Promise<number>,
+  upsert: (Data) => Promise<>,
+  update: (Data, Query) => Promise<>,
+  findOne: (?Query) => Promise<>,
+  findAll: (?Query) => Promise<>,
+  create: (Data) => Promise<>,
+  destroy: (Query) => Promise<>,
+  findAndCount: (Query) => Promise<>,
+  count: (?Query) => Promise<number>,
 };
 
 export type Models = {

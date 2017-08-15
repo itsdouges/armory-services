@@ -3,7 +3,6 @@ import _ from 'lodash';
 
 import * as testData from 'test/testData/db';
 import { stubValidator } from 'test/utils';
-import { unauthorized } from 'lib/errors';
 
 const sandbox = sinon.sandbox.create();
 const readGuild = sandbox.stub();
@@ -224,12 +223,8 @@ describe('user controller', () => {
   describe('forgot my password', () => {
     context('starting', () => {
       context('when user is not found', () => {
-        it('should throw error', async () => {
-          try {
-            await controller.forgotMyPasswordStart();
-          } catch (e) {
-            expect(e).to.eql(new Error('User not found'));
-          }
+        it('should throw error', () => {
+          return expect(controller.forgotMyPasswordStart()).to.be.rejectedWith('User not found');
         });
       });
 
@@ -260,12 +255,8 @@ describe('user controller', () => {
 
     context('finishing', () => {
       context('when reset token doesnt exist', () => {
-        it('should throw error', async () => {
-          try {
-            await controller.forgotMyPasswordFinish();
-          } catch (e) {
-            expect(e).to.eql(new Error('Reset doesn\'t exist'));
-          }
+        it('should throw error', () => {
+          expect(controller.forgotMyPasswordFinish()).to.be.rejectedWith('Reset doesn\'t exist');
         });
       });
 
@@ -303,9 +294,9 @@ describe('user controller', () => {
           used: true,
         });
 
-        return controller.forgotMyPasswordFinish(resetToken.id, '1234').catch((e) => {
-          expect(e).to.eql(new Error('Reset doesn\'t exist'));
-        });
+        const promise = controller.forgotMyPasswordFinish(resetToken.id, '1234');
+
+        return expect(promise).to.be.rejectedWith('Reset doesn\'t exist');
       });
 
       it('should throw error when token expired', () => {
@@ -314,9 +305,9 @@ describe('user controller', () => {
           expires: moment().add(-5, 'days'),
         });
 
-        return controller.forgotMyPasswordFinish(resetToken.id, '1234').catch((e) => {
-          expect(e).to.eql(new Error('Reset doesn\'t exist'));
-        });
+        const promise = controller.forgotMyPasswordFinish(resetToken.id, '1234');
+
+        return expect(promise).to.be.rejectedWith('Reset doesn\'t exist');
       });
     });
   });
@@ -391,7 +382,7 @@ describe('user controller', () => {
         expect(spy).to.have.been.calledWith(token);
       });
 
-      it(`should reject access if user doessnt own and privacy is set for ${funcName}`, (done) => {
+      it(`should reject access if user does not own and privacy is set for ${funcName}`, () => {
         const token = '1234-1234';
         readUser.withArgs(models, { alias: user.alias, mode: 'lean' })
           .returns(Promise.resolve({
@@ -400,11 +391,8 @@ describe('user controller', () => {
           }));
         readToken.withArgs(models, { id: user.tokenId }).returns(Promise.resolve({ token }));
 
-        controller[funcName](user.alias, { email: 'nah@nah.com' })
-          .catch((e) => {
-            expect(e).to.eql(unauthorized());
-            done();
-          });
+        return expect(controller[funcName](user.alias, { email: 'nah@nah.com' }))
+          .to.be.rejectedWith('unauthorized');
       });
     });
   });

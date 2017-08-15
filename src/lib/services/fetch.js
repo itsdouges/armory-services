@@ -34,7 +34,6 @@ export async function tryFetch (mdls: Models, id: number) {
     fetchBlock[id] = true;
     await fetch({ id: token.id, permissions: token.permissions, token: token.token });
     delete fetchBlock[id];
-    return;
   }
 
   return;

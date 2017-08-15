@@ -44,12 +44,8 @@ describe('character controller', () => {
   });
 
   describe('reading character', () => {
-    it('should reject if character name is not in our db', async () => {
-      try {
-        await controller.read('noname');
-      } catch (e) {
-        expect(e).to.eql(new Error('Unauthorized'));
-      }
+    it('should reject if character name is not in our db', () => {
+      return expect(controller.read('noname')).to.be.rejectedWith('Character not found');
     });
 
     it('should throw if email doesnt match', async () => {
@@ -104,14 +100,10 @@ describe('character controller', () => {
       });
     });
 
-    it('should hide character if showPublic is false', async () => {
+    it('should hide character if showPublic is false', () => {
       readCharacter.returns(Promise.resolve({}));
 
-      try {
-        await controller.read(characterTwo.name);
-      } catch (e) {
-        expect(e).to.eql(new Error('Unauthorized'));
-      }
+      return expect(controller.read(characterTwo.name)).to.be.rejectedWith('Character not found');
     });
 
     it('should show character is showPublic is false and ignorePrivacy is true', async () => {

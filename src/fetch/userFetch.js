@@ -19,7 +19,7 @@ export type Fetcher$Token = {
 
 type Fetcher = (models: Models, token: Fetcher$Token) => Promise<>;
 
-export function parseResults (results: []) {
+export function parseResults (results: Array<*>) {
   const errors = [];
   const successes = [];
   const removed = [];
