@@ -7,6 +7,7 @@ import axios from 'axios';
 import restifyOAuth2 from 'restify-oauth2';
 import createValidator from 'gotta-validate';
 import config from 'config';
+import corsMiddleware from 'restify-cors-middleware';
 
 import tokenControllerFactory from './controllers/gw2-token';
 import usersControllerFactory from './controllers/user';
@@ -58,18 +59,17 @@ export default function createServer (models: Models) {
     version: config.version,
   });
 
-  restify.CORS.ALLOW_HEADERS.push('authorization');
-  restify.CORS.ALLOW_HEADERS.push('Access-Control-Allow-Origin');
-
-  // eslint-disable-next-line new-cap
-  server.use(restify.CORS({
+  const cors = corsMiddleware({
     origins: config.allowedCors,
-  }));
+    allowHeaders: ['authorization', 'Access-Control-Allow-Origin'],
+  });
 
-  server.use(restify.authorizationParser());
-  server.use(restify.bodyParser());
-  server.use(restify.queryParser());
-  server.use(restify.gzipResponse());
+  server.pre(cors.preflight);
+  server.use(cors.actual);
+  server.use(restify.plugins.authorizationParser());
+  server.use(restify.plugins.bodyParser());
+  server.use(restify.plugins.queryParser());
+  server.use(restify.plugins.gzipResponse());
 
   restifyOAuth2.ropc(server, {
     tokenEndpoint: '/token',

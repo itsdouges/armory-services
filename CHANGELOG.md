@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
 ### Changed
-- Upgraded sequelize
+- Updated sequelize
+- Updated restify
 
 ## [3.4.1][] - 2017-08-15
 ### Changed
