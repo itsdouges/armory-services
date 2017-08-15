@@ -43,19 +43,17 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     privacy: DataTypes.STRING,
-  }, {
-    classMethods: {
-      associate (models) {
-        Gw2Guild.belongsTo(models.Gw2ApiToken, {
-          onDelete: 'SET NULL',
-          foreignKey: {
-            name: 'apiTokenId',
-            allowNull: false,
-          },
-        });
-      },
-    },
   });
+
+  Gw2Guild.associate = function associate (models) {
+    Gw2Guild.belongsTo(models.Gw2ApiToken, {
+      onDelete: 'SET NULL',
+      foreignKey: {
+        name: 'apiTokenId',
+        allowNull: false,
+      },
+    });
+  };
 
   return Gw2Guild;
 };

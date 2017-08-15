@@ -36,19 +36,17 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id',
       },
     },
-  }, {
-    classMethods: {
-      associate (models) {
-        PvpStandings.belongsTo(models.Gw2ApiToken, {
-          onDelete: 'SET NULL',
-          foreignKey: {
-            name: 'apiTokenId',
-            allowNull: false,
-          },
-        });
-      },
-    },
   });
+
+  PvpStandings.associate = function associate (models) {
+    PvpStandings.belongsTo(models.Gw2ApiToken, {
+      onDelete: 'SET NULL',
+      foreignKey: {
+        name: 'apiTokenId',
+        allowNull: false,
+      },
+    });
+  };
 
   return PvpStandings;
 };

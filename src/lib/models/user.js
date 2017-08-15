@@ -37,19 +37,18 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     privacy: DataTypes.STRING,
-  }, {
-    classMethods: {
-      associate (models) {
-        User.hasMany(models.Gw2ApiToken, {
-          as: 'gw2_api_tokens',
-          onDelete: 'CASCADE',
-          foreignKey: {
-            allowNull: false,
-          },
-        });
-      },
-    },
+    avatar: DataTypes.STRING,
   });
+
+  User.associate = function associate (models) {
+    User.hasMany(models.Gw2ApiToken, {
+      as: 'gw2_api_tokens',
+      onDelete: 'CASCADE',
+      foreignKey: {
+        allowNull: false,
+      },
+    });
+  };
 
   return User;
 };
