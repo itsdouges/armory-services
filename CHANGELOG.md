@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+
+## [3.4.2][] - 2017-08-16
 ### Changed
 - Use `circular-json` dep instead of `JSON.stringify` for error logging
 
@@ -271,7 +273,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - This CHANGELOG file to allow more insight to the changes made throughout the development of api.gw2armory.com
 
 
-[Unreleased]: https://github.com/madou/armory-back/compare/v3.4.1...HEAD
+[Unreleased]: https://github.com/madou/armory-back/compare/v3.4.2...HEAD
+[3.4.2]: https://github.com/madou/armory-back/compare/v3.4.1...v3.4.2
 [3.4.1]: https://github.com/madou/armory-back/compare/v3.4.0...v3.4.1
 [3.4.0]: https://github.com/madou/armory-back/compare/v3.3.1...v3.4.0
 [3.3.1]: https://github.com/madou/armory-back/compare/v3.3.0...v3.3.1
