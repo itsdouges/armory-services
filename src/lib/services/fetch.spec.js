@@ -64,7 +64,6 @@ describe('fetch service', () => {
     });
 
     it('should only start fetching once', async () => {
-      sandbox.reset();
       momentStub.returns(moment().freeze().add(config.fetch.refetchTimeout));
       let rslv;
       const promise = new Promise((resolve) => (rslv = resolve));

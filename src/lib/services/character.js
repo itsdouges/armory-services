@@ -91,7 +91,7 @@ export async function read (models: Models, name: string, email?: string) {
     },
   });
 
-  return (character.showPublic || canIgnorePrivacy(character, email))
+  return (character && (character.showPublic || canIgnorePrivacy(character, email)))
     ? character
     : undefined;
 }

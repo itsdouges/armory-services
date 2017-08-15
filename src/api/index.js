@@ -9,7 +9,7 @@ import createLog from 'lib/logger';
 import createServer from './server';
 
 const logger = createLog('api', 'api');
-const server = createServer(models, config);
+const server = createServer(models);
 
 sync().then(() => {
   server.listen(config.api.port);
