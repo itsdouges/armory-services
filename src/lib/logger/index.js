@@ -3,6 +3,7 @@
 import _ from 'lodash';
 import SlackBot from 'slackbots';
 import PromiseThrottle from 'promise-throttle';
+import CircularJSON from 'circular-json';
 
 import config from 'config';
 
@@ -32,7 +33,7 @@ ${_.get(error, 'config.headers.Authorization')}`;
     }
 
     return `:fire::fire:
-${JSON.stringify(error)}`;
+${CircularJSON.stringify(error)}`;
   } catch (err) {
     console.error(err);
     return 'Something bad happened';
