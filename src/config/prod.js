@@ -11,7 +11,7 @@ export default {
 
   fetch: {
     concurrentCalls: 1,
-    interval: hours(24),
+    interval: hours(30),
     retries: 1,
   },
 };

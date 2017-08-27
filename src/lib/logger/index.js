@@ -25,15 +25,22 @@ const throttle = new PromiseThrottle({
 
 function humanifyError (error = {}): string {
   try {
+    if (error.code === 'ECONNRESET') {
+      return `
+:fire::fire:
+${error.code}
+${error.config.method}${error.config.url}
+`;
+    }
+
     if (error.status) {
-      // eslint-disable-next-line max-len
       return `:fire::fire: [${error.status} ${error.statusText}] - ${_.get(error, 'data.text')}
 [${_.get(error, 'config.method')}] ${_.get(error, 'config.url')}
 ${_.get(error, 'config.headers.Authorization')}`;
     }
 
     return `:fire::fire:
-${CircularJSON.stringify(error)}`;
+${error.toString()}`;
   } catch (err) {
     console.error(err);
     return 'Something bad happened';
