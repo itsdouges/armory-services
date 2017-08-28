@@ -72,6 +72,7 @@ sync()
     logger.log(':wave:');
 
     if (config.fetch.disabled) {
+      logger.log('fetch is disabled');
       return;
     }
 

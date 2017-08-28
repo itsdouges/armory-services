@@ -61,7 +61,7 @@ export default function createServer (models: Models) {
 
   const cors = corsMiddleware({
     origins: config.allowedCors,
-    allowHeaders: ['authorization', 'Access-Control-Allow-Origin'],
+    allowHeaders: ['Authorization', 'Access-Control-Allow-Origin'],
   });
 
   server.pre(cors.preflight);
