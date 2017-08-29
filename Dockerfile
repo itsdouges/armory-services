@@ -3,7 +3,7 @@ MAINTAINER madou <laheen@gmail.com>
 LABEL Description="Guild Wars 2 Armory Services"
 
 RUN apt-get update
-RUN apt-get install git-all
+RUN apt-get install -y git
 RUN curl -o- -L https://yarnpkg.com/install.sh | bash
 RUN $HOME/.yarn/bin/yarn install
 
