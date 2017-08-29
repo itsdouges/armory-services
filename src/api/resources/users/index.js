@@ -2,12 +2,13 @@
 
 import type { Server } from 'restify';
 
+import { UnauthorizedError } from 'restify-errors';
 import _ from 'lodash';
 
 export default function UserResource (server: Server, controller: any) {
   server.get('/users/me', (req, res, next) => {
     if (!req.username) {
-      return res.sendUnauthenticated();
+      return next(new UnauthorizedError());
     }
 
     return controller.read({ email: req.username, excludeChildren: true })
@@ -38,7 +39,7 @@ export default function UserResource (server: Server, controller: any) {
 
   server.put('/users/me/password', (req, res, next) => {
     if (!req.username) {
-      return res.sendUnauthenticated();
+      return next(new UnauthorizedError());
     }
 
     return controller
@@ -92,7 +93,7 @@ export default function UserResource (server: Server, controller: any) {
 
   server.post('claim/api-token', async (req, res, next) => {
     if (!req.username) {
-      return res.sendUnauthenticated();
+      return next(new UnauthorizedError());
     }
 
     try {
@@ -134,7 +135,7 @@ export default function UserResource (server: Server, controller: any) {
 
   server.put('/users/me/privacy', async (req, res, next) => {
     if (!req.username) {
-      return res.sendUnauthenticated();
+      return next(new UnauthorizedError());
     }
 
     try {
@@ -149,7 +150,7 @@ export default function UserResource (server: Server, controller: any) {
 
   server.del('/users/me/privacy/:privacy', async (req, res, next) => {
     if (!req.username) {
-      return res.sendUnauthenticated();
+      return next(new UnauthorizedError());
     }
 
     try {

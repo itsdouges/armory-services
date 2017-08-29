@@ -1,4 +1,5 @@
 // @flow
+/* eslint import/imports-first:0 */
 
 import type { Models } from 'flowTypes';
 
@@ -67,8 +68,12 @@ export default function createServer (models: Models) {
   server.pre(cors.preflight);
   server.use(cors.actual);
   server.use(restify.plugins.authorizationParser());
-  server.use(restify.plugins.bodyParser());
-  server.use(restify.plugins.queryParser());
+  server.use(restify.plugins.bodyParser({
+    mapParams: true,
+  }));
+  server.use(restify.plugins.queryParser({
+    mapParams: true,
+  }));
   server.use(restify.plugins.gzipResponse());
 
   restifyOAuth2.ropc(server, {

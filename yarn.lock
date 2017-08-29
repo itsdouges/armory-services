@@ -4520,9 +4520,9 @@ restify-errors@^5.0.0:
   optionalDependencies:
     safe-json-stringify "^1.0.3"
 
-restify-oauth2@^4.0.3:
+"restify-oauth2@https://github.com/mariopeixoto/restify-oauth2":
   version "4.0.4"
-  resolved "https://registry.yarnpkg.com/restify-oauth2/-/restify-oauth2-4.0.4.tgz#ebe6f853aabd5ab501a8b257896748146eafdd5d"
+  resolved "https://github.com/mariopeixoto/restify-oauth2#b876b1c6e7faa7b74728c9dda7215f23d5456a78"
   dependencies:
     underscore "1.x"
 

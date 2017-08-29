@@ -25,7 +25,9 @@ const server = restify.createServer({
   name: 'gw2-fetch',
 });
 
-server.use(restify.plugins.bodyParser());
+server.use(restify.plugins.bodyParser({
+  mapParams: true,
+}));
 
 server.get('/healthcheck', (req, res, next) => {
   res.send(200, 'hi, im alive');

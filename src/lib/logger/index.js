@@ -3,7 +3,6 @@
 import _ from 'lodash';
 import SlackBot from 'slackbots';
 import PromiseThrottle from 'promise-throttle';
-import CircularJSON from 'circular-json';
 
 import config from 'config';
 
@@ -29,8 +28,7 @@ function humanifyError (error = {}): string {
       return `
 :fire::fire:
 ${error.code}
-${error.config.method}${error.config.url}
-`;
+${error.config.method}${error.config.url}`;
     }
 
     if (error.status) {
@@ -40,10 +38,12 @@ ${_.get(error, 'config.headers.Authorization')}`;
     }
 
     return `:fire::fire:
-${error.toString()}`;
+${error.toString()}${error.stack ? `\n${error.stack}` : ''}`;
   } catch (err) {
-    console.error(err);
-    return 'Something bad happened';
+    return `
+:fire::fire:
+There was an error parsing the error, lol
+${JSON.stringify(err)}`;
   }
 }
 
