@@ -85,10 +85,10 @@ module.exports = (sequelize, DataTypes) => {
       field: 'show_guild',
     },
     privacy: DataTypes.STRING,
-    images: {
-      type: DataTypes.STRING,
-    },
-    portrait: DataTypes.STRING,
+    // images: {
+    //   type: DataTypes.STRING,
+    // },
+    // portrait: DataTypes.STRING,
   });
 
   Gw2Character.associate = function associate (models) {
