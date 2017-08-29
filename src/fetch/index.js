@@ -25,7 +25,9 @@ const server = restify.createServer({
   name: 'gw2-fetch',
 });
 
-server.use(restify.bodyParser());
+server.use(restify.plugins.bodyParser({
+  mapParams: true,
+}));
 
 server.get('/healthcheck', (req, res, next) => {
   res.send(200, 'hi, im alive');
@@ -72,6 +74,7 @@ sync()
     logger.log(':wave:');
 
     if (config.fetch.disabled) {
+      logger.log('fetch is disabled');
       return;
     }
 

@@ -15,18 +15,16 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false,
     },
-  }, {
-    classMethods: {
-      associate (models) {
-        UserReset.belongsTo(models.User, {
-          onDelete: 'CASCADE',
-          foreignKey: {
-            allowNull: false,
-          },
-        });
-      },
-    },
   });
+
+  UserReset.associate = function associate (models) {
+    UserReset.belongsTo(models.User, {
+      onDelete: 'CASCADE',
+      foreignKey: {
+        allowNull: false,
+      },
+    });
+  };
 
   return UserReset;
 };

@@ -2,6 +2,8 @@
 
 import type { Server } from 'restify';
 
+import errors from 'restify-errors';
+
 export default function charactersResource (server: Server, controller: any) {
   server.get('random/characters/:n', (req, res, next) => {
     controller
@@ -62,7 +64,7 @@ export default function charactersResource (server: Server, controller: any) {
 
   server.put('characters/:name', (req, res, next) => {
     if (!req.username) {
-      return res.sendUnauthenticated();
+      return next(new errors.UnauthorizedError());
     }
 
     return controller
@@ -79,7 +81,7 @@ export default function charactersResource (server: Server, controller: any) {
 
   server.put('/characters/:name/privacy', async (req, res, next) => {
     if (!req.username) {
-      return res.sendUnauthenticated();
+      return next(new errors.UnauthorizedError());
     }
 
     try {
@@ -94,7 +96,7 @@ export default function charactersResource (server: Server, controller: any) {
 
   server.del('/characters/:name/privacy/:privacy', async (req, res, next) => {
     if (!req.username) {
-      return res.sendUnauthenticated();
+      return next(new errors.UnauthorizedError());
     }
 
     try {

@@ -26,7 +26,9 @@ export default {
   },
 
   allowedCors: [
-    '*',
+    'https://gw2armory.com',
+    'https://*.gw2armory.com',
+    'http://localhost:3000',
   ],
 
   slack: {

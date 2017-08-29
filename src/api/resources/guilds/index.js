@@ -3,6 +3,7 @@
 import type { Server } from 'restify';
 import type { Models } from 'flowTypes';
 
+import errors from 'restify-errors';
 import config from 'config';
 import _ from 'lodash';
 import controllerFactory from 'api/controllers/guild';
@@ -68,7 +69,7 @@ export default function guildsResource (server: Server, models: Models) {
 
   server.put('/guilds/:name/privacy', async (req, res, next) => {
     if (!req.username) {
-      return res.sendUnauthenticated();
+      return next(new errors.UnauthorizedError());
     }
 
     try {
@@ -83,7 +84,7 @@ export default function guildsResource (server: Server, models: Models) {
 
   server.del('/guilds/:name/privacy/:privacy', async (req, res, next) => {
     if (!req.username) {
-      return res.sendUnauthenticated();
+      return next(new errors.UnauthorizedError());
     }
 
     try {

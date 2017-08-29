@@ -2,10 +2,12 @@
 
 import type { Server } from 'restify';
 
+import errors from 'restify-errors';
+
 export default function tokenResourceFactory (server: Server, controller: any) {
   server.get('/users/me/gw2-tokens', (req, res, next) => {
     if (!req.username) {
-      return res.sendUnauthenticated();
+      return next(new errors.UnauthorizedError());
     }
 
     return controller
@@ -21,7 +23,7 @@ export default function tokenResourceFactory (server: Server, controller: any) {
 
   server.post('/users/me/gw2-tokens', (req, res, next) => {
     if (!req.username) {
-      return res.sendUnauthenticated();
+      return next(new errors.UnauthorizedError());
     }
 
     return controller
@@ -37,7 +39,7 @@ export default function tokenResourceFactory (server: Server, controller: any) {
 
   server.del('/users/me/gw2-tokens/:token', (req, res, next) => {
     if (!req.username) {
-      return res.sendUnauthenticated();
+      return next(new errors.UnauthorizedError());
     }
 
     return controller
@@ -53,7 +55,7 @@ export default function tokenResourceFactory (server: Server, controller: any) {
 
   server.put('/users/me/gw2-tokens/:token/set-primary', (req, res, next) => {
     if (!req.username) {
-      return res.sendUnauthenticated();
+      return next(new errors.UnauthorizedError());
     }
 
     return controller
