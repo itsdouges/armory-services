@@ -35,7 +35,9 @@ export async function list (models: Models, {
     }),
     include: [{
       model: models.Gw2ApiToken,
+      required: true,
       include: [{
+        required: true,
         model: models.User,
         where: _.pickBy({
           // We only want to search with one prop.

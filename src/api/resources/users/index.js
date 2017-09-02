@@ -192,7 +192,7 @@ export default function UserResource (server: Server, controller: any) {
         const data = await func(req.params.alias, { email: req.username });
         res.send(200, data);
       } catch (e) {
-        res.send(e.status || 500, e);
+        res.send(500);
       }
 
       return next();

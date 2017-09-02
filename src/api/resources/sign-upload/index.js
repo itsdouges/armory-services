@@ -31,7 +31,7 @@ export default function signUploadResource (server: Server, models: Models) {
       res.send(200, data);
     } catch (e) {
       res.send(500);
-      logger.log(JSON.stringify(e));
+      logger.error(e);
     }
 
     return next();

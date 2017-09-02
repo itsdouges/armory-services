@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+### Fixed
+- Response not being sent back for unclaimed users
+- Sequelize request not bringing back associated models
 
 ## [3.4.4][] - 2017-08-29
 ### Changed

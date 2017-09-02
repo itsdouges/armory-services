@@ -3,8 +3,10 @@
 import _ from 'lodash';
 import SlackBot from 'slackbots';
 import PromiseThrottle from 'promise-throttle';
-
+import PrettyError from 'pretty-error';
 import config from 'config';
+
+const pe = new PrettyError();
 
 const startBot = () => new Promise((resolve) => {
   const slackBot = new SlackBot({
@@ -38,12 +40,12 @@ ${_.get(error, 'config.headers.Authorization')}`;
     }
 
     return `:fire::fire:
-${error.toString()}${error.stack ? `\n${error.stack}` : ''}`;
+${pe.render(error)}`;
   } catch (err) {
     return `
 :fire::fire:
 There was an error parsing the error, lol
-${JSON.stringify(err)}`;
+${pe.render(err)}`;
   }
 }
 
@@ -62,11 +64,7 @@ const createLog = (title: string, channel: string, privateChannel: boolean = tru
 
       throttle.add(() => postMessage);
     } catch (e) {
-      console.log();
-      console.log('>>> Couldn\'t connect to slack (check api key)! Falling back to console.log()');
-      console.log();
       console.log(messageWithTitle);
-      console.log(JSON.stringify(e));
     }
   },
 

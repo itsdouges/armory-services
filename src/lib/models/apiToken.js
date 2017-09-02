@@ -55,21 +55,20 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Gw2ApiToken.associate = function associate (models) {
+    Gw2ApiToken.belongsTo(models.User, {
+      onDelete: 'CASCADE',
+      foreignKey: {
+        allowNull: false,
+      },
+    });
+
     Gw2ApiToken.hasMany(models.Gw2Character, {
-      // as: 'characters',
       as: 'gw2_characters',
       foreignKey: {
         allowNull: false,
         name: 'apiTokenId',
       },
       onDelete: 'CASCADE',
-    });
-
-    Gw2ApiToken.belongsTo(models.User, {
-      onDelete: 'CASCADE',
-      foreignKey: {
-        allowNull: false,
-      },
     });
   };
 
