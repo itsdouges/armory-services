@@ -190,12 +190,13 @@ describe('gw2 api', () => {
       it('should return backup season id', async () => {
         axiosGet
           .withArgs(`${config.gw2.endpoint}v2/pvp/seasons?page=0&page_size=200`)
-          .returns(Promise.reject('latest pvp season not found'));
+          .returns(Promise.reject(new Error('latest pvp season not found')));
 
         const season = await gw2Api.readLatestPvpSeason();
 
         expect(season).to.eql({
           id: config.leaderboards.backupLatestSeasonId,
+          name: 'Pvp Season Data Currently Unavailable',
         });
       });
     });

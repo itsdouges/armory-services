@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+### Added
+- Season data to pvp leaderboards endpoint
 
 ## [3.4.5][] - 2017-09-02
 ### Fixed

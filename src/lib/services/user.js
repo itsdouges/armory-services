@@ -179,7 +179,7 @@ export async function read (models: Models, {
     return data;
   }
 
-  const { id: seasonId } = await readLatestPvpSeason();
+  const { id: seasonId } = await readLatestPvpSeason('en');
   const standing = await models.PvpStandings.findOne({
     where: {
       seasonId,

@@ -35,6 +35,10 @@ export type Pagination = {
   offset?: number,
 };
 
+export type Params = Pagination & {
+  lang?: string,
+};
+
 export type PaginatedResponse<T> = {
   rows: Array<T>,
   count: number,
@@ -66,6 +70,7 @@ export type PvpStandingModel = {
 
 export type PvpSeason = {
   id: string,
+  name: string,
 };
 
 export type User = {

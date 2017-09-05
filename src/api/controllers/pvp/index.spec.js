@@ -88,7 +88,7 @@ describe('pvp controller', () => {
 
       describe(region, () => {
         it('should add user data to each standing', async () => {
-          const leaderboard = await controller.leaderboard(region);
+          const leaderboard = await controller.leaderboard(region, { lang: 'en' });
           expect(leaderboard.rows).to.eql(standings.map((standing) => _.pick(standing, [
             'euRank',
             'gw2aRank',

@@ -157,10 +157,10 @@ export async function readPvpSeason (id: number) {
   return response.data;
 }
 
-async function getLatestPvpSeason (): Promise<PvpSeason> {
+async function getLatestPvpSeason (lang: string): Promise<PvpSeason> {
   try {
     const { data: seasons } = await axios
-      .get(`${config.gw2.endpoint}v2/pvp/seasons?page=0&page_size=200`);
+      .get(`${config.gw2.endpoint}v2/pvp/seasons?page=0&page_size=200&lang=${lang}`);
 
     const sortedSeasons = seasons.sort((a, b) => {
       const aStart = new Date(a.start);
@@ -182,15 +182,18 @@ async function getLatestPvpSeason (): Promise<PvpSeason> {
   } catch (e) {
     return {
       id: config.leaderboards.backupLatestSeasonId,
+      name: 'Pvp Season Data Currently Unavailable',
     };
   }
 }
 
-export const readLatestPvpSeason: () => Promise<PvpSeason> = memoize(getLatestPvpSeason, {
-  maxAge: config.leaderboards.latestSeasonCacheTtl,
-  promise: true,
-  preFetch: true,
-});
+export const readLatestPvpSeason: (lang: string) =>
+  Promise<PvpSeason> = memoize(getLatestPvpSeason, {
+    maxAge: config.leaderboards.latestSeasonCacheTtl,
+    promise: true,
+    preFetch: true,
+    length: 1,
+  });
 
 export default {
   ...simpleCalls,

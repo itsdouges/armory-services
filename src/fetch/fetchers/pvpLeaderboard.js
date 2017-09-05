@@ -78,7 +78,7 @@ const buildStandings = ({ standings, na, eu }) => {
 export default async function calculatePvpLeaderboards (models: Models) {
   logger.start();
 
-  const season = await readLatestPvpSeason();
+  const season = await readLatestPvpSeason('en');
 
   const [naLadder, euLadder, standings] = await Promise.all([
     gw2.readPvpLadder(null, season.id, { region: 'na' }),

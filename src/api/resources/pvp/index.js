@@ -18,6 +18,7 @@ export default function PvpResource (server: Server, controller: any) {
       const leaderboard = await memoizedLeaderboard(req.params.region, {
         limit: _.toInteger(req.params.limit) || config.pagination.leaderboards,
         offset: _.toInteger(req.params.offset) || 0,
+        lang: req.params.lang,
       });
 
       res.send(200, leaderboard);
