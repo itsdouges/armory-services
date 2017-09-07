@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+
+## [3.6.0][] - 2017-09-07
 ### Removed
 - CORS origin restrictions
 
@@ -294,7 +296,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - This CHANGELOG file to allow more insight to the changes made throughout the development of api.gw2armory.com
 
 
-[Unreleased]: https://github.com/madou/armory-back/compare/v3.5.0...HEAD
+[Unreleased]: https://github.com/madou/armory-back/compare/v3.6.0...HEAD
+[3.6.0]: https://github.com/madou/armory-back/compare/v3.5.0...v3.6.0
 [3.5.0]: https://github.com/madou/armory-back/compare/v3.4.5...v3.5.0
 [3.4.5]: https://github.com/madou/armory-back/compare/v3.4.4...v3.4.5
 [3.4.4]: https://github.com/madou/armory-back/compare/v3.4.3...v3.4.4
