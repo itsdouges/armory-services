@@ -44,6 +44,10 @@ const gw2Api = {
   readPvpStats: sandbox.spy(),
   readPvpGames: sandbox.spy(),
   readPvpStandings: sandbox.spy(),
+  readPvpHeroes: sandbox.spy(),
+  readMailCarriers: sandbox.spy(),
+  readGliders: sandbox.spy(),
+  readMail: sandbox.spy(),
 };
 
 const readToken = sandbox.stub();
@@ -351,11 +355,15 @@ describe('user controller', () => {
       ['recipes', gw2Api.readRecipes],
       ['skins', gw2Api.readSkins],
       ['titles', gw2Api.readTitles],
-      ['cats', gw2Api.readCats],
-      ['nodes', gw2Api.readNodes],
+      ['homeCats', gw2Api.readCats],
+      ['homeNodes', gw2Api.readNodes],
       ['pvpStats', gw2Api.readPvpStats],
       ['pvpGames', gw2Api.readPvpGames],
       ['pvpStandings', gw2Api.readPvpStandings],
+      ['gliders', gw2Api.readGliders],
+      ['mailCarriers', gw2Api.readMailCarriers],
+      ['mail', gw2Api.readMail],
+      ['pvpHeroes', gw2Api.readPvpHeroes],
     ].forEach(([funcName, spy]) => {
       it(`should call ${funcName}'s spy`, async () => {
         const token = '1234-1234';

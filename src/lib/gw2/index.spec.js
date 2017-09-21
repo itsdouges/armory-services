@@ -111,6 +111,11 @@ describe('gw2 api', () => {
       'readTitles',
       'readCats',
       'readNodes',
+      'readGliders',
+      'readMailCarriers',
+      'readMail',
+      'readMasteryPoints',
+      'readPvpHeroes',
     ]);
   });
 
@@ -148,6 +153,11 @@ describe('gw2 api', () => {
       readTitles: { resource: 'account/titles' },
       readCats: { resource: 'account/home/cats' },
       readNodes: { resource: 'account/home/nodes' },
+      readMasteryPoints: { resource: 'account/mastery/points' },
+      readGliders: { resource: 'account/gliders' },
+      readMail: { resource: 'account/mail' },
+      readMailCarriers: { resource: 'account/mailcarriers' },
+      readPvpHeroes: { resource: 'pvp/heroes' },
     }, ({ resource, id, normalise }, funcName) => {
       it(`should call ${funcName} and resolve data`, async () => {
         const data = { some_data: 'data' };
