@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+### Changed
+- Use `serialize-error` to parse errors to logger
 
 ## [3.7.0][] - 2017-09-21
 ### Added

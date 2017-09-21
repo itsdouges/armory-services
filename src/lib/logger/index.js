@@ -3,10 +3,8 @@
 import _ from 'lodash';
 import SlackBot from 'slackbots';
 import PromiseThrottle from 'promise-throttle';
-import PrettyError from 'pretty-error';
 import config from 'config';
-
-const pe = new PrettyError();
+import serialiseError from 'serialize-error';
 
 const startBot = () => new Promise((resolve) => {
   const slackBot = new SlackBot({
@@ -40,12 +38,12 @@ ${_.get(error, 'config.headers.Authorization')}`;
     }
 
     return `:fire::fire:
-${pe.render(error)}`;
+${serialiseError(error)}`;
   } catch (err) {
     return `
 :fire::fire:
 There was an error parsing the error, lol
-${pe.render(err)}`;
+${serialiseError(err)}`;
   }
 }
 
