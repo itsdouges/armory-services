@@ -43,6 +43,22 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     privacy: DataTypes.STRING,
+    images: {
+      type: DataTypes.LONGTEXT,
+      get () {
+        const images = this.getDataValue('images');
+        if (images) {
+          return JSON.parse(images);
+        }
+
+        return null;
+      },
+      set (val) {
+        if (val) {
+          this.setDataValue('images', JSON.stringify(val));
+        }
+      },
+    },
   });
 
   Gw2Guild.associate = function associate (models) {

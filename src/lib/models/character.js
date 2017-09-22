@@ -85,10 +85,23 @@ module.exports = (sequelize, DataTypes) => {
       field: 'show_guild',
     },
     privacy: DataTypes.STRING,
-    // images: {
-    //   type: DataTypes.STRING,
-    // },
-    // portrait: DataTypes.STRING,
+    images: {
+      type: DataTypes.LONGTEXT,
+      get () {
+        const images = this.getDataValue('images');
+        if (images) {
+          return JSON.parse(images);
+        }
+
+        return null;
+      },
+      set (val) {
+        if (val) {
+          this.setDataValue('images', JSON.stringify(val));
+        }
+      },
+    },
+    portrait: DataTypes.STRING,
   });
 
   Gw2Character.associate = function associate (models) {

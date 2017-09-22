@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     privacy: DataTypes.STRING,
-    // avatar: DataTypes.STRING,
+    avatar: DataTypes.STRING,
   });
 
   User.associate = function associate (models) {
