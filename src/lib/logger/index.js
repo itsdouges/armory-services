@@ -38,12 +38,12 @@ ${_.get(error, 'config.headers.Authorization')}`;
     }
 
     return `:fire::fire:
-${serialiseError(error)}`;
+${serialiseError(new Error(error))}`;
   } catch (err) {
     return `
 :fire::fire:
 There was an error parsing the error, lol
-${serialiseError(err)}`;
+${serialiseError(new Error(err))}`;
   }
 }
 
