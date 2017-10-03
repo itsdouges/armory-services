@@ -40,7 +40,17 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
     },
     created: DataTypes.STRING,
-    access: DataTypes.STRING,
+    access: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      get () {
+        const access = this.getDataValue('access');
+        return access ? access.split(',') : null;
+      },
+      set (value) {
+        this.setDataValue('access', value ? value.join(',') : null);
+      },
+    },
     commander: DataTypes.BOOLEAN,
     fractalLevel: DataTypes.INTEGER,
     dailyAp: DataTypes.INTEGER,

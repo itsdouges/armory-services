@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
 
+## [3.7.2][] - 2017-09-27
+### Changed
+- User access to be array based output
+
 ## [3.7.1][] - 2017-09-22
 ### Changed
 - Use `serialize-error` to parse errors to logger
@@ -304,7 +308,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - This CHANGELOG file to allow more insight to the changes made throughout the development of api.gw2armory.com
 
 
-[Unreleased]: https://github.com/madou/armory-back/compare/v3.7.1...HEAD
+[Unreleased]: https://github.com/madou/armory-back/compare/v3.7.2...HEAD
+[3.7.2]: https://github.com/madou/armory-back/compare/v3.7.1...v3.7.2
 [3.7.1]: https://github.com/madou/armory-back/compare/v3.7.0...v3.7.1
 [3.7.0]: https://github.com/madou/armory-back/compare/v3.6.0...v3.7.0
 [3.6.0]: https://github.com/madou/armory-back/compare/v3.5.0...v3.6.0

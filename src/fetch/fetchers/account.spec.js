@@ -28,7 +28,7 @@ describe('account fetcher', () => {
     const accountInfo = {
       world: 100,
       created: '10/20/16:20:20',
-      access: 'HeartOfThorns',
+      access: ['HeartOfThorns', 'PathOfFire'],
       commander: true,
       fractalLevel: 23,
       dailyAp: 30,
@@ -50,6 +50,7 @@ describe('account fetcher', () => {
 
     expect(data.dataValues).to.include(Object.assign({}, accountInfo, {
       guilds: accountInfo.guilds.join(','),
+      access: accountInfo.access.join(','),
     }));
   });
 });

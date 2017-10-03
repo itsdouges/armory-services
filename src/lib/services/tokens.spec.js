@@ -25,7 +25,10 @@ describe('token service', () => {
     const tokens = await list(models);
 
     expect(tokens.length).to.equal(1);
-    expect(tokens[0]).to.include(_.omit(apiToken, ['User']));
+    expect(tokens[0]).to.include({
+      ..._.omit(apiToken, ['User']),
+      access: 'HOT',
+    });
   });
 
   describe('replacing invalid token with a valid token', () => {

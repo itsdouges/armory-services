@@ -9,7 +9,7 @@ import guildsService from 'lib/services/guilds';
 
 export default async function fetch (models: Models, { token }: Fetcher$Token) {
   const accountInfo = await gw2.readAccount(token);
-  const row = {
+  const accountData = {
     ..._.pick(accountInfo, [
       'world',
       'created',
@@ -25,7 +25,7 @@ export default async function fetch (models: Models, { token }: Fetcher$Token) {
 
   return await Promise.all([
     guildsService.fetch(models, accountInfo.guilds),
-    models.Gw2ApiToken.update(row, {
+    models.Gw2ApiToken.update(accountData, {
       where: {
         token,
       },
