@@ -86,7 +86,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     privacy: DataTypes.STRING,
     images: {
-      type: DataTypes.LONGTEXT,
+      // eslint-disable-next-line new-cap
+      type: DataTypes.TEXT('long'),
       get () {
         const images = this.getDataValue('images');
         if (images) {
