@@ -1,5 +1,5 @@
 
-import { queryItemAttributes } from 'gw2itemstats';
+import { queryItemAttributes } from 'gw2-item-stats';
 
 function convertType (apiType) {
   switch (apiType) {

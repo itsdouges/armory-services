@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+### Changed
+- Use custom version of gw2itemstats
 
 ## [3.8.1][] - 2017-10-06
 ### Fixed
