@@ -14,7 +14,7 @@ export default function ItemStatsResource (server: Server) {
         level: +req.params.level,
       };
 
-      const itemStats = await readItemStats(req.params.id);
+      const itemStats = await readItemStats(req.params.id, req.params.lang);
       const attributes = calculateAttributes(item, itemStats);
 
       res.send(200, {

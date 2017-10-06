@@ -161,8 +161,12 @@ export async function readPvpSeason (id: number) {
   return response.data;
 }
 
-async function itemStats (id: number) {
-  const response = await axios.get(`${config.gw2.endpoint}v2/itemstats/${id}`);
+async function itemStats (id: number, lang: string) {
+  const response = await axios.get(`${config.gw2.endpoint}v2/itemstats/${id}`, {
+    params: {
+      lang,
+    },
+  });
   return response.data;
 }
 
