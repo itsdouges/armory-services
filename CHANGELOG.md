@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+
+## [3.8.2][] - 2017-10-06
 ### Changed
 - Use custom version of gw2itemstats
 
@@ -321,7 +323,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - This CHANGELOG file to allow more insight to the changes made throughout the development of api.gw2armory.com
 
 
-[Unreleased]: https://github.com/madou/armory-back/compare/v3.8.1...HEAD
+[Unreleased]: https://github.com/madou/armory-back/compare/v3.8.2...HEAD
+[3.8.2]: https://github.com/madou/armory-back/compare/v3.8.1...v3.8.2
 [3.8.1]: https://github.com/madou/armory-back/compare/v3.8.0...v3.8.1
 [3.8.0]: https://github.com/madou/armory-back/compare/v3.7.2...v3.8.0
 [3.7.2]: https://github.com/madou/armory-back/compare/v3.7.1...v3.7.2
