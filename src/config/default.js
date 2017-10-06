@@ -69,6 +69,7 @@ export default {
     findAllCharacters: hours(1),
     statistics: hours(1),
     resourceOfTheDay: hours(24),
+    itemStats: hours(24),
     gw2Api: minutes(5),
   },
 

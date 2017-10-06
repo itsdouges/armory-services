@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+### Added
+- Calculated item stats resource
 
 ## [3.7.2][] - 2017-09-27
 ### Changed

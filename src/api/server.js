@@ -96,6 +96,7 @@ export default function createServer (models: Models) {
   require('./resources/statistics').default(server, statisticsControllerFactory(models));
   require('./resources/users').default(server, usersControllerFactory(models));
   require('./resources/sitemap').default(server, sitemapControllerFactory(models));
+  require('./resources/itemstats').default(server);
 
   return server;
 }

@@ -161,6 +161,17 @@ export async function readPvpSeason (id: number) {
   return response.data;
 }
 
+async function itemStats (id: number) {
+  const response = await axios.get(`${config.gw2.endpoint}v2/itemstats/${id}`);
+  return response.data;
+}
+
+export const readItemStats = memoize(itemStats, {
+  promise: true,
+  preFetch: true,
+  maxAge: config.cache.itemStats,
+});
+
 async function getLatestPvpSeason (lang: string): Promise<PvpSeason> {
   try {
     const { data: seasons } = await axios
