@@ -43,7 +43,7 @@ ${JSON.stringify(serialiseError(new Error(error)))}`;
     return `
 :fire::fire:
 There was an error parsing the error, lol
-${JSON.stringifty(serialiseError(new Error(err)))}`;
+${JSON.stringify(serialiseError(new Error(err)))}`;
   }
 }
 
