@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+
+## [3.8.0][] - 2017-10-06
 ### Added
 - Calculated item stats resource
 
@@ -313,7 +315,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - This CHANGELOG file to allow more insight to the changes made throughout the development of api.gw2armory.com
 
 
-[Unreleased]: https://github.com/madou/armory-back/compare/v3.7.2...HEAD
+[Unreleased]: https://github.com/madou/armory-back/compare/v3.8.0...HEAD
+[3.8.0]: https://github.com/madou/armory-back/compare/v3.7.2...v3.8.0
 [3.7.2]: https://github.com/madou/armory-back/compare/v3.7.1...v3.7.2
 [3.7.1]: https://github.com/madou/armory-back/compare/v3.7.0...v3.7.1
 [3.7.0]: https://github.com/madou/armory-back/compare/v3.6.0...v3.7.0
