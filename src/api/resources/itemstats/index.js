@@ -29,4 +29,50 @@ export default function ItemStatsResource (server: Server) {
 
     return next();
   });
+
+  /**
+   * Request Body Example:
+   *
+[
+  {
+    "id": 1379,
+    "level": 80,
+    "type": "Coat",
+    "rarity": "Ascended",
+  }
+]
+   */
+  server.post('/itemstats', async (req, res, next) => {
+    try {
+      const requests = req.params
+        .map((stat) => ({
+          id: stat.id,
+          type: stat.type,
+          rarity: stat.rarity,
+          level: +stat.level,
+        }));
+
+      const promises = requests.map((request) => readItemStats(request.id, req.params.lang));
+
+      const itemStats = await Promise.all(promises);
+
+      const response = requests.map((request, index) => {
+        const itemStat = itemStats[index];
+        const attributes = calculateAttributes(request, itemStat);
+
+        return {
+          ...itemStat,
+          attributes,
+        };
+      });
+
+      res.send(200, response);
+    } catch (err) {
+      res.send(500, {
+        error: err.message,
+      });
+    }
+
+    return next();
+  });
 }
