@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Calculated item stats resource
 
+### Fixed
+- Logging serialization
+
 ## [3.7.2][] - 2017-09-27
 ### Changed
 - User access to be array based output
