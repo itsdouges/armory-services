@@ -2,25 +2,17 @@
 
 import type { Server } from 'restify';
 
-import calculateAttributes from 'lib/gw2/itemstats';
-import { readItemStats } from 'lib/gw2';
+import * as controller from 'api/controllers/itemstats';
 
 export default function ItemStatsResource (server: Server) {
   server.get('/itemstats/:id', async (req, res, next) => {
     try {
-      const item = {
+      const itemStats = await controller.read(+req.params.id, {
         type: req.params.type,
         rarity: req.params.rarity,
         level: +req.params.level,
-      };
-
-      const itemStats = await readItemStats(req.params.id, req.params.lang);
-      const attributes = calculateAttributes(item, itemStats);
-
-      res.send(200, {
-        ...itemStats,
-        attributes,
-      });
+      }, req.params.lang);
+      return itemStats;
     } catch (err) {
       res.send(500, {
         error: err.message,
@@ -52,19 +44,7 @@ export default function ItemStatsResource (server: Server) {
           level: +stat.level,
         }));
 
-      const promises = requests.map((request) => readItemStats(request.id, req.params.lang));
-
-      const itemStats = await Promise.all(promises);
-
-      const response = requests.map((request, index) => {
-        const itemStat = itemStats[index];
-        const attributes = calculateAttributes(request, itemStat);
-
-        return {
-          ...itemStat,
-          attributes,
-        };
-      });
+      const response = await controller.bulkRead(requests, req.params.lang);
 
       res.send(200, response);
     } catch (err) {
