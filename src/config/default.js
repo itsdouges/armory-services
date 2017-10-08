@@ -14,6 +14,12 @@ export default {
     password: 'password',
     dialect: 'mysql',
     logging: false,
+    pool: {
+      max: 5,
+      min: 0,
+      idle: 20000,
+      acquire: 20000,
+    },
   },
 
   gw2: {

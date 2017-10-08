@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Dependencies to be the latest versions
+- Sequelize pool options
 
 ## [3.9.0][] - 2017-10-07
 ### Added
