@@ -60,7 +60,6 @@
     "moment": "^2.14.1",
     "mysql": "^2.14.1",
     "mysql2": "^1.4.0",
-    "node-gitter": "^2.0.5",
     "nodemailer": "^2.6.0",
     "nodemailer-ses-transport": "^1.4.0",
     "password-hash-and-salt": "^0.1.2",

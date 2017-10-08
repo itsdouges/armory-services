@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Bulk request mode for itemstats to handle errors
 
+### Changed
+- Dependencies to be the latest versions
+
 ## [3.9.0][] - 2017-10-07
 ### Added
 - Bulk request mode for itemstats
