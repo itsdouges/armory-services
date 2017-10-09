@@ -12,7 +12,8 @@ export default function ItemStatsResource (server: Server) {
         rarity: req.params.rarity,
         level: +req.params.level,
       }, req.params.lang);
-      return itemStats;
+
+      res.send(200, itemStats);
     } catch (err) {
       res.send(500, {
         error: err.message,
