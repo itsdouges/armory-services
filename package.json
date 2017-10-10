@@ -53,7 +53,7 @@
     "frozen-moment": "^0.4.0",
     "fs": "0.0.2",
     "gotta-validate": "^0.2.x",
-    "gw2-item-stats": "^0.1.0",
+    "gw2itemstats": "^0.0.3",
     "lodash": "^4.16.4",
     "lodash.assign": "^4.2.0",
     "memoizee": "^0.4.9",
