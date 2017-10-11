@@ -1,5 +1,5 @@
 
-import { queryItemAttributes } from 'gw2-item-stats';
+import { queryItemAttributes } from 'gw2itemstats';
 
 function convertType (apiType) {
   switch (apiType) {
@@ -8,10 +8,6 @@ function convertType (apiType) {
     default:
       return apiType;
   }
-}
-
-function calcAttribute (base, modifier) {
-  return base + modifier;
 }
 
 function getMajorKeys (itemAttributes, selectedStat) {
@@ -26,16 +22,16 @@ function getMajorKeys (itemAttributes, selectedStat) {
 
 function getCalcFunctionStandard (itemAttributes, selectedStat) {
   const majorAttributeKeys = getMajorKeys(itemAttributes, selectedStat);
-  const calcMajor = (v) => calcAttribute(parseInt(itemAttributes.majorAttribute, 10), 32, v);
-  const calcMinor = (v) => calcAttribute(parseInt(itemAttributes.minorAttribute, 10), 18, v);
+  const calcMajor = (v) => parseInt(itemAttributes.majorAttribute, 10);
+  const calcMinor = (v) => parseInt(itemAttributes.minorAttribute, 10);
   const isMajor = (attr) => (majorAttributeKeys.indexOf(attr) > -1);
   return (attr, v) => (isMajor(attr) ? calcMajor(v) : calcMinor(v));
 }
 
 function getCalcFunctionQuad (itemAttributes, selectedStat) {
   const majorAttributeKeys = getMajorKeys(itemAttributes, selectedStat);
-  const calcMajor = (v) => calcAttribute(parseInt(itemAttributes.majorQuadAttribute, 10), 25, v);
-  const calcMinor = (v) => calcAttribute(parseInt(itemAttributes.minorQuadAttribute, 10), 12, v);
+  const calcMajor = (v) => parseInt(itemAttributes.majorQuadAttribute, 10);
+  const calcMinor = (v) => parseInt(itemAttributes.minorQuadAttribute, 10);
   const isMajor = (attr) => (majorAttributeKeys.indexOf(attr) > -1);
   return (attr, v) => (isMajor(attr) ? calcMajor(v) : calcMinor(v));
 }
@@ -43,8 +39,8 @@ function getCalcFunctionQuad (itemAttributes, selectedStat) {
 function getCalcFunctionQuadOld (itemAttributes, selectedStat) {
   const minorValue = parseInt(itemAttributes.minorAttribute, 10);
   const majorAttributeKeys = getMajorKeys(itemAttributes, selectedStat);
-  const calcMajor = (v) => calcAttribute(parseInt(itemAttributes.majorAttribute, 10), 32, v);
-  const calcMinor = (v) => calcAttribute(minorValue, 18, v);
+  const calcMajor = (v) => parseInt(itemAttributes.majorAttribute, 10);
+  const calcMinor = (v) => minorValue;
 
   // This is the most hacky thing ever, but we have 2 items that we need
   // to detect by the position in attributes.
@@ -59,14 +55,14 @@ function getCalcFunctionQuadOld (itemAttributes, selectedStat) {
     }
 
     if (v === 0) {
-      return calcAttribute(0, 18, v);
+      return 18;
     }
-    return calcAttribute(minorValue, 0, v);
+    return minorValue - 18;
   };
 }
 
 function getCalcFunctionCelectiel (itemAttributes) {
-  return () => calcAttribute(parseInt(itemAttributes.celestialNbr, 10), 13);
+  return () => parseInt(itemAttributes.celestialNbr, 10);
 }
 
 function getCalcFunction (itemAttributes, selectedStat) {
