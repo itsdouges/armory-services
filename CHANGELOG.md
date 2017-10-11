@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+### Fixed
+- Item stats being calculated incorrectly
 
 ## [3.9.2][] - 2017-10-09
 ### Fixed
