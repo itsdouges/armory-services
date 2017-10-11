@@ -1,6 +1,6 @@
 # api.gw2armory.com
 
-[![Build Status](https://travis-ci.org/madou/armory-back.svg?branch=master)](https://travis-ci.org/madou/armory-back) [![Dependencies](https://david-dm.org/madou/armory-react.svg)](https://david-dm.org/madou/armory-back) [![Dev Dependencies](https://david-dm.org/madou/armory-react/dev-status.svg)](https://david-dm.org/madou/armory-back?type=dev) [![codecov](https://codecov.io/gh/madou/armory-back/branch/master/graph/badge.svg)](https://codecov.io/gh/madou/armory-back)
+[![Build Status](https://travis-ci.org/madou/armory-services.svg?branch=master)](https://travis-ci.org/madou/armory-services) [![Dependencies](https://david-dm.org/madou/armory-react.svg)](https://david-dm.org/madou/armory-services) [![Dev Dependencies](https://david-dm.org/madou/armory-react/dev-status.svg)](https://david-dm.org/madou/armory-services?type=dev) [![codecov](https://codecov.io/gh/madou/armory-services/branch/master/graph/badge.svg)](https://codecov.io/gh/madou/armory-services)
 
 ## Usage
 
@@ -64,6 +64,6 @@ Deployments to production are triggered by tagged commits, tag with `npm version
 
 ## Pull Requests
 
-Like to contribute? Look at the [issues](https://github.com/madou/armory-back/issues) tab or contact me on [reddit](https://www.reddit.com/r/gw2armory) or [twitter](https://twitter.com/itsmadou) to find something you'd like to work on, then make a pull request against the `master` branch.
+Like to contribute? Look at the [issues](https://github.com/madou/armory-services/issues) tab or contact me on [reddit](https://www.reddit.com/r/gw2armory) or [twitter](https://twitter.com/itsmadou) to find something you'd like to work on, then make a pull request against the `master` branch.
 
-© 2015-2017 gw2armory.com
+© 2015-present gw2armory.com
