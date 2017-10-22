@@ -1,6 +1,10 @@
 # api.gw2armory.com
 
-[![Build Status](https://travis-ci.org/madou/armory-services.svg?branch=master)](https://travis-ci.org/madou/armory-services) [![Dependencies](https://david-dm.org/madou/armory-react.svg)](https://david-dm.org/madou/armory-services) [![Dev Dependencies](https://david-dm.org/madou/armory-react/dev-status.svg)](https://david-dm.org/madou/armory-services?type=dev) [![codecov](https://codecov.io/gh/madou/armory-services/branch/master/graph/badge.svg)](https://codecov.io/gh/madou/armory-services)
+[![Build Status](https://travis-ci.org/madou/armory-services.svg?branch=master)](https://travis-ci.org/madou/armory-services) [![Dependencies](https://david-dm.org/madou/armory-react.svg)](https://david-dm.org/madou/armory-services)
+[![Dev Dependencies](https://david-dm.org/madou/armory-react/dev-status.svg)](https://david-dm.org/madou/armory-services?type=dev) 
+[![codecov](https://codecov.io/gh/madou/armory-services/branch/master/graph/badge.svg)](https://codecov.io/gh/madou/armory-services)
+[![Discord](https://img.shields.io/badge/discord-GW2Armory-blue.svg)](https://discord.gg/3BRbV7b)
+[![Patreon](https://img.shields.io/badge/patreon-Become%20a%20Patreon-green.svg)](https://www.patreon.com/bePatron?u=5546924)
 
 ## Usage
 
