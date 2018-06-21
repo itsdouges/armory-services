@@ -11,13 +11,13 @@ function convertType (apiType) {
 }
 
 function getMajorKeys (itemAttributes, selectedStat) {
-  const attributes = Object.keys(selectedStat.attributes);
-  const values = attributes.map((key) => selectedStat.attributes[key]);
+  const attributes = selectedStat.attributes;
+  const values = attributes.map((attr) => attr.multiplier);
 
   const majorAttributeValue = Math.max(...values);
   return attributes.filter(
-    (key) => selectedStat.attributes[key] === majorAttributeValue
-  );
+    (attr) => attr.multiplier === majorAttributeValue
+  ).map((attr) => attr.attribute);
 }
 
 function getCalcFunctionStandard (itemAttributes, selectedStat) {
@@ -44,7 +44,8 @@ function getCalcFunctionQuadOld (itemAttributes, selectedStat) {
 
   // This is the most hacky thing ever, but we have 2 items that we need
   // to detect by the position in attributes.
-  const isMajorMinor = (attr) => Object.keys(selectedStat.attributes).indexOf(attr) === 3;
+  const isMajorMinor = (attr) => selectedStat.attributes[3].attribute === attr;
+
   const isMajor = (attr) => (majorAttributeKeys.indexOf(attr) > -1);
   return (attr, v) => {
     if (isMajor(attr)) {
@@ -70,7 +71,7 @@ function getCalcFunction (itemAttributes, selectedStat) {
     return getCalcFunctionQuadOld(itemAttributes, selectedStat);
   }
 
-  switch (Object.keys(selectedStat.attributes).length) {
+  switch (selectedStat.attributes.length) {
     case 2:
     case 3:
       return getCalcFunctionStandard(itemAttributes, selectedStat);
@@ -101,10 +102,9 @@ export default function calculateAttributes (item, itemStat) {
 
   const calcModifier = getCalcFunction(itemAttributes, itemStat);
 
-  return Object.keys(itemStat.attributes)
-    .map((attribute) => ({
+  return itemStat.attributes.map(({attribute, multiplier}) => ({
       attribute,
       // TODO: need to calculate modifier, how?
-      modifier: calcModifier(attribute, itemStat.attributes[attribute]),
+      modifier: calcModifier(attribute, multiplier),
     }));
 }
