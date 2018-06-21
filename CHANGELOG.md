@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
+### Fixed
+- Item states not being calculated correctly from breaking change in ANet API
 
 ## [3.9.3][] - 2017-10-11
 ### Fixed
