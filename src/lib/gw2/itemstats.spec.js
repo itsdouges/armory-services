@@ -200,7 +200,7 @@ const STAT_WIRED = {
       "attribute": "CritDamage",
       "multiplier": 0.25,
       "value": 18
-    }
+    },
     {
       "attribute": "CritDamage",
       "multiplier": 0.165,
