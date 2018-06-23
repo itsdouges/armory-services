@@ -2,87 +2,211 @@ import applyAttributes from './itemstats';
 
 // PoF
 const STAT_MARSHALS = {
-  id: 1378,
-  name: "Marshal's",
-  attributes: {
-    Power: 0.3,
-    Precision: 0.165,
-    Healing: 0.3,
-    ConditionDamage: 0.165
-  }
+  "id": 1378,
+  "name": "Marshal's",
+  "attributes": [
+    {
+      "attribute": "Power",
+      "multiplier": 0.3,
+      "value": 0
+    },
+    {
+      "attribute": "Precision",
+      "multiplier": 0.165,
+      "value": 0
+    },
+    {
+      "attribute": "Healing",
+      "multiplier": 0.3,
+      "value": 0
+    },
+    {
+      "attribute": "ConditionDamage",
+      "multiplier": 0.165,
+      "value": 0
+    }
+  ],
 };
 
 const STAT_GRIEVING = {
-  id: 1379,
-  name: "Grieving",
-  attributes: {
-    Power: 0.3,
-    Precision: 0.165,
-    CritDamage: 0.165,
-    ConditionDamage: 0.3
-  }
+  "id": 1379,
+  "name": "Grieving",
+  "attributes": [
+    {
+      "attribute": "Power",
+      "multiplier": 0.3,
+      "value": 0
+    },
+    {
+      "attribute": "Precision",
+      "multiplier": 0.165,
+      "value": 0
+    },
+    {
+      "attribute": "CritDamage",
+      "multiplier": 0.165,
+      "value": 0
+    },
+    {
+      "attribute": "ConditionDamage",
+      "multiplier": 0.3,
+      "value": 0
+    }
+  ],
 };
 
 
 // New Stat (Quad Attrib)
 const STAT_MINSTREL = {
-  id: 1134,
-  name: 'Minstrel\'s',
-  attributes: {
-    Toughness: 0.3,
-    Vitality: 0.165,
-    Healing: 0.3,
-    BoonDuration: 0.165,
-  },
+  "id": 1134,
+  "name": "Minstrel's",
+  "attributes": [
+    {
+      "attribute": "Toughness",
+      "multiplier": 0.3,
+      "value": 25
+    },
+    {
+      "attribute": "Vitality",
+      "multiplier": 0.165,
+      "value": 12
+    },
+    {
+      "attribute": "Healing",
+      "multiplier": 0.3,
+      "value": 25
+    },
+    {
+      "attribute": "BoonDuration",
+      "multiplier": 0.165,
+      "value": 12
+    }
+  ],
 };
 
 // Celectiel stat (7 Attrib)
 const STAT_CELECTIEL = {
-  id: 588,
-  name: 'Celestial',
-  attributes: {
-    Power: 0.165,
-    Precision: 0.165,
-    Toughness: 0.165,
-    Vitality: 0.165,
-    CritDamage: 0.165,
-    Healing: 0.165,
-    ConditionDamage: 0.165,
-  },
+  "id": 588,
+  "name": "Celestial",
+  "attributes": [
+    {
+      "attribute": "Power",
+      "multiplier": 0.165,
+      "value": 13
+    },
+    {
+      "attribute": "Precision",
+      "multiplier": 0.165,
+      "value": 13
+    },
+    {
+      "attribute": "Toughness",
+      "multiplier": 0.165,
+      "value": 13
+    },
+    {
+      "attribute": "Vitality",
+      "multiplier": 0.165,
+      "value": 13
+    },
+    {
+      "attribute": "CritDamage",
+      "multiplier": 0.165,
+      "value": 13
+    },
+    {
+      "attribute": "Healing",
+      "multiplier": 0.165,
+      "value": 13
+    },
+    {
+      "attribute": "ConditionDamage",
+      "multiplier": 0.165,
+      "value": 13
+    }
+  ],
 };
 
 // Berseker (3 Attrib - Legacy)
 const STAT_BERSEKER = {
-  id: 161,
-  name: 'Berserker\'s',
-  attributes: {
-    Power: 0.35,
-    Precision: 0.25,
-    CritDamage: 0.25,
-  },
+  "id": 161,
+  "name": "Berserker's",
+  "attributes": [
+    {
+      "attribute": "Power",
+      "multiplier": 0.35,
+      "value": 0
+    },
+    {
+      "attribute": "Precision",
+      "multiplier": 0.25,
+      "value": 0
+    },
+    {
+      "attribute": "CritDamage",
+      "multiplier": 0.25,
+      "value": 0
+    }
+  ],
 };
 
 const STAT_BERSEKER_VALKYRE = {
-  id: 591,
-  name: 'Berserker\'s and Valkyrie',
-  attributes: {
-    Power: 0.35,
-    Precision: 0.25,
-    Vitality: 0,
-    CritDamage: 0.25,
-  },
+  "id": 591,
+  "name": "Berserker's and Valkyrie",
+  "attributes": [
+    {
+      "attribute": "Power",
+      "multiplier": 0.35,
+      "value": 32
+    },
+    {
+      "attribute": "Precision",
+      "multiplier": 0.25,
+      "value": 0
+    },
+    {
+      "attribute": "Vitality",
+      "multiplier": 0,
+      "value": 18
+    },
+    {
+      "attribute": "CritDamage",
+      "multiplier": 0.25,
+      "value": 18
+    }
+  ],
 };
 
 const STAT_WIRED = {
-  id: 591,
-  name: 'MadeUp\'s',
-  attributes: {
-    Power: 0.35,
-    Precision: 0.25,
-    Vitality: 0,
-    CritDamage: 0.25,
-    ConditionDamage: 0.165,
-  },
+  "id": 591,
+  "name": 'MadeUp\'s',
+  "attributes": [
+    {
+      "attribute": "Power",
+      "multiplier": 0.35,
+      "value": 32
+    },
+    {
+      "attribute": "Precision",
+      "multiplier": 0.25,
+      "value": 0
+    },
+    {
+      "attribute": "Vitality",
+      "multiplier": 0,
+      "value": 18
+    },
+    {
+      "attribute": "CritDamage",
+      "multiplier": 0.25,
+      "value": 18
+    },
+    {
+      "attribute": "CritDamage",
+      "multiplier": 0.165,
+      "value": 13
+    },
+  ],
 };
 
 const SELECTABLE_ACCESORRY = {
