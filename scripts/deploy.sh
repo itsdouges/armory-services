@@ -2,7 +2,7 @@
 
 TEST_BRANCH=feature/ReclaimToken
 
-docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 
 if [ "$TRAVIS_TAG" ]; then
   echo ""
