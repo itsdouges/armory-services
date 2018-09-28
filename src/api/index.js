@@ -13,14 +13,14 @@ const server = createServer(models);
 
 sync().then(() => {
   server.listen(config.api.port);
-  logger.log(':wave:');
+  logger.log(`:wave: api running at localhost:${config.api.port}`);
 });
 
-process.on('unhandledRejection', (err) => {
+process.on('unhandledRejection', err => {
   logger.error(err);
 });
 
-process.on('uncaughtException', (err) => {
+process.on('uncaughtException', err => {
   logger.error(err);
   throw err;
 });
