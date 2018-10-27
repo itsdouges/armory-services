@@ -6,7 +6,7 @@ import type { Fetcher$Token } from 'fetch/userFetch';
 import { saveList } from 'lib/services/pvpStandings';
 import gw2 from 'lib/gw2';
 
-export default async function fetchPvpStandings (
+export default async function fetchPvpStandings(
   models: Models,
   { token, id, permissions }: Fetcher$Token
 ) {
@@ -16,7 +16,7 @@ export default async function fetchPvpStandings (
 
   const standings = await gw2.readPvpStandings(token);
 
-  const mappedStandings = standings.map((standing) => ({
+  const mappedStandings = standings.map(standing => ({
     apiTokenId: id,
     seasonId: standing.season_id,
 
@@ -36,4 +36,4 @@ export default async function fetchPvpStandings (
   }));
 
   return await saveList(models, mappedStandings);
-};
+}

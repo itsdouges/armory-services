@@ -12,7 +12,7 @@ import buildLadderByAccountName from '../lib/leaderboardBuilder';
 
 const logger = createLogger('Pvp-leaderboard-fetcher', 'fetch-pvp');
 
-const hasJoined = (standing) => !!standing.totalPointsBest;
+const hasJoined = standing => !!standing.totalPointsBest;
 
 const sortByRating = (a, b) => {
   const aJoined = hasJoined(a);
@@ -34,10 +34,10 @@ const sortByRating = (a, b) => {
   }
 
   // Both have joined the armory.
-  return (b.ratingCurrent - b.decayCurrent) - (a.ratingCurrent - a.decayCurrent);
+  return b.ratingCurrent - b.decayCurrent - (a.ratingCurrent - a.decayCurrent);
 };
 
-async function addMissingUsers (models, ladder) {
+async function addMissingUsers(models, ladder) {
   const users = ladder.map(({ name }) => ({ accountName: name }));
   return await bulkCreateStubUser(models, users);
 }
@@ -48,21 +48,18 @@ const mergeLadders = ({ standings, na, eu }) => {
   const naMap = _.keyBy(na, key);
   const euMap = _.keyBy(eu, key);
 
-  const mergedStandings = _.merge(
-    standingsMap,
-    naMap,
-    euMap,
-  );
+  const mergedStandings = _.merge(standingsMap, naMap, euMap);
 
   return _.values(mergedStandings);
 };
 
-const clearRanks = (standings) => standings.rows.map((standing) => ({
-  ...standing,
-  euRank: null,
-  naRank: null,
-  gw2aRank: null,
-}));
+const clearRanks = standings =>
+  standings.rows.map(standing => ({
+    ...standing,
+    euRank: null,
+    naRank: null,
+    gw2aRank: null,
+  }));
 
 const buildStandings = ({ standings, na, eu }) => {
   const cleanedStandings = clearRanks(standings);
@@ -75,7 +72,7 @@ const buildStandings = ({ standings, na, eu }) => {
     }));
 };
 
-export default async function calculatePvpLeaderboards (models: Models) {
+export default async function calculatePvpLeaderboards(models: Models) {
   logger.start();
 
   const season = await readLatestPvpSeason('en');
@@ -95,8 +92,8 @@ export default async function calculatePvpLeaderboards (models: Models) {
 
   const compiledStandings = buildStandings({ standings, na, eu });
 
-  const saveResults = await saveStandings(models, compiledStandings);
+  await saveStandings(models, compiledStandings);
 
   logger.finish(`${newUsersResults.length} new or updated users
-${saveResults.length} standings saved`);
+    ${compiledStandings.length} standings saved`);
 }

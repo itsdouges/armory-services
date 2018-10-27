@@ -25,9 +25,11 @@ const server = restify.createServer({
   name: 'gw2-fetch',
 });
 
-server.use(restify.plugins.bodyParser({
-  mapParams: true,
-}));
+server.use(
+  restify.plugins.bodyParser({
+    mapParams: true,
+  })
+);
 
 server.get('/healthcheck', (req, res, next) => {
   res.send(200, 'hi, im alive');
@@ -55,35 +57,35 @@ server.post('/fetch', async (req, res, next) => {
   return next();
 });
 
-process.on('unhandledRejection', (err) => {
+process.on('unhandledRejection', err => {
   logger.error(err);
 });
 
-process.on('uncaughtException', (err) => {
+process.on('uncaughtException', err => {
   logger.error(err);
   throw err;
 });
 
-sync()
-  .then(() => {
-    console.log();
-    console.log(`>>> Starting server on port ${config.fetch.port}...`);
-    console.log();
+sync().then(() => {
+  console.log();
+  console.log(`>>> Starting server on port ${config.fetch.port}...`);
+  console.log();
 
-    server.listen(config.fetch.port);
-    logger.log(':wave:');
+  server.listen(config.fetch.port);
+  logger.log(':wave:');
 
-    if (config.fetch.disabled) {
-      logger.log('fetch is disabled');
-      return;
-    }
+  if (config.fetch.disabled) {
+    logger.log('fetch is disabled');
+    return;
+  }
 
-    fetchAll();
-    setInterval(fetchAll, config.fetch.interval);
+  setInterval(fetchAll, config.fetch.interval);
 
-    fetchFactory(models, [{
+  fetchFactory(models, [
+    {
       fetcher: require('./fetchers/pvpLeaderboard').default,
       interval: config.leaderboards.refreshInterval,
       callImmediately: true,
-    }]);
-  });
+    },
+  ]);
+});
