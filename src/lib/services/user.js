@@ -23,7 +23,7 @@ type ListOptions = {
   offset?: number,
 };
 
-export async function list (
+export async function list(
   models: Models,
   { guild, limit, offset }: ListOptions
 ): Promise<PaginatedResponse<UserModel>> {
@@ -35,16 +35,16 @@ export async function list (
         $like: `%${guild || ''}%`,
       },
     },
-    order: [
-      ['stub', 'ASC'],
+    order: [['stub', 'ASC']],
+    include: [
+      {
+        model: models.User,
+      },
     ],
-    include: [{
-      model: models.User,
-    }],
   });
 
   return {
-    rows: rows.map((token) => ({
+    rows: rows.map(token => ({
       name: token.User.alias,
       accountName: token.accountName,
     })),
@@ -54,10 +54,10 @@ export async function list (
   };
 }
 
-export async function isUserInGuild (
+export async function isUserInGuild(
   models: Models,
   email: string,
-  guildName: string,
+  guildName: string
 ): Promise<boolean> {
   const guild = await readGuild(models, { name: guildName });
 
@@ -67,18 +67,20 @@ export async function isUserInGuild (
         $like: `%${guild ? guild.id : ''}%`,
       },
     },
-    include: [{
-      model: models.User,
-      where: {
-        email,
+    include: [
+      {
+        model: models.User,
+        where: {
+          email,
+        },
       },
-    }],
+    ],
   });
 
   return !!token && !!token.length;
 }
 
-function cleanApiToken (apiToken) {
+function cleanApiToken(apiToken) {
   if (!apiToken) {
     return undefined;
   }
@@ -103,34 +105,38 @@ type CreateUser = User & {
   passwordHash: string,
 };
 
-export async function create (models: Models, user: CreateUser): Promise<DbUser> {
+export async function create(models: Models, user: CreateUser): Promise<DbUser> {
   return await models.User.create(user);
 }
 
-async function readByToken (models, { accountName, apiToken, apiTokenId }): Promise<?UserModel> {
+async function readByToken(models, { accountName, apiToken, apiTokenId }): Promise<?UserModel> {
   const token = await models.Gw2ApiToken.findOne({
     where: _.pickBy({
       id: apiTokenId,
       token: apiToken,
       accountName,
     }),
-    include: [{
-      model: models.User,
-    }],
+    include: [
+      {
+        model: models.User,
+      },
+    ],
   });
 
-  return token ? {
-    ...cleanApiToken(token),
-    id: token.User.id,
-    alias: token.User.alias,
-    passwordHash: token.User.passwordHash,
-    email: token.User.email,
-    stub: token.User.stub,
-    privacy: (token.User.privacy || '').split('|').filter(Boolean),
-  } : null;
+  return token
+    ? {
+        ...cleanApiToken(token),
+        id: token.User.id,
+        alias: token.User.alias,
+        passwordHash: token.User.passwordHash,
+        email: token.User.email,
+        stub: token.User.stub,
+        privacy: (token.User.privacy || '').split('|').filter(Boolean),
+      }
+    : null;
 }
 
-async function readByUser (models, { alias, email }) {
+async function readByUser(models, { alias, email }) {
   const user = await models.User.findOne({
     // We only want to use one prop to find the user.
     where: _.pickBy({ alias, email: alias && email ? undefined : email }),
@@ -139,15 +145,17 @@ async function readByUser (models, { alias, email }) {
     },
   });
 
-  return user ? {
-    ...cleanApiToken(_.find(user.gw2_api_tokens, ({ primary }) => primary)),
-    id: user.id,
-    alias: user.alias,
-    passwordHash: user.passwordHash,
-    email: user.email,
-    stub: user.stub,
-    privacy: (user.privacy || '').split('|').filter(Boolean),
-  } : null;
+  return user
+    ? {
+        ...cleanApiToken(_.find(user.gw2_api_tokens, ({ primary }) => primary)),
+        id: user.id,
+        alias: user.alias,
+        passwordHash: user.passwordHash,
+        email: user.email,
+        stub: user.stub,
+        privacy: (user.privacy || '').split('|').filter(Boolean),
+      }
+    : null;
 }
 
 type ReadOptions = {
@@ -159,17 +167,14 @@ type ReadOptions = {
   mode?: 'lean' | 'full',
 };
 
-export async function read (models: Models, {
-  apiTokenId,
-  apiToken,
-  alias,
-  email,
-  accountName,
-  mode,
-}: ReadOptions): Promise<?UserModel> {
-  const data = (apiTokenId || accountName || apiToken)
-    ? await readByToken(models, { apiTokenId, apiToken, accountName })
-    : await readByUser(models, { alias, email });
+export async function read(
+  models: Models,
+  { apiTokenId, apiToken, alias, email, accountName, mode }: ReadOptions
+): Promise<?UserModel> {
+  const data =
+    apiTokenId || accountName || apiToken
+      ? await readByToken(models, { apiTokenId, apiToken, accountName })
+      : await readByUser(models, { alias, email });
 
   if (!data) {
     return null;
@@ -204,17 +209,20 @@ type UpdateUser = {
   passwordHash: string,
 };
 
-export async function update (models: Models, user: UpdateUser): Promise<> {
-  await models.User.update({
-    passwordHash: user.passwordHash,
-  }, {
-    where: {
-      id: user.id,
+export async function update(models: Models, user: UpdateUser): Promise<> {
+  await models.User.update(
+    {
+      passwordHash: user.passwordHash,
     },
-  });
+    {
+      where: {
+        id: user.id,
+      },
+    }
+  );
 }
 
-export async function createPasswordReset (models: Models, userId: string): Promise<string> {
+export async function createPasswordReset(models: Models, userId: string): Promise<string> {
   const { id } = await models.UserReset.create({
     UserId: userId,
     expires: moment().add(config.forgotMyPassword.expiry, 'minutes'),
@@ -223,7 +231,7 @@ export async function createPasswordReset (models: Models, userId: string): Prom
   return id;
 }
 
-export async function readPasswordReset (models: Models, resetId: string): Promise<> {
+export async function readPasswordReset(models: Models, resetId: string): Promise<> {
   return await models.UserReset.findOne({
     where: {
       id: resetId,
@@ -231,12 +239,15 @@ export async function readPasswordReset (models: Models, resetId: string): Promi
   });
 }
 
-export async function finishPasswordReset (models: Models, resetId: string): Promise<> {
-  return await models.UserReset.update({ used: true }, {
-    where: {
-      id: resetId,
-    },
-  });
+export async function finishPasswordReset(models: Models, resetId: string): Promise<> {
+  return await models.UserReset.update(
+    { used: true },
+    {
+      where: {
+        id: resetId,
+      },
+    }
+  );
 }
 
 type StubUser = {
@@ -248,21 +259,23 @@ type StubUserWithId = StubUser & {
   id?: number,
 };
 
-async function updateStubUser (models: Models, { guilds, id: userId }: StubUserWithId) {
+async function updateStubUser(models: Models, { guilds, id: userId }: StubUserWithId) {
   if (!guilds) {
     return null;
   }
 
   const apiToken = await models.Gw2ApiToken.findOne({
-    include: [{
-      model: models.User,
-      where: {
-        id: userId,
+    include: [
+      {
+        model: models.User,
+        where: {
+          id: userId,
+        },
       },
-    }],
+    ],
   });
 
-  const mappedGuilds = apiToken.guilds ? guilds.concat((apiToken.guilds).split(',')) : guilds;
+  const mappedGuilds = apiToken.guilds ? guilds.concat(apiToken.guilds.split(',')) : guilds;
   await apiToken.set('guilds', _.uniq(mappedGuilds).join(','));
   await apiToken.save();
 
@@ -272,7 +285,7 @@ async function updateStubUser (models: Models, { guilds, id: userId }: StubUserW
   };
 }
 
-async function createStubUser (
+async function createStubUser(
   models: Models,
   { accountName, guilds, id: userId }: StubUserWithId
 ): Promise<> {
@@ -306,13 +319,16 @@ async function createStubUser (
   };
 }
 
-export async function bulkCreateStubUser (models: Models, users: Array<StubUser>) {
-  const foundUsers = await Promise.all(
-    users.map(({ accountName }) => read(models, { accountName, mode: 'lean' }))
-  );
+export async function bulkCreateStubUser(models: Models, users: Array<StubUser>) {
+  const foundUsers = [];
+  for (let i = 0; i < users.length; i++) {
+    const { accountName } = users[i];
+    const user = await read(models, { accountName, mode: 'lean' });
+    foundUsers.push(user);
+  }
 
   const newUsers = _.zip(foundUsers, users)
-    .filter(([user]) => (!user || user.stub))
+    .filter(([user]) => !user || user.stub)
     .map(([userInDb, user]) => ({
       ..._.pick(userInDb, ['id']),
       ...user,
@@ -320,16 +336,14 @@ export async function bulkCreateStubUser (models: Models, users: Array<StubUser>
 
   if (newUsers.length) {
     return await allSettled(
-      newUsers.map(
-        throat(config.fetch.concurrentCalls, (user) => createStubUser(models, user))
-      )
+      newUsers.map(throat(config.fetch.concurrentCalls, user => createStubUser(models, user)))
     );
   }
 
   return [];
 }
 
-async function readToken (apiToken) {
+async function readToken(apiToken) {
   const [account, info] = await Promise.all([
     gw2.readAccount(apiToken),
     gw2.readTokenInfo(apiToken),
@@ -342,7 +356,7 @@ async function readToken (apiToken) {
   };
 }
 
-export async function claimStubApiToken (
+export async function claimStubApiToken(
   models: Models,
   email: string,
   apiToken: string,
@@ -355,18 +369,21 @@ export async function claimStubApiToken (
     throw new Error('User doesnt exist');
   }
 
-  await models.Gw2ApiToken.update({
-    token: apiToken,
-    permissions,
-    accountId,
-    stub: false,
-    UserId: user.id,
-    primary,
-  }, {
-    where: {
-      accountName: name,
+  await models.Gw2ApiToken.update(
+    {
+      token: apiToken,
+      permissions,
+      accountId,
+      stub: false,
+      UserId: user.id,
+      primary,
     },
-  });
+    {
+      where: {
+        accountName: name,
+      },
+    }
+  );
 
   await models.User.destroy({
     where: {
@@ -394,28 +411,34 @@ type ClaimUser = CreateUser & {
   apiToken: string,
 };
 
-export async function claimStubUser (models: Models, user: ClaimUser) {
+export async function claimStubUser(models: Models, user: ClaimUser) {
   const { name, permissions, accountId } = await readToken(user.apiToken);
 
-  await models.User.update({
-    ...user,
-    stub: false,
-  }, {
-    where: {
-      alias: name,
+  await models.User.update(
+    {
+      ...user,
+      stub: false,
     },
-  });
+    {
+      where: {
+        alias: name,
+      },
+    }
+  );
 
-  await models.Gw2ApiToken.update({
-    token: user.apiToken,
-    stub: false,
-    permissions,
-    accountId,
-  }, {
-    where: {
-      accountName: name,
+  await models.Gw2ApiToken.update(
+    {
+      token: user.apiToken,
+      stub: false,
+      permissions,
+      accountId,
     },
-  });
+    {
+      where: {
+        accountName: name,
+      },
+    }
+  );
 
   const { id } = await models.Gw2ApiToken.findOne({
     where: {
@@ -430,7 +453,7 @@ export async function claimStubUser (models: Models, user: ClaimUser) {
   });
 }
 
-export async function getUserId (models: Models, email: string) {
+export async function getUserId(models: Models, email: string) {
   const user = await models.User.findOne({
     where: {
       email,
@@ -440,21 +463,23 @@ export async function getUserId (models: Models, email: string) {
   return user.id;
 }
 
-export async function doesUserHaveTokens (models: Models, userId: number) {
+export async function doesUserHaveTokens(models: Models, userId: number) {
   const tokens = await models.Gw2ApiToken.findAll({
-    include: [{
-      model: models.User,
-      where: {
-        id: userId,
+    include: [
+      {
+        model: models.User,
+        where: {
+          id: userId,
+        },
       },
-    }],
+    ],
   });
 
   return !!tokens.length;
 }
 
 type Token$Status = 'valid' | 'invalid' | 'stub' | false;
-export async function doesTokenExist (models: Models, accountName: string): Promise<Token$Status> {
+export async function doesTokenExist(models: Models, accountName: string): Promise<Token$Status> {
   const token = await models.Gw2ApiToken.findOne({
     where: {
       accountName,
@@ -476,39 +501,47 @@ export async function doesTokenExist (models: Models, accountName: string): Prom
   return false;
 }
 
-export async function selectPrimaryToken (models: Models, email: string, token: string) {
+export async function selectPrimaryToken(models: Models, email: string, token: string) {
   const id = await getUserId(models, email);
 
-  await models.Gw2ApiToken.update({
-    primary: false,
-  }, {
-    where: {
-      UserId: id,
+  await models.Gw2ApiToken.update(
+    {
+      primary: false,
     },
-  });
-
-  await models.Gw2ApiToken.update({
-    primary: true,
-  }, {
-    where: {
-      UserId: id,
-      token,
-    },
-  });
-}
-
-export function listTokens (models: Models, email: string) {
-  return models.Gw2ApiToken.findAll({
-    include: [{
-      model: models.User,
+    {
       where: {
-        email,
+        UserId: id,
       },
-    }],
+    }
+  );
+
+  await models.Gw2ApiToken.update(
+    {
+      primary: true,
+    },
+    {
+      where: {
+        UserId: id,
+        token,
+      },
+    }
+  );
+}
+
+export function listTokens(models: Models, email: string) {
+  return models.Gw2ApiToken.findAll({
+    include: [
+      {
+        model: models.User,
+        where: {
+          email,
+        },
+      },
+    ],
   });
 }
 
-export async function removeToken (models: Models, email: string, apiToken: string) {
+export async function removeToken(models: Models, email: string, apiToken: string) {
   const user = await models.User.findOne({
     where: {
       email,
@@ -523,21 +556,21 @@ export async function removeToken (models: Models, email: string, apiToken: stri
   });
 }
 
-export async function setPrivacy (models: Models, email: string, privacy: string) {
+export async function setPrivacy(models: Models, email: string, privacy: string) {
   return setPrivacyGeneric(models.User, privacy, {
     key: 'email',
     value: email,
   });
 }
 
-export async function removePrivacy (models: Models, email: string, privacy: string) {
+export async function removePrivacy(models: Models, email: string, privacy: string) {
   return removePrivacyGeneric(models.User, privacy, {
     key: 'email',
     value: email,
   });
 }
 
-export async function hasPrivacy (models: Models, email: string, privacy: string) {
+export async function hasPrivacy(models: Models, email: string, privacy: string) {
   return hasPrivacyGeneric(models.User, privacy, {
     key: 'email',
     value: email,
