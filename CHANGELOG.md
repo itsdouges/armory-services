@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
 
+## [3.9.6][] - 2018-10-27
+
 ### Fixed
 
 - Pvp leaderboard fetching timing out
@@ -531,3 +533,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [3.1.0]: https://github.com/madou/armory-back/compare/v3.0.1...v3.1.0
 [3.0.1]: https://github.com/madou/armory-back/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/madou/armory-back/tree/v3.0.0
+
+
+[Unreleased]: https://github.com/madou/armory-services/compare/v3.9.6...HEAD
+[3.9.6]: https://github.com/madou/armory-services/tree/v3.9.6
