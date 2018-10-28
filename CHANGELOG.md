@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
 
+## [3.10.0][] - 2018-10-28
+
 ### Added
 
 - Saving every standing record for historical lookup
@@ -504,7 +506,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - This CHANGELOG file to allow more insight to the changes made throughout the development of api.gw2armory.com
 
-[Unreleased]: https://github.com/madou/armory-back/compare/v3.9.6...HEAD
+[Unreleased]: https://github.com/madou/armory-back/compare/v3.10.0...HEAD
+[3.10.0]: https://github.com/madou/armory-back/compare/v3.9.6...v3.10.0
 [3.9.6]: https://github.com/madou/armory-back/compare/v3.9.5...v3.9.6
 [3.9.5]: https://github.com/madou/armory-back/compare/v3.9.4...v3.9.5
 [3.9.4]: https://github.com/madou/armory-back/compare/v3.9.3...v3.9.4
