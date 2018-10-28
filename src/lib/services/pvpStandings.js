@@ -2,22 +2,13 @@
 
 import type { Models, PvpStandingModel, Pagination, PaginatedResponse } from 'flowTypes';
 import _ from 'lodash';
+import sequelize from 'sequelize';
 
 export async function saveList(models: Models, pvpStandings: Array<PvpStandingModel>) {
   for (let i = 0; i < pvpStandings.length; i++) {
     const standing = pvpStandings[i];
-    const standingInDb = await models.PvpStandings.findOne({
-      where: {
-        apiTokenId: standing.apiTokenId,
-        seasonId: standing.seasonId,
-      },
-    });
-
-    if (!standingInDb) {
-      await models.PvpStandings.create(standing);
-    } else {
-      await standingInDb.update(standing);
-    }
+    // Always create a new standing so we have historical data to show.
+    await models.PvpStandings.create(standing);
   }
 }
 
@@ -41,12 +32,37 @@ export async function list(
   const { rows, count } = await models.PvpStandings.findAndCount(
     _.merge(
       {
+        attributes: [
+          sequelize.fn('max', sequelize.col('PvpStandings.id')),
+          'apiTokenId',
+          'euRank',
+          'gw2aRank',
+          'naRank',
+          'ratingCurrent',
+          'seasonId',
+          'totalPointsBest',
+          'decayCurrent',
+          'wins',
+          'losses',
+        ],
         where: {
           seasonId,
           apiTokenId: {
             $ne: null,
           },
         },
+        group: [
+          'apiTokenId',
+          'euRank',
+          'gw2aRank',
+          'naRank',
+          'ratingCurrent',
+          'seasonId',
+          'totalPointsBest',
+          'decayCurrent',
+          'wins',
+          'losses',
+        ],
         include: [
           {
             model: models.Gw2ApiToken,
@@ -65,9 +81,9 @@ export async function list(
   );
 
   return {
-    limit: params.limit || count,
+    limit: params.limit || count.length,
     offset: params.offset || 0,
-    count,
+    count: count.length,
     rows: rows.map(standing => ({
       ..._.pick(standing, [
         'euRank',

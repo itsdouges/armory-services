@@ -1,15 +1,9 @@
 module.exports = {
-  extends: [
-    'airbnb-base',
-    'plugin:flowtype/recommended',
-  ],
+  extends: ['airbnb-base', 'plugin:flowtype/recommended'],
 
   parser: 'babel-eslint',
 
-  plugins: [
-    'flowtype',
-    'mocha',
-  ],
+  plugins: ['flowtype', 'mocha'],
 
   parserOptions: {
     ecmaFeatures: {
@@ -19,14 +13,14 @@ module.exports = {
   },
 
   rules: {
-    'space-before-function-paren': [2, 'always'],
-    'comma-dangle': ['error', 'always-multiline'],
+    'space-before-function-paren': 'off',
+    'comma-dangle': 'off',
     'default-case': 0,
     'global-require': 0,
     'import/no-unresolved': 0,
     'no-duplicate-imports': 'off',
     'import/no-extraneous-dependencies': 0,
-    'arrow-body-style': 0,
+    'arrow-body-style': 'off',
     'no-unused-expressions': 'error',
     'no-unused-vars': ['error'],
     'mocha/no-exclusive-tests': 'error',

@@ -47,6 +47,7 @@ describe('pvp standings fetcher', () => {
   });
 
   it('should insert all pvp data into db', async () => {
+    const doubleStandings = [].concat(standings).concat(standings);
     await pvpStandingsFetcher(models, token);
     await pvpStandingsFetcher(models, token);
 
@@ -54,9 +55,9 @@ describe('pvp standings fetcher', () => {
       order: ['createdAt'],
     });
 
-    expect(rows.length).to.equal(standings.length);
-    rows.map((row) => row.dataValues).forEach((row, index) => {
-      const pvpStanding = standings[index];
+    expect(rows.length).to.equal(doubleStandings.length);
+    rows.map(row => row.dataValues).forEach((row, index) => {
+      const pvpStanding = doubleStandings[index];
 
       expect(row).to.include({
         seasonId: pvpStanding.season_id,

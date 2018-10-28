@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
 
+### Added
+
+- Saving every standing record for historical lookup
+
 ## [3.9.6][] - 2018-10-27
 
 ### Fixed
@@ -500,8 +504,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - This CHANGELOG file to allow more insight to the changes made throughout the development of api.gw2armory.com
 
-[unreleased]: https://github.com/madou/armory-back/compare/v3.9.5...HEAD
-[3.9.5]: https://github.com/madou/armory-services/tree/v3.9.5
+[Unreleased]: https://github.com/madou/armory-back/compare/v3.9.6...HEAD
+[3.9.6]: https://github.com/madou/armory-back/compare/v3.9.5...v3.9.6
+[3.9.5]: https://github.com/madou/armory-back/compare/v3.9.4...v3.9.5
 [3.9.4]: https://github.com/madou/armory-back/compare/v3.9.3...v3.9.4
 [3.9.3]: https://github.com/madou/armory-back/compare/v3.9.2...v3.9.3
 [3.9.2]: https://github.com/madou/armory-back/compare/v3.9.1...v3.9.2
@@ -533,7 +538,3 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [3.1.0]: https://github.com/madou/armory-back/compare/v3.0.1...v3.1.0
 [3.0.1]: https://github.com/madou/armory-back/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/madou/armory-back/tree/v3.0.0
-
-
-[Unreleased]: https://github.com/madou/armory-services/compare/v3.9.6...HEAD
-[3.9.6]: https://github.com/madou/armory-services/tree/v3.9.6
