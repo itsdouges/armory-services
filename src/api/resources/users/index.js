@@ -5,36 +5,42 @@ import type { Server } from 'restify';
 import { UnauthorizedError } from 'restify-errors';
 import _ from 'lodash';
 
-export default function UserResource (server: Server, controller: any) {
+export default function UserResource(server: Server, controller: any) {
   server.get('/users/me', (req, res, next) => {
     if (!req.username) {
       return next(new UnauthorizedError());
     }
 
-    return controller.read({ email: req.username, excludeChildren: true })
-      .then((data) => {
+    return controller.read({ email: req.username, excludeChildren: true }).then(
+      data => {
         res.send(200, data);
         return next();
-      }, (err) => {
+      },
+      err => {
         console.error(err);
         res.send(500);
         return next();
-      });
+      }
+    );
   });
 
   server.get('/users/:alias', (req, res, next) => {
-    return controller.read({
-      alias: req.params.alias,
-      email: req.username,
-    })
-    .then((data) => {
-      res.send(200, data);
-      return next();
-    }, (err) => {
-      console.error(err);
-      res.send(404);
-      return next();
-    });
+    return controller
+      .read({
+        alias: req.params.alias,
+        email: req.username,
+      })
+      .then(
+        data => {
+          res.send(200, data);
+          return next();
+        },
+        err => {
+          console.error(err);
+          res.send(404);
+          return next();
+        }
+      );
   });
 
   server.put('/users/me/password', (req, res, next) => {
@@ -48,13 +54,16 @@ export default function UserResource (server: Server, controller: any) {
         password: req.params.password,
         currentPassword: req.params.currentPassword,
       })
-      .then(() => {
-        res.send(200);
-        return next();
-      }, (e) => {
-        res.send(400, e);
-        return next();
-      });
+      .then(
+        () => {
+          res.send(200);
+          return next();
+        },
+        e => {
+          res.send(400, e);
+          return next();
+        }
+      );
   });
 
   server.post('/users', (req, res, next) => {
@@ -64,13 +73,16 @@ export default function UserResource (server: Server, controller: any) {
         email: req.params.email.toLowerCase(),
         password: req.params.password,
       })
-      .then(() => {
-        res.send(200);
-        return next();
-      }, (e) => {
-        res.send(400, e);
-        return next();
-      });
+      .then(
+        () => {
+          res.send(200);
+          return next();
+        },
+        e => {
+          res.send(400, e);
+          return next();
+        }
+      );
   });
 
   server.post('claim/user', async (req, res, next) => {
@@ -108,29 +120,31 @@ export default function UserResource (server: Server, controller: any) {
   });
 
   server.post('/forgot-my-password', (req, res, next) => {
-    controller
-      .forgotMyPasswordStart(req.params.email.toLowerCase())
-      .then(() => {
+    controller.forgotMyPasswordStart(req.params.email.toLowerCase()).then(
+      () => {
         res.send(200);
         return next();
-      }, (e) => {
+      },
+      e => {
         console.error('\n== FORGOT-MY-PASSWORD ==\n', e);
         res.send(200);
         return next();
-      });
+      }
+    );
   });
 
   server.put('/forgot-my-password', (req, res, next) => {
-    controller
-      .forgotMyPasswordFinish(req.params.token, req.params.password)
-      .then(() => {
+    controller.forgotMyPasswordFinish(req.params.token, req.params.password).then(
+      () => {
         res.send(200);
         return next();
-      }, (e) => {
+      },
+      e => {
         console.error('\n== FORGOT-MY-PASSWORD-FINISH ==\n', e);
         res.send(400, e);
         return next();
-      });
+      }
+    );
   });
 
   server.put('/users/me/privacy', async (req, res, next) => {
@@ -198,7 +212,8 @@ export default function UserResource (server: Server, controller: any) {
         const data = await func(req.params.alias, { email: req.username });
         res.send(200, data);
       } catch (e) {
-        res.send(500);
+        console.log(e);
+        res.send(e.status);
       }
 
       return next();

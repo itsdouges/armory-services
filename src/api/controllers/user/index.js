@@ -26,48 +26,49 @@ import {
   removePrivacy as removePrivacyUser,
 } from 'lib/services/user';
 
-export default function userControllerFactory (models: Models) {
-  createValidator.addResource({
-    name: 'users',
-    mode: 'create',
-    rules: {
-      alias: ['required', 'unique-alias', 'no-white-space', 'min5'],
-      email: ['required', 'unique-email', 'no-white-space'],
-      password: ['required', 'ezpassword', 'no-white-space'],
-    },
-  })
-  .addResource({
-    name: 'users',
-    mode: 'claim',
-    rules: {
-      alias: ['required', 'unique-alias', 'no-white-space', 'min5'],
-      email: ['required', 'unique-email', 'no-white-space'],
-      password: ['required', 'ezpassword', 'no-white-space'],
-      apiToken: ['required', 'valid-gw2-token', 'no-white-space'],
-    },
-  })
-  .addResource({
-    name: 'users',
-    mode: 'update-password',
-    rules: {
-      email: 'required',
-      currentPassword: ['required'],
-      password: ['required', 'ezpassword', 'no-white-space'],
-    },
-  })
-  .addResource({
-    name: 'users',
-    mode: 'forgot-my-password',
-    rules: {
-      password: ['required', 'ezpassword', 'no-white-space'],
-    },
-  });
+export default function userControllerFactory(models: Models) {
+  createValidator
+    .addResource({
+      name: 'users',
+      mode: 'create',
+      rules: {
+        alias: ['required', 'unique-alias', 'no-white-space', 'min5'],
+        email: ['required', 'unique-email', 'no-white-space'],
+        password: ['required', 'ezpassword', 'no-white-space'],
+      },
+    })
+    .addResource({
+      name: 'users',
+      mode: 'claim',
+      rules: {
+        alias: ['required', 'unique-alias', 'no-white-space', 'min5'],
+        email: ['required', 'unique-email', 'no-white-space'],
+        password: ['required', 'ezpassword', 'no-white-space'],
+        apiToken: ['required', 'valid-gw2-token', 'no-white-space'],
+      },
+    })
+    .addResource({
+      name: 'users',
+      mode: 'update-password',
+      rules: {
+        email: 'required',
+        currentPassword: ['required'],
+        password: ['required', 'ezpassword', 'no-white-space'],
+      },
+    })
+    .addResource({
+      name: 'users',
+      mode: 'forgot-my-password',
+      rules: {
+        password: ['required', 'ezpassword', 'no-white-space'],
+      },
+    });
 
   type CreateUser = User & {
     password: string,
   };
 
-  async function create (user: CreateUser) {
+  async function create(user: CreateUser) {
     const validator = createValidator({
       resource: 'users',
       mode: 'create',
@@ -88,14 +89,9 @@ export default function userControllerFactory (models: Models) {
     excludeChildren?: boolean,
   };
 
-  const cleanUser = (user) => _.omit(user, [
-    'id',
-    'passwordHash',
-    'token',
-    'email',
-  ]);
+  const cleanUser = user => _.omit(user, ['id', 'passwordHash', 'token', 'email']);
 
-  async function read ({ email, alias, excludeChildren }: ReadPublicOptions = {}) {
+  async function read({ email, alias, excludeChildren }: ReadPublicOptions = {}) {
     const user = await readUser(models, { alias, email });
     if (!user) {
       throw new Error('No user was found.');
@@ -109,14 +105,10 @@ export default function userControllerFactory (models: Models) {
 
     let guilds = [];
     if (user.guilds) {
-      const promises = user.guilds.split(',').map((id) => readGuild(models, { id }));
+      const promises = user.guilds.split(',').map(id => readGuild(models, { id }));
 
       guilds = await Promise.all(promises);
-      guilds = guilds.filter((guild) => !!guild).map((guild) => _.pick(guild, [
-        'id',
-        'tag',
-        'name',
-      ]));
+      guilds = guilds.filter(guild => !!guild).map(guild => _.pick(guild, ['id', 'tag', 'name']));
     }
 
     return {
@@ -125,7 +117,7 @@ export default function userControllerFactory (models: Models) {
     };
   }
 
-  async function changePassword (id, newPassword) {
+  async function changePassword(id, newPassword) {
     const passwordHash = await hashPassword(newPassword);
     await updateUser(models, {
       id,
@@ -139,7 +131,7 @@ export default function userControllerFactory (models: Models) {
     currentPassword: string,
   };
 
-  async function updatePassword (user: UpdatePasswordOptions) {
+  async function updatePassword(user: UpdatePasswordOptions) {
     const validator = createValidator({
       resource: 'users',
       mode: 'update-password',
@@ -156,7 +148,7 @@ export default function userControllerFactory (models: Models) {
     await changePassword(usr.id, user.password);
   }
 
-  async function forgotMyPasswordStart (email: string) {
+  async function forgotMyPasswordStart(email: string) {
     const user = await readUser(models, { email });
     if (!user) {
       throw new Error('User not found');
@@ -171,10 +163,10 @@ export default function userControllerFactory (models: Models) {
     });
   }
 
-  async function forgotMyPasswordFinish (guid: string, newPassword: string) {
+  async function forgotMyPasswordFinish(guid: string, newPassword: string) {
     const row = await readPasswordReset(models, guid);
     if (!row) {
-      throw new Error('Reset doesn\'t exist.');
+      throw new Error("Reset doesn't exist.");
     }
 
     if (moment(row.expires).isBefore(moment()) || row.used) {
@@ -184,8 +176,7 @@ export default function userControllerFactory (models: Models) {
     await createValidator({
       resource: 'users',
       mode: 'forgot-my-password',
-    })
-    .validate({
+    }).validate({
       password: newPassword,
     });
 
@@ -198,7 +189,7 @@ export default function userControllerFactory (models: Models) {
     apiToken: string,
   };
 
-  async function claim (user: ClaimUser) {
+  async function claim(user: ClaimUser) {
     const validator = createValidator({
       resource: 'users',
       mode: 'claim',
@@ -214,7 +205,7 @@ export default function userControllerFactory (models: Models) {
     });
   }
 
-  async function readUserWithAccess (alias, accessType, { email } = {}) {
+  async function readUserWithAccess(alias, accessType, { email } = {}) {
     const user = await readUser(models, { alias, mode: 'lean' });
     if (!user) {
       throw notFound();
@@ -231,11 +222,11 @@ export default function userControllerFactory (models: Models) {
     return user;
   }
 
-  async function setPrivacy (email: string, privacy: string) {
+  async function setPrivacy(email: string, privacy: string) {
     return setPrivacyUser(models, email, privacy);
   }
 
-  async function removePrivacy (email: string, privacy: string) {
+  async function removePrivacy(email: string, privacy: string) {
     return removePrivacyUser(models, email, privacy);
   }
 
@@ -267,20 +258,24 @@ export default function userControllerFactory (models: Models) {
     pvpStandings: gw2.readPvpStandings,
   };
 
-  const userMethods = _.reduce(userMethodMap, (obj, func, methodName) => {
-    return {
-      ...obj,
-      [methodName]: async (alias, { email } = {}) => {
-        const user = await readUserWithAccess(alias, methodName, { email });
-        if (!user) {
-          throw notFound();
-        }
+  const userMethods = _.reduce(
+    userMethodMap,
+    (obj, func, methodName) => {
+      return {
+        ...obj,
+        [methodName]: async (alias, { email } = {}) => {
+          const user = await readUserWithAccess(alias, methodName, { email });
+          if (!user || !user.tokenId) {
+            throw notFound();
+          }
 
-        const { token } = await readToken(models, { id: user.tokenId });
-        return func(token);
-      },
-    };
-  }, {});
+          const { token } = await readToken(models, { id: user.tokenId });
+          return func(token);
+        },
+      };
+    },
+    {}
+  );
 
   return {
     ...userMethods,

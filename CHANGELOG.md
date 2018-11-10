@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
 
+### Fixed
+
+- Calling out to gw2 api with non-existent token
+
 ## [3.10.0][] - 2018-10-28
 
 ### Added
